@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import { startsWith } from 'lodash';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import React from 'react';
@@ -79,8 +78,10 @@ class PreviewMain extends React.Component {
 	}
 
 	updateSiteLocation = ( pathname ) => {
+		const url = this.props.site.URL + ( pathname === '/' ? '' : pathname );
+
 		this.setState( {
-			externalUrl: this.props.site.URL + ( startsWith( pathname, '/' ) ? '' : '/' ) + pathname
+			externalUrl: url.replace( /\/$/, '' )
 		} );
 	}
 
