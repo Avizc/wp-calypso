@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes } from 'react';
+
+import React from 'react';
+import PropTypes from 'prop-types';
 import { omit } from 'lodash';
 
 /**
@@ -9,14 +13,14 @@ import { omit } from 'lodash';
  */
 import CompactFormToggle from 'components/forms/form-toggle/compact';
 
-const PaymentMethodEditFormToggle = ( props ) => {
+const PaymentMethodEditFormToggle = props => {
 	const { checked, name, onChange } = props;
 	const onChangeHandler = () => {
 		const fakeEvent = {
 			target: {
 				name,
-				value: checked ? 'no' : 'yes'
-			}
+				value: checked ? 'no' : 'yes',
+			},
 		};
 		onChange( fakeEvent );
 	};
@@ -26,7 +30,8 @@ const PaymentMethodEditFormToggle = ( props ) => {
 			{ ...omit( props, [ 'onChange' ] ) }
 			checked={ checked }
 			name={ name }
-			onChange={ onChangeHandler } />
+			onChange={ onChangeHandler }
+		/>
 	);
 };
 

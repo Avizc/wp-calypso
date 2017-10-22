@@ -1,11 +1,14 @@
+/** @format */
 /**
  * External dependencies
  */
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import config from 'config';
 import debugFactory from 'debug';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { pick } from 'lodash';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -13,7 +16,6 @@ import { localize } from 'i18n-calypso';
  */
 import ActivityActor from './activity-actor';
 import ActivityIcon from './activity-icon';
-import ActivityTitle from './activity-title';
 import EllipsisMenu from 'components/ellipsis-menu';
 import FoldableCard from 'components/foldable-card';
 import PopoverMenuItem from 'components/popover/menu-item';
@@ -32,119 +34,27 @@ class ActivityLogItem extends Component {
 		siteId: PropTypes.number.isRequired,
 
 		log: PropTypes.shape( {
-			group: PropTypes.oneOf( [
-				'attachment',
-				'comment',
-				'core',
-				'menu',
-				'plugin',
-				'post',
-				'term',
-				'theme',
-				'user',
-				'widget',
-			] ).isRequired,
-			name: PropTypes.string.isRequired,
-			ts_utc: PropTypes.number.isRequired,
+			// Base
+			activityDate: PropTypes.string.isRequired,
+			activityGroup: PropTypes.string.isRequired,
+			activityIcon: PropTypes.string.isRequired,
+			activityId: PropTypes.string.isRequired,
+			activityName: PropTypes.string.isRequired,
+			activityStatus: PropTypes.string,
+			activityTitle: PropTypes.string.isRequired,
+			activityTs: PropTypes.number.isRequired,
 
-			actor: PropTypes.shape( {
-				display_name: PropTypes.string,
-				login: PropTypes.string,
-				translated_role: PropTypes.string,
-				user_email: PropTypes.string,
-				user_roles: PropTypes.string,
-				wpcom_user_id: PropTypes.number,
-				avatar_url: PropTypes.string,
-			} ),
-
-			object: PropTypes.shape( {
-				attachment: PropTypes.shape( {
-					mime_type: PropTypes.string,
-					id: PropTypes.number.isRequired,
-					title: PropTypes.string.isRequired,
-					url: PropTypes.shape( {
-						host: PropTypes.string.isRequired,
-						url: PropTypes.string.isRequired,
-						host_reversed: PropTypes.string.isRequired,
-					} ).isRequired,
-				} ),
-
-				comment: PropTypes.shape( {
-					approved: PropTypes.bool.isRequired,
-					id: PropTypes.number.isRequired,
-				} ),
-
-				core: PropTypes.shape( {
-					new_version: PropTypes.string,
-					old_version: PropTypes.string,
-				} ),
-
-				menu: PropTypes.shape( {
-					id: PropTypes.number,
-					name: PropTypes.string,
-				} ),
-
-				plugin: PropTypes.oneOfType( [
-					PropTypes.shape( {
-						name: PropTypes.string,
-						previous_version: PropTypes.string,
-						slug: PropTypes.string,
-						version: PropTypes.string,
-					} ),
-					PropTypes.arrayOf(
-						PropTypes.shape( {
-							name: PropTypes.string,
-							previous_version: PropTypes.string,
-							slug: PropTypes.string,
-							version: PropTypes.string,
-						} ),
-					),
-				] ),
-
-				post: PropTypes.shape( {
-					id: PropTypes.number.isRequired,
-					status: PropTypes.string.isRequired,
-					type: PropTypes.string,
-					title: PropTypes.string,
-				} ),
-
-				term: PropTypes.shape( {
-					id: PropTypes.number.isRequired,
-					title: PropTypes.string.isRequired,
-					type: PropTypes.string.isRequired,
-				} ),
-
-				theme: PropTypes.oneOfType( [
-					PropTypes.arrayOf(
-						PropTypes.shape( {
-							name: PropTypes.string,
-							slug: PropTypes.string,
-							uri: PropTypes.string,
-							version: PropTypes.string,
-						} )
-					),
-					PropTypes.shape( {
-						name: PropTypes.string,
-						slug: PropTypes.string,
-						uri: PropTypes.string,
-						version: PropTypes.string,
-					} ),
-				] ),
-
-				user: PropTypes.shape( {
-					display_name: PropTypes.string,
-					external_user_id: PropTypes.string,
-					login: PropTypes.string,
-					wpcom_user_id: PropTypes.number,
-				} ),
-
-				widget: PropTypes.shape( {
-					id: PropTypes.number,
-					name: PropTypes.string,
-					sidebar: PropTypes.string,
-				} ),
-			} ),
+			// Actor
+			actorAvatarUrl: PropTypes.string.isRequired,
+			actorName: PropTypes.string.isRequired,
+			actorRemoteId: PropTypes.number.isRequired,
+			actorRole: PropTypes.string.isRequired,
+			actorType: PropTypes.string.isRequired,
+			actorWpcomId: PropTypes.number.isRequired,
 		} ).isRequired,
+
+		// connect
+		recordTracksEvent: PropTypes.func.isRequired,
 
 		// localize
 		moment: PropTypes.func.isRequired,
@@ -156,90 +66,61 @@ class ActivityLogItem extends Component {
 	};
 
 	handleClickRestore = () => {
-		const {
-			log,
-			requestRestore,
-		} = this.props;
-		requestRestore( log.ts_utc, 'item' );
+		const { log, requestRestore } = this.props;
+		requestRestore( log.activityId, 'item' );
 	};
 
 	handleOpen = () => {
-		const {
-			log,
-			recordTracksEvent,
-		} = this.props;
-		const {
-			group,
-			name,
-			ts_utc,
-		} = log;
+		const { log, recordTracksEvent } = this.props;
+		const { activityGroup, activityName, activityTs } = log;
 
 		debug( 'opened log', log );
 
 		recordTracksEvent( 'calypso_activitylog_item_expand', {
-			group,
-			name,
-			timestamp: ts_utc,
+			group: activityGroup,
+			name: activityName,
+			timestamp: activityTs,
 		} );
 	};
 
-	// FIXME: Just for demonstration purposes
+	//
+	// TODO: Descriptions are temporarily disabled and this method is not called.
+	// Rich descriptions will be added after designs have been prepared for all types of activity.
+	//
 	renderDescription() {
-		const {
-			log,
-			moment,
-			translate,
-			applySiteOffset,
-		} = this.props;
-		const {
-			name,
-			ts_utc,
-		} = log;
+		const { log, moment, translate, applySiteOffset } = this.props;
+		const { activityName, activityTs } = log;
 
 		return (
 			<div>
 				<div>
 					{ translate( 'An event "%(eventName)s" occurred at %(date)s', {
 						args: {
-							date: applySiteOffset( moment.utc( ts_utc ) ).format( 'LLL' ),
-							eventName: name,
-						}
+							date: applySiteOffset( moment.utc( activityTs ) ).format( 'LLL' ),
+							eventName: activityName,
+						},
 					} ) }
 				</div>
-				<div className="activity-log-item__id">ID { ts_utc }</div>
+				<div className="activity-log-item__id">ID { activityTs }</div>
 			</div>
 		);
 	}
 
 	renderHeader() {
-		const {
-			action,
-			group,
-			name,
-		} = this.props.log;
-		const actor = get( this.props, [ 'log', 'actor' ] );
-		const object = get( this.props, [ 'log', 'object' ] );
+		const { log } = this.props;
 
 		return (
 			<div className="activity-log-item__card-header">
-				<ActivityActor actor={ actor } />
-				<ActivityTitle
-					action={ action }
-					actor={ actor }
-					group={ group }
-					name={ name }
-					object={ object }
+				<ActivityActor
+					{ ...pick( log, [ 'actorAvatarUrl', 'actorName', 'actorRole', 'actorType' ] ) }
 				/>
+				<div className="activity-log-item__title">{ log.activityTitle }</div>
 			</div>
 		);
 	}
 
 	renderSummary() {
-		const {
-			disableRestore,
-			hideRestore,
-			translate,
-		} = this.props;
+		const { disableRestore, hideRestore, translate } = this.props;
 
 		if ( hideRestore ) {
 			return null;
@@ -247,13 +128,10 @@ class ActivityLogItem extends Component {
 
 		return (
 			<div className="activity-log-item__action">
-				<EllipsisMenu
-					onClick={ stopPropagation }
-					position="bottom right"
-				>
+				<EllipsisMenu onClick={ stopPropagation } position="bottom right">
 					<PopoverMenuItem
 						disabled={ disableRestore }
-						icon="undo"
+						icon="history"
 						onClick={ this.handleClickRestore }
 					>
 						{ translate( 'Rewind to this point' ) }
@@ -264,47 +142,37 @@ class ActivityLogItem extends Component {
 	}
 
 	renderTime() {
-		const {
-			moment,
-			log,
-			applySiteOffset,
-		} = this.props;
+		const { moment, log, applySiteOffset } = this.props;
 
 		return (
 			<div className="activity-log-item__time">
-				{ applySiteOffset( moment.utc( log.ts_utc ) ).format( 'LT' ) }
+				{ applySiteOffset( moment.utc( log.activityTs ) ).format( 'LT' ) }
 			</div>
 		);
 	}
 
 	render() {
-		const {
-			className,
-			log,
-		} = this.props;
-		const {
-			group,
-			name,
-		} = log;
+		const { className, log } = this.props;
+		const { activityIcon, activityStatus } = log;
 
-		const classes = classNames( 'activity-log-item', className );
+		const classes = classNames( 'activity-log-item', className, {
+			'is-discarded': config( 'env' ) === 'development' && Math.random() > 0.8,
+		} );
 
 		return (
-			<div className={ classes } >
+			<div className={ classes }>
 				<div className="activity-log-item__type">
 					{ this.renderTime() }
-					<ActivityIcon group={ group } name={ name } />
+					<ActivityIcon activityIcon={ activityIcon } activityStatus={ activityStatus } />
 				</div>
 				<FoldableCard
 					className="activity-log-item__card"
 					clickableHeader
 					expandedSummary={ this.renderSummary() }
 					header={ this.renderHeader() }
-					onOpen={ this.handleOpen }
+					onClick={ this.handleOpen }
 					summary={ this.renderSummary() }
-				>
-					{ this.renderDescription() }
-				</FoldableCard>
+				/>
 			</div>
 		);
 	}

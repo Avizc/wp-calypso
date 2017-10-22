@@ -1,9 +1,12 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import analytics from 'lib/analytics';
 import titlecase from 'to-title-case';
-import mapValues from 'lodash/mapValues';
+import { mapValues } from 'lodash';
 
 /**
  * Internal dependencies
@@ -26,7 +29,7 @@ function appendActionTracking( option, name ) {
 		action: t => {
 			action && action( t );
 			trackClick( 'more button', name );
-		}
+		},
 	} );
 }
 

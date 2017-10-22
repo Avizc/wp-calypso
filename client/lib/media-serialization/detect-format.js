@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import includes from 'lodash/includes';
+
+import { includes } from 'lodash';
 
 /**
  * Internal dependencies

@@ -1,3 +1,5 @@
+/** @format */
+
 /**
  * External dependencies
  */
@@ -7,30 +9,28 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import {
-	getHelpSelectedSiteId,
-} from '../selectors';
+import { getHelpSiteId } from '../selectors';
 
 describe( 'selectors', () => {
-	describe( '#getHelpSelectedSiteId()', () => {
-		it( 'should return null for default state', () => {
+	describe( '#getHelpSiteId()', () => {
+		test( 'should return null for default state', () => {
 			const state = deepFreeze( {
 				help: {
-					selectedSiteId: null
-				}
+					selectedSiteId: null,
+				},
 			} );
 
-			expect( getHelpSelectedSiteId( state ) ).to.be.null;
+			expect( getHelpSiteId( state ) ).to.be.null;
 		} );
 
-		it( 'should return courses for given state', () => {
+		test( 'should return courses for given state', () => {
 			const state = deepFreeze( {
 				help: {
-					selectedSiteId: 1234
-				}
+					selectedSiteId: 1234,
+				},
 			} );
 
-			expect( getHelpSelectedSiteId( state ) ).to.eql( state.help.selectedSiteId );
+			expect( getHelpSiteId( state ) ).to.eql( state.help.selectedSiteId );
 		} );
 	} );
 } );

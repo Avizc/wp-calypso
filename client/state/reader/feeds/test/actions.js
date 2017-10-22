@@ -1,11 +1,12 @@
+/** @format */
 /**
  * External dependencies
  */
-import sinon from 'sinon';
 import { assert, expect } from 'chai';
+import sinon from 'sinon';
 
 /**
- * Internal deps
+ * Internal dependencies
  */
 import { requestFeed } from '../actions';
 import {
@@ -21,14 +22,16 @@ describe( 'actions', () => {
 		let request;
 
 		useNock( nock => {
-			nock( 'https://public-api.wordpress.com:443' ).get( '/rest/v1.1/read/feed/1' ).reply( 200, {
-				feed_ID: 1,
-				name: 'My test feed',
-			} );
+			nock( 'https://public-api.wordpress.com:443' )
+				.get( '/rest/v1.1/read/feed/1' )
+				.reply( 200, {
+					feed_ID: 1,
+					name: 'My test feed',
+				} );
 			request = requestFeed( 1 )( spy );
 		} );
 
-		it( 'should dispatch request sync', () => {
+		test( 'should dispatch request sync', () => {
 			expect( spy ).to.have.been.calledWith( {
 				type: READER_FEED_REQUEST,
 				payload: {
@@ -37,7 +40,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		it( 'should dispatch success, eventually', function() {
+		test( 'should dispatch success, eventually', () => {
 			return request.then(
 				() => {
 					expect( spy ).to.have.been.calledWith( {
@@ -51,7 +54,7 @@ describe( 'actions', () => {
 				err => {
 					assert.fail( 'Errback should not be invoked!', err );
 					return err;
-				},
+				}
 			);
 		} );
 	} );
@@ -61,11 +64,13 @@ describe( 'actions', () => {
 		let request;
 
 		useNock( nock => {
-			nock( 'https://public-api.wordpress.com:443' ).get( '/rest/v1.1/read/feed/1' ).reply( 404 );
+			nock( 'https://public-api.wordpress.com:443' )
+				.get( '/rest/v1.1/read/feed/1' )
+				.reply( 404 );
 			request = requestFeed( 1 )( spy );
 		} );
 
-		it( 'should dispatch request sync', () => {
+		test( 'should dispatch request sync', () => {
 			expect( spy ).to.have.been.calledWith( {
 				type: READER_FEED_REQUEST,
 				payload: {
@@ -74,7 +79,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		it( 'should dispatch error, eventually', function() {
+		test( 'should dispatch error, eventually', () => {
 			return request.then(
 				() => {
 					assert.fail( 'callback should not be invoked!', arguments );
@@ -88,7 +93,7 @@ describe( 'actions', () => {
 						},
 						error: sinon.match.instanceOf( Error ),
 					} );
-				},
+				}
 			);
 		} );
 	} );

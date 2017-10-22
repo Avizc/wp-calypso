@@ -1,6 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
+import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -14,48 +18,59 @@ import paths from 'my-sites/domains/paths';
 import SectionHeader from 'components/section-header';
 import support from 'lib/url/support';
 
-const ContactsPrivacyCard = React.createClass( {
-	propTypes: {
-		contactInformation: React.PropTypes.object.isRequired,
-		privateDomain: React.PropTypes.bool.isRequired,
-		hasPrivacyProtection: React.PropTypes.bool.isRequired,
-		selectedDomainName: React.PropTypes.string.isRequired,
-		selectedSite: React.PropTypes.oneOfType( [
-			React.PropTypes.object,
-			React.PropTypes.bool
-		] ).isRequired,
-		currentUserCanManage: React.PropTypes.bool.isRequired
-	},
+class ContactsPrivacyCard extends React.PureComponent {
+	static propTypes = {
+		contactInformation: PropTypes.object.isRequired,
+		privateDomain: PropTypes.bool.isRequired,
+		hasPrivacyProtection: PropTypes.bool.isRequired,
+		selectedDomainName: PropTypes.string.isRequired,
+		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ).isRequired,
+		currentUserCanManage: PropTypes.bool.isRequired,
+	};
 
 	render() {
+		const { contactInformation, currentUserCanManage, translate } = this.props;
+
 		return (
 			<div>
-				<SectionHeader label={ this.props.translate( 'Domain Contacts' ) } />
+				<SectionHeader label={ translate( 'Domain Contacts' ) } />
 
 				<CompactCard className="contacts-privacy-card">
 					<p className="settings-explanation">
-						{ this.props.translate(
+						{ translate(
 							'Domain owners are required to make their contact information available to the public. ' +
-							'{{a}}Learn more.{{/a}}',
+								'{{a}}Learn more.{{/a}}',
 							{
 								components: {
-									a: <a href={ support.PUBLIC_VS_PRIVATE } target="_blank" rel="noopener noreferrer" />
-								}
+									a: (
+										<a
+											href={ support.PUBLIC_VS_PRIVATE }
+											target="_blank"
+											rel="noopener noreferrer"
+										/>
+									),
+								},
 							}
 						) }
 					</p>
 
-					{ this.props.currentUserCanManage && this.getNotice() }
+					{ currentUserCanManage && this.getNotice() }
 
-					<ContactDisplay
-						contactInformation={ this.props.contactInformation } />
+					<ContactDisplay contactInformation={ contactInformation } />
 				</CompactCard>
 			</div>
 		);
-	},
+	}
 
 	getNotice() {
-		const { privacyAvailable, hasPrivacyProtection, privateDomain, translate, selectedSite, selectedDomainName } = this.props;
+		const {
+			hasPrivacyProtection,
+			privacyAvailable,
+			privateDomain,
+			selectedSite,
+			selectedDomainName,
+			translate,
+		} = this.props;
 
 		if ( ! privacyAvailable ) {
 			return false;
@@ -66,11 +81,11 @@ const ContactsPrivacyCard = React.createClass( {
 				<Notice status="is-success" showDismiss={ false }>
 					{ translate(
 						'{{strong}}Privacy Protection{{/strong}} is turned on for this domain. ' +
-						'Your contact information is {{strong}}private{{/strong}}. ',
+							'Your contact information is {{strong}}private{{/strong}}. ',
 						{
 							components: {
-								strong: <strong />
-							}
+								strong: <strong />,
+							},
 						}
 					) }
 				</Notice>
@@ -80,14 +95,21 @@ const ContactsPrivacyCard = React.createClass( {
 				<Notice status="is-warning" showDismiss={ false }>
 					{ translate(
 						'{{strong}}Privacy Protection{{/strong}} is temporarily ' +
-						'disabled for this domain while the domain is being transferred. ' +
-						'Your contact information is {{strong}}public{{/strong}}. ' +
-						'{{a}}Cancel Transfer and Enable Privacy Protection{{/a}}',
+							'disabled for this domain while the domain is being transferred. ' +
+							'Your contact information is {{strong}}public{{/strong}}. ' +
+							'{{a}}Cancel Transfer and Enable Privacy Protection{{/a}}',
 						{
 							components: {
 								strong: <strong />,
-								a: <a href={ paths.domainManagementTransferOut( selectedSite.slug, selectedDomainName ) } />
-							}
+								a: (
+									<a
+										href={ paths.domainManagementTransferOut(
+											selectedSite.slug,
+											selectedDomainName
+										) }
+									/>
+								),
+							},
 						}
 					) }
 				</Notice>
@@ -98,20 +120,25 @@ const ContactsPrivacyCard = React.createClass( {
 			<Notice status="is-warning" showDismiss={ false }>
 				{ translate(
 					'{{strong}}Privacy Protection{{/strong}} is turned off for this domain. ' +
-					'Your contact information is {{strong}}public{{/strong}}. ' +
-					'{{a}}Enable Privacy Protection{{/a}}',
+						'Your contact information is {{strong}}public{{/strong}}. ' +
+						'{{a}}Enable Privacy Protection{{/a}}',
 					{
 						components: {
 							strong: <strong />,
-							a: <a
-								href={ paths.domainManagementPrivacyProtection(
-									selectedSite.slug, selectedDomainName ) } />
-						}
+							a: (
+								<a
+									href={ paths.domainManagementPrivacyProtection(
+										selectedSite.slug,
+										selectedDomainName
+									) }
+								/>
+							),
+						},
 					}
 				) }
 			</Notice>
 		);
 	}
-} );
+}
 
-module.exports = localize( ContactsPrivacyCard );
+export default localize( ContactsPrivacyCard );

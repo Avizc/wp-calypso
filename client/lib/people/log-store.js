@@ -1,16 +1,18 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-var debug = require( 'debug' )( 'calypso:my-sites:people:log-store' ),
-	clone = require( 'lodash/clone' ),
-	find = require( 'lodash/find' ),
-	reject = require( 'lodash/reject' );
+
+import { clone, find, reject } from 'lodash';
+import debugFactory from 'debug';
+const debug = debugFactory( 'calypso:my-sites:people:log-store' );
 
 /**
  * Internal dependencies
  */
-var Dispatcher = require( 'dispatcher' ),
-	emitter = require( 'lib/mixins/emitter' );
+import Dispatcher from 'dispatcher';
+import emitter from 'lib/mixins/emitter';
 
 var _errors = [],
 	_inProgress = [],
@@ -43,7 +45,7 @@ function addLog( status, action, siteId, user, error ) {
 		action: action,
 		siteId: siteId,
 		user: user,
-		error: error
+		error: error,
 	};
 
 	debug( 'Add in ' + status + ' data:', log );
@@ -88,7 +90,7 @@ PeopleLogStore = {
 
 	emitChange: function() {
 		this.emit( 'change' );
-	}
+	},
 };
 
 PeopleLogStore.dispatchToken = Dispatcher.register( function( payload ) {
@@ -105,7 +107,13 @@ PeopleLogStore.dispatchToken = Dispatcher.register( function( payload ) {
 		case 'RECEIVE_EMAIL_FOLLOWERS':
 		case 'RECEIVE_ROLES':
 			if ( action.error ) {
-				addLog( 'error', action.type, action.siteId || action.fetchOptions.siteId, null, action.error.error );
+				addLog(
+					'error',
+					action.type,
+					action.siteId || action.fetchOptions.siteId,
+					null,
+					action.error.error
+				);
 				PeopleLogStore.emitChange();
 			}
 			break;
@@ -126,7 +134,7 @@ PeopleLogStore.dispatchToken = Dispatcher.register( function( payload ) {
 				status: 'inProgress',
 				action: action.action,
 				siteId: action.siteId,
-				user: action.user
+				user: action.user,
 			} );
 			if ( action.error ) {
 				addLog( 'error', action.type, action.siteId, action.user, action.error );
@@ -135,11 +143,10 @@ PeopleLogStore.dispatchToken = Dispatcher.register( function( payload ) {
 			}
 			PeopleLogStore.emitChange();
 			break;
-
 	}
 } );
 
 // Add the Store to the emitter so we can emit change events.
 emitter( PeopleLogStore );
 
-module.exports = PeopleLogStore;
+export default PeopleLogStore;

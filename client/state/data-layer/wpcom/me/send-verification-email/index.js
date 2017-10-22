@@ -1,6 +1,9 @@
 /**
  * Internal dependencies
+ *
+ * @format
  */
+
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 import {
@@ -10,14 +13,19 @@ import {
 } from 'state/action-types';
 
 export const requestEmailVerification = function( { dispatch }, action ) {
-	dispatch( http( {
-		apiVersion: '1.1',
-		method: 'POST',
-		path: '/me/send-verification-email',
-	}, action ) );
+	dispatch(
+		http(
+			{
+				apiVersion: '1.1',
+				method: 'POST',
+				path: '/me/send-verification-email',
+			},
+			action
+		)
+	);
 };
 
-export const handleError = ( { dispatch }, action, next, rawError ) => {
+export const handleError = ( { dispatch }, action, rawError ) => {
 	dispatch( {
 		type: EMAIL_VERIFY_REQUEST_FAILURE,
 		message: rawError.message,
@@ -29,9 +37,7 @@ export const handleSuccess = ( { dispatch } ) => {
 };
 
 export default {
-	[ EMAIL_VERIFY_REQUEST ]: [ dispatchRequest(
-		requestEmailVerification,
-		handleSuccess,
-		handleError
-	) ],
+	[ EMAIL_VERIFY_REQUEST ]: [
+		dispatchRequest( requestEmailVerification, handleSuccess, handleError ),
+	],
 };

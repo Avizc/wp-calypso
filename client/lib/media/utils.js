@@ -1,10 +1,13 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import url from 'url';
 import path from 'path';
 import photon from 'photon';
-import { includes, omitBy, startsWith, uniqueId } from 'lodash';
+import { includes, omitBy, startsWith } from 'lodash';
 import { isUri } from 'valid-url';
 
 /**
@@ -17,10 +20,10 @@ import {
 	ThumbnailSizeDimensions,
 	GalleryColumnedTypes,
 	GallerySizeableTypes,
-	GalleryDefaultAttrs
+	GalleryDefaultAttrs,
 } from './constants';
 import Shortcode from 'lib/shortcode';
-import versionCompare from 'lib/version-compare';
+import { uniqueId } from 'lib/impure-lodash';
 
 /**
  * Module variables
@@ -68,7 +71,7 @@ const MediaUtils = {
 
 		if ( options.maxWidth ) {
 			return resize( media.URL, {
-				w: options.maxWidth
+				w: options.maxWidth,
 			} );
 		}
 
@@ -228,14 +231,14 @@ const MediaUtils = {
 	 * Returns true if the site can be trusted to accurately report its allowed
 	 * file types. Returns false otherwise.
 	 *
-	 * Jetpack versions 3.8.0 and earlier do not sync the allowed file types
+	 * Jetpack currently does not sync the allowed file types
 	 * option, so we must assume that all file types are supported.
 	 *
 	 * @param  {Object}  site Site object
 	 * @return {Boolean}      Site allowed file types are accurate
 	 */
 	isSiteAllowedFileTypesToBeTrusted: function( site ) {
-		return ! site || ! site.jetpack || versionCompare( site.options.jetpack_version, '3.8.1', '>=' );
+		return ! site || ! site.jetpack;
 	},
 
 	/**
@@ -318,8 +321,12 @@ const MediaUtils = {
 			return null;
 		}
 
-		if ( site.jetpack && site.isModuleActive( 'videopress' ) && site.versionCompare( '4.5', '>=' ) &&
-				startsWith( MediaUtils.getMimeType( item ), 'video/' ) ) {
+		if (
+			site.jetpack &&
+			site.isModuleActive( 'videopress' ) &&
+			site.versionCompare( '4.5', '>=' ) &&
+			startsWith( MediaUtils.getMimeType( item ), 'video/' )
+		) {
 			return null;
 		}
 
@@ -359,9 +366,11 @@ const MediaUtils = {
 			minutes = Math.floor( duration / 60 ) % 60,
 			seconds = Math.floor( duration ) % 60;
 
-		let playtime = [ minutes, seconds ].map( function( value ) {
-			return ( '0' + value ).slice( -2 );
-		} ).join( ':' );
+		let playtime = [ minutes, seconds ]
+			.map( function( value ) {
+				return ( '0' + value ).slice( -2 );
+			} )
+			.join( ':' );
 
 		if ( hours ) {
 			playtime = [ hours, playtime ].join( ':' );
@@ -417,9 +426,12 @@ const MediaUtils = {
 
 		// gallery images are passed in as an array of objects
 		// in settings.items but we just need the IDs set to attrs.ids
-		attrs = Object.assign( {
-			ids: settings.items.map( ( item ) => item.ID ).join()
-		}, settings );
+		attrs = Object.assign(
+			{
+				ids: settings.items.map( item => item.ID ).join(),
+			},
+			settings
+		);
 
 		delete attrs.items;
 
@@ -444,7 +456,7 @@ const MediaUtils = {
 		return Shortcode.stringify( {
 			tag: 'gallery',
 			type: 'single',
-			attrs: attrs
+			attrs: attrs,
 		} );
 	},
 
@@ -486,10 +498,12 @@ const MediaUtils = {
 						arr[ i ] = binStr.charCodeAt( i );
 					}
 
-					polyfillCallback( new Blob( [ arr ], {
-						type: polyfillType || 'image/png'
-					} ) );
-				}
+					polyfillCallback(
+						new Blob( [ arr ], {
+							type: polyfillType || 'image/png',
+						} )
+					);
+				},
 			} );
 		}
 
@@ -523,8 +537,8 @@ const MediaUtils = {
 	 */
 	createTransientMedia( file ) {
 		const transientMedia = {
-			'transient': true,
-			ID: uniqueId( 'media-' )
+			transient: true,
+			ID: uniqueId( 'media-' ),
 		};
 
 		if ( 'string' === typeof file ) {
@@ -533,7 +547,7 @@ const MediaUtils = {
 				file: file,
 				title: path.basename( file ),
 				extension: MediaUtils.getFileExtension( file ),
-				mime_type: MediaUtils.getMimeType( file )
+				mime_type: MediaUtils.getMimeType( file ),
 			} );
 		} else if ( file.thumbnails ) {
 			// Generate from a file data object
@@ -544,6 +558,7 @@ const MediaUtils = {
 				mime_type: file.mime_type,
 				guid: file.URL,
 				URL: file.URL,
+				external: true,
 			} );
 		} else {
 			// Handle the case where a an object has been passed that wraps a
@@ -563,12 +578,12 @@ const MediaUtils = {
 				mime_type: MediaUtils.getMimeType( file.fileName || fileContents ),
 				// Size is not an API media property, though can be useful for
 				// validation purposes if known
-				size: fileContents.size
+				size: fileContents.size,
 			} );
 		}
 
 		return transientMedia;
-	}
+	},
 };
 
-module.exports = MediaUtils;
+export default MediaUtils;

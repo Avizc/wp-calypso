@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import get from 'lodash/get';
+
+import { get } from 'lodash';
 
 export default function isDropZoneVisible( state, dropZoneName = null ) {
 	return get( state, [ 'ui', 'dropZone', 'isVisible', dropZoneName ], false );

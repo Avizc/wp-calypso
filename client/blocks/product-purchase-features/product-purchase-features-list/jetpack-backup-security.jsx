@@ -1,6 +1,9 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -14,14 +17,13 @@ export default localize( ( { translate } ) => {
 		<div className="product-purchase-features-list__item">
 			<PurchaseDetail
 				icon="flag"
-				title={ translate( 'Backups & Security' ) }
+				title={ translate( 'Site Security' ) }
 				description={ translate(
-					'VaultPress makes it easy to keep an up-to-date backup of your site with both daily and real-time syncing of all ' +
-					'your WordPress content. To ensure your site stays safe, VaultPress performs security scans daily and makes it ' +
-					'easy to review and fix threats.'
+					'Your site is being securely backed up and scanned with real-time sync.'
 				) }
-				buttonText={ translate( 'View your backups' ) }
-				href="https://dashboard.vaultpress.com/" />
+				buttonText={ translate( 'Visit security dashboard' ) }
+				href="https://dashboard.vaultpress.com/"
+			/>
 		</div>
 	);
 } );

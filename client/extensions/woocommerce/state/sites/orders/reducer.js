@@ -1,12 +1,16 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import { keyBy } from 'lodash';
+
+import { keyBy, omit } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { combineReducers } from 'state/utils';
+import { getSerializedOrdersQuery } from './utils';
 import notes from './notes/reducer';
 import {
 	WOOCOMMERCE_ORDER_REQUEST,
@@ -35,7 +39,9 @@ export function isLoading( state = {}, action ) {
 		case WOOCOMMERCE_ORDER_REQUEST:
 		case WOOCOMMERCE_ORDER_REQUEST_SUCCESS:
 		case WOOCOMMERCE_ORDER_REQUEST_FAILURE:
-			return Object.assign( {}, state, { [ action.orderId ]: WOOCOMMERCE_ORDER_REQUEST === action.type } );
+			return Object.assign( {}, state, {
+				[ action.orderId ]: WOOCOMMERCE_ORDER_REQUEST === action.type,
+			} );
 		default:
 			return state;
 	}
@@ -55,7 +61,8 @@ export function isQueryLoading( state = {}, action ) {
 		case WOOCOMMERCE_ORDERS_REQUEST:
 		case WOOCOMMERCE_ORDERS_REQUEST_SUCCESS:
 		case WOOCOMMERCE_ORDERS_REQUEST_FAILURE:
-			return Object.assign( {}, state, { [ `{page:${ action.page }}` ]: WOOCOMMERCE_ORDERS_REQUEST === action.type } );
+			const query = getSerializedOrdersQuery( action.query );
+			return Object.assign( {}, state, { [ query ]: WOOCOMMERCE_ORDERS_REQUEST === action.type } );
 		default:
 			return state;
 	}
@@ -75,7 +82,9 @@ export function isUpdating( state = {}, action ) {
 		case WOOCOMMERCE_ORDER_UPDATE:
 		case WOOCOMMERCE_ORDER_UPDATE_SUCCESS:
 		case WOOCOMMERCE_ORDER_UPDATE_FAILURE:
-			return Object.assign( {}, state, { [ action.orderId ]: WOOCOMMERCE_ORDER_UPDATE === action.type } );
+			return Object.assign( {}, state, {
+				[ action.orderId ]: WOOCOMMERCE_ORDER_UPDATE === action.type,
+			} );
 		default:
 			return state;
 	}
@@ -115,7 +124,8 @@ export function queries( state = {}, action ) {
 	switch ( action.type ) {
 		case WOOCOMMERCE_ORDERS_REQUEST_SUCCESS:
 			const idList = action.orders.map( order => order.id );
-			return Object.assign( {}, state, { [ `{page:${ action.page }}` ]: idList } );
+			const query = getSerializedOrdersQuery( action.query );
+			return Object.assign( {}, state, { [ query ]: idList } );
 		default:
 			return state;
 	}
@@ -128,10 +138,11 @@ export function queries( state = {}, action ) {
  * @param  {Object} action Action payload
  * @return {Object}        Updated state
  */
-export function totalPages( state = 1, action ) {
+export function total( state = 1, action ) {
 	switch ( action.type ) {
 		case WOOCOMMERCE_ORDERS_REQUEST_SUCCESS:
-			return action.totalPages;
+			const query = getSerializedOrdersQuery( omit( action.query, 'page' ) );
+			return Object.assign( {}, state, { [ query ]: action.total } );
 		default:
 			return state;
 	}
@@ -144,6 +155,6 @@ export default combineReducers( {
 	items,
 	queries,
 	refunds,
-	totalPages,
+	total,
 	notes,
 } );

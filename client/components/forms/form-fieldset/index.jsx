@@ -1,19 +1,16 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-var React = require( 'react' ),
-	classnames = require( 'classnames' ),
-	omit = require( 'lodash/omit' );
 
-module.exports = React.createClass( {
+import React from 'react';
+import classnames from 'classnames';
 
-	displayName: 'FormFieldset',
+const FormFieldset = ( { className, children, ...otherProps } ) => (
+	<fieldset { ...otherProps } className={ classnames( className, 'form-fieldset' ) }>
+		{ children }
+	</fieldset>
+);
 
-	render: function() {
-		return (
-			<fieldset { ...omit( this.props, 'className' ) } className={ classnames( this.props.className, 'form-fieldset' ) } >
-				{ this.props.children }
-			</fieldset>
-		);
-	}
-} );
+export default FormFieldset;

@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes } from 'react';
+import config from 'config';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
 import { localize } from 'i18n-calypso';
@@ -15,11 +19,7 @@ import NavItem from 'components/section-nav/item';
 import NavTabs from 'components/section-nav/tabs';
 import SectionNav from 'components/section-nav';
 
-export const SettingsNavigation = ( {
-	site,
-	activeSection,
-	translate,
-} ) => {
+export const SettingsNavigation = ( { site, activeSection, translate } ) => {
 	const items = [
 		{
 			id: 'payments',
@@ -37,6 +37,14 @@ export const SettingsNavigation = ( {
 			title: translate( 'Taxes' ),
 		},
 	];
+
+	if ( config.isEnabled( 'woocommerce/extension-settings-email' ) ) {
+		items.push( {
+			id: 'email',
+			path: '/store/settings/email/:site',
+			title: translate( 'Email' ),
+		} );
+	}
 
 	const section = find( items, { id: activeSection } );
 	return (
@@ -64,10 +72,8 @@ SettingsNavigation.propTypes = {
 	translate: PropTypes.func,
 };
 
-export default connect(
-	( state ) => {
-		return {
-			site: getSelectedSiteWithFallback( state ),
-		};
-	},
-)( localize( SettingsNavigation ) );
+export default connect( state => {
+	return {
+		site: getSelectedSiteWithFallback( state ),
+	};
+} )( localize( SettingsNavigation ) );

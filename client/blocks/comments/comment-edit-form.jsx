@@ -1,6 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
@@ -34,7 +38,7 @@ class PostCommentForm extends Component {
 
 	componentDidMount() {
 		// If it's a reply, give the input focus if commentText exists ( can not exist if comments are closed )
-		if ( this.props.parentCommentID && this._textareaNode ) {
+		if ( this.props.parentCommentId && this._textareaNode ) {
 			this._textareaNode.focus();
 		}
 	}
@@ -76,7 +80,7 @@ class PostCommentForm extends Component {
 				this.props.deleteComment(
 					this.props.post.site_ID,
 					this.props.post.ID,
-					this.props.placeholderId,
+					this.props.placeholderId
 				);
 			}
 		}
@@ -107,7 +111,7 @@ class PostCommentForm extends Component {
 			return false;
 		}
 
-		this.props.editComment( post.site_ID, post.ID, this.props.commentId, commentText );
+		this.props.editComment( post.site_ID, post.ID, this.props.commentId, { content: commentText } );
 
 		recordAction( 'edited_comment' );
 		recordGaEvent( 'Clicked Edit Comment Button' );
@@ -131,7 +135,7 @@ class PostCommentForm extends Component {
 		switch ( error.error ) {
 			case 'comment_duplicate':
 				message = translate(
-					"Duplicate comment detected. It looks like you've already said that!",
+					"Duplicate comment detected. It looks like you've already said that!"
 				);
 				break;
 
@@ -169,9 +173,7 @@ class PostCommentForm extends Component {
 					<label>
 						<div className={ expandingAreaClasses }>
 							<pre>
-								<span>
-									{ this.state.commentText }
-								</span>
+								<span>{ this.state.commentText }</span>
 								<br />
 							</pre>
 							<AutoDirection>
@@ -203,13 +205,13 @@ class PostCommentForm extends Component {
 }
 
 PostCommentForm.propTypes = {
-	post: React.PropTypes.object.isRequired,
-	commentId: React.PropTypes.number,
-	commentText: React.PropTypes.string,
-	onCommentSubmit: React.PropTypes.func,
+	post: PropTypes.object.isRequired,
+	commentId: PropTypes.number,
+	commentText: PropTypes.string,
+	onCommentSubmit: PropTypes.func,
 
 	// connect()ed props:
-	editComment: React.PropTypes.func.isRequired,
+	editComment: PropTypes.func.isRequired,
 };
 
 PostCommentForm.defaultProps = {

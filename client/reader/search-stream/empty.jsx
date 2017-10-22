@@ -1,6 +1,8 @@
+/** @format */
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -13,7 +15,7 @@ import { isDiscoverEnabled } from 'reader/discover/helper';
 
 class SearchEmptyContent extends React.Component {
 	static propTypes = {
-		query: React.PropTypes.string,
+		query: PropTypes.string,
 	};
 
 	shouldComponentUpdate() {
@@ -39,23 +41,19 @@ class SearchEmptyContent extends React.Component {
 			</a>
 		);
 
-		const secondaryAction = isDiscoverEnabled()
-			? <a
-					className="empty-content__action button"
-					onClick={ this.recordSecondaryAction }
-					href="/discover"
-				>
-					{ this.props.translate( 'Explore Discover' ) }
-				</a>
-			: null;
+		const secondaryAction = isDiscoverEnabled() ? (
+			<a
+				className="empty-content__action button"
+				onClick={ this.recordSecondaryAction }
+				href="/discover"
+			>
+				{ this.props.translate( 'Explore Discover' ) }
+			</a>
+		) : null;
 
 		const message = this.props.translate( 'No posts found for {{query /}} for your language.', {
 			components: {
-				query: (
-					<em>
-						{ this.props.query }
-					</em>
-				),
+				query: <em>{ this.props.query }</em>,
 			},
 		} );
 

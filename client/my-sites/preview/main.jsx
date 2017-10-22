@@ -1,21 +1,23 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
+import { debounce } from 'lodash';
 import React from 'react';
 import debugFactory from 'debug';
 
 /**
  * Internal dependencies
  */
-import {
-	getSelectedSite,
-	getSelectedSiteId,
-} from 'state/ui/selectors';
+import { getSelectedSite, getSelectedSiteId } from 'state/ui/selectors';
 import { isSitePreviewable } from 'state/sites/selectors';
 import addQueryArgs from 'lib/route/add-query-args';
-
+import { setLayoutFocus } from 'state/ui/layout-focus/actions';
+import { isWithinBreakpoint } from 'lib/viewport';
 import Button from 'components/button';
 import DocumentHead from 'components/data/document-head';
 import EmptyContent from 'components/empty-content';
@@ -26,35 +28,63 @@ import WebPreviewContent from 'components/web-preview/content';
 const debug = debugFactory( 'calypso:my-sites:preview' );
 
 class PreviewMain extends React.Component {
-
 	static displayName = 'Preview';
 
 	state = {
 		previewUrl: null,
+		externalUrl: null,
+		showingClose: false,
 	};
 
 	componentWillMount() {
 		this.updateUrl();
+		this.updateLayout();
+	}
+
+	updateLayout = () => {
+		this.setState( {
+			showingClose: isWithinBreakpoint( '<660px' ),
+		} );
+	};
+
+	debouncedUpdateLayout = debounce( this.updateLayout, 50 );
+
+	componentDidMount() {
+		global.window && global.window.addEventListener( 'resize', this.debouncedUpdateLayout );
+	}
+
+	componentWillUnmount() {
+		global.window && global.window.removeEventListener( 'resize', this.debouncedUpdateLayout );
 	}
 
 	updateUrl() {
 		if ( ! this.props.site ) {
 			if ( this.state.previewUrl !== null ) {
 				debug( 'unloaded page' );
-				this.setState( { previewUrl: null } );
+				this.setState( {
+					previewUrl: null,
+					externalUrl: null,
+				} );
 			}
 			return;
 		}
 
-		const newUrl = addQueryArgs( {
-			preview: true,
-			iframe: true,
-			'frame-nonce': this.props.site.options.frame_nonce
-		}, this.getBasePreviewUrl() );
+		const baseUrl = this.getBasePreviewUrl();
+		const newUrl = addQueryArgs(
+			{
+				theme_preview: true,
+				iframe: true,
+				'frame-nonce': this.props.site.options.frame_nonce,
+			},
+			baseUrl
+		);
 
 		if ( this.iframeUrl !== newUrl ) {
 			debug( 'loading', newUrl );
-			this.setState( { previewUrl: newUrl } );
+			this.setState( {
+				previewUrl: newUrl,
+				externalUrl: this.props.site.URL,
+			} );
 		}
 	}
 
@@ -69,6 +99,16 @@ class PreviewMain extends React.Component {
 		}
 	}
 
+	updateSiteLocation = pathname => {
+		this.setState( {
+			externalUrl: this.props.site.URL + ( pathname === '/' ? '' : pathname ),
+		} );
+	};
+
+	focusSidebar = () => {
+		this.props.setLayoutFocus( 'sidebar' );
+	};
+
 	render() {
 		const { translate, isPreviewable, site } = this.props;
 
@@ -80,8 +120,7 @@ class PreviewMain extends React.Component {
 		if ( ! isPreviewable ) {
 			const action = (
 				<Button primary icon href={ site.URL } target="_blank">
-					{ translate( 'Open' ) }
-					<Gridicon icon="external" />
+					{ translate( 'Open' ) } <Gridicon icon="external" />
 				</Button>
 			);
 
@@ -98,18 +137,25 @@ class PreviewMain extends React.Component {
 
 		return (
 			<Main className="preview">
-				<DocumentHead title={ translate( 'Site Preview' ) } />
+				<DocumentHead title={ translate( 'Your Site' ) } />
 				<WebPreviewContent
-					showClose={ false }
+					onLocationUpdate={ this.updateSiteLocation }
+					showUrl={ !! this.state.externalUrl }
+					showClose={ this.state.showingClose }
+					onClose={ this.focusSidebar }
 					previewUrl={ this.state.previewUrl }
-					externalUrl={ site.URL }
+					externalUrl={ this.state.externalUrl }
+					loadingMessage={ this.props.translate(
+						'{{strong}}One moment, please…{{/strong}} loading your site.',
+						{ components: { strong: <strong /> } }
+					) }
 				/>
 			</Main>
 		);
 	}
 }
 
-const mapState = ( state ) => {
+const mapState = state => {
 	const selectedSiteId = getSelectedSiteId( state );
 	return {
 		isPreviewable: isSitePreviewable( state, selectedSiteId ),
@@ -118,4 +164,4 @@ const mapState = ( state ) => {
 	};
 };
 
-export default connect( mapState )( localize( PreviewMain ) );
+export default connect( mapState, { setLayoutFocus } )( localize( PreviewMain ) );

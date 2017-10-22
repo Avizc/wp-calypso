@@ -17,6 +17,7 @@
 
 .editor-ground-control .site,
 .editor-ground-control .editor-ground-control__status,
+.editor-ground-control .editor-ground-control__history,
 .editor-ground-control .editor-ground-control__action-buttons {
 	height: 46px;
 	line-height: 46px;
@@ -49,7 +50,6 @@
 	display: flex;
 	min-height: 20px;
 	justify-content: space-between;
-	margin: 0 auto 0 0;
 	position: relative;
 	border-left: 1px solid lighten( $gray, 25% );
 	padding-left: 16px;
@@ -59,7 +59,20 @@
 	}
 }
 
+.editor-ground-control__history {
+	display: flex;
+	min-height: 20px;
+	justify-content: space-between;
+	position: relative;
+	padding-left: 16px;
+
+	@include breakpoint( "<660px" ) {
+		display: none;
+	}
+}
+
 .editor-ground-control__action-buttons {
+	margin-left: auto;
 	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
@@ -102,17 +115,13 @@
 	font-size: 13px;
 }
 
-.editor-ground-control__publish-combo {
+.editor-ground-control__publish-button {
 	flex-grow: 1;
 	display: flex;
-	margin: 0 4px;
+	margin: 0 12px;
 
-	&.is-standalone {
-		margin: 0 12px;
-
-		@include breakpoint( "<480px" ) {
-			margin: 0;
-		}
+	@include breakpoint( "<480px" ) {
+		margin: 0;
 	}
 }
 
@@ -122,7 +131,7 @@
 	padding: 5px 14px 7px;
 }
 
-.editor-ground-control .is-standalone .editor-publish-button {
+.editor-ground-control .editor-publish-button {
 	border-radius: 4px;
 	padding: 7px 16px;
 
@@ -152,18 +161,6 @@
 .editor-ground-control__save-status {
 	text-decoration: none;
 	color: lighten( $gray, 20% );
-}
-
-.editor-ground-control__schedule-post {
-	box-sizing: border-box;
-	display: block;
-	padding: 0 16px;
-	width: 237px;
-
-	.async-load {
-		margin: 16px 0;
-		width: auto;
-	}
 }
 
 .editor-ground-control .edit-post-status {
@@ -240,6 +237,7 @@
 	border-right: 1px solid lighten( $gray, 25% );
 	padding: 6px 10px;
 	height: 46px;
+	border-radius: 0;
 
 	.gridicon {
 		top: 4px;
@@ -255,4 +253,11 @@
 		display: none;
 	}
 
+}
+
+.popover {
+	&.editor-ground-control__post-schedule-popover {
+		/* applying a lower z-index to ensure it is layered behind global notice */
+		z-index: z-index( 'root', '.popover.editor-ground-control__post-schedule-popover' );
+	}
 }

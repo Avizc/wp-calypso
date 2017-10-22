@@ -1,24 +1,26 @@
+/** @format */
+
 /**
- * External Dependencies
+ * External dependencies
  */
 import { expect } from 'chai';
 import { spy } from 'sinon';
 
 /**
- * Internal Dependencies
+ * Internal dependencies
  */
 import {
 	requestBlogStickerRemove,
 	receiveBlogStickerRemove,
 	receiveBlogStickerRemoveError,
 } from '../';
-import { addBlogSticker, removeBlogSticker } from 'state/sites/blog-stickers/actions';
+import { bypassDataLayer } from 'state/data-layer/utils';
 import { http } from 'state/data-layer/wpcom-http/actions';
-import { local } from 'state/data-layer/utils';
+import { addBlogSticker, removeBlogSticker } from 'state/sites/blog-stickers/actions';
 
 describe( 'blog-sticker-remove', () => {
 	describe( 'requestBlogStickerRemove', () => {
-		it( 'should dispatch an http request', () => {
+		test( 'should dispatch an http request', () => {
 			const dispatch = spy();
 			const action = removeBlogSticker( 123, 'broken-in-reader' );
 			requestBlogStickerRemove( { dispatch }, action );
@@ -30,19 +32,18 @@ describe( 'blog-sticker-remove', () => {
 					apiVersion: '1.1',
 					onSuccess: action,
 					onFailure: action,
-				} ),
+				} )
 			);
 		} );
 	} );
 
 	describe( 'receiveBlogStickerRemove', () => {
-		it( 'should dispatch a notice', () => {
+		test( 'should dispatch a notice', () => {
 			const dispatch = spy();
 			receiveBlogStickerRemove(
 				{ dispatch },
 				{ payload: { blogId: 123, stickerName: 'broken-in-reader' } },
-				null,
-				{ success: true },
+				{ success: true }
 			);
 			expect( dispatch ).to.have.been.calledWithMatch( {
 				notice: {
@@ -51,15 +52,14 @@ describe( 'blog-sticker-remove', () => {
 			} );
 		} );
 
-		it( 'should dispatch a sticker removal if it fails', () => {
+		test( 'should dispatch a sticker removal if it fails', () => {
 			const dispatch = spy();
 			receiveBlogStickerRemove(
 				{ dispatch },
 				{ payload: { blogId: 123, stickerName: 'broken-in-reader' } },
-				null,
 				{
 					success: false,
-				},
+				}
 			);
 			expect( dispatch ).to.have.been.calledWithMatch( {
 				notice: {
@@ -70,11 +70,11 @@ describe( 'blog-sticker-remove', () => {
 	} );
 
 	describe( 'receiveBlogStickerRemoveError', () => {
-		it( 'should dispatch an error notice and add sticker action', () => {
+		test( 'should dispatch an error notice and add sticker action', () => {
 			const dispatch = spy();
 			receiveBlogStickerRemoveError(
 				{ dispatch },
-				{ payload: { blogId: 123, stickerName: 'broken-in-reader' } },
+				{ payload: { blogId: 123, stickerName: 'broken-in-reader' } }
 			);
 			expect( dispatch ).to.have.been.calledWithMatch( {
 				notice: {
@@ -82,7 +82,7 @@ describe( 'blog-sticker-remove', () => {
 				},
 			} );
 			expect( dispatch ).to.have.been.calledWith(
-				local( addBlogSticker( 123, 'broken-in-reader' ) ),
+				bypassDataLayer( addBlogSticker( 123, 'broken-in-reader' ) )
 			);
 		} );
 	} );

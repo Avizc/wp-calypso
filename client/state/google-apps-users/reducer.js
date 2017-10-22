@@ -1,7 +1,10 @@
 /**
  * External Dependencies
+ *
+ * @format
  */
-import uniqBy from 'lodash/uniqBy';
+
+import { uniqBy } from 'lodash';
 
 /**
  * Internal Dependencies
@@ -34,5 +37,5 @@ export function loaded( state = false, action ) {
 
 export default combineReducers( {
 	items,
-	loaded
+	loaded,
 } );

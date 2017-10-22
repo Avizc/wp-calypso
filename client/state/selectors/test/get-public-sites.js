@@ -1,3 +1,5 @@
+/** @format */
+
 /**
  * External dependencies
  */
@@ -7,20 +9,23 @@ import { expect } from 'chai';
  * Internal dependencies
  */
 import { getPublicSites } from '../';
+import { userState } from './fixtures/user-state';
 
 describe( 'getPublicSites()', () => {
-	it( 'should return an empty array if no sites in state', () => {
+	test( 'should return an empty array if no sites in state', () => {
 		const state = {
+			...userState,
 			sites: {
-				items: {}
-			}
+				items: {},
+			},
 		};
 		const sites = getPublicSites( state );
 		expect( sites ).to.eql( [] );
 	} );
 
-	it( 'should return the public sites in state', () => {
+	test( 'should return the public sites in state', () => {
 		const state = {
+			...userState,
 			sites: {
 				items: {
 					2916284: {
@@ -29,8 +34,8 @@ describe( 'getPublicSites()', () => {
 						name: 'WordPress.com Example Blog',
 						URL: 'http://example.com',
 						options: {
-							unmapped_url: 'http://example.com'
-						}
+							unmapped_url: 'http://example.com',
+						},
 					},
 					2916285: {
 						ID: 2916285,
@@ -38,10 +43,10 @@ describe( 'getPublicSites()', () => {
 						name: 'WordPress.com Non visible Blog',
 						URL: 'http://example2.com',
 						options: {
-							unmapped_url: 'http://example2.com'
-						}
-					}
-				}
+							unmapped_url: 'http://example2.com',
+						},
+					},
+				},
 			},
 			siteSettings: {
 				items: {},
@@ -62,9 +67,9 @@ describe( 'getPublicSites()', () => {
 				is_previewable: false,
 				options: {
 					default_post_format: 'standard',
-					unmapped_url: 'http://example.com'
-				}
-			}
+					unmapped_url: 'http://example.com',
+				},
+			},
 		] );
 	} );
 } );

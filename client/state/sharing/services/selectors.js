@@ -1,6 +1,9 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import { filter } from 'lodash';
 
 /**
@@ -31,6 +34,19 @@ export function getKeyringServicesByType( state, type ) {
 }
 
 /**
+ * Returns an object for the specified service name
+ *
+ * @param  {Object} state Global state tree
+ * @param  {String} name  Service name
+ * @return {Object}        Keyring service, if known, or false.
+ */
+export function getKeyringServiceByName( state, name ) {
+	const services = getKeyringServices( state );
+
+	return services[ name ] ? services[ name ] : false;
+}
+
+/**
  * Returns an array of eligible service objects with the specified type.
  *
  * A service is eligible for a given site if
@@ -51,15 +67,18 @@ export function getEligibleKeyringServices( state, siteId, type ) {
 		return services;
 	}
 
-	return services.filter( ( service ) => {
+	return services.filter( service => {
 		// Omit if the site is Jetpack and service doesn't support Jetpack
 		if ( isJetpackSite( state, siteId ) && ! service.jetpack_support ) {
 			return false;
 		}
 
 		// Omit if Jetpack module not activated
-		if ( isJetpackSite( state, siteId ) && service.jetpack_module_required &&
-			! isJetpackModuleActive( state, siteId, service.jetpack_module_required ) ) {
+		if (
+			isJetpackSite( state, siteId ) &&
+			service.jetpack_module_required &&
+			! isJetpackModuleActive( state, siteId, service.jetpack_module_required )
+		) {
 			return false;
 		}
 

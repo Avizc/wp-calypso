@@ -1,7 +1,10 @@
 /**
  * External Dependencies
+ *
+ * @format
  */
-import forEach from 'lodash/forEach';
+
+import { forEach } from 'lodash';
 
 /**
  * Internal Dependencies
@@ -20,7 +23,7 @@ const thingsToRemove = [
 	'input',
 	'select',
 	'button',
-	'textarea'
+	'textarea',
 ].join( ', ' ); // make them all into one big selector
 
 function removeElement( element ) {

@@ -1,3 +1,4 @@
+/** @format */
 /**
  * External dependencies
  */
@@ -10,7 +11,7 @@ import { getPost, getPostBySiteAndId } from '../selectors';
 
 describe( 'selectors', () => {
 	describe( '#getPost()', () => {
-		it( 'should return undefined if there is no match', () => {
+		test( 'should return undefined if there is no match', () => {
 			const post = getPost(
 				{
 					reader: {
@@ -19,13 +20,13 @@ describe( 'selectors', () => {
 						},
 					},
 				},
-				'nope',
+				'nope'
 			);
 
 			expect( post ).to.eql( undefined );
 		} );
 
-		it( 'should return a post object if found', () => {
+		test( 'should return a post object if found', () => {
 			expect(
 				getPost(
 					{
@@ -40,8 +41,8 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					'1234',
-				),
+					'1234'
+				)
 			).to.deep.equal( {
 				ID: 1,
 				global_ID: '1234',
@@ -50,7 +51,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getPostBySiteAndId', () => {
-		it( 'should return undefined if no matches are found', () => {
+		test( 'should return undefined if no matches are found', () => {
 			expect(
 				getPostBySiteAndId(
 					{
@@ -71,12 +72,12 @@ describe( 'selectors', () => {
 						},
 					},
 					1,
-					1,
-				),
+					1
+				)
 			).to.be.undefined;
 		} );
 
-		it( 'should return a post if a match is found', () => {
+		test( 'should return a post if a match is found', () => {
 			const stateTree = {
 				reader: {
 					posts: {
@@ -95,7 +96,7 @@ describe( 'selectors', () => {
 				},
 			};
 			expect( getPostBySiteAndId( stateTree, 1, 1 ) ).to.equal(
-				stateTree.reader.posts.items[ '2' ],
+				stateTree.reader.posts.items[ '2' ]
 			);
 		} );
 	} );

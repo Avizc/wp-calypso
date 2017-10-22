@@ -1,11 +1,14 @@
 /**
  * External Dependencies
+ *
+ * @format
  */
+
 import ReactDom from 'react-dom';
 import React from 'react';
 import page from 'page';
 import qs from 'qs';
-import isEmpty from 'lodash/isEmpty';
+import { isEmpty } from 'lodash';
 
 /**
  * Internal Dependencies
@@ -68,19 +71,25 @@ export default {
 
 	redirectToFlow( context, next ) {
 		if ( context.pathname !== utils.getValidPath( context.params ) ) {
-			return page.redirect( utils.getValidPath( context.params ) + ( context.querystring ? '?' + context.querystring : '' ) );
+			return page.redirect(
+				utils.getValidPath( context.params ) +
+					( context.querystring ? '?' + context.querystring : '' )
+			);
 		}
 
 		next();
 	},
 
 	start( context ) {
-		var basePath = route.sectionify( context.path ),
+		const basePath = route.sectionify( context.path ),
 			flowName = utils.getFlowName( context.params ),
 			stepName = utils.getStepName( context.params ),
 			stepSectionName = utils.getStepSectionName( context.params );
 
-		analytics.pageView.record( basePath, basePageTitle + ' > Start > ' + flowName + ' > ' + stepName );
+		analytics.pageView.record(
+			basePath,
+			basePageTitle + ' > Start > ' + flowName + ' > ' + stepName
+		);
 
 		ReactDom.unmountComponentAtNode( document.getElementById( 'secondary' ) );
 		context.store.dispatch( setLayoutFocus( 'content' ) );
@@ -93,10 +102,10 @@ export default {
 				locale: utils.getLocale( context.params ),
 				flowName: flowName,
 				stepName: stepName,
-				stepSectionName: stepSectionName
+				stepSectionName: stepSectionName,
 			} ),
 			'primary',
 			context.store
 		);
-	}
+	},
 };

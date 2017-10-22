@@ -1,24 +1,29 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React from 'react';
 import { localize } from 'i18n-calypso';
+import { noop } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import ExternalLink from 'components/external-link';
+import Emojify from 'components/emojify';
 import Gravatar from 'components/gravatar';
 import SiteIcon from 'blocks/site-icon';
 
 export const CommentDetailPost = ( {
+	commentId,
 	parentCommentAuthorAvatarUrl,
 	parentCommentAuthorDisplayName,
 	parentCommentContent,
-	parentCommentUrl,
 	postAuthorDisplayName,
 	postTitle,
 	postUrl,
+	onClick = noop,
 	siteId,
 	translate,
 } ) => {
@@ -35,14 +40,18 @@ export const CommentDetailPost = ( {
 					<Gravatar user={ author } />
 				</div>
 				<div className="comment-detail__post-info">
-					{ parentCommentAuthorDisplayName &&
+					{ parentCommentAuthorDisplayName && (
 						<span>
-							{ translate( '%(authorName)s:', { args: { authorName: parentCommentAuthorDisplayName } } ) }
+							<Emojify>
+								{ translate( '%(authorName)s:', {
+									args: { authorName: parentCommentAuthorDisplayName },
+								} ) }
+							</Emojify>
 						</span>
-					}
-					<ExternalLink href={ parentCommentUrl }>
-						{ parentCommentContent }
-					</ExternalLink>
+					) }
+					<a href={ `${ postUrl }#comment-${ commentId }` } onClick={ onClick }>
+						<Emojify>{ parentCommentContent }</Emojify>
+					</a>
 				</div>
 			</div>
 		);
@@ -52,13 +61,15 @@ export const CommentDetailPost = ( {
 		<div className="comment-detail__post">
 			<SiteIcon siteId={ siteId } size={ 24 } />
 			<div className="comment-detail__post-info">
-				{ postAuthorDisplayName &&
+				{ postAuthorDisplayName && (
 					<span>
-						{ translate( '%(authorName)s:', { args: { authorName: postAuthorDisplayName } } ) }
+						<Emojify>
+							{ translate( '%(authorName)s:', { args: { authorName: postAuthorDisplayName } } ) }
+						</Emojify>
 					</span>
-				}
-				<a href={ postUrl }>
-					{ postTitle || translate( 'Untitled' ) }
+				) }
+				<a href={ postUrl } onClick={ onClick }>
+					<Emojify>{ postTitle || translate( 'Untitled' ) }</Emojify>
 				</a>
 			</div>
 		</div>

@@ -1,3 +1,4 @@
+/** @format */
 /**
  * External dependencies
  */
@@ -7,7 +8,6 @@ import { uniqBy } from 'lodash';
  * Internal dependencies
  */
 import { combineReducers, createReducer, keyedReducer } from 'state/utils';
-
 import { READER_FEED_SEARCH_RECEIVE } from 'state/action-types';
 
 /**
@@ -32,7 +32,7 @@ export const items = keyedReducer(
 	createReducer( null, {
 		[ READER_FEED_SEARCH_RECEIVE ]: ( state, action ) =>
 			uniqBy( ( state || [] ).concat( action.payload.feeds ), 'feed_URL' ),
-	} ),
+	} )
 );
 
 /**
@@ -58,7 +58,7 @@ export const total = keyedReducer(
 	'queryKey',
 	createReducer( null, {
 		[ READER_FEED_SEARCH_RECEIVE ]: ( state, action ) => action.payload.total,
-	} ),
+	} )
 );
 
 export default combineReducers( {

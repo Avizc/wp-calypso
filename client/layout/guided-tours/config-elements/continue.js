@@ -1,16 +1,18 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { translate } from 'i18n-calypso';
 import Gridicon from 'gridicons';
 
 /**
  * Internal dependencies
  */
-import {
-	targetForSlug,
-} from '../positioning';
+import { targetForSlug } from '../positioning';
 import contextTypes from '../context-types';
 
 export default class Continue extends Component {
@@ -54,7 +56,7 @@ export default class Continue extends Component {
 		const { next, tour, tourVersion, step } = this.context;
 		const { step: nextStepName } = this.props;
 		next( { tour, tourVersion, step, nextStepName } );
-	}
+	};
 
 	addTargetListener() {
 		const { target = false, click, when } = this.props;
@@ -79,8 +81,8 @@ export default class Continue extends Component {
 	defaultMessage() {
 		return this.props.icon
 			? translate( 'Click the {{icon/}} to continue.', {
-				components: { icon: <Gridicon icon={ this.props.icon } /> }
-			} )
+					components: { icon: <Gridicon icon={ this.props.icon } /> },
+				} )
 			: translate( 'Click to continue.' );
 	}
 

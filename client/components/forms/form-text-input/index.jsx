@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PureComponent, PropTypes } from 'react';
+
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { omit } from 'lodash';
 
@@ -10,7 +14,7 @@ export default class FormTextInput extends PureComponent {
 		isError: PropTypes.bool,
 		isValid: PropTypes.bool,
 		selectOnFocus: PropTypes.bool,
-		className: PropTypes.string
+		className: PropTypes.string,
 	};
 
 	constructor() {
@@ -35,7 +39,7 @@ export default class FormTextInput extends PureComponent {
 
 		const classes = classNames( 'form-text-input', this.props.className, {
 			'is-error': this.props.isError,
-			'is-valid': this.props.isValid
+			'is-valid': this.props.isValid,
 		} );
 
 		return (
@@ -44,7 +48,8 @@ export default class FormTextInput extends PureComponent {
 				{ ...props }
 				ref={ inputRef || 'textField' }
 				className={ classes }
-				onClick={ this.selectOnFocus } />
+				onClick={ this.selectOnFocus }
+			/>
 		);
 	}
 }

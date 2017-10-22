@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import find from 'lodash/find';
+
+import { find } from 'lodash';
 
 /**
  * Internal dependencies
@@ -18,5 +21,5 @@ function findPrivacyServiceWhois( whoisContacts ) {
 
 export default {
 	findRegistrantWhois,
-	findPrivacyServiceWhois
+	findPrivacyServiceWhois,
 };

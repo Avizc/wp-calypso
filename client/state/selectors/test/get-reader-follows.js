@@ -1,3 +1,5 @@
+/** @format */
+
 /**
  * External dependencies
  */
@@ -8,6 +10,7 @@ import deepFreeze from 'deep-freeze';
  * Internal dependencies
  */
 import { getReaderFollows } from '../';
+import { userState } from './fixtures/user-state';
 
 describe( 'getReaderFollows()', () => {
 	const siteOne = {
@@ -23,6 +26,7 @@ describe( 'getReaderFollows()', () => {
 		feed_ID: 2,
 	};
 	const state = deepFreeze( {
+		...userState,
 		reader: {
 			follows: {
 				items: {
@@ -60,7 +64,7 @@ describe( 'getReaderFollows()', () => {
 		},
 	} );
 
-	it( 'should not return follows with an error set and should fill in feed and site when available', () => {
+	test( 'should not return follows with an error set and should fill in feed and site when available', () => {
 		const follows = getReaderFollows( state );
 		expect( follows ).to.eql( [
 			{

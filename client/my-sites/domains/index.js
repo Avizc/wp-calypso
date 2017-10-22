@@ -1,27 +1,29 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-const page = require( 'page' );
+
+import page from 'page';
 
 /**
  * Internal dependencies
  */
-const controller = require( 'my-sites/controller' ),
-	domainsController = require( './controller' ),
-	domainManagementController = require( './domain-management/controller' ),
-	SiftScience = require( 'lib/siftscience' ),
-	config = require( 'config' ),
-	paths = require( './paths' );
+import controller from 'my-sites/controller';
+import domainsController from './controller';
+import domainManagementController from './domain-management/controller';
+import SiftScience from 'lib/siftscience';
+import config from 'config';
+import paths from './paths';
 
 function registerMultiPage( { paths, handlers } ) {
 	paths.forEach( path => page( path, ...handlers ) );
 }
 
-function getCommonHandlers( { noSitePath = paths.domainManagementRoot(), warnIfJetpack = true } = {} ) {
-	const handlers = [
-		controller.siteSelection,
-		controller.navigation
-	];
+function getCommonHandlers(
+	{ noSitePath = paths.domainManagementRoot(), warnIfJetpack = true } = {}
+) {
+	const handlers = [ controller.siteSelection, controller.navigation ];
 
 	if ( noSitePath ) {
 		handlers.push( domainsController.redirectIfNoSite( noSitePath ) );
@@ -34,35 +36,28 @@ function getCommonHandlers( { noSitePath = paths.domainManagementRoot(), warnIfJ
 	return handlers;
 }
 
-module.exports = function() {
+export default function() {
 	SiftScience.recordUser();
 
-	page(
-		paths.domainManagementEmail(),
-		controller.siteSelection,
-		controller.sites
-	);
+	page( paths.domainManagementEmail(), controller.siteSelection, controller.sites );
 
 	registerMultiPage( {
 		paths: [
 			paths.domainManagementEmail( ':site', ':domain' ),
-			paths.domainManagementEmail( ':site' )
+			paths.domainManagementEmail( ':site' ),
 		],
 		handlers: [
 			...getCommonHandlers( { noSitePath: paths.domainManagementEmail() } ),
-			domainManagementController.domainManagementEmail
-		]
+			domainManagementController.domainManagementEmail,
+		],
 	} );
 
 	registerMultiPage( {
 		paths: [
 			paths.domainManagementAddGoogleApps( ':site', ':domain' ),
-			paths.domainManagementAddGoogleApps( ':site' )
+			paths.domainManagementAddGoogleApps( ':site' ),
 		],
-		handlers: [
-			...getCommonHandlers(),
-			domainManagementController.domainManagementAddGoogleApps
-		]
+		handlers: [ ...getCommonHandlers(), domainManagementController.domainManagementAddGoogleApps ],
 	} );
 
 	page(
@@ -125,11 +120,7 @@ module.exports = function() {
 		domainManagementController.domainManagementTransferToOtherSite
 	);
 
-	page(
-		paths.domainManagementRoot(),
-		controller.siteSelection,
-		controller.sites
-	);
+	page( paths.domainManagementRoot(), controller.siteSelection, controller.sites );
 
 	page(
 		paths.domainManagementList( ':site' ),
@@ -181,7 +172,8 @@ module.exports = function() {
 			controller.sites
 		);
 
-		page( '/domains/add/:domain',
+		page(
+			'/domains/add/:domain',
 			controller.siteSelection,
 			controller.navigation,
 			domainsController.redirectIfNoSite( '/domains/add' ),
@@ -190,7 +182,8 @@ module.exports = function() {
 			domainsController.domainSearch
 		);
 
-		page( '/domains/add/suggestion/:suggestion/:domain',
+		page(
+			'/domains/add/suggestion/:suggestion/:domain',
 			controller.siteSelection,
 			controller.navigation,
 			domainsController.redirectIfNoSite( '/domains/add' ),
@@ -199,7 +192,8 @@ module.exports = function() {
 			domainsController.domainSearch
 		);
 
-		page( '/domains/add/:registerDomain/google-apps/:domain',
+		page(
+			'/domains/add/:registerDomain/google-apps/:domain',
 			controller.siteSelection,
 			controller.navigation,
 			domainsController.redirectIfNoSite( '/domains/add' ),
@@ -207,7 +201,8 @@ module.exports = function() {
 			domainsController.googleAppsWithRegistration
 		);
 
-		page( '/domains/add/mapping/:domain',
+		page(
+			'/domains/add/mapping/:domain',
 			controller.siteSelection,
 			controller.navigation,
 			domainsController.redirectIfNoSite( '/domains/add/mapping' ),
@@ -215,7 +210,8 @@ module.exports = function() {
 			domainsController.mapDomain
 		);
 
-		page( '/domains/add/site-redirect/:domain',
+		page(
+			'/domains/add/site-redirect/:domain',
 			controller.siteSelection,
 			controller.navigation,
 			domainsController.redirectIfNoSite( '/domains/add/site-redirect' ),
@@ -224,11 +220,7 @@ module.exports = function() {
 		);
 	}
 
-	page(
-		'/domains',
-		controller.siteSelection,
-		controller.sites
-	);
+	page( '/domains', controller.siteSelection, controller.sites );
 
 	page(
 		'/domains/:site',
@@ -237,4 +229,4 @@ module.exports = function() {
 		controller.jetPackWarning,
 		domainManagementController.domainManagementIndex
 	);
-};
+}

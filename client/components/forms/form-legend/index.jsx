@@ -1,19 +1,16 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-var React = require( 'react' ),
-	classnames = require( 'classnames' ),
-	omit = require( 'lodash/omit' );
 
-module.exports = React.createClass( {
+import React from 'react';
+import classnames from 'classnames';
 
-	displayName: 'FormLegend',
+const FormLegend = ( { className, children, ...otherProps } ) => (
+	<legend { ...otherProps } className={ classnames( className, 'form-legend' ) }>
+		{ children }
+	</legend>
+);
 
-	render: function() {
-		return (
-			<legend { ...omit( this.props, 'className' ) } className={ classnames( this.props.className, 'form-legend' ) } >
-				{ this.props.children }
-			</legend>
-		);
-	}
-} );
+export default FormLegend;

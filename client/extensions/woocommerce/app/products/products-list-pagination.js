@@ -1,22 +1,33 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes } from 'react';
+
+import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Pagination from 'components/pagination';
 
-const ProductsListPagination = ( { site, totalProducts, currentPage, currentPageLoaded, requestedPage, onSwitchPage } ) => {
+const ProductsListPagination = ( {
+	site,
+	totalProducts,
+	currentPage,
+	currentPageLoaded,
+	requestedPage,
+	onSwitchPage,
+} ) => {
 	const perPage = 10;
 
-	if ( totalProducts && totalProducts < ( perPage + 1 ) ) {
+	if ( totalProducts && totalProducts < perPage + 1 ) {
 		return null;
 	}
 
 	if ( ! site || ! currentPageLoaded ) {
-		return ( <div className="products__list-placeholder pagination"></div> );
+		return <div className="products__list-placeholder pagination" />;
 	}
 
 	const page = requestedPage || currentPage;

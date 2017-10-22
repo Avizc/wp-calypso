@@ -1,33 +1,45 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import find from 'lodash/find';
-import identity from 'lodash/identity';
+
 import React from 'react';
+import { find, identity, noop } from 'lodash';
 import classnames from 'classnames';
 import { localize } from 'i18n-calypso';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import FormCountrySelect from 'components/forms/form-country-select';
-import { formatNumber, findCountryFromNumber, processNumber, MIN_LENGTH_TO_FORMAT } from './phone-number';
+import {
+	formatNumber,
+	findCountryFromNumber,
+	processNumber,
+	MIN_LENGTH_TO_FORMAT,
+} from './phone-number';
 import CountryFlag from './country-flag';
 import { countries } from './data';
 
 class PhoneInput extends React.PureComponent {
 	static propTypes = {
-		onChange: React.PropTypes.func.isRequired,
-		value: React.PropTypes.string.isRequired,
-		countryCode: React.PropTypes.string.isRequired,
-		countriesList: React.PropTypes.object.isRequired
+		onChange: PropTypes.func.isRequired,
+		value: PropTypes.string.isRequired,
+		countryCode: PropTypes.string.isRequired,
+		countriesList: PropTypes.object.isRequired,
+	};
+
+	static defaultProps = {
+		setComponentReference: noop,
 	};
 
 	constructor( props ) {
 		super( props );
 
 		this.state = {
-			freezeSelection: false
+			freezeSelection: false,
 		};
 
 		this.handleInput = this.handleInput.bind( this );
@@ -45,29 +57,47 @@ class PhoneInput extends React.PureComponent {
 		if ( ! selectedCountry ) {
 			// Special cases where the country is in a disputed region and not globally recognized.
 			// At this point this should only be used for: Canary islands, Kosovo, Netherlands Antilles
-			const data = find( this.props.countriesList.get() || [], ( { code } ) => code === countryCode );
+			const data = find(
+				this.props.countriesList.get() || [],
+				( { code } ) => code === countryCode
+			);
 
 			selectedCountry = {
 				isoCode: countryCode,
-				dialCode: ( data && data.numeric_code || '' ).replace( '+', '' ),
-				nationalPrefix: ''
+				dialCode: ( ( data && data.numeric_code ) || '' ).replace( '+', '' ),
+				nationalPrefix: '',
 			};
 		}
 		return selectedCountry;
 	}
 
 	componentDidMount() {
-		const { countryCode, value } = this.calculateInputAndCountryCode( this.props.value, this.props.countryCode );
+		const { countryCode, value } = this.calculateInputAndCountryCode(
+			this.props.value,
+			this.props.countryCode
+		);
+		this.numberInput.value = value;
 		if ( value !== this.props.value || countryCode !== this.props.countryCode ) {
 			this.props.onChange( { value, countryCode } );
 		}
+		this.props.setComponentReference( this );
+	}
+
+	componentWillUnmount() {
+		this.props.setComponentReference( undefined );
 	}
 
 	componentWillReceiveProps( nextProps ) {
-		if ( nextProps.value === this.props.value && nextProps.countryCode === this.props.countryCode ) {
+		if (
+			nextProps.value === this.props.value &&
+			nextProps.countryCode === this.props.countryCode
+		) {
 			return;
 		}
-		const { countryCode, value } = this.calculateInputAndCountryCode( nextProps.value, nextProps.countryCode );
+		const { countryCode, value } = this.calculateInputAndCountryCode(
+			nextProps.value,
+			nextProps.countryCode
+		);
 		this.props.onChange( { value, countryCode } );
 	}
 
@@ -147,7 +177,10 @@ class PhoneInput extends React.PureComponent {
 
 		event.preventDefault();
 
-		const { countryCode, value } = this.calculateInputAndCountryCode( inputValue, this.props.countryCode );
+		const { countryCode, value } = this.calculateInputAndCountryCode(
+			inputValue,
+			this.props.countryCode
+		);
 
 		this.props.onChange( { value, countryCode } );
 	}
@@ -183,7 +216,10 @@ class PhoneInput extends React.PureComponent {
 		 format the national number, UK -> Turkmenistan will be like 05556667788 -> 85556667788, which is the expected
 		 result.
 		 */
-		const { nationalNumber } = processNumber( this.props.value, this.getCountry( this.props.countryCode ) );
+		const { nationalNumber } = processNumber(
+			this.props.value,
+			this.getCountry( this.props.countryCode )
+		);
 		if ( this.props.value[ 0 ] !== '+' ) {
 			inputValue = nationalNumber;
 		} else {
@@ -191,10 +227,12 @@ class PhoneInput extends React.PureComponent {
 		}
 		this.props.onChange( {
 			countryCode: newCountryCode,
-			value: this.format( inputValue, newCountryCode )
+			value: this.format( inputValue, newCountryCode ),
 		} );
 		this.setState( { freezeSelection: true } );
 	}
+
+	setNumberInputRef = c => ( this.numberInput = c );
 
 	render() {
 		return (
@@ -203,16 +241,18 @@ class PhoneInput extends React.PureComponent {
 					placeholder={ this.props.translate( 'Phone' ) }
 					onChange={ this.handleInput }
 					name={ this.props.name }
-					ref={ c => this.numberInput = c }
-					type="tel" />
+					ref={ this.setNumberInputRef }
+					type="tel"
+				/>
 				<div className="phone-input__select-container">
 					<div className="phone-input__select-inner-container">
 						<FormCountrySelect
 							tabIndex={ -1 }
 							className="phone-input__country-select"
 							onChange={ this.handleCountrySelection }
-							value={ ( this.getCountry().isoCode ) }
-							countriesList={ this.props.countriesList } />
+							value={ this.getCountry().isoCode }
+							countriesList={ this.props.countriesList }
+						/>
 						<CountryFlag countryCode={ this.getCountry().isoCode.toLowerCase() } />
 					</div>
 				</div>

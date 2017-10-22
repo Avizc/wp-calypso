@@ -1,17 +1,17 @@
+/** @format */
 /**
- * External Dependencies
+ * External dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal Dependencies
+ * Internal dependencies
  */
-
 import { shouldFetchRelated, relatedPostsForPost } from '../selectors';
 
 describe( 'selectors', () => {
 	describe( 'shouldFetchRelated', () => {
-		it( 'should return true if no key present', () => {
+		test( 'should return true if no key present', () => {
 			expect(
 				shouldFetchRelated(
 					{
@@ -23,11 +23,11 @@ describe( 'selectors', () => {
 						},
 					},
 					1,
-					1,
-				),
+					1
+				)
 			).to.be.true;
 		} );
-		it( 'should return false if key present', () => {
+		test( 'should return false if key present', () => {
 			expect(
 				shouldFetchRelated(
 					{
@@ -41,12 +41,12 @@ describe( 'selectors', () => {
 						},
 					},
 					1,
-					1,
-				),
+					1
+				)
 			).to.be.false;
 		} );
 
-		it( 'should return false if we have a value', () => {
+		test( 'should return false if we have a value', () => {
 			expect(
 				shouldFetchRelated(
 					{
@@ -60,14 +60,14 @@ describe( 'selectors', () => {
 						},
 					},
 					1,
-					1,
-				),
+					1
+				)
 			).to.be.false;
 		} );
 	} );
 
 	describe( 'relatedPostsForPost', () => {
-		it( 'should return the posts that are there', () => {
+		test( 'should return the posts that are there', () => {
 			expect(
 				relatedPostsForPost(
 					{
@@ -80,12 +80,12 @@ describe( 'selectors', () => {
 						},
 					},
 					1,
-					1,
-				),
+					1
+				)
 			).to.eql( [ 1, 2 ] );
 		} );
 
-		it( 'should return undefined if nothing present', () => {
+		test( 'should return undefined if nothing present', () => {
 			expect(
 				relatedPostsForPost(
 					{
@@ -98,8 +98,8 @@ describe( 'selectors', () => {
 						},
 					},
 					1,
-					1,
-				),
+					1
+				)
 			).to.be.undefined;
 		} );
 	} );

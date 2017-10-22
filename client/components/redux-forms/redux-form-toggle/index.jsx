@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Field } from 'redux-form';
 
 /**
@@ -10,7 +14,7 @@ import { Field } from 'redux-form';
 import FormToggle from 'components/forms/form-toggle/compact';
 
 // eslint-disable-next-line no-unused-vars
-const RenderToggle = ( { input, meta, text, type, ...otherProps } ) => (
+const ToggleRenderer = ( { input, meta, text, type, ...otherProps } ) => (
 	<FormToggle { ...input } { ...otherProps }>
 		{ text }
 	</FormToggle>
@@ -23,7 +27,7 @@ class ReduxFormToggle extends Component {
 	};
 
 	render() {
-		return <Field component={ RenderToggle } type="checkbox" { ...this.props } />;
+		return <Field component={ ToggleRenderer } type="checkbox" { ...this.props } />;
 	}
 }
 

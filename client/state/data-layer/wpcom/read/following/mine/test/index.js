@@ -1,25 +1,15 @@
-/*
+/** @format */
+/**
  * External dependencies
  */
 import { expect } from 'chai';
-import sinon from 'sinon';
 import freeze from 'deep-freeze';
 import { noop } from 'lodash';
+import sinon from 'sinon';
 
 /**
  * Internal dependencies
  */
-import { READER_FOLLOWS_SYNC_START } from 'state/action-types';
-
-import {
-	receiveFollows as receiveFollowsAction,
-	follow,
-	syncComplete,
-} from 'state/reader/follows/actions';
-import { http } from 'state/data-layer/wpcom-http/actions';
-import { NOTICE_CREATE } from 'state/action-types';
-import { subscriptionsFromApi } from '../utils';
-
 import {
 	isSyncingFollows,
 	requestPage,
@@ -30,6 +20,15 @@ import {
 	resetSyncingFollows,
 	updateSeenOnFollow,
 } from '../';
+import { subscriptionsFromApi } from '../utils';
+import { READER_FOLLOWS_SYNC_START } from 'state/action-types';
+import { NOTICE_CREATE } from 'state/action-types';
+import { http } from 'state/data-layer/wpcom-http/actions';
+import {
+	receiveFollows as receiveFollowsAction,
+	follow,
+	syncComplete,
+} from 'state/reader/follows/actions';
 
 const successfulApiResponse = freeze( {
 	number: 2,
@@ -57,7 +56,7 @@ describe( 'get follow subscriptions', () => {
 	} );
 
 	describe( '#syncReaderFollows', () => {
-		it( 'should request first page + set syncing to true', () => {
+		test( 'should request first page + set syncing to true', () => {
 			const action = { type: READER_FOLLOWS_SYNC_START };
 			const dispatch = sinon.spy();
 
@@ -69,7 +68,7 @@ describe( 'get follow subscriptions', () => {
 	} );
 
 	describe( '#requestPage', () => {
-		it( 'should dispatch HTTP request to following/mine endpoint', () => {
+		test( 'should dispatch HTTP request to following/mine endpoint', () => {
 			const action = requestPageAction();
 			const dispatch = sinon.spy();
 
@@ -84,19 +83,19 @@ describe( 'get follow subscriptions', () => {
 					query: { page: 1, number: 200, meta: '' },
 					onSuccess: action,
 					onError: action,
-				} ),
+				} )
 			);
 		} );
 	} );
 
 	describe( '#receivePageSuccess', () => {
-		it( 'if non-empty subs then should dispatch subs-receive and request next page', () => {
+		test( 'if non-empty subs then should dispatch subs-receive and request next page', () => {
 			const startSyncAction = { type: READER_FOLLOWS_SYNC_START };
 			const action = requestPageAction(); // no feeds
 			const dispatch = sinon.spy();
 
 			syncReaderFollows( { dispatch }, startSyncAction );
-			receivePage( { dispatch }, action, null, successfulApiResponse );
+			receivePage( { dispatch }, action, successfulApiResponse );
 
 			expect( dispatch ).to.have.been.calledThrice;
 			expect( dispatch ).to.have.been.calledWith( requestPageAction( 1 ) );
@@ -105,11 +104,11 @@ describe( 'get follow subscriptions', () => {
 				receiveFollowsAction( {
 					follows: subscriptionsFromApi( successfulApiResponse ),
 					totalCount: successfulApiResponse.total_subscriptions,
-				} ),
+				} )
 			);
 		} );
 
-		it( 'should stop the sync process if it hits an empty page', () => {
+		test( 'should stop the sync process if it hits an empty page', () => {
 			const startSyncAction = { type: READER_FOLLOWS_SYNC_START };
 			const action = requestPageAction(); // no feeds
 			const ignoredDispatch = noop;
@@ -130,8 +129,8 @@ describe( 'get follow subscriptions', () => {
 			} );
 
 			syncReaderFollows( { dispatch: ignoredDispatch }, startSyncAction );
-			receivePage( { dispatch: ignoredDispatch }, action, null, successfulApiResponse );
-			receivePage( { dispatch, getState }, action, null, {
+			receivePage( { dispatch: ignoredDispatch }, action, successfulApiResponse );
+			receivePage( { dispatch, getState }, action, {
 				number: 0,
 				page: 2,
 				total_subscriptions: 10,
@@ -143,14 +142,14 @@ describe( 'get follow subscriptions', () => {
 				receiveFollowsAction( {
 					follows: [],
 					totalCount: 10,
-				} ),
+				} )
 			);
 			expect( dispatch ).to.have.been.calledWith(
-				syncComplete( [ 'http://readerpostcards.wordpress.com', 'https://fivethirtyeight.com/' ] ),
+				syncComplete( [ 'http://readerpostcards.wordpress.com', 'https://fivethirtyeight.com/' ] )
 			);
 		} );
 
-		it( 'should catch a feed followed during the sync', () => {
+		test( 'should catch a feed followed during the sync', () => {
 			const startSyncAction = { type: READER_FOLLOWS_SYNC_START };
 			const action = requestPageAction(); // no feeds
 			const ignoredDispatch = noop;
@@ -171,11 +170,11 @@ describe( 'get follow subscriptions', () => {
 			} );
 
 			syncReaderFollows( { dispatch: ignoredDispatch }, startSyncAction );
-			receivePage( { dispatch: ignoredDispatch }, action, null, successfulApiResponse );
+			receivePage( { dispatch: ignoredDispatch }, action, successfulApiResponse );
 
 			updateSeenOnFollow( { dispatch: ignoredDispatch }, follow( 'http://feed.example.com' ) );
 
-			receivePage( { dispatch, getState }, action, null, {
+			receivePage( { dispatch, getState }, action, {
 				number: 0,
 				page: 2,
 				total_subscriptions: 10,
@@ -187,7 +186,7 @@ describe( 'get follow subscriptions', () => {
 				receiveFollowsAction( {
 					follows: [],
 					totalCount: 10,
-				} ),
+				} )
 			);
 
 			expect( dispatch ).to.have.been.calledWith(
@@ -195,13 +194,13 @@ describe( 'get follow subscriptions', () => {
 					'http://readerpostcards.wordpress.com',
 					'https://fivethirtyeight.com/',
 					'http://feed.example.com',
-				] ),
+				] )
 			);
 		} );
 	} );
 
 	describe( '#receiveError', () => {
-		it( 'should dispatch an error notice', () => {
+		test( 'should dispatch an error notice', () => {
 			const action = requestPageAction();
 			const dispatch = sinon.spy();
 

@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import { PropTypes, PureComponent } from 'react';
+
+import { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { delay } from 'lodash';
 
@@ -24,21 +28,9 @@ class QueryRewindRestoreStatus extends PureComponent {
 	};
 
 	query( props ) {
-		const {
-			getRewindRestoreProgress,
-			queryDelay,
-			restoreId,
-			siteId,
-			timestamp,
-		} = props;
-		if ( siteId, timestamp, restoreId ) {
-			delay(
-				getRewindRestoreProgress,
-				queryDelay,
-				siteId,
-				timestamp,
-				restoreId,
-			);
+		const { getRewindRestoreProgress, queryDelay, restoreId, siteId, timestamp } = props;
+		if ( ( siteId, timestamp, restoreId ) ) {
+			delay( getRewindRestoreProgress, queryDelay, siteId, timestamp, restoreId );
 		}
 	}
 
@@ -47,14 +39,8 @@ class QueryRewindRestoreStatus extends PureComponent {
 	}
 
 	componentWillUpdate( nextProps ) {
-		const {
-			freshness,
-			restoreId,
-		} = this.props;
-		if (
-			restoreId !== nextProps.restoreId ||
-			freshness !== nextProps.freshness
-		) {
+		const { freshness, restoreId } = this.props;
+		if ( restoreId !== nextProps.restoreId || freshness !== nextProps.freshness ) {
 			this.query( nextProps );
 		}
 	}

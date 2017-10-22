@@ -1,6 +1,9 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import { get } from 'lodash';
 
 function getSettingsState( state ) {
@@ -16,17 +19,6 @@ function getSettingsState( state ) {
  */
 export function isFetchingSettings( state, siteId ) {
 	return get( getSettingsState( state ), [ 'fetching', siteId ], false );
-}
-
-/**
- * Returns true if we are saving settings for the specified site ID, false otherwise.
- *
- * @param  {Object}  state Global state tree
- * @param  {Number}  siteId Site ID
- * @return {Boolean} Whether settings are being saved
- */
-export function isSavingSettings( state, siteId ) {
-	return get( getSettingsState( state ), [ 'saving', siteId ], false );
 }
 
 /**

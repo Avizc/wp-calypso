@@ -1,11 +1,12 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import debugFactory from 'debug';
 import page from 'page';
 import qs from 'querystring';
-import ReactClass from 'react/lib/ReactClass';
-import i18n, { setLocale } from 'i18n-calypso';
 import { some, startsWith } from 'lodash';
 import url from 'url';
 
@@ -16,26 +17,29 @@ import accessibleFocus from 'lib/accessible-focus';
 import { bindState as bindWpLocaleState } from 'lib/wp/localization';
 import config from 'config';
 import { receiveUser } from 'state/users/actions';
-import {
-	setCurrentUserId,
-	setCurrentUserFlags
-} from 'state/current-user/actions';
+import { setCurrentUserId, setCurrentUserFlags } from 'state/current-user/actions';
 import { setRoute as setRouteAction } from 'state/ui/actions';
-import switchLocale from 'lib/i18n-utils/switch-locale';
 import touchDetect from 'lib/touch-detect';
+import { setLocale, setLocaleRawData } from 'state/ui/language/actions';
+import { isDefaultLocale } from 'lib/i18n-utils';
+import getCurrentLocaleSlug from 'state/selectors/get-current-locale-slug';
 
 const debug = debugFactory( 'calypso' );
 
-const switchUserLocale = currentUser => {
+const switchUserLocale = ( currentUser, reduxStore ) => {
 	const localeSlug = currentUser.get().localeSlug;
+
 	if ( localeSlug ) {
-		switchLocale( localeSlug );
+		reduxStore.dispatch( setLocale( localeSlug ) );
 	}
 };
 
 const setupContextMiddleware = reduxStore => {
 	page( '*', ( context, next ) => {
 		const parsed = url.parse( location.href, true );
+
+		// Decode the pathname by default (now disabled in page.js)
+		context.pathname = decodeURIComponent( context.pathname );
 
 		context.store = reduxStore;
 
@@ -79,13 +83,17 @@ const loggedOutMiddleware = currentUser => {
 		return;
 	}
 
-	if ( config.isEnabled( 'devdocs/redirect-loggedout-homepage' ) ) {
+	if ( config.isEnabled( 'desktop' ) ) {
 		page( '/', () => {
 			if ( config.isEnabled( 'oauth' ) ) {
 				page.redirect( '/authorize' );
 			} else {
-				page.redirect( '/devdocs/start' );
+				page.redirect( '/log-in' );
 			}
+		} );
+	} else if ( config.isEnabled( 'devdocs/redirect-loggedout-homepage' ) ) {
+		page( '/', () => {
+			page.redirect( '/devdocs/start' );
 		} );
 	}
 
@@ -93,9 +101,8 @@ const loggedOutMiddleware = currentUser => {
 	const validSections = sections.get().reduce( ( acc, section ) => {
 		return section.enableLoggedOut ? acc.concat( section.paths ) : acc;
 	}, [] );
-	const isValidSection = sectionPath => some(
-		validSections, validPath => startsWith( sectionPath, validPath )
-	);
+	const isValidSection = sectionPath =>
+		some( validSections, validPath => startsWith( sectionPath, validPath ) );
 
 	page( '*', ( context, next ) => {
 		if ( isValidSection( context.path ) ) {
@@ -113,10 +120,7 @@ const oauthTokenMiddleware = () => {
 
 const setRouteMiddleware = () => {
 	page( '*', ( context, next ) => {
-		context.store.dispatch( setRouteAction(
-			context.pathname,
-			context.query
-		) );
+		context.store.dispatch( setRouteAction( context.pathname, context.query ) );
 
 		next();
 	} );
@@ -132,24 +136,20 @@ const unsavedFormsMiddleware = () => {
 	page.exit( '*', require( 'lib/protect-form' ).checkFormHandler );
 };
 
-export const locales = currentUser => {
+export const locales = ( currentUser, reduxStore ) => {
 	debug( 'Executing Calypso locales.' );
-
-	// Initialize i18n mixin
-	ReactClass.injection.injectMixin( i18n.mixin );
 
 	if ( window.i18nLocaleStrings ) {
 		const i18nLocaleStringsObject = JSON.parse( window.i18nLocaleStrings );
-		setLocale( i18nLocaleStringsObject );
+		reduxStore.dispatch( setLocaleRawData( i18nLocaleStringsObject ) );
 	}
 
 	// When the user is not bootstrapped, we also bootstrap the
-	// locale strings
-	if ( ! config.isEnabled( 'wpcom-user-bootstrap' ) ) {
-		switchUserLocale( currentUser );
+	// user locale strings, unless the locale was already set in the initial store during SSR
+	const currentLocaleSlug = getCurrentLocaleSlug( reduxStore.getState() );
+	if ( ! config.isEnabled( 'wpcom-user-bootstrap' ) && isDefaultLocale( currentLocaleSlug ) ) {
+		switchUserLocale( currentUser, reduxStore );
 	}
-
-	currentUser.on( 'change', () => switchUserLocale( currentUser ) );
 };
 
 export const utils = () => {
@@ -187,7 +187,9 @@ export const configureReduxStore = ( currentUser, reduxStore ) => {
 	}
 
 	if ( config.isEnabled( 'network-connection' ) ) {
-		asyncRequire( 'lib/network-connection', networkConnection => networkConnection.init( reduxStore ) );
+		asyncRequire( 'lib/network-connection', networkConnection =>
+			networkConnection.init( reduxStore )
+		);
 	}
 };
 

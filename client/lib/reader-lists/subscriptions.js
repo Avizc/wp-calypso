@@ -1,14 +1,17 @@
+/** @format */
 // Reader List Store
 
-// External Dependencies
-var Dispatcher = require( 'dispatcher' ),
-	find = require( 'lodash/find' ),
-	reject = require( 'lodash/reject' ),
-	isEqual = require( 'lodash/isEqual' );
+/**
+ * External dependencies
+ */
+import { find, isEqual, reject } from 'lodash';
+import Dispatcher from 'dispatcher';
 
-// Internal Dependencies
-var emitter = require( 'lib/mixins/emitter' ),
-	ListStore = require( './lists' );
+/**
+ * Internal dependencies
+ */
+import emitter from 'lib/mixins/emitter';
+import ListStore from './lists';
 
 var lists = null,
 	errors = [],
@@ -140,4 +143,4 @@ ReaderListStore.dispatchToken = Dispatcher.register( function( payload ) {
 	}
 } );
 
-module.exports = ReaderListStore;
+export default ReaderListStore;

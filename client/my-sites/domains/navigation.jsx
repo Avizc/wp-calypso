@@ -1,9 +1,14 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
+import PropTypes from 'prop-types';
 import React from 'react';
 import Dispatcher from 'dispatcher';
 import { get } from 'lodash';
+import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -18,36 +23,36 @@ import { action as upgradesActionTypes } from 'lib/upgrades/constants';
 import PopoverCart from 'my-sites/checkout/cart/popover-cart';
 import { isATEnabled } from 'lib/automated-transfer';
 
-const PlansNavigation = React.createClass( {
-	propTypes: {
-		cart: React.PropTypes.object,
-		path: React.PropTypes.string.isRequired,
-		selectedSite: React.PropTypes.oneOfType( [
-			React.PropTypes.object,
-			React.PropTypes.bool
-		] ).isRequired
-	},
+class PlansNavigation extends React.Component {
+	static propTypes = {
+		cart: PropTypes.object,
+		path: PropTypes.string.isRequired,
+		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ).isRequired,
+	};
 
-	getInitialState() {
-		return {
-			cartVisible: false,
-			cartShowKeepSearching: false
-		};
-	},
+	state = {
+		cartVisible: false,
+		cartShowKeepSearching: false,
+	};
 
 	componentWillMount() {
-		this.dispatchToken = Dispatcher.register( function( payload ) {
-			if ( payload.action.type === upgradesActionTypes.CART_POPUP_OPEN ) {
-				this.setState( { cartVisible: true, cartShowKeepSearching: payload.action.options.showKeepSearching } );
-			} else if ( payload.action.type === upgradesActionTypes.CART_POPUP_CLOSE ) {
-				this.setState( { cartVisible: false } );
-			}
-		}.bind( this ) );
-	},
+		this.dispatchToken = Dispatcher.register(
+			function( payload ) {
+				if ( payload.action.type === upgradesActionTypes.CART_POPUP_OPEN ) {
+					this.setState( {
+						cartVisible: true,
+						cartShowKeepSearching: payload.action.options.showKeepSearching,
+					} );
+				} else if ( payload.action.type === upgradesActionTypes.CART_POPUP_CLOSE ) {
+					this.setState( { cartVisible: false } );
+				}
+			}.bind( this )
+		);
+	}
 
 	componentWillUnmount() {
 		Dispatcher.unregister( this.dispatchToken );
-	},
+	}
 
 	getSectionTitle( path ) {
 		switch ( path ) {
@@ -68,64 +73,79 @@ const PlansNavigation = React.createClass( {
 			default:
 				return path.split( '?' )[ 0 ].replace( /\//g, ' ' );
 		}
-	},
+	}
 
 	render() {
+		const { translate } = this.props;
 		const site = this.props.selectedSite;
 		const path = sectionify( this.props.path );
 		const hasPlan = site && site.plan && site.plan.product_slug !== 'free_plan';
 		const sectionTitle = this.getSectionTitle( path );
 		const userCanManageOptions = get( site, 'capabilities.manage_options', false );
-		const canManageDomain = userCanManageOptions &&
-			( isATEnabled( site ) || ! site.jetpack );
+		const canManageDomain = userCanManageOptions && ( isATEnabled( site ) || ! site.jetpack );
 
 		return (
 			<SectionNav
-					hasPinnedItems={ viewport.isMobile() }
-					selectedText={ sectionTitle }
-					onMobileNavPanelOpen={ this.onMobileNavPanelOpen }>
+				hasPinnedItems={ viewport.isMobile() }
+				selectedText={ sectionTitle }
+				onMobileNavPanelOpen={ this.onMobileNavPanelOpen }
+			>
 				<NavTabs label="Section" selectedText={ sectionTitle }>
-					{ hasPlan &&
-						<NavItem path={ `/plans/my-plan/${ site.slug }` } key="myPlan" selected={ path === '/plans/my-plan' }>
-							{ this.translate( 'My Plan' ) }
+					{ hasPlan && (
+						<NavItem
+							path={ `/plans/my-plan/${ site.slug }` }
+							key="myPlan"
+							selected={ path === '/plans/my-plan' }
+						>
+							{ translate( 'My Plan' ) }
 						</NavItem>
-					}
-					<NavItem path={ `/plans/${ site.slug }` } key="plans" selected={ path === '/plans' || path === '/plans/monthly' }>
-						{ this.translate( 'Plans' ) }
+					) }
+					<NavItem
+						path={ `/plans/${ site.slug }` }
+						key="plans"
+						selected={ path === '/plans' || path === '/plans/monthly' }
+					>
+						{ translate( 'Plans' ) }
 					</NavItem>
-					{ canManageDomain &&
-						<NavItem path={ `/domains/manage/${ site.slug }` } key="domains"
-							selected={ path === '/domains/manage' || path === '/domains/add' }>
-							{ this.translate( 'Domains' ) }
+					{ canManageDomain && (
+						<NavItem
+							path={ `/domains/manage/${ site.slug }` }
+							key="domains"
+							selected={ path === '/domains/manage' || path === '/domains/add' }
+						>
+							{ translate( 'Domains' ) }
 						</NavItem>
-					}
-					{ canManageDomain &&
-						<NavItem path={ `/domains/manage/email/${ site.slug }` } key="googleApps"
-							selected={ path === '/domains/manage/email' }>
-							{ this.translate( 'Email' ) }
+					) }
+					{ canManageDomain && (
+						<NavItem
+							path={ `/domains/manage/email/${ site.slug }` }
+							key="googleApps"
+							selected={ path === '/domains/manage/email' }
+						>
+							{ translate( 'Email' ) }
 						</NavItem>
-					}
+					) }
 				</NavTabs>
 				{ this.cartToggleButton() }
 			</SectionNav>
 		);
-	},
+	}
 
-	toggleCartVisibility( event ) {
+	toggleCartVisibility = event => {
 		if ( event ) {
 			event.preventDefault();
 		}
 
 		this.setState( { cartVisible: ! this.state.cartVisible } );
-	},
+	};
 
-	onMobileNavPanelOpen() {
+	onMobileNavPanelOpen = () => {
 		this.setState( { cartVisible: false } );
-	},
+	};
 
-	onKeepSearchingClick() {
+	onKeepSearchingClick = () => {
 		this.setState( { cartVisible: false } );
-	},
+	};
 
 	cartToggleButton() {
 		if ( ! config.isEnabled( 'upgrades/checkout' ) || ! this.props.cart ) {
@@ -141,9 +161,10 @@ const PlansNavigation = React.createClass( {
 				visible={ this.state.cartVisible }
 				showKeepSearching={ this.state.cartShowKeepSearching }
 				onKeepSearchingClick={ this.onKeepSearchingClick }
-				path={ this.props.path } />
+				path={ this.props.path }
+			/>
 		);
 	}
-} );
+}
 
-export default PlansNavigation;
+export default localize( PlansNavigation );

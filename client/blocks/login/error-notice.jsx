@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -23,8 +27,8 @@ class ErrorNotice extends Component {
 		twoFactorAuthRequestError: PropTypes.object,
 	};
 
-	componentWillReceiveProps = ( nextProps ) => {
-		const receiveNewError = ( key ) => {
+	componentWillReceiveProps = nextProps => {
+		const receiveNewError = key => {
 			return this.props[ key ] !== nextProps[ key ];
 		};
 
@@ -36,7 +40,7 @@ class ErrorNotice extends Component {
 		) {
 			window.scrollTo( 0, 0 );
 		}
-	}
+	};
 
 	getCreateAccountError() {
 		const { createAccountError } = this.props;
@@ -51,13 +55,26 @@ class ErrorNotice extends Component {
 	getError() {
 		const { requestAccountError, requestError, twoFactorAuthRequestError } = this.props;
 
-		return requestError || twoFactorAuthRequestError || requestAccountError || this.getCreateAccountError();
+		return (
+			requestError ||
+			twoFactorAuthRequestError ||
+			requestAccountError ||
+			this.getCreateAccountError()
+		);
 	}
 
 	render() {
 		const error = this.getError();
 
 		if ( ! error || ( error.field && error.field !== 'global' ) || ! error.message ) {
+			return null;
+		}
+
+		/*
+		 * The user_exists error is caught in SocialLoginForm.
+		 * The relevant messages are displayed inline in LoginForm.
+		*/
+		if ( error.code === 'user_exists' ) {
 			return null;
 		}
 
@@ -69,11 +86,9 @@ class ErrorNotice extends Component {
 	}
 }
 
-export default connect(
-	( state ) => ( {
-		createAccountError: getCreateSocialAccountError( state ),
-		requestAccountError: getRequestSocialAccountError( state ),
-		requestError: getRequestError( state ),
-		twoFactorAuthRequestError: getTwoFactorAuthRequestError( state ),
-	} )
-)( ErrorNotice );
+export default connect( state => ( {
+	createAccountError: getCreateSocialAccountError( state ),
+	requestAccountError: getRequestSocialAccountError( state ),
+	requestError: getRequestError( state ),
+	twoFactorAuthRequestError: getTwoFactorAuthRequestError( state ),
+} ) )( ErrorNotice );

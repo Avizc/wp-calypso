@@ -1,3 +1,4 @@
+/** @format */
 /**
  * External dependencies
  */
@@ -15,9 +16,6 @@ import { savePreference } from 'state/preferences/actions';
 import { getPreference } from 'state/preferences/selectors';
 import { recordTrack } from 'reader/stats';
 import { isUserNewerThan, WEEK_IN_MILLISECONDS } from 'state/ui/guided-tours/contexts';
-import { abtest } from 'lib/abtest';
-
-const abtestVariant = abtest( 'readerIntroIllustration' );
 
 class FollowingIntro extends React.Component {
 	componentDidMount() {
@@ -45,22 +43,8 @@ class FollowingIntro extends React.Component {
 
 		const linkElement = <a onClick={ this.props.handleManageLinkClick } href="/following/manage" />;
 
-		// A/B test three variants of the new illustration
-		let variantClassname = null;
-		if ( abtestVariant === 'blue' ) {
-			variantClassname = 'following__intro-blue';
-		} else if ( abtestVariant === 'lightBlue' ) {
-			variantClassname = 'following__intro-light-blue';
-		} else if ( abtestVariant === 'white' ) {
-			variantClassname = 'following__intro-white';
-		}
-
-		if ( ! variantClassname ) {
-			return null;
-		}
-
 		return (
-			<header className={ variantClassname }>
+			<header className="following__intro">
 				<QueryPreferences />
 				<div className="following__intro-header">
 					<div className="following__intro-copy">
@@ -76,7 +60,7 @@ class FollowingIntro extends React.Component {
 										strong: <strong />,
 										span: <span className="following__intro-copy-hidden" />,
 									},
-								},
+								}
 							) }
 						</span>
 					</div>
@@ -121,6 +105,6 @@ export default connect(
 					return savePreference( 'is_new_reader', false );
 				},
 			},
-			dispatch,
-		),
+			dispatch
+		)
 )( localize( FollowingIntro ) );

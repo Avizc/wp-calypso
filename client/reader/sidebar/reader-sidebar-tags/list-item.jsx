@@ -1,25 +1,27 @@
+/** @format */
 /**
- * External Dependencies
+ * External dependencies
  */
-import React, { Component } from 'react';
-import ReactDom from 'react-dom';
+import Gridicon from 'gridicons';
 import { localize } from 'i18n-calypso';
 import { identity } from 'lodash';
-import { recordTrack } from 'reader/stats';
-import Gridicon from 'gridicons';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import ReactDom from 'react-dom';
 
 /**
- * Internal Dependencies
+ * Internal dependencies
  */
 import ReaderSidebarHelper from '../helper';
+import { recordAction, recordGaEvent, recordTrack } from 'reader/stats';
 
 export class ReaderSidebarTagsListItem extends Component {
 	static propTypes = {
-		tag: React.PropTypes.object.isRequired,
-		onUnfollow: React.PropTypes.func.isRequired,
-		path: React.PropTypes.string.isRequired,
-		currentTag: React.PropTypes.string,
-		translate: React.PropTypes.func,
+		tag: PropTypes.object.isRequired,
+		onUnfollow: PropTypes.func.isRequired,
+		path: PropTypes.string.isRequired,
+		currentTag: PropTypes.string,
+		translate: PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -35,14 +37,18 @@ export class ReaderSidebarTagsListItem extends Component {
 	}
 
 	handleTagSidebarClick = () => {
-		recordTrack( 'calypso_reader_tag_sidebar_click', {
-			slug: this.props.tag.slug,
+		recordAction( 'clicked_reader_sidebar_tag_item' );
+		recordGaEvent( 'Clicked Reader Sidebar Tag Item' );
+		recordTrack( 'calypso_reader_sidebar_tag_item_clicked', {
+			tag: decodeURIComponent( this.props.tag.slug ),
 		} );
 	};
 
 	render() {
 		const { tag, path, onUnfollow, translate } = this.props;
+		const tagName = tag.displayName || tag.slug;
 
+		/* eslint-disable wpcalypso/jsx-classname-namespace */
 		return (
 			<li
 				key={ tag.id }
@@ -54,25 +60,32 @@ export class ReaderSidebarTagsListItem extends Component {
 					className="sidebar__menu-item-label"
 					href={ tag.url }
 					onClick={ this.handleTagSidebarClick }
+					title={ translate( "View tag '%(currentTagName)s'", {
+						args: {
+							currentTagName: tagName,
+						},
+					} ) }
 				>
-					<div className="sidebar__menu-item-tagname">
-						{ tag.displayName || tag.slug }
-					</div>
+					<div className="sidebar__menu-item-tagname">{ tagName }</div>
 				</a>
-				{ tag.id !== 'pending'
-					? <button
-							className="sidebar__menu-action"
-							data-tag-slug={ tag.slug }
-							onClick={ onUnfollow }
-						>
-							<Gridicon icon="cross-small" />
-							<span className="sidebar__menu-action-label">
-								{ translate( 'Unfollow' ) }
-							</span>
-						</button>
-					: null }
+				{ tag.id !== 'pending' && (
+					<button
+						className="sidebar__menu-action"
+						data-tag-slug={ tag.slug }
+						onClick={ onUnfollow }
+						title={ translate( "Unfollow tag '%(currentTagName)s'", {
+							args: {
+								currentTagName: tagName,
+							},
+						} ) }
+					>
+						<Gridicon icon="cross-small" />
+						<span className="sidebar__menu-action-label">{ translate( 'Unfollow' ) }</span>
+					</button>
+				) }
 			</li>
 		);
+		/* eslint-enable wpcalypso/jsx-classname-namespace */
 	}
 }
 

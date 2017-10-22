@@ -1,6 +1,8 @@
+/** @format */
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import React from 'react';
 import i18n, { localize } from 'i18n-calypso';
 
@@ -52,9 +54,7 @@ class FeedError extends React.Component {
 		return (
 			<ReaderMain>
 				<MobileBackToSidebar>
-					<h1>
-						{ this.props.sidebarTitle }
-					</h1>
+					<h1>{ this.props.sidebarTitle }</h1>
 				</MobileBackToSidebar>
 
 				<EmptyContent
@@ -70,7 +70,7 @@ class FeedError extends React.Component {
 }
 
 FeedError.propTypes = {
-	sidebarTitle: React.PropTypes.string,
+	sidebarTitle: PropTypes.string,
 };
 
 export default localize( FeedError );

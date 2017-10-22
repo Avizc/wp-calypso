@@ -1,33 +1,37 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-const React = require( 'react' ),
-	page = require( 'page' );
+
+import React from 'react';
+import page from 'page';
+import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
  */
-const Main = require( 'components/main' ),
-	Header = require( 'my-sites/domains/domain-management/components/header' ),
-	AddEmailAddressesCard = require( './add-email-addresses-card' ),
-	paths = require( 'my-sites/domains/paths' ),
-	{ hasGoogleAppsSupportedDomain } = require( 'lib/domains' ),
-	SectionHeader = require( 'components/section-header' );
+import Main from 'components/main';
+import Header from 'my-sites/domains/domain-management/components/header';
+import AddEmailAddressesCard from './add-email-addresses-card';
+import paths from 'my-sites/domains/paths';
+import { hasGoogleAppsSupportedDomain } from 'lib/domains';
+import SectionHeader from 'components/section-header';
+import EmailVerificationGate from 'components/email-verification/email-verification-gate';
 
-const AddGoogleApps = React.createClass( {
+class AddGoogleApps extends React.Component {
 	componentDidMount() {
 		this.ensureCanAddEmail();
-	},
+	}
 
 	componentDidUpdate() {
 		this.ensureCanAddEmail();
-	},
+	}
 
 	ensureCanAddEmail() {
-		const needsRedirect = (
+		const needsRedirect =
 			this.props.domains.hasLoadedFromServer &&
-			! hasGoogleAppsSupportedDomain( this.props.domains.list )
-		);
+			! hasGoogleAppsSupportedDomain( this.props.domains.list );
 
 		if ( needsRedirect ) {
 			const path = paths.domainManagementEmail(
@@ -37,35 +41,40 @@ const AddGoogleApps = React.createClass( {
 
 			page.replace( path );
 		}
-	},
+	}
 
 	render() {
+		const { translate } = this.props;
+
 		return (
-			<Main className="domain-management-add-google-apps">
-				<Header
-					onClick={ this.goToEmail }
-					selectedDomainName={ this.props.selectedDomainName }>
-					{ this.translate( 'Add G Suite' ) }
+			<Main>
+				<Header onClick={ this.goToEmail } selectedDomainName={ this.props.selectedDomainName }>
+					{ translate( 'Add G Suite' ) }
 				</Header>
 
-				<SectionHeader label={ this.translate( 'Add G Suite' ) } />
-
-				<AddEmailAddressesCard
-					domains={ this.props.domains }
-					selectedDomainName={ this.props.selectedDomainName }
-					selectedSite={ this.props.selectedSite } />
+				<EmailVerificationGate
+					noticeText={ translate( 'You must verify your email to purchase G Suite.' ) }
+					noticeStatus="is-info"
+				>
+					<SectionHeader label={ translate( 'Add G Suite' ) } />
+					<AddEmailAddressesCard
+						domains={ this.props.domains }
+						selectedDomainName={ this.props.selectedDomainName }
+						selectedSite={ this.props.selectedSite }
+					/>
+				</EmailVerificationGate>
 			</Main>
 		);
-	},
+	}
 
-	goToEmail() {
+	goToEmail = () => {
 		const path = paths.domainManagementEmail(
 			this.props.selectedSite.slug,
 			this.props.selectedDomainName
 		);
 
 		page( path );
-	}
-} );
+	};
+}
 
-module.exports = AddGoogleApps;
+export default localize( AddGoogleApps );

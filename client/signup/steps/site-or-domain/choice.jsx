@@ -1,6 +1,9 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React, { Component } from 'react';
 
 /**
@@ -10,14 +13,32 @@ import Button from 'components/button';
 import Card from 'components/card';
 
 export default class SiteOrDomainChoice extends Component {
-	handleClickChoice = ( event ) => {
+	handleClickChoice = event => {
 		event.preventDefault();
 
 		this.props.handleClickChoice( this.props.choice.type );
 	};
 
 	render() {
-		const { choice } = this.props;
+		const { choice, isPlaceholder } = this.props;
+
+		if ( isPlaceholder ) {
+			return (
+				<div
+					className="site-or-domain__choice site-or-domain__choice-is-placeholder"
+					key={ choice.type }
+				>
+					<Card compact className="site-or-domain__choice-image site-or-domain__is-placeholder" />
+					<Card compact className="site-or-domain__choice-text">
+						<div className="site-or-domain__choice-button">
+							<Button className="site-or-domain__is-placeholder" />
+						</div>
+						<p className="site-or-domain__is-placeholder" />
+					</Card>
+				</div>
+			);
+		}
+
 		return (
 			<div className="site-or-domain__choice" key={ choice.type }>
 				<a className="site-or-domain__choice-link" onClick={ this.handleClickChoice }>

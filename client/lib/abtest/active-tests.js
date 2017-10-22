@@ -1,4 +1,5 @@
-module.exports = {
+/** @format */
+export default {
 	multiDomainRegistrationV1: {
 		datestamp: '20200721',
 		variations: {
@@ -15,6 +16,14 @@ module.exports = {
 			hideSurveyStep: 80,
 		},
 		defaultVariation: 'hideSurveyStep',
+	},
+	signupPressableStoreFlow: {
+		datestamp: '20171018',
+		variations: {
+			atomic: 99,
+			pressable: 1,
+		},
+		defaultVariation: 'atomic',
 	},
 	businessPlanDescriptionAT: {
 		datestamp: '20170605',
@@ -68,49 +77,23 @@ module.exports = {
 		defaultVariation: 'hide',
 		allowExistingUsers: true,
 	},
-	signupPlansCopyChanges: {
-		datestamp: '20170623',
+	skipThemesSelectionModal: {
+		datestamp: '20170904',
 		variations: {
-			original: 50,
-			modified: 50,
-		},
-		defaultVariation: 'original',
-	},
-	showCartAbandonmentNotice: {
-		datestamp: '20170630',
-		variations: {
-			doNotShowNotice: 50,
-			showNotice: 50,
-		},
-		defaultVariation: 'doNotShowNotice',
-		allowExistingUsers: true,
-	},
-	postPublishConfirmation: {
-		datestamp: '20170713',
-		allowExistingUsers: true,
-		variations: {
-			showPublishConfirmation: 30,
-			noPublishConfirmation: 70,
-		},
-		defaultVariation: 'noPublishConfirmation',
-	},
-	readerIntroIllustration: {
-		datestamp: '20170718',
-		variations: {
-			blue: 33,
-			lightBlue: 33,
-			white: 34,
-		},
-		defaultVariation: 'white',
-		assignmentMethod: 'userId',
-	},
-	paymentShowPaypalLogo: {
-		datestamp: '20170719',
-		variations: {
-			hide: 50,
+			skip: 50,
 			show: 50,
 		},
-		defaultVariation: 'hide',
+		defaultVariation: 'show',
+		allowExistingUsers: true,
+		localeTargets: 'any',
+	},
+	recommendShortestDomain: {
+		datestamp: '20171010',
+		variations: {
+			shortest: 50,
+			original: 50,
+		},
+		defaultVariation: 'original',
 		allowExistingUsers: true,
 		localeTargets: 'any',
 	},

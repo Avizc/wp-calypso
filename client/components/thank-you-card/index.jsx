@@ -1,14 +1,28 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
+import React from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import Gridicon from 'gridicons';
-import React, { PropTypes } from 'react';
 
 // Non standard gridicon sizes are used here because we use them as background pattern with various sizes and rotation
 /* eslint-disable wpcalypso/jsx-gridicon-size */
 
-const ThankYouCard = ( { heading, description, buttonUrl, buttonText, price, name, icon, action } ) => {
+const ThankYouCard = ( {
+	heading,
+	description,
+	descriptionWithHTML,
+	buttonUrl,
+	buttonText,
+	price,
+	name,
+	icon,
+	action,
+} ) => {
 	const renderAction = () => {
 		if ( action ) {
 			return action;
@@ -17,7 +31,8 @@ const ThankYouCard = ( { heading, description, buttonUrl, buttonText, price, nam
 		return (
 			<a
 				className={ classnames( 'thank-you-card__button', { 'is-placeholder': ! buttonUrl } ) }
-				href={ buttonUrl }>
+				href={ buttonUrl }
+			>
 				{ buttonText }
 			</a>
 		);
@@ -26,11 +41,11 @@ const ThankYouCard = ( { heading, description, buttonUrl, buttonText, price, nam
 	return (
 		<div className="thank-you-card">
 			<div className="thank-you-card__header">
-				{
-					icon
-					? <div className="thank-you-card__main-icon">{ icon }</div>
-					: <Gridicon className="thank-you-card__main-icon" icon="checkmark-circle" size={ 140 } />
-				}
+				{ icon ? (
+					<div className="thank-you-card__main-icon">{ icon }</div>
+				) : (
+					<Gridicon className="thank-you-card__main-icon" icon="checkmark-circle" size={ 140 } />
+				) }
 
 				<div className="thank-you-card__header-detail">
 					<div className={ classnames( 'thank-you-card__name', { 'is-placeholder': ! name } ) }>
@@ -57,16 +72,13 @@ const ThankYouCard = ( { heading, description, buttonUrl, buttonText, price, nam
 				</div>
 			</div>
 			<div className="thank-you-card__body">
-				<div className="thank-you-card__heading">
-					{ heading }
-				</div>
+				<div className="thank-you-card__heading">{ heading }</div>
 				<div className="thank-you-card__description">
 					{ description }
+					{ descriptionWithHTML }
 				</div>
 
-				<div className="thank-you-card__action">
-					{ renderAction() }
-				</div>
+				<div className="thank-you-card__action">{ renderAction() }</div>
 			</div>
 		</div>
 	);
@@ -77,11 +89,12 @@ ThankYouCard.propTypes = {
 	buttonText: PropTypes.string,
 	buttonUrl: PropTypes.string,
 	description: PropTypes.string,
+	descriptionWithHTML: PropTypes.object,
 	heading: PropTypes.string,
 	name: PropTypes.string,
 	price: PropTypes.string,
 	icon: PropTypes.node,
-	action: PropTypes.node
+	action: PropTypes.node,
 };
 
 export default ThankYouCard;

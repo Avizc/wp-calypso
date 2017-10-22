@@ -1,16 +1,17 @@
+/** @format */
 /**
- * External Dependencies
+ * External dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal Dependencies
+ * Internal dependencies
  */
 import { shouldFeedBeFetched } from '../selectors';
 
 describe( 'selectors', () => {
 	describe( 'shouldFeedBeFetched', () => {
-		it( 'should return false if the fetch is queued', () => {
+		test( 'should return false if the fetch is queued', () => {
 			expect(
 				shouldFeedBeFetched(
 					{
@@ -23,12 +24,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1,
-				),
+					1
+				)
 			).to.be.false;
 		} );
 
-		it( 'should return false if the feed is loaded and recent', () => {
+		test( 'should return false if the feed is loaded and recent', () => {
 			expect(
 				shouldFeedBeFetched(
 					{
@@ -44,12 +45,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1,
-				),
+					1
+				)
 			).to.be.false;
 		} );
 
-		it( 'should return true if the feed is loaded, but no fetch time exists', () => {
+		test( 'should return true if the feed is loaded, but no fetch time exists', () => {
 			expect(
 				shouldFeedBeFetched(
 					{
@@ -63,12 +64,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1,
-				),
+					1
+				)
 			).to.be.true;
 		} );
 
-		it( 'should return true if the feed is loaded, but old', () => {
+		test( 'should return true if the feed is loaded, but old', () => {
 			expect(
 				shouldFeedBeFetched(
 					{
@@ -84,12 +85,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1,
-				),
+					1
+				)
 			).to.be.true;
 		} );
 
-		it( 'should return true if the feed is not queued and not loaded', () => {
+		test( 'should return true if the feed is not queued and not loaded', () => {
 			expect(
 				shouldFeedBeFetched(
 					{
@@ -101,12 +102,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1,
-				),
+					1
+				)
 			).to.be.true;
 		} );
 
-		it( 'should still return true if another feed is queued or loaded', () => {
+		test( 'should still return true if another feed is queued or loaded', () => {
 			expect(
 				shouldFeedBeFetched(
 					{
@@ -122,8 +123,8 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1,
-				),
+					1
+				)
 			).to.be.true;
 		} );
 	} );

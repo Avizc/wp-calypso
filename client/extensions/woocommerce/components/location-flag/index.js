@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 class LocationFlag extends Component {
@@ -17,8 +21,8 @@ class LocationFlag extends Component {
 		const { code, className } = this.props;
 		const { ready } = this.state;
 		const style = ready ? {} : { visibility: 'hidden' };
-		const onLoad = () => ( this.setState( { ready: true } ) );
-		const onError = () => ( this.setState( { ready: false } ) );
+		const onLoad = () => this.setState( { ready: true } );
+		const onError = () => this.setState( { ready: false } );
 
 		return (
 			<img
@@ -26,7 +30,8 @@ class LocationFlag extends Component {
 				onError={ onError }
 				className={ classNames( 'location-flag', className ) }
 				style={ style }
-				src={ `/calypso/images/flags/${ code.toLowerCase() }.svg` } />
+				src={ `/calypso/images/flags/${ code.toLowerCase() }.svg` }
+			/>
 		);
 	}
 }

@@ -1,7 +1,12 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
@@ -11,17 +16,16 @@ import postUtils from 'lib/posts/utils';
 import siteUtils from 'lib/site/utils';
 import Button from 'components/button';
 import { localize } from 'i18n-calypso';
+import { getSelectedSiteId } from 'state/ui/selectors';
+import { getEditorPostId } from 'state/ui/editor/selectors';
+import { isEditedPostPrivate, isPrivateEditedPostPasswordValid } from 'state/posts/selectors';
 
 export const getPublishButtonStatus = ( site, post, savedPost ) => {
 	if (
-		postUtils.isPublished( savedPost ) &&
-		! postUtils.isBackDatedPublished( savedPost ) &&
-		! postUtils.isFutureDated( post ) ||
-		(
-			savedPost &&
-			savedPost.status === 'future' &&
-			postUtils.isFutureDated( post )
-		)
+		( postUtils.isPublished( savedPost ) &&
+			! postUtils.isBackDatedPublished( savedPost ) &&
+			! postUtils.isFutureDated( post ) ) ||
+		( savedPost && savedPost.status === 'future' && postUtils.isFutureDated( post ) )
 	) {
 		return 'update';
 	}
@@ -53,6 +57,8 @@ export class EditorPublishButton extends Component {
 		isSaveBlocked: PropTypes.bool,
 		hasContent: PropTypes.bool,
 		needsVerification: PropTypes.bool,
+		privatePost: PropTypes.bool,
+		privatePostPasswordValid: PropTypes.bool,
 		busy: PropTypes.bool,
 		isConfirmationSidebarEnabled: PropTypes.bool,
 	};
@@ -69,16 +75,22 @@ export class EditorPublishButton extends Component {
 			update: 'Clicked Update Post Button',
 			schedule: 'Clicked Schedule Post Button',
 			requestReview: 'Clicked Request-Review Post Button',
-			publish: 'Clicked Publish Post Button'
+			publish: 'Clicked Publish Post Button',
 		};
 		const pageEvents = {
 			update: 'Clicked Update Page Button',
 			schedule: 'Clicked Schedule Page Button',
 			requestReview: 'Clicked Request-Review Page Button',
-			publish: 'Clicked Publish Page Button'
+			publish: 'Clicked Publish Page Button',
 		};
-		const buttonState = getPublishButtonStatus( this.props.site, this.props.post, this.props.savedPost );
-		const eventString = postUtils.isPage( this.props.post ) ? pageEvents[ buttonState ] : postEvents[ buttonState ];
+		const buttonState = getPublishButtonStatus(
+			this.props.site,
+			this.props.post,
+			this.props.savedPost
+		);
+		const eventString = postUtils.isPage( this.props.post )
+			? pageEvents[ buttonState ]
+			: postEvents[ buttonState ];
 		recordEvent( eventString );
 		recordEvent( 'Clicked Primary Button' );
 	}
@@ -89,8 +101,9 @@ export class EditorPublishButton extends Component {
 				return this.props.translate( 'Update' );
 			case 'schedule':
 				if ( this.props.isConfirmationSidebarEnabled ) {
-					return this.props.translate( 'Schedule…',
-						{ comment: 'Button label on the editor sidebar - a confirmation step will follow' } );
+					return this.props.translate( 'Schedule…', {
+						comment: 'Button label on the editor sidebar - a confirmation step will follow',
+					} );
 				}
 
 				return this.props.translate( 'Schedule' );
@@ -100,12 +113,14 @@ export class EditorPublishButton extends Component {
 				}
 
 				if ( this.props.isPublishing ) {
-					return this.props.translate( 'Publishing…',
-						{ comment: 'Button label on the editor sidebar while publishing is in progress' } );
+					return this.props.translate( 'Publishing…', {
+						comment: 'Button label on the editor sidebar while publishing is in progress',
+					} );
 				}
 
-				return this.props.translate( 'Publish…',
-					{ comment: 'Button label on the editor sidebar - a confirmation step will follow' } );
+				return this.props.translate( 'Publish…', {
+					comment: 'Button label on the editor sidebar - a confirmation step will follow',
+				} );
 			case 'requestReview':
 				return this.props.translate( 'Submit for Review' );
 		}
@@ -114,7 +129,8 @@ export class EditorPublishButton extends Component {
 	onClick() {
 		this.trackClick();
 
-		if ( postUtils.isPublished( this.props.savedPost ) &&
+		if (
+			postUtils.isPublished( this.props.savedPost ) &&
 			! postUtils.isBackDatedPublished( this.props.savedPost )
 		) {
 			return this.props.onSave();
@@ -128,10 +144,13 @@ export class EditorPublishButton extends Component {
 	}
 
 	isEnabled() {
-		return ! this.props.isPublishing &&
+		return (
+			! this.props.isPublishing &&
 			! this.props.isSaveBlocked &&
 			this.props.hasContent &&
-			! this.props.needsVerification;
+			! this.props.needsVerification &&
+			( ! this.props.privatePost || this.props.privatePostPasswordValid )
+		);
 	}
 
 	render() {
@@ -150,4 +169,14 @@ export class EditorPublishButton extends Component {
 	}
 }
 
-export default localize( EditorPublishButton );
+export default connect( state => {
+	const siteId = getSelectedSiteId( state );
+	const postId = getEditorPostId( state );
+	const privatePost = isEditedPostPrivate( state, siteId, postId );
+	const privatePostPasswordValid = isPrivateEditedPostPasswordValid( state, siteId, postId );
+
+	return {
+		privatePost,
+		privatePostPasswordValid,
+	};
+} )( localize( EditorPublishButton ) );

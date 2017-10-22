@@ -1,17 +1,26 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import page from 'page';
-import { values } from 'lodash';
+import { compact, map } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { navigation, sites, siteSelection } from 'my-sites/controller';
 import { settings } from './app/controller';
-import { Tabs } from './app/constants';
+import { Tabs } from './app/constants';
 
 export default function() {
+	const validTabSlugs = compact( map( Tabs, ( { slug } ) => slug ) ).join( '|' );
 	page( '/extensions/wp-super-cache', sites );
-	page( `/extensions/wp-super-cache/:tab(${ values( Tabs ).join( '|' ) })?/:site`, siteSelection, navigation, settings );
+	page(
+		`/extensions/wp-super-cache/:tab(${ validTabSlugs })?/:site`,
+		siteSelection,
+		navigation,
+		settings
+	);
 }

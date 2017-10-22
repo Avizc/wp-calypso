@@ -1,3 +1,4 @@
+/** @format */
 export const productsListSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -5,13 +6,16 @@ export const productsListSchema = {
 		'.+': {
 			type: 'object',
 			required: [
+				'available',
 				'product_id',
 				'product_name',
 				'product_slug',
 				'description',
 				'is_domain_registration',
-				'cost_display' ],
+				'cost_display',
+			],
 			properties: {
+				available: { type: 'boolean' },
 				product_id: { type: 'integer' },
 				product_name: { type: 'string' },
 				product_slug: { type: 'string' },
@@ -22,7 +26,7 @@ export const productsListSchema = {
 				},
 				is_domain_registration: { type: 'boolean' },
 				cost_display: { type: 'string' },
-			}
-		}
-	}
+			},
+		},
+	},
 };

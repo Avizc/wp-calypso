@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React from 'react';
+
+import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 
 /**
@@ -10,33 +13,25 @@ import classNames from 'classnames';
 import CompactCard from 'components/card/compact';
 import Count from 'components/count';
 
-export default React.createClass( {
-	getDefaultProps() {
-		return {
-			label: '',
-			href: null
-		};
-	},
+export default class SectionHeader extends PureComponent {
+	static defaultProps = {
+		label: '',
+		href: null,
+	};
 
 	render() {
-		const classes = classNames(
-			this.props.className,
-			'section-header'
-		);
+		const hasCount = 'number' === typeof this.props.count;
+		const isEmpty = ! ( this.props.label || hasCount || this.props.children );
+		const classes = classNames( this.props.className, 'section-header', { 'is-empty': isEmpty } );
 
 		return (
 			<CompactCard className={ classes } href={ this.props.href }>
 				<div className="section-header__label">
 					<span className="section-header__label-text">{ this.props.label }</span>
-					{
-						'number' === typeof this.props.count &&
-							<Count count={ this.props.count } />
-					}
+					{ hasCount && <Count count={ this.props.count } /> }
 				</div>
-				<div className="section-header__actions">
-					{ this.props.children }
-				</div>
+				<div className="section-header__actions">{ this.props.children }</div>
 			</CompactCard>
 		);
 	}
-} );
+}

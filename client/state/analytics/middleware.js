@@ -1,9 +1,10 @@
-/** External dependencies
+/**
+ *  External dependencies
+ *
+ * @format
  */
-import {
-	has,
-	invoke,
-} from 'lodash';
+
+import { has, invoke } from 'lodash';
 
 /**
  * Internal dependencies
@@ -18,12 +19,13 @@ import {
 	ANALYTICS_PAGE_VIEW_RECORD,
 	ANALYTICS_STAT_BUMP,
 	ANALYTICS_TRACKING_ON,
+	ANALYTICS_TRACKS_ANONID_SET,
 } from 'state/action-types';
 import isTracking from 'state/selectors/is-tracking';
-import config from 'config';
 
 const eventServices = {
-	ga: ( { category, action, label, value } ) => analytics.ga.recordEvent( category, action, label, value ),
+	ga: ( { category, action, label, value } ) =>
+		analytics.ga.recordEvent( category, action, label, value ),
 	tracks: ( { name, properties } ) => analytics.tracks.recordEvent( name, properties ),
 	fb: ( { name, properties } ) => trackCustomFacebookConversionEvent( name, properties ),
 	adwords: ( { properties } ) => trackCustomAdWordsRemarketingEvent( properties ),
@@ -31,14 +33,11 @@ const eventServices = {
 
 const pageViewServices = {
 	ga: ( { url, title } ) => analytics.ga.recordPageView( url, title ),
-	'default': ( { url, title } ) => analytics.pageView.record( url, title ),
+	default: ( { url, title } ) => analytics.pageView.record( url, title ),
 };
 
 const loadTrackingTool = ( trackingTool, state ) => {
-	const trackUser = ! navigator.doNotTrack;
-	const hotJarEnabled = config( 'hotjar_enabled' );
-
-	if ( trackingTool === 'HotJar' && ! isTracking( state, 'HotJar' ) && hotJarEnabled && trackUser ) {
+	if ( trackingTool === 'HotJar' && ! isTracking( state, 'HotJar' ) ) {
 		analytics.hotjar.addHotJarScript();
 	}
 };
@@ -55,6 +54,9 @@ export const dispatcher = ( { meta: { analytics: analyticsMeta } }, state ) => {
 
 			case ANALYTICS_PAGE_VIEW_RECORD:
 				return invoke( pageViewServices, service, payload );
+
+			case ANALYTICS_TRACKS_ANONID_SET:
+				return analytics.tracks.setAnonymousUserId( payload );
 
 			case ANALYTICS_STAT_BUMP:
 				return statBump( payload );

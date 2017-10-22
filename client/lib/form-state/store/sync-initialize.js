@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import mapValues from 'lodash/mapValues';
+
+import { mapValues } from 'lodash';
 
 /**
  * Internal dependencies
@@ -29,7 +32,7 @@ function syncInitialize( { fieldNames } ) {
 			}
 
 			return next;
-		}
+		},
 	};
 }
 

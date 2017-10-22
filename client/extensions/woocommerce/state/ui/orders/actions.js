@@ -1,18 +1,50 @@
 /**
  * Internal dependencies
+ *
+ * @format
  */
-import { getSelectedSiteId } from 'state/ui/selectors';
-import { WOOCOMMERCE_UI_ORDERS_SET_PAGE } from 'woocommerce/state/action-types';
 
-export const setCurrentPage = ( siteId, page ) => ( dispatch, getState ) => {
+import { getSelectedSiteId } from 'state/ui/selectors';
+import {
+	WOOCOMMERCE_UI_ORDERS_CLEAR_EDIT,
+	WOOCOMMERCE_UI_ORDERS_EDIT,
+	WOOCOMMERCE_UI_ORDERS_SET_QUERY,
+} from 'woocommerce/state/action-types';
+
+export const clearOrderEdits = siteId => ( dispatch, getState ) => {
 	const state = getState();
 	if ( ! siteId ) {
 		siteId = getSelectedSiteId( state );
 	}
 
 	dispatch( {
-		type: WOOCOMMERCE_UI_ORDERS_SET_PAGE,
+		type: WOOCOMMERCE_UI_ORDERS_CLEAR_EDIT,
 		siteId,
-		page,
+	} );
+};
+
+export const editOrder = ( siteId, order ) => ( dispatch, getState ) => {
+	const state = getState();
+	if ( ! siteId ) {
+		siteId = getSelectedSiteId( state );
+	}
+
+	dispatch( {
+		type: WOOCOMMERCE_UI_ORDERS_EDIT,
+		siteId,
+		order,
+	} );
+};
+
+export const updateCurrentOrdersQuery = ( siteId, query ) => ( dispatch, getState ) => {
+	const state = getState();
+	if ( ! siteId ) {
+		siteId = getSelectedSiteId( state );
+	}
+
+	dispatch( {
+		type: WOOCOMMERCE_UI_ORDERS_SET_QUERY,
+		siteId,
+		query,
 	} );
 };

@@ -1,10 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import mapValues from 'lodash/mapValues';
-import without from 'lodash/without';
-import isEmpty from 'lodash/isEmpty';
-import pickBy from 'lodash/pickBy';
+
+import { isEmpty, mapValues, pickBy, without } from 'lodash';
 
 /**
  * Internal dependencies
@@ -19,9 +19,10 @@ import { ValidationErrors as MediaValidationErrors } from './constants';
  * Module variables
  */
 const MediaValidationStore = {
-	_errors: {}
+	_errors: {},
 };
 const sites = Sites();
+const ERROR_GLOBAL_ITEM_ID = 0;
 
 /**
  * Errors are represented as an object, mapping a site to an object of items
@@ -50,6 +51,9 @@ function ensureErrorsObjectForSite( siteId ) {
 
 	MediaValidationStore._errors[ siteId ] = {};
 }
+
+const isExternalError = message => message.error && message.error === 'servicefail';
+const isMediaError = action => action.error && ( action.id || isExternalError( action.error ) );
 
 MediaValidationStore.validateItem = function( siteId, item ) {
 	var site = sites.getSite( siteId ),
@@ -102,15 +106,15 @@ MediaValidationStore.clearValidationErrorsByType = function( siteId, errorType )
 	}
 
 	MediaValidationStore._errors[ siteId ] = pickBy(
-		mapValues( MediaValidationStore._errors[ siteId ], ( errors ) => without( errors, errorType ) ),
-		( errors ) => ! isEmpty( errors )
+		mapValues( MediaValidationStore._errors[ siteId ], errors => without( errors, errorType ) ),
+		errors => ! isEmpty( errors )
 	);
 };
 
 function receiveServerError( siteId, itemId, errors ) {
 	ensureErrorsObjectForSite( siteId );
 
-	MediaValidationStore._errors[ siteId ][ itemId ] = errors.map( ( error ) => {
+	MediaValidationStore._errors[ siteId ][ itemId ] = errors.map( error => {
 		switch ( error.error ) {
 			case 'http_404':
 				return MediaValidationErrors.UPLOAD_VIA_URL_404;
@@ -122,6 +126,8 @@ function receiveServerError( siteId, itemId, errors ) {
 					return MediaValidationErrors.EXCEEDS_PLAN_STORAGE_LIMIT;
 				}
 				return MediaValidationErrors.SERVER_ERROR;
+			case 'servicefail':
+				return MediaValidationErrors.SERVICE_FAILED;
 			default:
 				return MediaValidationErrors.SERVER_ERROR;
 		}
@@ -150,7 +156,8 @@ MediaValidationStore.hasErrors = function( siteId, itemId ) {
 
 MediaValidationStore.dispatchToken = Dispatcher.register( function( payload ) {
 	var action = payload.action,
-		items, errors;
+		items,
+		errors;
 
 	switch ( action.type ) {
 		case 'CREATE_MEDIA_ITEM':
@@ -180,8 +187,8 @@ MediaValidationStore.dispatchToken = Dispatcher.register( function( payload ) {
 
 		case 'RECEIVE_MEDIA_ITEM':
 		case 'RECEIVE_MEDIA_ITEMS':
-			// Track any errors which occurred during upload
-			if ( ! action.error || ! action.id ) {
+			// Track any errors which occurred during upload or getting external media
+			if ( ! isMediaError( action ) ) {
 				break;
 			}
 
@@ -191,10 +198,11 @@ MediaValidationStore.dispatchToken = Dispatcher.register( function( payload ) {
 				errors = [ action.error ];
 			}
 
-			receiveServerError( action.siteId, action.id, errors );
+			receiveServerError( action.siteId, action.id ? action.id : ERROR_GLOBAL_ITEM_ID, errors );
 			MediaValidationStore.emit( 'change' );
 			break;
 
+		case 'CHANGE_MEDIA_SOURCE':
 		case 'CLEAR_MEDIA_VALIDATION_ERRORS':
 			if ( ! action.siteId ) {
 				break;
@@ -211,4 +219,4 @@ MediaValidationStore.dispatchToken = Dispatcher.register( function( payload ) {
 	}
 } );
 
-module.exports = MediaValidationStore;
+export default MediaValidationStore;

@@ -1,48 +1,64 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-var React = require( 'react' ),
-	i18n = require( 'i18n-calypso' ),
-	find = require( 'lodash/find' );
+
+import { find } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import i18n from 'i18n-calypso';
 
 /**
  * Internal dependencies
  */
-var SectionNav = require( 'components/section-nav' ),
-	NavTabs = require( 'components/section-nav/tabs' ),
-	NavItem = require( 'components/section-nav/item' );
+import config from 'config';
+import NavItem from 'components/section-nav/item';
+import NavTabs from 'components/section-nav/tabs';
+import SectionNav from 'components/section-nav';
 
-module.exports = React.createClass( {
+export default React.createClass( {
+	displayName: 'SecuritySectionNav',
+
 	propTypes: {
-		path: React.PropTypes.string.isRequired
+		path: PropTypes.string.isRequired,
 	},
 
 	getNavtabs: function() {
-		var tabs = [
+		const tabs = [
 			{
 				title: i18n.translate( 'Password', { textOnly: true } ),
 				path: '/me/security',
 			},
+			config.isEnabled( 'signup/social-management' )
+				? {
+						title: i18n.translate( 'Social Login', { textOnly: true } ),
+						path: '/me/security/social-login',
+					}
+				: null,
 			{
 				title: i18n.translate( 'Two-Step Authentication', { textOnly: true } ),
 				path: '/me/security/two-step',
 			},
 			{
-				title: i18n.translate( 'Connected Applications', { textOnly: true } ),
+				title: config.isEnabled( 'signup/social-management' )
+					? // This was shortened from 'Connected Applications' due to space constraints.
+						i18n.translate( 'Connected Apps', { textOnly: true } )
+					: i18n.translate( 'Connected Applications', { textOnly: true } ),
 				path: '/me/security/connected-applications',
 			},
 			{
 				title: i18n.translate( 'Account Recovery', { textOnly: true } ),
 				path: '/me/security/account-recovery',
 			},
-		];
+		].filter( tab => tab !== null );
 
 		return tabs;
 	},
 
 	getFilteredPath: function() {
 		var paramIndex = this.props.path.indexOf( '?' );
-		return ( paramIndex < 0 ) ? this.props.path : this.props.path.substring( 0, paramIndex );
+		return paramIndex < 0 ? this.props.path : this.props.path.substring( 0, paramIndex );
 	},
 
 	getSelectedText: function() {
@@ -80,5 +96,5 @@ module.exports = React.createClass( {
 				</NavTabs>
 			</SectionNav>
 		);
-	}
+	},
 } );

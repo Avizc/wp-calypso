@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { noop } from 'lodash';
 import classNames from 'classnames';
 import Gridicon from 'gridicons';
@@ -20,6 +24,7 @@ export default class Accordion extends Component {
 		subtitle: PropTypes.string,
 		status: PropTypes.object,
 		icon: PropTypes.element,
+		e2eTitle: PropTypes.string,
 	};
 
 	static defaultProps = {
@@ -32,7 +37,7 @@ export default class Accordion extends Component {
 		super( ...arguments );
 
 		this.state = {
-			isExpanded: props.initialExpanded
+			isExpanded: props.initialExpanded,
 		};
 	}
 
@@ -40,35 +45,35 @@ export default class Accordion extends Component {
 		this.setExpandedStatus( ! this.state.isExpanded );
 	};
 
-	setExpandedStatus = ( isExpanded ) => {
+	setExpandedStatus = isExpanded => {
 		this.setState( { isExpanded } );
 		this.props.onToggle( isExpanded );
 	};
 
 	render() {
-		const { className, icon, title, subtitle, status, children } = this.props;
+		const { className, icon, title, subtitle, status, children, e2eTitle } = this.props;
 		const classes = classNames( 'accordion', className, {
 			'is-expanded': this.state.isExpanded || this.props.forceExpand,
 			'has-icon': !! icon,
 			'has-subtitle': !! subtitle,
-			'has-status': !! status
+			'has-status': !! status,
 		} );
 
 		return (
-			<div className={ classes }>
+			<div className={ classes } data-e2e-title={ e2eTitle }>
 				<header className="accordion__header">
 					<button type="button" onClick={ this.toggleExpanded } className="accordion__toggle">
 						{ icon && <span className="accordion__icon">{ icon }</span> }
 						<span className="accordion__title">{ title }</span>
 						{ subtitle && <span className="accordion__subtitle">{ subtitle }</span> }
-						<span className="accordion__arrow"><Gridicon icon="dropdown" /></span>
+						<span className="accordion__arrow">
+							<Gridicon icon="dropdown" />
+						</span>
 					</button>
 					{ status && <AccordionStatus { ...status } /> }
 				</header>
 				<div className="accordion__content">
-					<div className="accordion__content-wrap">
-						{ children }
-					</div>
+					<div className="accordion__content-wrap">{ children }</div>
 				</div>
 			</div>
 		);

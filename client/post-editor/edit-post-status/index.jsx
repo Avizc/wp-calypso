@@ -1,8 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes, Component } from 'react';
-import { noop } from 'lodash';
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 import Gridicon from 'gridicons';
@@ -10,27 +13,21 @@ import Gridicon from 'gridicons';
 /**
  * Internal dependencies
  */
-import config from 'config';
-import { abtest } from 'lib/abtest';
-import AsyncLoad from 'components/async-load';
 import Button from 'components/button';
 import FormToggle from 'components/forms/form-toggle/compact';
 import Revisions from 'post-editor/editor-revisions';
 import postUtils from 'lib/posts/utils';
-import Popover from 'components/popover';
 import InfoPopover from 'components/info-popover';
-import Tooltip from 'components/tooltip';
-import postScheduleUtils from 'components/post-schedule/utils';
 import siteUtils from 'lib/site/utils';
 import { recordStat, recordEvent } from 'lib/posts/stats';
 import { editPost } from 'state/posts/actions';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getEditorPostId } from 'state/ui/editor/selectors';
 import { getEditedPost } from 'state/posts/selectors';
+import EditorPublishDate from 'post-editor/editor-publish-date';
 import EditorVisibility from 'post-editor/editor-visibility';
 
 export class EditPostStatus extends Component {
-
 	static propTypes = {
 		moment: PropTypes.func,
 		setPostDate: PropTypes.func,
@@ -44,14 +41,13 @@ export class EditPostStatus extends Component {
 		onPrivatePublish: PropTypes.func,
 		status: PropTypes.string,
 		isPostPrivate: PropTypes.bool,
+		confirmationSidebarStatus: PropTypes.string,
+		setNestedSidebar: PropTypes.func,
+		selectRevision: PropTypes.func,
 	};
 
 	constructor( props ) {
 		super( props );
-		this.state = {
-			showTZTooltip: false,
-			showPostSchedulePopover: false
-		};
 	}
 
 	toggleStickyStatus = () => {
@@ -69,7 +65,7 @@ export class EditPostStatus extends Component {
 		recordEvent( 'Changed Sticky Setting', stickyEventLabel );
 
 		this.props.editPost( this.props.siteId, this.props.postId, {
-			sticky: ! this.props.post.sticky
+			sticky: ! this.props.post.sticky,
 		} );
 	};
 
@@ -80,26 +76,12 @@ export class EditPostStatus extends Component {
 		recordEvent( 'Changed Pending Status', pending ? 'Marked Draft' : 'Marked Pending' );
 
 		this.props.editPost( this.props.siteId, this.props.postId, {
-			status: pending ? 'draft' : 'pending'
-		} );
-	};
-
-	togglePostSchedulePopover = () => {
-		this.setState( {
-			showPostSchedulePopover: ! this.state.showPostSchedulePopover
+			status: pending ? 'draft' : 'pending',
 		} );
 	};
 
 	revertToDraft = () => {
 		this.props.onSave( 'draft' );
-	};
-
-	showTZTooltip = () => {
-		this.setState( { showTZTooltip: true } );
-	};
-
-	hideTZTooltip = () => {
-		this.setState( { showTZTooltip: false } );
 	};
 
 	render() {
@@ -115,46 +97,16 @@ export class EditPostStatus extends Component {
 			canPublish = siteUtils.userCan( 'publish_posts', this.props.site );
 		}
 
-		const adminUrl = this.props.site &&
-			this.props.site.options &&
-			this.props.site.options.admin_url;
-
-		const fullDate = postScheduleUtils.convertDateToUserLocation(
-			( this.props.postDate || new Date() ),
-			siteUtils.timezone( this.props.site ),
-			siteUtils.gmtOffset( this.props.site )
-		).format( 'll LT' );
-
-		const isPostPublishFlow = config.isEnabled( 'post-editor/delta-post-publish-flow' ) &&
-			abtest( 'postPublishConfirmation' ) === 'showPublishConfirmation';
+		const adminUrl =
+			this.props.site && this.props.site.options && this.props.site.options.admin_url;
 
 		return (
 			<div className="edit-post-status">
-				<span
-					ref="postStatusTooltip"
-					className="edit-post-status__full-date"
-					onMouseEnter={ this.showTZTooltip }
-					onMouseLeave={ this.hideTZTooltip }
-					onClick={ this.togglePostSchedulePopover }
-				>
-					{
-						postUtils.isFutureDated( this.props.savedPost )
-							? <span className="edit-post-status__future-label">
-									{ translate( 'Future' ) }
-								</span>
-							: <Gridicon icon="time" size={ 18 } />
-					}
-
-					{ fullDate }
-					{ this.renderTZTooltop() }
-					{ this.renderPostSchedulePopover() }
-				</span>
-				{
-					isPostPublishFlow
-						? this.renderPostVisibility()
-						: null
-				}
-				{ this.props.type === 'post' && ! isPostPrivate && ! isPasswordProtected &&
+				{ this.renderPostScheduling() }
+				{ this.renderPostVisibility() }
+				{ this.props.type === 'post' &&
+				! isPostPrivate &&
+				! isPasswordProtected && (
 					<label className="edit-post-status__sticky">
 						<span className="edit-post-status__label-text">
 							{ translate( 'Stick to the front page' ) }
@@ -168,8 +120,10 @@ export class EditPostStatus extends Component {
 							aria-label={ translate( 'Stick post to the front page' ) }
 						/>
 					</label>
-				}
-				{ ( ! isPublished && ! isScheduled && canPublish ) &&
+				) }
+				{ ! isPublished &&
+				! isScheduled &&
+				canPublish && (
 					<label className="edit-post-status__pending-review">
 						<span className="edit-post-status__label-text">
 							{ translate( 'Pending review' ) }
@@ -183,8 +137,8 @@ export class EditPostStatus extends Component {
 							aria-label={ translate( 'Request review for post' ) }
 						/>
 					</label>
-				}
-				{ ( isPublished || isScheduled || isPending && ! canPublish ) &&
+				) }
+				{ ( isPublished || isScheduled || ( isPending && ! canPublish ) ) && (
 					<Button
 						className="edit-post-status__revert-to-draft"
 						onClick={ this.revertToDraft }
@@ -192,22 +146,29 @@ export class EditPostStatus extends Component {
 					>
 						<Gridicon icon="undo" size={ 18 } /> { translate( 'Revert to draft' ) }
 					</Button>
-				}
-				{
-					! isPostPublishFlow
-						? this.renderPostVisibility()
-						: null
-				}
+				) }
 				<Revisions
 					revisions={ this.props.post && this.props.post.revisions }
 					adminUrl={ adminUrl }
+					setNestedSidebar={ this.props.setNestedSidebar }
+					selectRevision={ this.props.selectRevision }
 				/>
 			</div>
 		);
 	}
 
+	renderPostScheduling() {
+		return <EditorPublishDate post={ this.props.post } setPostDate={ this.props.setPostDate } />;
+	}
+
 	renderPostVisibility() {
 		if ( ! this.props.post ) {
+			return;
+		}
+
+		// Do not render the editor visibility component on both the editor sidebar and the confirmation sidebar
+		// at the same time so that it is predictable which one gets the focus / shows the validation error message.
+		if ( 'open' === this.props.confirmationSidebarStatus ) {
 			return;
 		}
 
@@ -226,74 +187,12 @@ export class EditPostStatus extends Component {
 			context: 'post-settings',
 		};
 
-		return (
-			<EditorVisibility { ...props } />
-		);
-	}
-
-	renderPostSchedulePopover() {
-		const tz = siteUtils.timezone( this.props.site ),
-			gmt = siteUtils.gmtOffset( this.props.site ),
-			selectedDay = this.props.postDate
-				? this.props.moment( this.props.postDate )
-				: null;
-
-		return (
-			<Popover
-				context={ this.refs && this.refs.postStatusTooltip }
-				isVisible={ this.state.showPostSchedulePopover }
-				position="bottom left"
-				onClose={ this.togglePostSchedulePopover }
-			>
-				<div className="edit-post-status__post-schedule">
-					<AsyncLoad
-						require="components/post-schedule"
-						selectedDay={ selectedDay }
-						timezone={ tz }
-						gmtOffset={ gmt }
-						onDateChange={ this.props.setPostDate }
-					/>
-				</div>
-			</Popover>
-		);
-	}
-
-	renderTZTooltop() {
-		const timezone = siteUtils.timezone( this.props.site ),
-			gmtOffset = siteUtils.gmtOffset( this.props.site );
-
-		if ( ! ( timezone || postScheduleUtils.isValidGMTOffset( gmtOffset ) ) ) {
-			return;
-		}
-
-		if ( this.state.showPostSchedulePopover ) {
-			return;
-		}
-
-		return (
-			<Tooltip
-				context={ this.refs && this.refs.postStatusTooltip }
-				isVisible={ this.state.showTZTooltip }
-				position="left"
-				onClose={ noop }
-			>
-				<div className="edit-post-status__full-date__tooltip">
-					{ timezone ? timezone + ' ' : 'UTC' }
-					{
-						postScheduleUtils.getLocalizedDate(
-							postUtils.getEditedTime( this.props.post ),
-							timezone,
-							gmtOffset
-						).format( 'Z' )
-					}
-				</div>
-			</Tooltip>
-		);
+		return <EditorVisibility { ...props } />;
 	}
 }
 
 export default connect(
-	( state ) => {
+	state => {
 		const siteId = getSelectedSiteId( state );
 		const postId = getEditorPostId( state );
 		const post = getEditedPost( state, siteId, postId );
@@ -301,7 +200,7 @@ export default connect(
 		return {
 			siteId,
 			postId,
-			post
+			post,
 		};
 	},
 	{ editPost }

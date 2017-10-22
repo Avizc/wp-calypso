@@ -1,3 +1,5 @@
+/** @format */
+
 /**
  * External dependencies
  */
@@ -7,18 +9,59 @@ import { spy } from 'sinon';
 /**
  * Internal dependencies
  */
-import { setCurrentPage } from '../actions';
-import { WOOCOMMERCE_UI_ORDERS_SET_PAGE } from 'woocommerce/state/action-types';
+import { clearOrderEdits, editOrder, updateCurrentOrdersQuery } from '../actions';
+import {
+	WOOCOMMERCE_UI_ORDERS_CLEAR_EDIT,
+	WOOCOMMERCE_UI_ORDERS_EDIT,
+	WOOCOMMERCE_UI_ORDERS_SET_QUERY,
+} from 'woocommerce/state/action-types';
 
 describe( 'actions', () => {
-	describe( '#setCurrentPage()', () => {
+	describe( '#clearOrderEdits()', () => {
 		const siteId = '123';
 
-		it( 'should dispatch an action', () => {
+		test( 'should dispatch an action', () => {
 			const getState = () => ( {} );
 			const dispatch = spy();
-			setCurrentPage( siteId, 2 )( dispatch, getState );
-			expect( dispatch ).to.have.been.calledWith( { type: WOOCOMMERCE_UI_ORDERS_SET_PAGE, siteId, page: 2 } );
+			clearOrderEdits( siteId )( dispatch, getState );
+			expect( dispatch ).to.have.been.calledWith( {
+				type: WOOCOMMERCE_UI_ORDERS_CLEAR_EDIT,
+				siteId,
+			} );
+		} );
+	} );
+
+	describe( '#editOrder()', () => {
+		const siteId = '123';
+
+		test( 'should dispatch an action', () => {
+			const getState = () => ( {} );
+			const dispatch = spy();
+			const order = {
+				id: 40,
+				first_name: 'Joan',
+			};
+			editOrder( siteId, order )( dispatch, getState );
+			expect( dispatch ).to.have.been.calledWith( {
+				type: WOOCOMMERCE_UI_ORDERS_EDIT,
+				siteId,
+				order,
+			} );
+		} );
+	} );
+
+	describe( '#updateCurrentOrdersQuery()', () => {
+		const siteId = '123';
+
+		test( 'should dispatch an action', () => {
+			const getState = () => ( {} );
+			const dispatch = spy();
+			updateCurrentOrdersQuery( siteId, { page: 2, search: 'test' } )( dispatch, getState );
+			expect( dispatch ).to.have.been.calledWith( {
+				type: WOOCOMMERCE_UI_ORDERS_SET_QUERY,
+				siteId,
+				query: { page: 2, search: 'test' },
+			} );
 		} );
 	} );
 } );

@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import includes from 'lodash/includes';
+
+import { includes } from 'lodash';
 
 /**
  * Internal Dependencies
@@ -17,7 +20,7 @@ const statsLocationsByTab = {
 	week: '/stats/week/',
 	month: '/stats/month/',
 	year: '/stats/year/',
-	insights: '/stats/insights/'
+	insights: '/stats/insights/',
 };
 
 function getSiteFragment( path ) {
@@ -53,7 +56,7 @@ function addSiteFragment( path, site ) {
 	if ( includes( [ 'post', 'page', 'edit' ], pieces[ 1 ] ) ) {
 		// Editor-style URL; insert the site as either the 2nd or 3rd piece of
 		// the URL ( '/post/:site' or '/edit/:cpt/:site' )
-		const sitePos = ( 'edit' === pieces[ 1 ] ? 3 : 2 );
+		const sitePos = 'edit' === pieces[ 1 ] ? 3 : 2;
 		pieces.splice( sitePos, 0, site );
 	} else {
 		// Somewhere else in Calypso; add /:site onto the end
@@ -63,12 +66,42 @@ function addSiteFragment( path, site ) {
 	return pieces.join( '/' );
 }
 
-function sectionify( path ) {
-	let basePath = path.split( '?' )[ 0 ];
-	const site = getSiteFragment( basePath );
+function sectionifyWithRoutes( path, routes ) {
+	const routeParams = {};
+	if ( ! routes || ! Array.isArray( routes ) ) {
+		return {
+			routePath: sectionify( path, routes ),
+			routeParams,
+		};
+	}
 
-	if ( site ) {
-		basePath = trailingslashit( basePath ).replace( '/' + site + '/', '/' );
+	let routePath = path.split( '?' )[ 0 ];
+	for ( const route of routes ) {
+		if ( route.match( routePath, routeParams ) ) {
+			routePath = route.path;
+			break;
+		}
+	}
+
+	return {
+		routePath: untrailingslashit( routePath ),
+		routeParams,
+	};
+}
+
+function sectionify( path, siteFragment ) {
+	let basePath = path.split( '?' )[ 0 ];
+
+	// Sometimes the caller knows better than `getSiteFragment` what the `siteFragment` is.
+	// For example, when the `:site` parameter is not the last or second-last part of the route
+	// and is retrieved from `context.params.site`. In that case, it can pass the `siteFragment`
+	// explicitly as the second parameter. We call `getSiteFragment` only as a fallback.
+	if ( ! siteFragment ) {
+		siteFragment = getSiteFragment( basePath );
+	}
+
+	if ( siteFragment ) {
+		basePath = trailingslashit( basePath ).replace( '/' + siteFragment + '/', '/' );
 	}
 	return untrailingslashit( basePath );
 }
@@ -114,15 +147,15 @@ function getStatsPathForTab( tab, siteIdOrSlug ) {
 function mapPostStatus( status ) {
 	switch ( status ) {
 		// Drafts
-		case 'drafts' :
+		case 'drafts':
 			return 'draft,pending';
 		// Posts scheduled in the future
-		case 'scheduled' :
+		case 'scheduled':
 			return 'future';
 		// Trashed posts
-		case 'trashed' :
+		case 'trashed':
 			return 'trash';
-		default :
+		default:
 			return 'publish,private';
 	}
 }
@@ -131,12 +164,13 @@ function externalRedirect( url ) {
 	window.location = url;
 }
 
-module.exports = {
+export default {
 	getSiteFragment: getSiteFragment,
 	addSiteFragment: addSiteFragment,
 	getStatsDefaultSitePage: getStatsDefaultSitePage,
 	getStatsPathForTab: getStatsPathForTab,
 	sectionify: sectionify,
+	sectionifyWithRoutes: sectionifyWithRoutes,
 	mapPostStatus: mapPostStatus,
-	externalRedirect: externalRedirect
+	externalRedirect: externalRedirect,
 };

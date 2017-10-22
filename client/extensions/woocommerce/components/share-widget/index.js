@@ -1,9 +1,13 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import config from 'config';
 import { localize } from 'i18n-calypso';
-import React, { Component, PropTypes } from 'react';
 import SocialLogo from 'social-logos';
 import url from 'url';
 
@@ -12,7 +16,7 @@ class ShareWidget extends Component {
 		text: PropTypes.string,
 		title: PropTypes.string,
 		urlToShare: PropTypes.string,
-	}
+	};
 
 	renderServiceIcons = () => {
 		const { translate, urlToShare } = this.props;
@@ -50,7 +54,7 @@ class ShareWidget extends Component {
 					pathname: '/share',
 					query: {
 						url: urlToShare,
-					}
+					},
 				},
 			},
 			{
@@ -62,7 +66,7 @@ class ShareWidget extends Component {
 					query: {
 						url: urlToShare,
 						mini: 'true',
-					}
+					},
 				},
 			},
 			{
@@ -76,7 +80,7 @@ class ShareWidget extends Component {
 						posttype: 'link',
 						shareSource: 'legacy',
 						url: urlToShare,
-					}
+					},
 				},
 			},
 			{
@@ -87,28 +91,26 @@ class ShareWidget extends Component {
 					pathname: 'pin/create/button',
 					query: {
 						url: urlToShare,
-					}
+					},
 				},
 			},
 		];
 
 		return (
 			<ul className="share-widget__services">
-				{
-					services.map( ( service ) => {
-						const link = url.format( service.urlProperties );
-						return (
-							<li className="share-widget__service" key={ service.icon }>
-								<a href={ link } rel="noopener noreferrer" target="_blank">
-									<SocialLogo icon={ service.icon } size={ 48 } />
-								</a>
-							</li>
-						);
-					} )
-				}
+				{ services.map( service => {
+					const link = url.format( service.urlProperties );
+					return (
+						<li className="share-widget__service" key={ service.icon }>
+							<a href={ link } rel="noopener noreferrer" target="_blank">
+								<SocialLogo icon={ service.icon } size={ 48 } />
+							</a>
+						</li>
+					);
+				} ) }
 			</ul>
 		);
-	}
+	};
 
 	render = () => {
 		const { text, title, urlToShare } = this.props;
@@ -120,7 +122,7 @@ class ShareWidget extends Component {
 				<img src="/calypso/images/extensions/woocommerce/woocommerce-share.svg" />
 			</div>
 		);
-	}
+	};
 }
 
 export default localize( ShareWidget );

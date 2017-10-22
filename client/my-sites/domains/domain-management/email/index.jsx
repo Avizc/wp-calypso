@@ -1,8 +1,13 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
+import PropTypes from 'prop-types';
 import React from 'react';
 import page from 'page';
+import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -18,47 +23,39 @@ import VerticalNavItem from 'components/vertical-nav/item';
 import UpgradesNavigation from 'my-sites/domains/navigation';
 import EmptyContent from 'components/empty-content';
 import paths from 'my-sites/domains/paths';
-import {
-	hasGoogleApps,
-	hasGoogleAppsSupportedDomain,
-	getSelectedDomain
-} from 'lib/domains';
+import { hasGoogleApps, hasGoogleAppsSupportedDomain, getSelectedDomain } from 'lib/domains';
 import { isPlanFeaturesEnabled } from 'lib/plans';
+import EmailVerificationGate from 'components/email-verification/email-verification-gate';
 
-const Email = React.createClass( {
-	propTypes: {
-		domains: React.PropTypes.object.isRequired,
-		products: React.PropTypes.object.isRequired,
-		selectedDomainName: React.PropTypes.string,
-		selectedSite: React.PropTypes.oneOfType( [
-			React.PropTypes.object,
-			React.PropTypes.bool
-		] ).isRequired,
-		user: React.PropTypes.object.isRequired,
-		googleAppsUsers: React.PropTypes.array.isRequired,
-		googleAppsUsersLoaded: React.PropTypes.bool.isRequired
-	},
+class Email extends React.Component {
+	static propTypes = {
+		domains: PropTypes.object.isRequired,
+		products: PropTypes.object.isRequired,
+		selectedDomainName: PropTypes.string,
+		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ).isRequired,
+		user: PropTypes.object.isRequired,
+		googleAppsUsers: PropTypes.array.isRequired,
+		googleAppsUsersLoaded: PropTypes.bool.isRequired,
+	};
 
 	render() {
 		return (
-			<Main
-				className="domain-management-email"
-				wideLayout={ isPlanFeaturesEnabled() }
-			>
+			<Main className="domain-management-email" wideLayout={ isPlanFeaturesEnabled() }>
 				<SidebarNavigation />
 				{ this.headerOrUpgradesNavigation() }
 				{ this.content() }
 			</Main>
 		);
-	},
+	}
 
 	headerOrUpgradesNavigation() {
 		if ( this.props.selectedDomainName ) {
 			return (
 				<Header
 					onClick={ this.goToEditOrList }
-					selectedDomainName={ this.props.selectedDomainName }>
-					{ this.translate( 'Email' ) }
+					selectedDomainName={ this.props.selectedDomainName }
+				>
+					{ this.props.translate( 'Email' ) }
 				</Header>
 			);
 		}
@@ -66,12 +63,19 @@ const Email = React.createClass( {
 			<UpgradesNavigation
 				path={ this.props.context.path }
 				cart={ this.props.cart }
-				selectedSite={ this.props.selectedSite } />
+				selectedSite={ this.props.selectedSite }
+			/>
 		);
-	},
+	}
 
 	content() {
-		if ( ! ( this.props.domains.hasLoadedFromServer && this.props.googleAppsUsersLoaded && this.props.products.gapps ) ) {
+		if (
+			! (
+				this.props.domains.hasLoadedFromServer &&
+				this.props.googleAppsUsersLoaded &&
+				this.props.products.gapps
+			)
+		) {
 			return <Placeholder />;
 		}
 
@@ -85,68 +89,79 @@ const Email = React.createClass( {
 			return this.addGoogleAppsCard();
 		}
 		return this.emptyContent();
-	},
+	}
 
 	emptyContent() {
-		const {
-			selectedSite,
-			selectedDomainName,
-			} = this.props;
+		const { selectedSite, selectedDomainName, translate } = this.props;
 		let emptyContentProps;
 
 		if ( selectedDomainName ) {
 			emptyContentProps = {
-				title: this.translate( 'G Suite is not supported on this domain' ),
-				line: this.translate( 'Only domains registered with WordPress.com are eligible for G Suite.' ),
-				secondaryAction: this.translate( 'Add Email Forwarding' ),
-				secondaryActionURL: paths.domainManagementEmailForwarding( selectedSite.slug, selectedDomainName )
+				title: translate( 'G Suite is not supported on this domain' ),
+				line: translate( 'Only domains registered with WordPress.com are eligible for G Suite.' ),
+				secondaryAction: translate( 'Add Email Forwarding' ),
+				secondaryActionURL: paths.domainManagementEmailForwarding(
+					selectedSite.slug,
+					selectedDomainName
+				),
 			};
 		} else {
 			emptyContentProps = {
-				title: this.translate( "Enable powerful email features." ),
-				line: this.translate(
+				title: translate( 'Enable powerful email features.' ),
+				line: translate(
 					'To set up email forwarding, G Suite, and other email ' +
-					'services for your site, upgrade your site’s web address ' +
-					'to a professional custom domain.'
-				)
+						'services for your site, upgrade your site’s web address ' +
+						'to a professional custom domain.'
+				),
 			};
 		}
 		Object.assign( emptyContentProps, {
-			illustration: '/calypso/images/drake/drake-whoops.svg',
-			action: this.translate( 'Add a Custom Domain' ),
-			actionURL: '/domains/add/' + this.props.selectedSite.slug
+			illustration: '/calypso/images/illustrations/customDomain.svg',
+			action: translate( 'Add a Custom Domain' ),
+			actionURL: '/domains/add/' + this.props.selectedSite.slug,
 		} );
 
-		return (
-			<EmptyContent { ...emptyContentProps } />
-		);
-	},
+		return <EmptyContent { ...emptyContentProps } />;
+	}
 
 	googleAppsUsersCard() {
 		return <GoogleAppsUsersCard { ...this.props } />;
-	},
+	}
 
 	addGoogleAppsCard() {
 		return (
 			<div>
-				<AddGoogleAppsCard { ...this.props } />
-				{ this.props.selectedDomainName && <VerticalNav>
-					<VerticalNavItem
-						path={ paths.domainManagementEmailForwarding( this.props.selectedSite.slug, this.props.selectedDomainName ) }>
-						{ this.translate( 'Email Forwarding' ) }
-					</VerticalNavItem>
-				</VerticalNav> }
+				<EmailVerificationGate
+					noticeText={ this.props.translate( 'You must verify your email to purchase G Suite.' ) }
+					noticeStatus="is-info"
+				>
+					<AddGoogleAppsCard { ...this.props } />
+				</EmailVerificationGate>
+				{ this.props.selectedDomainName && (
+					<VerticalNav>
+						<VerticalNavItem
+							path={ paths.domainManagementEmailForwarding(
+								this.props.selectedSite.slug,
+								this.props.selectedDomainName
+							) }
+						>
+							{ this.props.translate( 'Email Forwarding' ) }
+						</VerticalNavItem>
+					</VerticalNav>
+				) }
 			</div>
 		);
-	},
+	}
 
-	goToEditOrList() {
+	goToEditOrList = () => {
 		if ( this.props.selectedDomainName ) {
-			page( paths.domainManagementEdit( this.props.selectedSite.slug, this.props.selectedDomainName ) );
+			page(
+				paths.domainManagementEdit( this.props.selectedSite.slug, this.props.selectedDomainName )
+			);
 		} else {
 			page( paths.domainManagementList( this.props.selectedSite.slug ) );
 		}
-	}
-} );
+	};
+}
 
-module.exports = Email;
+export default localize( Email );

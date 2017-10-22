@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import { Component, PropTypes } from 'react';
+
+import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 /**
@@ -39,13 +43,13 @@ class QuerySiteSettings extends Component {
 QuerySiteSettings.propTypes = {
 	siteId: PropTypes.number,
 	requestingSiteSettings: PropTypes.bool,
-	requestSiteSettings: PropTypes.func
+	requestSiteSettings: PropTypes.func,
 };
 
 export default connect(
 	( state, { siteId } ) => {
 		return {
-			requestingSiteSettings: isRequestingSiteSettings( state, siteId )
+			requestingSiteSettings: isRequestingSiteSettings( state, siteId ),
 		};
 	},
 	{ requestSiteSettings }

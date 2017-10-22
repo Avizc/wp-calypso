@@ -1,13 +1,17 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes, Component } from 'react';
+
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactDom from 'react-dom';
 import { connect } from 'react-redux';
 import debugFactory from 'debug';
 import classNames from 'classnames';
 import clickOutside from 'click-outside';
-import uid from 'component-uid';
+import { uniqueId } from 'lodash';
 
 /**
  * Internal dependencies
@@ -19,7 +23,7 @@ import {
 	suggested as suggestPosition,
 	constrainLeft,
 	isElement as isDOMElement,
-	offset
+	offset,
 } from './util';
 import { isRtl as isRtlSelector } from 'state/selectors';
 
@@ -37,7 +41,7 @@ class Popover extends Component {
 		className: PropTypes.string,
 		closeOnEsc: PropTypes.bool,
 		id: PropTypes.string,
-		ignoreContext: PropTypes.shape( { getDOMNode: React.PropTypes.function } ),
+		ignoreContext: PropTypes.shape( { getDOMNode: PropTypes.function } ),
 		isRtl: PropTypes.bool,
 		isVisible: PropTypes.bool,
 		position: PropTypes.oneOf( [
@@ -67,7 +71,7 @@ class Popover extends Component {
 		showDelay: 0,
 		onClose: noop,
 		onShow: noop,
-	}
+	};
 
 	constructor( props ) {
 		super( props );
@@ -85,7 +89,7 @@ class Popover extends Component {
 			show: props.isVisible,
 			left: -99999,
 			top: -99999,
-			positionClass: this.getPositionClass( props.position )
+			positionClass: this.getPositionClass( props.position ),
 		};
 	}
 
@@ -205,19 +209,14 @@ class Popover extends Component {
 	}
 
 	onClickout( event ) {
-		let shouldClose = (
-			this.domContext &&
-			this.domContext.contains &&
-			! this.domContext.contains( event.target )
-		);
+		let shouldClose =
+			this.domContext && this.domContext.contains && ! this.domContext.contains( event.target );
 
 		if ( this.props.ignoreContext && shouldClose ) {
 			const ignoreContext = ReactDom.findDOMNode( this.props.ignoreContext );
-			shouldClose = shouldClose && (
-				ignoreContext &&
-				ignoreContext.contains &&
-				! ignoreContext.contains( event.target )
-			);
+			shouldClose =
+				shouldClose &&
+				( ignoreContext && ignoreContext.contains && ! ignoreContext.contains( event.target ) );
 		}
 
 		if ( shouldClose ) {
@@ -344,10 +343,7 @@ class Popover extends Component {
 
 		const reposition = Object.assign(
 			{},
-			constrainLeft(
-				offset( suggestedPosition, domContainer, domContext ),
-				domContainer
-			),
+			constrainLeft( offset( suggestedPosition, domContainer, domContext ), domContainer ),
 			{ positionClass: this.getPositionClass( suggestedPosition ) }
 		);
 
@@ -361,7 +357,7 @@ class Popover extends Component {
 	}
 
 	setPopoverId( id ) {
-		this.id = id || `pop__${ uid( 16 ) }`;
+		this.id = id || `pop__${ uniqueId() }`;
 		__popovers.add( this.id );
 
 		this.debug( 'creating ...' );
@@ -433,32 +429,22 @@ class Popover extends Component {
 			return null;
 		}
 
-		const classes = classNames(
-			'popover',
-			this.props.className,
-			this.state.positionClass
-		);
+		const classes = classNames( 'popover', this.props.className, this.state.positionClass );
 
 		this.debug( 'rendering ...' );
 
 		return (
 			<RootChild className={ this.props.rootClassName }>
-				<div
-					style={ this.getStylePosition() }
-					className={ classes }
-					ref={ this.setDOMBehavior }
-				>
+				<div style={ this.getStylePosition() } className={ classes } ref={ this.setDOMBehavior }>
 					<div className="popover__arrow" />
 
-					<div className="popover__inner">
-						{ this.props.children }
-					</div>
+					<div className="popover__inner">{ this.props.children }</div>
 				</div>
 			</RootChild>
 		);
 	}
 }
 
-export default connect( ( state ) => ( {
+export default connect( state => ( {
 	isRtl: isRtlSelector( state ),
 } ) )( Popover );

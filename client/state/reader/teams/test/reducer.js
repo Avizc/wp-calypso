@@ -1,7 +1,9 @@
+/** @format */
 /**
  * External dependencies
  */
 import { assert, expect } from 'chai';
+import deepfreeze from 'deep-freeze';
 
 /**
  * Internal dependencies
@@ -24,39 +26,50 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'items', () => {
-		it( 'should return an empty list by default', () => {
+		test( 'should return an empty list by default', () => {
 			expect( items( undefined, {} ) ).to.deep.equal( [] );
 		} );
 
-		it( 'should append a single teams when received', () => {
+		test( 'should append a single teams when received', () => {
 			expect(
 				items(
 					{},
 					{
 						type: READER_TEAMS_RECEIVE,
 						payload: { teams: [ TEAM1 ] },
-					},
-				),
+					}
+				)
 			).to.deep.equal( [ TEAM1 ] );
 		} );
 
-		it( 'should append teams when received', () => {
+		test( 'should append teams when received', () => {
 			expect(
 				items(
 					{},
 					{
 						type: READER_TEAMS_RECEIVE,
 						payload: { teams: [ TEAM1, TEAM2 ] },
-					},
-				),
+					}
+				)
 			).to.deep.equal( [ TEAM1, TEAM2 ] );
 		} );
 
-		it( 'deserialize: should succeed with good data', () => {
+		test( 'should ignore errors', () => {
+			const initialState = deepfreeze( {} );
+			expect(
+				items( initialState, {
+					type: READER_TEAMS_RECEIVE,
+					payload: { some: 'error' },
+					error: true,
+				} )
+			).to.equal( initialState );
+		} );
+
+		test( 'deserialize: should succeed with good data', () => {
 			assert.deepEqual( validState, items( validState, { type: DESERIALIZE } ) );
 		} );
 
-		it( 'deserialize: should ignore bad data', () => {
+		test( 'deserialize: should ignore bad data', () => {
 			let state;
 			try {
 				state = items( invalidState, { type: DESERIALIZE } );
@@ -68,29 +81,29 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'isRequesting', () => {
-		it( 'requesting teams should set requesting to true', () => {
+		test( 'requesting teams should set requesting to true', () => {
 			expect(
 				isRequesting( false, {
 					type: READER_TEAMS_REQUEST,
-				} ),
+				} )
 			).to.equal( true );
 		} );
 
-		it( 'successful request should set requesting to false', () => {
+		test( 'successful request should set requesting to false', () => {
 			expect(
 				isRequesting( true, {
 					type: READER_TEAMS_RECEIVE,
 					teams: [ {}, {}, {} ],
-				} ),
+				} )
 			).to.equal( false );
 		} );
 
-		it( 'failed request should set requesting to false', () => {
+		test( 'failed request should set requesting to false', () => {
 			expect(
 				isRequesting( true, {
 					type: READER_TEAMS_RECEIVE,
 					error: new Error( 'test error' ),
-				} ),
+				} )
 			).to.equal( false );
 		} );
 	} );

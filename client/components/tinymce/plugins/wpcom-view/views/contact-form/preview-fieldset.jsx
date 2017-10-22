@@ -1,8 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React from 'react';
-import omit from 'lodash/omit';
+import { omit } from 'lodash';
 
 export default React.createClass( {
 	displayName: 'ContactFormViewPreviewFieldset',
@@ -13,5 +16,5 @@ export default React.createClass( {
 				{ this.props.children }
 			</fieldset>
 		);
-	}
+	},
 } );

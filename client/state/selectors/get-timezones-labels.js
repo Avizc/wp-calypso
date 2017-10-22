@@ -1,7 +1,10 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import get from 'lodash/get';
+
+import { get } from 'lodash';
 
 /**
  * Return an object of timezones.

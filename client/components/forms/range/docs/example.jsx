@@ -1,33 +1,31 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-var React = require( 'react' ),
-	PureRenderMixin = require( 'react-pure-render/mixin' );
+
+import React from 'react';
+import Gridicon from 'gridicons';
 
 /**
  * Internal dependencies
  */
-var FormRange = require( 'components/forms/range' );
-var Gridicon = require( 'gridicons' );
+import FormRange from '../';
 
-module.exports = React.createClass( {
-	displayName: 'Ranges',
+export default class extends React.PureComponent {
+	static displayName = 'Ranges';
 
-	mixins: [ PureRenderMixin ],
+	state = {
+		rangeValue: 24,
+	};
 
-	getInitialState: function() {
-		return {
-			rangeValue: 24
-		};
-	},
-
-	onChange: function( event ) {
+	onChange = event => {
 		this.setState( {
-			rangeValue: event.target.value
+			rangeValue: event.target.value,
 		} );
-	},
+	};
 
-	render: function() {
+	render() {
 		return (
 			<FormRange
 				minContent={ <Gridicon icon="minus-small" /> }
@@ -35,7 +33,8 @@ module.exports = React.createClass( {
 				max="100"
 				value={ this.state.rangeValue }
 				onChange={ this.onChange }
-				showValueLabel={ true } />
+				showValueLabel={ true }
+			/>
 		);
 	}
-} );
+}

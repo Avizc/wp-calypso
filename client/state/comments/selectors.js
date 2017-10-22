@@ -1,12 +1,29 @@
+/** @format */
 /***
  * External dependencies
  */
-import { filter, find, get, keyBy, last, first, map, size } from 'lodash';
+import {
+	filter,
+	find,
+	findLast,
+	flatMap,
+	get,
+	groupBy,
+	keyBy,
+	map,
+	mapValues,
+	partition,
+	pickBy,
+	size,
+	sortBy,
+} from 'lodash';
 
 /**
  * Internal dependencies
  */
 import createSelector from 'lib/create-selector';
+import { fetchStatusInitialState } from './reducer';
+import { getStateKey, deconstructStateKey } from './utils';
 
 /***
  * Gets comment items for post
@@ -18,12 +35,39 @@ import createSelector from 'lib/create-selector';
 export const getPostCommentItems = ( state, siteId, postId ) =>
 	get( state.comments.items, `${ siteId }-${ postId }` );
 
+export const getDateSortedPostComments = createSelector(
+	( state, siteId, postId ) => {
+		const comments = getPostCommentItems( state, siteId, postId );
+		return sortBy( comments, comment => new Date( comment.date ) );
+	},
+	state => [ state.comments.items ]
+);
+
+export const getCommentById = createSelector(
+	( { state, commentId, siteId } ) => {
+		if ( get( state, 'comments.errors', {} )[ `${ siteId }-${ commentId }` ] ) {
+			return state.comments.errors[ `${ siteId }-${ commentId }` ];
+		}
+
+		const commentsForSite = flatMap(
+			filter( state.comments && state.comments.items, ( comment, key ) => {
+				return deconstructStateKey( key ).siteId === siteId;
+			} )
+		);
+		return find( commentsForSite, comment => commentId === comment.ID );
+	},
+	( { state } ) => [
+		state.comments.items,
+		get( state.comments, 'items' ),
+		get( state.comments, 'errors' ),
+	]
+);
 /***
  * Get total number of comments on the server for a given post
  * @param {Object} state redux state
  * @param {Number} siteId site identification
  * @param {Number} postId site identification
- * @return {Number} total comments count on the server
+ * @return {Number} total comments count on the server. if not found, assume infinity
  */
 export const getPostTotalCommentsCount = ( state, siteId, postId ) =>
 	get( state.comments.totalCommentsCount, `${ siteId }-${ postId }` );
@@ -34,13 +78,14 @@ export const getPostTotalCommentsCount = ( state, siteId, postId ) =>
  * @param {Number} postId site identification
  * @return {Date} most recent comment date
  */
-export const getPostMostRecentCommentDate = createSelector( ( state, siteId, postId ) => {
+export const getPostNewestCommentDate = createSelector( ( state, siteId, postId ) => {
 	const items = getPostCommentItems( state, siteId, postId );
-	return items && first( items ) ? new Date( get( first( items ), 'date' ) ) : undefined;
-}, getPostCommentItems );
+	const firstContiguousComment = find( items, 'contiguous' );
+	return firstContiguousComment ? new Date( get( firstContiguousComment, 'date' ) ) : undefined;
+}, state => state.comments.items );
 
 /***
- * Get most old (earliest) comment date for a given post
+ * Get oldest comment date for a given post
  * @param {Object} state redux state
  * @param {Number} siteId site identification
  * @param {Number} postId site identification
@@ -48,8 +93,9 @@ export const getPostMostRecentCommentDate = createSelector( ( state, siteId, pos
  */
 export const getPostOldestCommentDate = createSelector( ( state, siteId, postId ) => {
 	const items = getPostCommentItems( state, siteId, postId );
-	return items && last( items ) ? new Date( get( last( items ), 'date' ) ) : undefined;
-}, getPostCommentItems );
+	const lastContiguousComment = findLast( items, 'contiguous' );
+	return lastContiguousComment ? new Date( get( lastContiguousComment, 'date' ) ) : undefined;
+}, state => state.comments.items );
 
 /***
  * Gets comment tree for a given post
@@ -67,38 +113,62 @@ export const getPostCommentsTree = createSelector(
 				? filter( allItems, item => item.isPlaceholder || item.status === status )
 				: allItems;
 
+		// separate out root comments from comments that have parents
+		const [ roots, children ] = partition( items, item => item.parent === false );
+
+		// group children by their parent ID
+		const childrenGroupedByParent = groupBy( children, 'parent.ID' );
+
+		// Generate a new map of parent ID to an array of chilren IDs
+		// Reverse the order to keep it in chrono order
+		const parentToChildIdMap = mapValues( childrenGroupedByParent, _children =>
+			map( _children, 'ID' ).reverse()
+		);
+
+		// convert all of the comments to comment nodes for our tree structure
+		const transformItemToNode = item => ( {
+			data: item,
+			children: parentToChildIdMap[ item.ID ] || [],
+		} );
+
+		const commentsByIdMap = keyBy( map( items, transformItemToNode ), 'data.ID' );
+
 		return {
-			...keyBy(
-				map( items, item => ( {
-					children: map( filter( items, { parent: { ID: item.ID } } ), 'ID' ).reverse(),
-					data: item,
-				} ) ),
-				'data.ID',
-			),
-			children: map( filter( items, { parent: false } ), 'ID' ).reverse(),
+			...commentsByIdMap,
+			children: map( roots, root => root.ID ).reverse(),
 		};
 	},
-	getPostCommentItems,
+	state => state.comments.items
 );
 
-/***
- * Whether we have more comments to fetch for a given post
- * @param {Object} state redux state
- * @param {Number} siteId site identification
- * @param {Number} postId site identification
- * @return {Boolean} do we have more comments to fetch
- */
-export const haveMoreCommentsToFetch = createSelector(
+export const getExpansionsForPost = ( state, siteId, postId ) =>
+	state.comments.expansions[ getStateKey( siteId, postId ) ];
+
+export const getHiddenCommentsForPost = createSelector(
 	( state, siteId, postId ) => {
-		const items = getPostCommentItems( state, siteId, postId );
-		const totalCommentsCount = getPostTotalCommentsCount( state, siteId, postId );
-		return items && totalCommentsCount ? size( items ) < totalCommentsCount : undefined;
+		const comments = keyBy( getPostCommentItems( state, siteId, postId ), 'ID' );
+		const expanded = getExpansionsForPost( state, siteId, postId );
+
+		return pickBy( comments, comment => ! get( expanded, comment.ID ) );
 	},
-	( state, siteId, postId ) => [
-		getPostCommentItems( state, siteId, postId ),
-		getPostTotalCommentsCount( state, siteId, postId ),
-	],
+	state => [ state.comments.items, state.comments.expansions ]
 );
+
+export const commentsFetchingStatus = ( state, siteId, postId, commentTotal = 0 ) => {
+	const fetchStatus = get(
+		state.comments.fetchStatus,
+		getStateKey( siteId, postId ),
+		fetchStatusInitialState
+	);
+	const hasMoreComments = commentTotal > size( getPostCommentItems( state, siteId, postId ) );
+
+	return {
+		haveEarlierCommentsToFetch: fetchStatus.before && hasMoreComments,
+		haveLaterCommentsToFetch: fetchStatus.after && hasMoreComments,
+		hasReceivedBefore: fetchStatus.hasReceivedBefore,
+		hasReceivedAfter: fetchStatus.hasReceivedAfter,
+	};
+};
 
 /***
  * Gets likes stats for the comment
@@ -117,4 +187,4 @@ export const getCommentLike = createSelector( ( state, siteId, postId, commentId
 	}
 	const { i_like, like_count } = comment;
 	return { i_like, like_count };
-}, getPostCommentItems );
+}, state => state.comments.items );

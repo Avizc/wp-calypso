@@ -1,28 +1,43 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes } from 'react';
+
+import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
+import page from 'page';
 
 /**
  * Internal dependencies
  */
+import { login } from 'lib/paths';
 import addQueryArgs from 'lib/route/add-query-args';
-import config from 'config';
 import EmptyContent from 'components/empty-content';
 import RedirectWhenLoggedIn from 'components/redirect-when-logged-in';
-import { goBackToWordPressDotCom } from 'state/login/magic-login/actions';
+import { hideMagicLoginRequestForm } from 'state/login/magic-login/actions';
 import { recordPageView } from 'state/analytics/actions';
 
-const lostPasswordURL = addQueryArgs( {
-	action: 'lostpassword',
-}, config( 'login_url' ) );
+const nativeLoginUrl = login( { isNative: true } );
+const lostPasswordURL = addQueryArgs(
+	{
+		action: 'lostpassword',
+	},
+	login()
+);
 
 class EmailedLoginLinkExpired extends React.Component {
 	static propTypes = {
 		recordPageView: PropTypes.func.isRequired,
 		translate: PropTypes.func.isRequired,
+	};
+
+	onClickTryAgainLink = event => {
+		event.preventDefault();
+		this.props.hideMagicLoginRequestForm();
+		page( nativeLoginUrl );
 	};
 
 	render() {
@@ -37,9 +52,9 @@ class EmailedLoginLinkExpired extends React.Component {
 					replaceCurrentLocation={ true }
 				/>
 				<EmptyContent
-					action={ translate( 'Back to WordPress.com' ) }
-					actionCallback={ goBackToWordPressDotCom }
-					actionURL="https://wordpress.com"
+					action={ translate( 'Try again' ) }
+					actionCallback={ this.onClickTryAgainLink }
+					actionURL={ nativeLoginUrl }
 					className="magic-login__link-expired"
 					illustration={ '/calypso/images/illustrations/illustration-404.svg' }
 					illustrationWidth={ 500 }
@@ -54,6 +69,7 @@ class EmailedLoginLinkExpired extends React.Component {
 }
 
 const mapDispatchToProps = {
+	hideMagicLoginRequestForm,
 	recordPageView,
 };
 

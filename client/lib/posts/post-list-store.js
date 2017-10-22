@@ -1,15 +1,12 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import debugModule from 'debug';
-import clone from 'lodash/clone';
-import assign from 'lodash/assign';
-import transform from 'lodash/transform';
-import difference from 'lodash/difference';
-import last from 'lodash/last';
-import maxBy from 'lodash/maxBy';
+import { assign, clone, difference, last, maxBy, some, transform } from 'lodash';
 import { EventEmitter } from 'events/';
-import some from 'lodash/some';
 
 /**
  * Internal dependencies
@@ -17,13 +14,12 @@ import some from 'lodash/some';
 import Dispatcher from 'dispatcher';
 import treeConvert from 'lib/tree-convert';
 import PostsStore from './posts-store';
-import PostListCacheStore,
-	{
-		getCacheKey,
-		getCanonicalList,
-		setCanonicalList,
-		deleteCanonicalList
-	} from './post-list-cache-store';
+import PostListCacheStore, {
+	getCacheKey,
+	getCanonicalList,
+	setCanonicalList,
+	deleteCanonicalList,
+} from './post-list-cache-store';
 
 /**
  * Module Variables
@@ -36,7 +32,9 @@ const _defaultQuery = {
 	order: 'DESC',
 	author: false,
 	search: false,
-	perPage: 20
+	category: false,
+	tag: false,
+	perPage: 20,
 };
 
 const debug = debugModule( 'calypso:posts-list' );
@@ -68,7 +66,7 @@ export function getRemovedPosts( currentList, newPosts ) {
 		return getRemovedPosts( currentList, newPosts.slice( 0, -1 ) );
 	}
 
-	const overlapList = currentList.slice( overlapBegin, ( overlapEnd + 1 ) );
+	const overlapList = currentList.slice( overlapBegin, overlapEnd + 1 );
 	return difference( overlapList, newPosts );
 }
 
@@ -127,11 +125,15 @@ export default function( id ) {
 	 * @return {object} The cleaned params object.
 	 */
 	function cleanParams( params ) {
-		return transform( params, function( result, value, key ) {
-			if ( value != null ) {
-				result[ key ] = value;
-			}
-		}, {} );
+		return transform(
+			params,
+			function( result, value, key ) {
+				if ( value != null ) {
+					result[ key ] = value;
+				}
+			},
+			{}
+		);
 	}
 
 	/**
@@ -324,7 +326,7 @@ export default function( id ) {
 			const dateNow = Date.now();
 
 			return some( _activeList.errors, function( error ) {
-				return ( dateNow - error.timestamp ) < ( recentTimeIntervalSeconds * 1000 );
+				return dateNow - error.timestamp < recentTimeIntervalSeconds * 1000;
 			} );
 		}
 
@@ -346,6 +348,14 @@ export default function( id ) {
 
 			if ( query.search ) {
 				params.search = query.search;
+			}
+
+			if ( query.category ) {
+				params.category = query.category;
+			}
+
+			if ( query.tag ) {
+				params.tag = query.tag;
 			}
 
 			if ( ! params.siteId ) {
@@ -370,6 +380,14 @@ export default function( id ) {
 
 			if ( query.search ) {
 				params.search = query.search;
+			}
+
+			if ( query.category ) {
+				params.category = query.category;
+			}
+
+			if ( query.tag ) {
+				params.tag = query.tag;
 			}
 
 			if ( ! params.siteId ) {
@@ -401,8 +419,10 @@ export default function( id ) {
 			const action = payload.action;
 
 			// If this action does not match this post-list-store.id return, but always evaluate RECEIVE_UPDATED_POST regardless
-			if ( ( action.postListStoreId && action.postListStoreId !== this.id ) &&
-					'RECEIVE_UPDATED_POST' !== action.type
+			if (
+				action.postListStoreId &&
+				action.postListStoreId !== this.id &&
+				'RECEIVE_UPDATED_POST' !== action.type
 			) {
 				return;
 			}
@@ -441,4 +461,4 @@ export default function( id ) {
 			}
 		}
 	}();
-};
+}

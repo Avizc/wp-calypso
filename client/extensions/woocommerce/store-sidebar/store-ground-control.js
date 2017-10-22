@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React from 'react';
+import PropTypes from 'prop-types';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -27,21 +31,15 @@ const StoreGroundControl = ( { site, translate } ) => {
 				<Gridicon icon="arrow-left" />
 			</Button>
 			<div className="store-sidebar__ground-control-site">
-				<Site
-					compact
-					site={ site }
-					indicator={ false }
-					homeLink
-					externalLink
-				/>
+				<Site compact site={ site } indicator={ false } homeLink externalLink />
 			</div>
 		</div>
 	);
 };
 
 StoreGroundControl.propTypes = {
-	site: React.PropTypes.shape( {
-		slug: React.PropTypes.string,
+	site: PropTypes.shape( {
+		slug: PropTypes.string,
 	} ),
 };
 

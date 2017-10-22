@@ -3,13 +3,15 @@
 	flex-direction: column;
 	padding-top: 5px;
 }
+
 .reader-feed-header__site-icon {
 	align-self: center;
 	padding-bottom: 20px;
 }
 
 .reader-feed-header__site-icon .site-icon.is-blank {
-	display: none;
+	height: 30px !important; // Prevents Settings from overlapping with Site Title
+	visibility: hidden;
 }
 
 .reader-feed-header .reader-feed-header__site-badge {
@@ -93,19 +95,12 @@
 	}
 
 	.reader-feed-header__follow-button .follow-button {
-		padding: 0;
 
 		@include breakpoint( ">960px" ) {
 			margin-left: 20px;
-			margin-right: 0;
-		}
-
-		.gridicon {
-			fill: $blue-medium;
 		}
 
 		.follow-button__label {
-			color: $blue-medium;
 
 			@include breakpoint( "<660px" ) {
 				display: inline-block;
@@ -113,17 +108,6 @@
 
 			@include breakpoint( "<480px" ) {
 				display: none;
-			}
-		}
-
-		&.is-following {
-
-			.gridicon {
-				fill: $alert-green;
-			}
-
-			.follow-button__label {
-				color: $alert-green;
 			}
 		}
 	}
@@ -220,7 +204,6 @@
 }
 
 .reader-feed-header__email-settings .reader-email-settings__button-label {
-	font-size: 14px;
 	display: inline;
 	position: relative;
 		top: -2px;

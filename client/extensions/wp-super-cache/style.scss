@@ -75,6 +75,10 @@
 	margin: 10px 0 0 24px;
 }
 
+.wp-super-cache__nested-page-types {
+	margin-left: 36px;
+}
+
 .wp-super-cache__directly-cached-files .form-text-input,
 .wp-super-cache__directly-cached-files .form-text-input-with-action {
 	width: 300px;
@@ -233,12 +237,20 @@
 	white-space: pre;
 }
 
-// Debug Tab
+// Plugins Tab
 
-.wp-super-cache__debug-fieldsets {
-	margin-left: 40px;
+.wp-super-cache__plugins-tab .form-setting-explanation {
+	margin-left: 36px;
+	margin-bottom: 5px;
 }
 
+// Debug Tab
+
+.wp-super-cache__debug-fieldsets,
 .wp-super-cache__debug-tab .form-fieldset .form-setting-explanation.is-indented {
 	margin-left: 36px;
+}
+
+.wp-super-cache__debug-log-button {
+	margin-top: 12px;
 }

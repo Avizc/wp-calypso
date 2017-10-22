@@ -1,29 +1,29 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import moment from 'moment';
-import {
-	find,
-	get,
-	includes,
-	invoke
-} from 'lodash';
+import { find, get, includes, invoke } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { isEnabled } from 'config';
-import {
-	isFreeJetpackPlan,
-	isJetpackPlan,
-	isMonthly
-} from 'lib/products-values';
+import { isFreeJetpackPlan, isJetpackPlan, isMonthly } from 'lib/products-values';
 import {
 	FEATURES_LIST,
 	PLANS_LIST,
 	PLAN_FREE,
+	PLAN_JETPACK_BUSINESS,
+	PLAN_JETPACK_BUSINESS_MONTHLY,
 	PLAN_JETPACK_FREE,
-	PLAN_PERSONAL
+	PLAN_JETPACK_PERSONAL,
+	PLAN_JETPACK_PERSONAL_MONTHLY,
+	PLAN_JETPACK_PREMIUM,
+	PLAN_JETPACK_PREMIUM_MONTHLY,
+	PLAN_PERSONAL,
 } from 'lib/plans/constants';
 
 /**
@@ -56,15 +56,23 @@ export function getFeatureTitle( feature ) {
 }
 
 export function canUpgradeToPlan( planKey, site ) {
-	const plan = get( site, [ 'plan', 'expired' ], false ) ? PLAN_FREE : get( site, [ 'plan', 'product_slug' ], PLAN_FREE );
+	// Which "free plan" should we use to test
+	const freePlan =
+		get( site, 'jetpack', false ) && ! get( site, [ 'options', 'is_automated_transfer' ], false )
+			? PLAN_JETPACK_FREE
+			: PLAN_FREE;
+	const plan = get( site, [ 'plan', 'expired' ], false )
+		? freePlan
+		: get( site, [ 'plan', 'product_slug' ], freePlan );
 	return get( getPlan( planKey ), 'availableFor', () => false )( plan );
 }
 
 export function getUpgradePlanSlugFromPath( path, site ) {
-	return find( Object.keys( PLANS_LIST ), planKey => (
-		( planKey === path || getPlanPath( planKey ) === path ) &&
-		canUpgradeToPlan( planKey, site )
-	) );
+	return find(
+		Object.keys( PLANS_LIST ),
+		planKey =>
+			( planKey === path || getPlanPath( planKey ) === path ) && canUpgradeToPlan( planKey, site )
+	);
 }
 
 export function getPlanPath( plan ) {
@@ -89,7 +97,11 @@ export function getDayOfTrial( plan ) {
 	const { subscribedDayMoment } = plan;
 
 	// we return the difference plus one day so that the first day is day 1 instead of day 0
-	return moment().startOf( 'day' ).diff( subscribedDayMoment, 'days' ) + 1;
+	return (
+		moment()
+			.startOf( 'day' )
+			.diff( subscribedDayMoment, 'days' ) + 1
+	);
 }
 
 export function getDaysUntilUserFacingExpiry( plan ) {
@@ -112,7 +124,13 @@ export function shouldFetchSitePlans( sitePlans, selectedSite ) {
 	return ! sitePlans.hasLoadedFromServer && ! sitePlans.isRequesting && selectedSite;
 }
 
-export function filterPlansBySiteAndProps( plans, site, hideFreePlan, intervalType, showJetpackFreePlan ) {
+export function filterPlansBySiteAndProps(
+	plans,
+	site,
+	hideFreePlan,
+	intervalType,
+	showJetpackFreePlan
+) {
 	const hasPersonalPlan = site && site.plan.product_slug === PLAN_PERSONAL;
 
 	return plans.filter( function( plan ) {
@@ -141,6 +159,66 @@ export function filterPlansBySiteAndProps( plans, site, hideFreePlan, intervalTy
 
 		return ! isJetpackPlan( plan );
 	} );
+}
+
+/**
+ * Returns the monthly slug which corresponds to the provided yearly slug or "" if the slug is
+ * not a recognized or cannot be converted.
+ *
+ * @param  {String} planSlug Slug to convert to monthly.
+ * @return {String}          Monthly version slug or "" if the slug could not be converted.
+ */
+export function getMonthlyPlanByYearly( planSlug ) {
+	switch ( planSlug ) {
+		case PLAN_JETPACK_PREMIUM:
+			return PLAN_JETPACK_PREMIUM_MONTHLY;
+		case PLAN_JETPACK_BUSINESS:
+			return PLAN_JETPACK_BUSINESS_MONTHLY;
+		case PLAN_JETPACK_PERSONAL:
+			return PLAN_JETPACK_PERSONAL_MONTHLY;
+		default:
+			return '';
+	}
+}
+
+/**
+ * Returns the yearly slug which corresponds to the provided monthly slug or "" if the slug is
+ * not a recognized or cannot be converted.
+ *
+ * @param  {String} planSlug Slug to convert to yearly.
+ * @return {String}          Yearly version slug or "" if the slug could not be converted.
+ */
+export function getYearlyPlanByMonthly( planSlug ) {
+	switch ( planSlug ) {
+		case PLAN_JETPACK_PREMIUM_MONTHLY:
+			return PLAN_JETPACK_PREMIUM;
+		case PLAN_JETPACK_BUSINESS_MONTHLY:
+			return PLAN_JETPACK_BUSINESS;
+		case PLAN_JETPACK_PERSONAL_MONTHLY:
+			return PLAN_JETPACK_PERSONAL;
+		default:
+			return '';
+	}
+}
+
+/**
+ * Returns true if plan "types" match regardless of their interval.
+ *
+ * For example (fake plans):
+ *     planLevelsMatch( PRO_YEARLY, PRO_YEARLY ) => true
+ *     planLevelsMatch( PRO_YEARLY, PRO_MONTHLY ) => true
+ *     planLevelsMatch( PRO_YEARLY, PERSONAL_YEARLY ) => false
+ *
+ * @param  {String}  planSlugA One of the plan slugs to compare
+ * @param  {String}  planSlugB One of the plan slugs to compare
+ * @return {Boolean}           Whether the plan "types" match regardless of interval
+ */
+export function planLevelsMatch( planSlugA, planSlugB ) {
+	return (
+		planSlugA === planSlugB ||
+		getMonthlyPlanByYearly( planSlugA ) === planSlugB ||
+		planSlugA === getMonthlyPlanByYearly( planSlugB )
+	);
 }
 
 export const isPlanFeaturesEnabled = () => {

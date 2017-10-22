@@ -1,7 +1,9 @@
+/** @format */
 /**
  * External Dependencies
  */
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import escapeRegexp from 'escape-string-regexp';
@@ -56,7 +58,7 @@ class FollowingManageSubscriptions extends Component {
 
 			return (
 				`${ follow.URL }${ siteName }${ siteUrl }${ siteDescription }${ siteAuthor }`.search(
-					phraseRe,
+					phraseRe
 				) !== -1
 			);
 		} );
@@ -121,7 +123,7 @@ class FollowingManageSubscriptions extends Component {
 					</div>
 				</div>
 				<div className={ subsListClassNames }>
-					{ ! noSitesMatchQuery &&
+					{ ! noSitesMatchQuery && (
 						<InfiniteStream
 							items={ sortedFollows }
 							extraRenderItemProps={ {
@@ -132,14 +134,16 @@ class FollowingManageSubscriptions extends Component {
 							totalCount={ sortedFollows.length }
 							windowScrollerRef={ this.props.windowScrollerRef }
 							rowRenderer={ siteRowRenderer }
-						/> }
-					{ noSitesMatchQuery &&
+						/>
+					) }
+					{ noSitesMatchQuery && (
 						<span>
 							{ translate( 'Sorry, no followed sites match {{italic}}%s.{{/italic}}', {
 								components: { italic: <i /> },
 								args: query,
 							} ) }
-						</span> }
+						</span>
+					) }
 				</div>
 			</div>
 		);

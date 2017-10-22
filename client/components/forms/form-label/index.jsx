@@ -1,27 +1,40 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-var React = require( 'react' ),
-	classnames = require( 'classnames' ),
-	omit = require( 'lodash/omit' ),
-	i18n = require( 'i18n-calypso' );
 
-module.exports = React.createClass( {
+import React from 'react';
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import { localize } from 'i18n-calypso';
+import { isObject, omit } from 'lodash';
 
-	displayName: 'FormLabel',
+const renderRequiredBadge = translate => (
+	<small className="form-label__required">{ translate( 'Required' ) }</small>
+);
 
-	propTypes: {
-		required: React.PropTypes.bool,
-	},
+const addKeys = elements =>
+	elements.map( ( elem, idx ) => ( isObject( elem ) ? { ...elem, key: idx } : elem ) );
 
-	render: function() {
-		return (
-			<label { ...omit( this.props, 'className' ) } className={ classnames( this.props.className, 'form-label' ) } >
-				{ this.props.children }
-				{ this.props.required && (
-					<small className="form-label__required">{ i18n.translate( 'Required' ) }</small>
-				) }
-			</label>
-		);
+const FormLabel = ( { children, required, translate, className, ...extraProps } ) => {
+	children = React.Children.toArray( children ) || [];
+	if ( required ) {
+		children.push( renderRequiredBadge( translate ) );
 	}
-} );
+
+	return (
+		<label
+			{ ...omit( extraProps, 'moment', 'numberFormat' ) }
+			className={ classnames( className, 'form-label' ) }
+		>
+			{ children.length ? addKeys( children ) : null }
+		</label>
+	);
+};
+
+FormLabel.propTypes = {
+	required: PropTypes.bool,
+};
+
+export default localize( FormLabel );

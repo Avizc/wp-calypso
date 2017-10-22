@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes } from 'react';
+
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 /**
@@ -17,7 +21,11 @@ const StoreStatsList = ( { data, values } ) => {
 	const titles = (
 		<TableRow isHeader>
 			{ values.map( ( value, i ) => {
-				return <TableItem isHeader key={ i } isTitle={ 0 === i }>{ value.title }</TableItem>;
+				return (
+					<TableItem isHeader key={ i } isTitle={ 0 === i }>
+						{ value.title }
+					</TableItem>
+				);
 			} ) }
 		</TableRow>
 	);
@@ -41,10 +49,8 @@ StoreStatsList.propTypes = {
 	values: PropTypes.array.isRequired,
 };
 
-export default connect(
-	( state, { siteId, statType, query } ) => {
-		return {
-			data: getSiteStatsNormalizedData( state, siteId, statType, query ),
-		};
-	}
-)( StoreStatsList );
+export default connect( ( state, { siteId, statType, query } ) => {
+	return {
+		data: getSiteStatsNormalizedData( state, siteId, statType, query ),
+	};
+} )( StoreStatsList );

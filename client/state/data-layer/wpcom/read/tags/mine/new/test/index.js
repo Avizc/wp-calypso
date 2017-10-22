@@ -1,22 +1,23 @@
-/*
+/** @format */
+/**
  * External dependencies
  */
 import { expect } from 'chai';
-import sinon from 'sinon';
-import { find } from 'lodash';
 import freeze from 'deep-freeze';
+import { find } from 'lodash';
+import sinon from 'sinon';
 
 /**
  * Internal dependencies
  */
+import { requestFollowTag, receiveFollowTag, receiveError } from '../';
+import { NOTICE_CREATE } from 'state/action-types';
+import { http } from 'state/data-layer/wpcom-http/actions';
+import { fromApi } from 'state/data-layer/wpcom/read/tags/utils';
 import {
 	requestFollowTag as requestFollowAction,
 	receiveTags as receiveTagsAction,
 } from 'state/reader/tags/items/actions';
-import { requestFollowTag, receiveFollowTag, receiveError } from '../';
-import { http } from 'state/data-layer/wpcom-http/actions';
-import { fromApi } from 'state/data-layer/wpcom/read/tags/utils';
-import { NOTICE_CREATE } from 'state/action-types';
 
 export const successfulFollowResponse = freeze( {
 	subscribed: true,
@@ -48,7 +49,7 @@ const slug = 'chicken';
 
 describe( 'follow tag request', () => {
 	describe( '#requestFollow', () => {
-		it( 'should dispatch HTTP request to tag endpoint', () => {
+		test( 'should dispatch HTTP request to tag endpoint', () => {
 			const action = requestFollowAction( slug );
 			const dispatch = sinon.spy();
 
@@ -62,17 +63,17 @@ describe( 'follow tag request', () => {
 					path: `/read/tags/${ slug }/mine/new`,
 					onSuccess: action,
 					onFailure: action,
-				} ),
+				} )
 			);
 		} );
 	} );
 
 	describe( '#receiveFollowSuccess', () => {
-		it( 'should dispatch the followed tag with isFollowing=true', () => {
+		test( 'should dispatch the followed tag with isFollowing=true', () => {
 			const action = requestFollowAction( slug );
 			const dispatch = sinon.spy();
 
-			receiveFollowTag( { dispatch }, action, null, successfulFollowResponse );
+			receiveFollowTag( { dispatch }, action, successfulFollowResponse );
 
 			const followedTagId = successfulFollowResponse.added_tag;
 			const followedTag = find( successfulFollowResponse.tags, { ID: followedTagId } );
@@ -85,15 +86,15 @@ describe( 'follow tag request', () => {
 			expect( dispatch ).to.have.been.calledWith(
 				receiveTagsAction( {
 					payload: [ normalizedFollowedTag ],
-				} ),
+				} )
 			);
 		} );
 
-		it( 'if api reports error then create an error notice', () => {
+		test( 'if api reports error then create an error notice', () => {
 			const action = requestFollowAction( slug );
 			const dispatch = sinon.spy();
 
-			receiveFollowTag( { dispatch }, action, null, unsuccessfulResponse );
+			receiveFollowTag( { dispatch }, action, unsuccessfulResponse );
 			expect( dispatch ).to.have.been.calledWithMatch( {
 				type: NOTICE_CREATE,
 			} );
@@ -101,12 +102,12 @@ describe( 'follow tag request', () => {
 	} );
 
 	describe( '#receiveError', () => {
-		it( 'should dispatch an error notice', () => {
+		test( 'should dispatch an error notice', () => {
 			const action = requestFollowAction( slug );
 			const dispatch = sinon.spy();
 			const error = 'could not find tag';
 
-			receiveError( { dispatch }, action, null, error );
+			receiveError( { dispatch }, action, error );
 
 			expect( dispatch ).to.have.been.calledOnce;
 			expect( dispatch ).to.have.been.calledWithMatch( {

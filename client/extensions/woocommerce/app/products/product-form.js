@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 /**
@@ -34,16 +38,21 @@ export default class ProductForm extends Component {
 		const { className } = this.props;
 		return (
 			<div className={ classNames( 'products__form', 'is-placeholder', className ) }>
-				<div></div>
-				<div></div>
-				<div></div>
+				<div />
+				<div />
+				<div />
 			</div>
 		);
 	}
 
 	render() {
 		const { siteId, product, productCategories, variations } = this.props;
-		const { editProduct, editProductCategory, editProductVariation, editProductAttribute } = this.props;
+		const {
+			editProduct,
+			editProductCategory,
+			editProductVariation,
+			editProductAttribute,
+		} = this.props;
 		const type = product.type || 'simple';
 
 		if ( ! siteId ) {
@@ -52,11 +61,7 @@ export default class ProductForm extends Component {
 
 		return (
 			<div className={ classNames( 'products__form', this.props.className ) }>
-				<ProductFormDetailsCard
-					siteId={ siteId }
-					product={ product }
-					editProduct={ editProduct }
-				/>
+				<ProductFormDetailsCard siteId={ siteId } product={ product } editProduct={ editProduct } />
 				<ProductFormAdditionalDetailsCard
 					siteId={ siteId }
 					product={ product }
@@ -92,5 +97,4 @@ export default class ProductForm extends Component {
 			</div>
 		);
 	}
-
 }

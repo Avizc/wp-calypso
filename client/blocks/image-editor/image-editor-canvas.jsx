@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { Component, PropTypes } from 'react';
+
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactDom from 'react-dom';
 import { connect } from 'react-redux';
 import { noop, startsWith } from 'lodash';
@@ -16,50 +20,53 @@ import {
 	getImageEditorTransform,
 	getImageEditorFileInfo,
 	getImageEditorCrop,
-	isImageEditorImageLoaded
+	isImageEditorImageLoaded,
 } from 'state/ui/editor/image-editor/selectors';
 import {
 	setImageEditorCropBounds,
-	setImageEditorImageHasLoaded
+	setImageEditorImageHasLoaded,
 } from 'state/ui/editor/image-editor/actions';
+import { getImageEditorIsGreaterThanMinimumDimensions } from 'state/selectors';
 
-class ImageEditorCanvas extends Component {
+export class ImageEditorCanvas extends Component {
 	static propTypes = {
 		src: PropTypes.string,
 		mimeType: PropTypes.string,
 		transform: PropTypes.shape( {
 			degrees: PropTypes.number,
 			scaleX: PropTypes.number,
-			scaleY: PropTypes.number
+			scaleY: PropTypes.number,
 		} ),
 		crop: PropTypes.shape( {
 			topRatio: PropTypes.number,
 			leftRatio: PropTypes.number,
 			widthRatio: PropTypes.number,
-			heightRatio: PropTypes.number
+			heightRatio: PropTypes.number,
 		} ),
 		setImageEditorCropBounds: PropTypes.func,
 		setImageEditorImageHasLoaded: PropTypes.func,
 		onLoadError: PropTypes.func,
-		isImageLoaded: PropTypes.bool
+		isImageLoaded: PropTypes.bool,
+		showCrop: PropTypes.bool,
 	};
 
 	static defaultProps = {
 		transform: {
 			degrees: 0,
 			scaleX: 1,
-			scaleY: 1
+			scaleY: 1,
 		},
 		crop: {
 			cropTopRatio: 0,
 			cropLeftRatio: 0,
 			cropWidthRatio: 1,
-			cropHeightRatio: 1
+			cropHeightRatio: 1,
 		},
 		setImageEditorCropBounds: noop,
 		setImageEditorImageHasLoaded: noop,
 		onLoadError: noop,
-		isImageLoaded: false
+		isImageLoaded: false,
+		showCrop: true,
 	};
 
 	// throttle the frame rate of window.resize() to circa 30fps
@@ -109,7 +116,9 @@ class ImageEditorCanvas extends Component {
 				return;
 			}
 
-			const objectURL = window.URL.createObjectURL( new Blob( [ req.response ], { type: mimeType } ) );
+			const objectURL = window.URL.createObjectURL(
+				new Blob( [ req.response ], { type: mimeType } )
+			);
 			this.initImage( objectURL );
 		};
 
@@ -155,17 +164,9 @@ class ImageEditorCanvas extends Component {
 	}
 
 	toBlob( callback ) {
-		const {
-			leftRatio,
-			topRatio,
-			widthRatio,
-			heightRatio
-		} = this.props.crop;
+		const { leftRatio, topRatio, widthRatio, heightRatio } = this.props.crop;
 
-		const {
-			mimeType,
-			transform
-		} = this.props;
+		const { mimeType, transform } = this.props;
 
 		const canvas = ReactDom.findDOMNode( this.refs.canvas ),
 			context = canvas.getContext( '2d' ),
@@ -177,12 +178,7 @@ class ImageEditorCanvas extends Component {
 			croppedWidth = widthRatio * imageWidth,
 			croppedHeight = heightRatio * imageHeight;
 
-		const imageData = context.getImageData(
-			croppedLeft,
-			croppedTop,
-			croppedWidth,
-			croppedHeight
-		);
+		const imageData = context.getImageData( croppedLeft, croppedTop, croppedWidth, croppedHeight );
 
 		const newCanvas = document.createElement( 'canvas' );
 
@@ -237,14 +233,9 @@ class ImageEditorCanvas extends Component {
 
 		// if enough time has passed to call the next frame
 		// reset lastTimeStamp minus 1 frame in ms ( to adjust for frame rates other than 60fps )
-		this.lastTimestamp = now - ( elapsedTime % this.frameRateInterval );
+		this.lastTimestamp = now - elapsedTime % this.frameRateInterval;
 
-		const {
-			leftRatio,
-			topRatio,
-			widthRatio,
-			heightRatio
-		} = this.props.crop;
+		const { leftRatio, topRatio, widthRatio, heightRatio } = this.props.crop;
 
 		const canvas = ReactDom.findDOMNode( this.refs.canvas ),
 			canvasX = -50 * widthRatio - 100 * leftRatio,
@@ -267,26 +258,21 @@ class ImageEditorCanvas extends Component {
 	}
 
 	render() {
-		const {
-			leftRatio,
-			topRatio,
-			widthRatio,
-			heightRatio
-		} = this.props.crop;
+		const { leftRatio, topRatio, widthRatio, heightRatio } = this.props.crop;
+
+		const { isImageLoaded, showCrop } = this.props;
 
 		const canvasX = -50 * widthRatio - 100 * leftRatio;
 		const canvasY = -50 * heightRatio - 100 * topRatio;
 
 		const canvasStyle = {
 			transform: 'translate(' + canvasX + '%, ' + canvasY + '%)',
-			maxWidth: ( 85 / widthRatio ) + '%',
-			maxHeight: ( 85 / heightRatio ) + '%'
+			maxWidth: 85 / widthRatio + '%',
+			maxHeight: 85 / heightRatio + '%',
 		};
 
-		const { isImageLoaded } = this.props;
-
 		const canvasClasses = classNames( 'image-editor__canvas', {
-			'is-placeholder': ! isImageLoaded
+			'is-placeholder': ! isImageLoaded,
 		} );
 
 		return (
@@ -297,30 +283,32 @@ class ImageEditorCanvas extends Component {
 					onMouseDown={ this.preventDrag }
 					className={ canvasClasses }
 				/>
-				{ isImageLoaded && <ImageEditorCrop /> }
+				{ showCrop && <ImageEditorCrop /> }
 			</div>
 		);
 	}
 }
 
 export default connect(
-	( state ) => {
+	state => {
 		const transform = getImageEditorTransform( state );
 		const { src, mimeType } = getImageEditorFileInfo( state );
 		const crop = getImageEditorCrop( state );
 		const isImageLoaded = isImageEditorImageLoaded( state );
+		const isGreaterThanMinimumDimensions = getImageEditorIsGreaterThanMinimumDimensions( state );
 
 		return {
 			src,
 			mimeType,
 			transform,
 			crop,
-			isImageLoaded
+			isImageLoaded,
+			showCrop: !! ( isImageLoaded && isGreaterThanMinimumDimensions ),
 		};
 	},
 	{
 		setImageEditorCropBounds,
-		setImageEditorImageHasLoaded
+		setImageEditorImageHasLoaded,
 	},
 	null,
 	{ withRef: true }

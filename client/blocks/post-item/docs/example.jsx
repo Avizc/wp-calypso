@@ -1,6 +1,9 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React from 'react';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
@@ -20,29 +23,27 @@ function PostItemExample( { primarySiteId, globalId } ) {
 			{ primarySiteId && <QuerySites siteId={ primarySiteId } /> }
 
 			{ primarySiteId && (
-				<QueryPosts
-					siteId={ primarySiteId }
-					query={ { number: 1, type: 'any' } } />
+				<QueryPosts siteId={ primarySiteId } query={ { number: 1, type: 'any' } } />
 			) }
-			<p>
+			<div>
 				<strong>Standard</strong>
 				{ ! globalId && <em style={ { display: 'block' } }>No posts found</em> }
 				{ globalId && <PostItem globalId={ globalId } /> }
-			</p>
-			<p>
+			</div>
+			<div>
 				<strong>Placeholder</strong>
 				<PostItem />
-			</p>
+			</div>
 		</div>
 	);
 }
 
-const ConnectedPostItemExample = connect( ( state ) => {
+const ConnectedPostItemExample = connect( state => {
 	const primarySiteId = get( getCurrentUser( state ), 'primary_blog' );
 
 	return {
 		primarySiteId,
-		globalId: get( getSitePosts( state, primarySiteId ), [ 0, 'global_ID' ] )
+		globalId: get( getSitePosts( state, primarySiteId ), [ 0, 'global_ID' ] ),
 	};
 } )( PostItemExample );
 

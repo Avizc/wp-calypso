@@ -1,6 +1,9 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -14,10 +17,8 @@ export default localize( ( { translate } ) => {
 		<div className="product-purchase-features-list__item">
 			<PurchaseDetail
 				icon="comment"
-				title={ translate( 'Anti-Spam' ) }
-				description={ translate(
-					'Akismet filters out comment and other forms of spam, so you can focus on more important things.'
-				) }
+				title={ translate( 'Spam Filtering' ) }
+				description={ translate( 'Spam is being automatically filtered.' ) }
 			/>
 		</div>
 	);

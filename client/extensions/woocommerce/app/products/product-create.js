@@ -1,7 +1,11 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import React, { PropTypes } from 'react';
+
+import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { head } from 'lodash';
@@ -25,12 +29,14 @@ import {
 	clearProductCategoryEdits,
 	editProductCategory,
 } from 'woocommerce/state/ui/product-categories/actions';
+import { fetchSetupChoices } from 'woocommerce/state/sites/setup-choices/actions';
 import { getActionList } from 'woocommerce/state/action-list/selectors';
 import {
 	getCurrentlyEditingId,
 	getProductWithLocalEdits,
-	getProductEdits
+	getProductEdits,
 } from 'woocommerce/state/ui/products/selectors';
+import { getFinishedInitialSetup } from 'woocommerce/state/sites/setup-choices/selectors';
 import { getProductVariationsWithLocalEdits } from 'woocommerce/state/ui/products/variations/selectors';
 import { fetchProductCategories } from 'woocommerce/state/sites/product-categories/actions';
 import {
@@ -68,16 +74,18 @@ class ProductCreate extends React.Component {
 				this.props.editProduct( site.ID, null, {} );
 			}
 			this.props.fetchProductCategories( site.ID );
+			this.props.fetchSetupChoices( site.ID );
 		}
 	}
 
 	componentWillReceiveProps( newProps ) {
 		const { site } = this.props;
-		const newSiteId = newProps.site && newProps.site.ID || null;
-		const oldSiteId = site && site.ID || null;
+		const newSiteId = ( newProps.site && newProps.site.ID ) || null;
+		const oldSiteId = ( site && site.ID ) || null;
 		if ( oldSiteId !== newSiteId ) {
 			this.props.editProduct( newSiteId, null, {} );
 			this.props.fetchProductCategories( newSiteId );
+			this.props.fetchSetupChoices( newSiteId );
 		}
 	}
 
@@ -92,11 +100,30 @@ class ProductCreate extends React.Component {
 	}
 
 	onSave = () => {
-		const { site, product, translate } = this.props;
+		const { site, product, finishedInitialSetup, translate } = this.props;
 
-		const successAction = ( products ) => {
-			const newProduct = head( products );
-			page.redirect( getLink( '/store/products/:site', site ) );
+		const getSuccessNotice = newProduct => {
+			if ( ! finishedInitialSetup ) {
+				return successNotice(
+					translate( '%(product)s successfully created. {{productLink}}View{{/productLink}}', {
+						args: {
+							product: newProduct.name,
+						},
+						components: {
+							productLink: (
+								<a href={ newProduct.permalink } target="_blank" rel="noopener noreferrer" />
+							),
+						},
+					} ),
+					{
+						displayOnNextPage: true,
+						showDismiss: false,
+						button: translate( 'Back to dashboard' ),
+						href: getLink( '/store/:site', site ),
+					}
+				);
+			}
+
 			return successNotice(
 				translate( '%(product)s successfully created.', {
 					args: { product: product.name },
@@ -112,6 +139,12 @@ class ProductCreate extends React.Component {
 			);
 		};
 
+		const successAction = products => {
+			const newProduct = head( products );
+			page.redirect( getLink( '/store/products/:site', site ) );
+			return getSuccessNotice( newProduct );
+		};
+
 		const failureAction = errorNotice(
 			translate( 'There was a problem saving %(product)s. Please try again.', {
 				args: { product: product.name },
@@ -123,15 +156,22 @@ class ProductCreate extends React.Component {
 			this.props.editProduct( site.ID, product, { type: 'simple' } );
 		}
 		this.props.createProductActionList( successAction, failureAction );
-	}
+	};
 
 	isProductValid( product = this.props.product ) {
-		return product &&
-			product.name && product.name.length > 0;
+		return product && product.name && product.name.length > 0;
 	}
 
 	render() {
-		const { site, product, hasEdits, className, variations, productCategories, actionList } = this.props;
+		const {
+			site,
+			product,
+			hasEdits,
+			className,
+			variations,
+			productCategories,
+			actionList,
+		} = this.props;
 
 		const isValid = 'undefined' !== site && this.isProductValid();
 		const isBusy = Boolean( actionList ); // If there's an action list present, we're trying to save.
@@ -170,6 +210,7 @@ function mapStateToProps( state ) {
 	const variations = product && getProductVariationsWithLocalEdits( state, product.id );
 	const productCategories = getProductCategoriesWithLocalEdits( state );
 	const actionList = getActionList( state );
+	const finishedInitialSetup = getFinishedInitialSetup( state );
 
 	return {
 		site,
@@ -178,6 +219,7 @@ function mapStateToProps( state ) {
 		variations,
 		productCategories,
 		actionList,
+		finishedInitialSetup,
 	};
 }
 
@@ -191,6 +233,7 @@ function mapDispatchToProps( dispatch ) {
 			editProductAttribute,
 			editProductVariation,
 			fetchProductCategories,
+			fetchSetupChoices,
 			clearProductEdits,
 			clearProductCategoryEdits,
 			clearProductVariationEdits,

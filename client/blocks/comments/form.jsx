@@ -1,7 +1,9 @@
+/** @format */
 /**
  * External dependencies
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { noop } from 'lodash';
@@ -11,8 +13,8 @@ import { translate } from 'i18n-calypso';
  * Internal dependencies
  */
 import AutoDirection from 'components/auto-direction';
+import FormInputValidation from 'components/forms/form-input-validation';
 import Gravatar from 'components/gravatar';
-import Notice from 'components/notice';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { writeComment, deleteComment, replyComment } from 'state/comments/actions';
 import { recordAction, recordGaEvent, recordTrackForPost } from 'reader/stats';
@@ -42,7 +44,7 @@ class PostCommentForm extends React.Component {
 
 	componentDidMount() {
 		// If it's a reply, give the input focus if commentText exists ( can not exist if comments are closed )
-		if ( this.props.parentCommentID && this._textareaNode ) {
+		if ( this.props.parentCommentId && this._textareaNode ) {
 			this._textareaNode.focus();
 		}
 	}
@@ -86,7 +88,7 @@ class PostCommentForm extends React.Component {
 				this.props.deleteComment(
 					this.props.post.site_ID,
 					this.props.post.ID,
-					this.props.placeholderId,
+					this.props.placeholderId
 				);
 			}
 		}
@@ -129,8 +131,8 @@ class PostCommentForm extends React.Component {
 			this.props.deleteComment( post.site_ID, post.ID, this.props.placeholderId );
 		}
 
-		if ( this.props.parentCommentID ) {
-			this.props.replyComment( commentText, post.site_ID, post.ID, this.props.parentCommentID );
+		if ( this.props.parentCommentId ) {
+			this.props.replyComment( commentText, post.site_ID, post.ID, this.props.parentCommentId );
 		} else {
 			this.props.writeComment( commentText, post.site_ID, post.ID );
 		}
@@ -138,7 +140,7 @@ class PostCommentForm extends React.Component {
 		recordAction( 'posted_comment' );
 		recordGaEvent( 'Clicked Post Comment Button' );
 		recordTrackForPost( 'calypso_reader_article_commented_on', post, {
-			parent_post_id: this.props.parentCommentID ? this.props.parentCommentID : undefined,
+			parent_post_id: this.props.parentCommentId ? this.props.parentCommentId : undefined,
 		} );
 
 		this.resetCommentText();
@@ -160,7 +162,7 @@ class PostCommentForm extends React.Component {
 		switch ( error.error ) {
 			case 'comment_duplicate':
 				message = translate(
-					"Duplicate comment detected. It looks like you've already said that!",
+					"Duplicate comment detected. It looks like you've already said that!"
 				);
 				break;
 
@@ -169,14 +171,7 @@ class PostCommentForm extends React.Component {
 				break;
 		}
 
-		return (
-			<Notice
-				text={ message }
-				className="comments__notice"
-				showDismiss={ false }
-				status="is-error"
-			/>
-		);
+		return <FormInputValidation isError text={ message } />;
 	}
 
 	render() {
@@ -191,11 +186,7 @@ class PostCommentForm extends React.Component {
 		) {
 			// If we already have some comments, show a 'comments closed message'
 			if ( post.discussion.comment_count && post.discussion.comment_count > 0 ) {
-				return (
-					<p className="comments__form-closed">
-						{ translate( 'Comments are closed.' ) }
-					</p>
-				);
+				return <p className="comments__form-closed">{ translate( 'Comments closed.' ) }</p>;
 			}
 
 			return null;
@@ -220,13 +211,12 @@ class PostCommentForm extends React.Component {
 					<label>
 						<div className={ expandingAreaClasses }>
 							<pre>
-								<span>
-									{ this.state.commentText }
-								</span>
+								<span>{ this.state.commentText }</span>
 								<br />
 							</pre>
 							<AutoDirection>
 								<textarea
+									className="comments__form-textarea"
 									value={ this.state.commentText }
 									placeholder={ translate( 'Enter your comment here…' ) }
 									ref={ this.handleTextAreaNode }
@@ -244,7 +234,7 @@ class PostCommentForm extends React.Component {
 							disabled={ this.state.commentText.length === 0 }
 							onClick={ this.handleSubmit }
 						>
-							{ translate( 'Send' ) }
+							{ this.props.error ? translate( 'Resend' ) : translate( 'Send' ) }
 						</button>
 						{ this.renderError() }
 					</label>
@@ -255,18 +245,18 @@ class PostCommentForm extends React.Component {
 }
 
 PostCommentForm.propTypes = {
-	post: React.PropTypes.object.isRequired,
-	parentCommentID: React.PropTypes.number,
-	placeholderId: React.PropTypes.string, // can only be 'placeholder-123'
-	commentText: React.PropTypes.string,
-	onUpdateCommentText: React.PropTypes.func.isRequired,
-	onCommentSubmit: React.PropTypes.func,
+	post: PropTypes.object.isRequired,
+	parentCommentId: PropTypes.number,
+	placeholderId: PropTypes.string, // can only be 'placeholder-123'
+	commentText: PropTypes.string,
+	onUpdateCommentText: PropTypes.func.isRequired,
+	onCommentSubmit: PropTypes.func,
 
 	// connect()ed props:
-	currentUser: React.PropTypes.object.isRequired,
-	writeComment: React.PropTypes.func.isRequired,
-	deleteComment: React.PropTypes.func.isRequired,
-	replyComment: React.PropTypes.func.isRequired,
+	currentUser: PropTypes.object.isRequired,
+	writeComment: PropTypes.func.isRequired,
+	deleteComment: PropTypes.func.isRequired,
+	replyComment: PropTypes.func.isRequired,
 };
 
 PostCommentForm.defaultProps = {
@@ -277,5 +267,5 @@ export default connect(
 	state => ( {
 		currentUser: getCurrentUser( state ),
 	} ),
-	{ writeComment, deleteComment, replyComment },
+	{ writeComment, deleteComment, replyComment }
 )( PostCommentForm );

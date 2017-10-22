@@ -1,8 +1,12 @@
 /**
  * External dependencies
+ *
+ * @format
  */
-import { connect } from 'react-redux';
+
+import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 import { includes, isNumber } from 'lodash';
 import { localize } from 'i18n-calypso';
 
@@ -12,26 +16,275 @@ import { localize } from 'i18n-calypso';
 import DomainSuggestion from 'components/domains/domain-suggestion';
 import Gridicon from 'gridicons';
 import DomainSuggestionFlag from 'components/domains/domain-suggestion-flag';
-import { shouldBundleDomainWithPlan, getDomainPriceRule, hasDomainInCart } from 'lib/cart-values/cart-items';
+import {
+	shouldBundleDomainWithPlan,
+	getDomainPriceRule,
+	hasDomainInCart,
+} from 'lib/cart-values/cart-items';
 import { recordTracksEvent } from 'state/analytics/actions';
+
+const newTLDs = [
+	'.rocks',
+	'.site',
+	'.cloud',
+	'.club',
+	'.today',
+	'.tube',
+	'.xyz',
+	'.shop',
+	'.academy',
+	'.accountants',
+	'.agency',
+	'.apartments',
+	'.associates',
+	'.bargains',
+	'.bike',
+	'.bingo',
+	'.boutique',
+	'.builders',
+	'.business',
+	'.ca',
+	'.cafe',
+	'.camera',
+	'.camp',
+	'.capital',
+	'.cards',
+	'.care',
+	'.careers',
+	'.cash',
+	'.casino',
+	'.catering',
+	'.center',
+	'.chat',
+	'.cheap',
+	'.church',
+	'.city',
+	'.claims',
+	'.cleaning',
+	'.clinic',
+	'.clothing',
+	'.coach',
+	'.codes',
+	'.coffee',
+	'.community',
+	'.company',
+	'.computer',
+	'.condos',
+	'.construction',
+	'.contractors',
+	'.cool',
+	'.coupons',
+	'.credit',
+	'.creditcard',
+	'.cruises',
+	'.dating',
+	'.deals',
+	'.delivery',
+	'.dental',
+	'.diamonds',
+	'.digital',
+	'.direct',
+	'.directory',
+	'.discount',
+	'.doctor',
+	'.dog',
+	'.domains',
+	'.education',
+	'.email',
+	'.energy',
+	'.engineering',
+	'.enterprises',
+	'.equipment',
+	'.estate',
+	'.events',
+	'.exchange',
+	'.expert',
+	'.exposed',
+	'.express',
+	'.fail',
+	'.farm',
+	'.finance',
+	'.financial',
+	'.fish',
+	'.fitness',
+	'.flights',
+	'.florist',
+	'.football',
+	'.foundation',
+	'.fr',
+	'.fund',
+	'.furniture',
+	'.fyi',
+	'.gallery',
+	'.gifts',
+	'.glass',
+	'.gmbh',
+	'.gold',
+	'.graphics',
+	'.gratis',
+	'.gripe',
+	'.guide',
+	'.guru',
+	'.healthcare',
+	'.hockey',
+	'.holdings',
+	'.holiday',
+	'.house',
+	'.immo',
+	'.industries',
+	'.institute',
+	'.insure',
+	'.international',
+	'.investments',
+	'.jewelry',
+	'.kitchen',
+	'.land',
+	'.lease',
+	'.legal',
+	'.life',
+	'.lighting',
+	'.limited',
+	'.limo',
+	'.loans',
+	'.ltd',
+	'.maison',
+	'.management',
+	'.marketing',
+	'.mba',
+	'.media',
+	'.memorial',
+	'.partners',
+	'.parts',
+	'.photography',
+	'.photos',
+	'.pictures',
+	'.pizza',
+	'.place',
+	'.plumbing',
+	'.plus',
+	'.productions',
+	'.properties',
+	'.recipes',
+	'.reise',
+	'.reisen',
+	'.rentals',
+	'.repair',
+	'.report',
+	'.restaurant',
+	'.run',
+	'.salon',
+	'.sarl',
+	'.school',
+	'.schule',
+	'.services',
+	'.shoes',
+	'.shopping',
+	'.show',
+	'.singles',
+	'.soccer',
+	'.solar',
+	'.solutions',
+	'.supplies',
+	'.supply',
+	'.support',
+	'.surgery',
+	'.systems',
+	'.tax',
+	'.taxi',
+	'.team',
+	'.technology',
+	'.tennis',
+	'.theater',
+	'.tienda',
+	'.tips',
+	'.tires',
+	'.today',
+	'.tools',
+	'.tours',
+	'.town',
+	'.toys',
+	'.training',
+	'.university',
+	'.vacations',
+	'.ventures',
+	'.viajes',
+	'.villas',
+	'.vin',
+	'.vision',
+	'.voyage',
+	'.watch',
+	'.wine',
+	'.works',
+	'.world',
+	'.wtf',
+	'.zone',
+	'.fun',
+	'.host',
+	'.online',
+	'.press',
+	'.site',
+	'.space',
+	'.store',
+	'.tech',
+	'.website',
+	'.actor',
+	'.airforce',
+	'.army',
+	'.attorney',
+	'.auction',
+	'.band',
+	'.consulting',
+	'.dance',
+	'.degree',
+	'.democrat',
+	'.dentist',
+	'.family',
+	'.forsale',
+	'.futbol',
+	'.games',
+	'.gives',
+	'.haus',
+	'.immobilien',
+	'.kaufen',
+	'.lawyer',
+	'.engineer',
+	'.market',
+	'.moda',
+	'.mortgage',
+	'.navy',
+	'.news',
+	'.ninja',
+	'.pub',
+	'.rehab',
+	'.republican',
+	'.reviews',
+	'.rip',
+	'.rocks',
+	'.sale',
+	'.social',
+	'.software',
+	'.studio',
+	'.vet',
+	'.video',
+];
 
 class DomainRegistrationSuggestion extends React.Component {
 	static propTypes = {
-		isSignupStep: React.PropTypes.bool,
-		cart: React.PropTypes.object,
-		suggestion: React.PropTypes.shape( {
-			domain_name: React.PropTypes.string.isRequired,
-			product_slug: React.PropTypes.string,
-			cost: React.PropTypes.string
+		isSignupStep: PropTypes.bool,
+		cart: PropTypes.object,
+		suggestion: PropTypes.shape( {
+			domain_name: PropTypes.string.isRequired,
+			product_slug: PropTypes.string,
+			cost: PropTypes.string,
 		} ).isRequired,
-		onButtonClick: React.PropTypes.func.isRequired,
-		domainsWithPlansOnly: React.PropTypes.bool.isRequired,
-		selectedSite: React.PropTypes.object,
-		railcarId: React.PropTypes.string,
-		recordTracksEvent: React.PropTypes.func,
-		uiPosition: React.PropTypes.number,
-		fetchAlgo: React.PropTypes.string,
-		query: React.PropTypes.string
+		onButtonClick: PropTypes.func.isRequired,
+		domainsWithPlansOnly: PropTypes.bool.isRequired,
+		selectedSite: PropTypes.object,
+		railcarId: PropTypes.string,
+		recordTracksEvent: PropTypes.func,
+		uiPosition: PropTypes.number,
+		fetchAlgo: PropTypes.string,
+		query: PropTypes.string,
 	};
 
 	componentDidMount() {
@@ -48,7 +301,7 @@ class DomainRegistrationSuggestion extends React.Component {
 				ui_position: this.props.uiPosition,
 				fetch_algo: this.props.fetchAlgo,
 				rec_result: `${ this.props.suggestion.domain_name }${ resultSuffix }`,
-				fetch_query: this.props.query
+				fetch_query: this.props.query,
 			} );
 		}
 	}
@@ -57,7 +310,7 @@ class DomainRegistrationSuggestion extends React.Component {
 		if ( this.props.railcarId ) {
 			this.props.recordTracksEvent( 'calypso_traintracks_interact', {
 				railcar: this.props.railcarId,
-				action: 'domain_added_to_cart'
+				action: 'domain_added_to_cart',
 			} );
 		}
 
@@ -65,7 +318,14 @@ class DomainRegistrationSuggestion extends React.Component {
 	};
 
 	render() {
-		const { cart, domainsWithPlansOnly, isSignupStep, selectedSite, suggestion, translate } = this.props;
+		const {
+			cart,
+			domainsWithPlansOnly,
+			isSignupStep,
+			selectedSite,
+			suggestion,
+			translate,
+		} = this.props;
 		const domain = suggestion.domain_name;
 		const isAdded = hasDomainInCart( cart, domain );
 		const domainFlags = [];
@@ -73,9 +333,9 @@ class DomainRegistrationSuggestion extends React.Component {
 		let buttonClasses, buttonContent;
 
 		if ( domain ) {
-			const newTLDs = [ '.rocks', '.site', '.cloud', '.club', '.today', '.tube', '.ca', '.xyz', '.shop' ];
-			const testTLDs = [ '.de', '.fr' ];
-			// Grab everything after the first dot, so 'example.co.uk' will
+			const testTLDs = [ '.de', '.in' ];
+
+			// Grab everything from the first dot, so 'example.co.uk' will
 			// match '.co.uk' but not '.uk'
 			// This won't work if we add subdomains.
 			const tld = domain.substring( domain.indexOf( '.' ) );
@@ -125,21 +385,26 @@ class DomainRegistrationSuggestion extends React.Component {
 			buttonContent = <Gridicon icon="checkmark" />;
 		} else {
 			buttonClasses = 'add is-primary';
-			buttonContent = ! isSignupStep && shouldBundleDomainWithPlan( domainsWithPlansOnly, selectedSite, cart, suggestion )
-				? translate( 'Upgrade', { context: 'Domain mapping suggestion button with plan upgrade' } )
-				: translate( 'Select', { context: 'Domain mapping suggestion button' } );
+			buttonContent =
+				! isSignupStep &&
+				shouldBundleDomainWithPlan( domainsWithPlansOnly, selectedSite, cart, suggestion )
+					? translate( 'Upgrade', {
+							context: 'Domain mapping suggestion button with plan upgrade',
+						} )
+					: translate( 'Select', { context: 'Domain mapping suggestion button' } );
 		}
 
 		return (
 			<DomainSuggestion
-					priceRule={ getDomainPriceRule( domainsWithPlansOnly, selectedSite, cart, suggestion ) }
-					price={ suggestion.product_slug && suggestion.cost }
-					domain={ domain }
-					buttonClasses={ buttonClasses }
-					buttonContent={ buttonContent }
-					cart={ cart }
-					domainsWithPlansOnly={ domainsWithPlansOnly }
-					onButtonClick={ this.onButtonClick }>
+				priceRule={ getDomainPriceRule( domainsWithPlansOnly, selectedSite, cart, suggestion ) }
+				price={ suggestion.product_slug && suggestion.cost }
+				domain={ domain }
+				buttonClasses={ buttonClasses }
+				buttonContent={ buttonContent }
+				cart={ cart }
+				domainsWithPlansOnly={ domainsWithPlansOnly }
+				onButtonClick={ this.onButtonClick }
+			>
 				<h3>
 					{ domain }
 					{ domainFlags }
@@ -149,7 +414,4 @@ class DomainRegistrationSuggestion extends React.Component {
 	}
 }
 
-export default connect(
-	null,
-	{ recordTracksEvent }
-)( localize( DomainRegistrationSuggestion ) );
+export default connect( null, { recordTracksEvent } )( localize( DomainRegistrationSuggestion ) );

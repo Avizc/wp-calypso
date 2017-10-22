@@ -1,3 +1,5 @@
+/** @format */
+
 /**
  * External dependencies
  */
@@ -7,47 +9,44 @@ import { spy } from 'sinon';
 /**
  * Internal dependencies
  */
+import { receivePlans, receiveError, requestPlans } from '../';
 import { http } from 'state/data-layer/wpcom-http/actions';
 import {
 	plansReceiveAction,
 	plansRequestFailureAction,
 	plansRequestSuccessAction,
 } from 'state/plans/actions';
-import {
-	receivePlans,
-	receiveError,
-	requestPlans,
-} from '../';
-
 import { WPCOM_RESPONSE } from 'state/plans/test/fixture';
 
 describe( 'wpcom-api', () => {
 	describe( 'plans request', () => {
 		describe( '#requestPlans', () => {
-			it( 'should dispatch HTTP request to plans endpoint', () => {
+			test( 'should dispatch HTTP request to plans endpoint', () => {
 				const action = { type: 'DUMMY' };
 				const dispatch = spy();
 
 				requestPlans( { dispatch }, action );
 
 				expect( dispatch ).to.have.been.calledOnce;
-				expect( dispatch ).to.have.been.calledWith( http( {
-					apiVersion: '1.4',
-					method: 'GET',
-					path: '/plans',
-					onSuccess: action,
-					onFailure: action,
-				} ) );
+				expect( dispatch ).to.have.been.calledWith(
+					http( {
+						apiVersion: '1.4',
+						method: 'GET',
+						path: '/plans',
+						onSuccess: action,
+						onFailure: action,
+					} )
+				);
 			} );
 		} );
 
 		describe( '#receivePlans', () => {
-			it( 'should dispatch plan updates', () => {
+			test( 'should dispatch plan updates', () => {
 				const plans = WPCOM_RESPONSE;
 				const action = plansReceiveAction( plans );
 				const dispatch = spy();
 
-				receivePlans( { dispatch }, action, null, plans );
+				receivePlans( { dispatch }, action, plans );
 
 				expect( dispatch ).to.have.been.calledTwice;
 				expect( dispatch ).to.have.been.calledWith( plansRequestSuccessAction() );
@@ -56,12 +55,12 @@ describe( 'wpcom-api', () => {
 		} );
 
 		describe( '#receiveError', () => {
-			it( 'should dispatch error', () => {
+			test( 'should dispatch error', () => {
 				const error = 'could not find plans';
 				const action = plansRequestFailureAction( error );
 				const dispatch = spy();
 
-				receiveError( { dispatch }, action, null, error );
+				receiveError( { dispatch }, action, error );
 
 				expect( dispatch ).to.have.been.calledOnce;
 				expect( dispatch ).to.have.been.calledWith( plansRequestFailureAction( error ) );

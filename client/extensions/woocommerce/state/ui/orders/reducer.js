@@ -1,27 +1,21 @@
 /**
  * External dependencies
+ *
+ * @format
  */
+
 import { combineReducers, keyedReducer } from 'state/utils';
-import { WOOCOMMERCE_UI_ORDERS_SET_PAGE } from 'woocommerce/state/action-types';
 
 /**
- * Tracks the current page of orders displayed for the current site.
- *
- * @param  {Object} state  Current state
- * @param  {Object} action Action payload
- * @return {Object}        Updated state
+ * Internal dependencies
  */
-export function currentPage( state = 1, action ) {
-	switch ( action.type ) {
-		case WOOCOMMERCE_UI_ORDERS_SET_PAGE:
-			return action.page;
-		default:
-			return state;
-	}
-}
+import edits from './edits/reducer';
+import list from './list/reducer';
 
-const ordersReducer = combineReducers( {
-	currentPage
-} );
-
-export default keyedReducer( 'siteId', ordersReducer );
+export default keyedReducer(
+	'siteId',
+	combineReducers( {
+		edits,
+		list,
+	} )
+);
