@@ -1,23 +1,26 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { clone } from 'lodash';
+var clone = require( 'lodash/clone' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import emitter from 'lib/mixins/emitter';
-import PluginsDataActions from './actions';
+var Dispatcher = require( 'dispatcher' ),
+	emitter = require( 'lib/mixins/emitter' ),
+	PluginsDataActions = require( './actions' ),
+	localStore = require( 'store' ),
+	PluginsListsStore,
+	config = require( 'config' );
 
 var _shortLists = {},
 	_fullLists = {},
 	_fetching = {},
 	_currentSearchTerm = null,
-	_DEFAULT_FIRST_PAGE = 1;
+	_CACHEABLE_CATEGORIES = [ 'featured', 'popular' ],
+	_STORAGE_LIST_NAME = 'CachedPluginsLists',
+	_DEFAULT_FIRST_PAGE = 1,
+	_CACHE_TIME_TO_LIVE = 10 * 60 * 1000; // 10 minutes ;
 
 function appendPage( category, page, list ) {
 	_fullLists[ category ] = _fullLists[ category ] || [];
@@ -28,19 +31,55 @@ function update( category, page, list ) {
 	if ( ! page || page === _DEFAULT_FIRST_PAGE ) {
 		_shortLists[ category ] = clone( list.slice( 0, 6 ) );
 		_fullLists[ category ] = clone( list );
+		if ( _CACHEABLE_CATEGORIES.indexOf( category ) >= 0 ) {
+			storePluginsList( category, _shortLists[ category ] );
+		}
 	} else {
 		appendPage( category, page, list );
 	}
 }
 
-const PluginsListsStore = {
+function storePluginsList( category, pluginsList ) {
+	if ( config.isEnabled( 'manage/plugins/cache' ) ) {
+		let storedLists = localStore.get( _STORAGE_LIST_NAME ) || {};
+		storedLists[ category ] = {
+			list: pluginsList,
+			fetched: Date.now()
+		};
+		localStore.set( _STORAGE_LIST_NAME, storedLists );
+	}
+}
+
+function getPluginsListFromStorage( category ) {
+	if ( config.isEnabled( 'manage/plugins/cache' ) ) {
+		let storedLists = localStore.get( _STORAGE_LIST_NAME );
+		if ( storedLists && storedLists[ category ] ) {
+			return storedLists[ category ];
+		}
+	}
+}
+
+function isCachedListStillValid( storedList ) {
+	return ( Date.now() - storedList.fetched < _CACHE_TIME_TO_LIVE );
+}
+
+PluginsListsStore = {
 	getShortList: function( category ) {
+		var storedList;
 		if ( ! _shortLists[ category ] && ! _fetching[ category ] ) {
-			PluginsDataActions.fetchPluginsList( category, _DEFAULT_FIRST_PAGE );
+			if ( _CACHEABLE_CATEGORIES.indexOf( category ) >= 0 ) {
+				storedList = getPluginsListFromStorage( category );
+			}
+			if ( storedList && isCachedListStillValid( storedList ) ) {
+				_shortLists[ category ] = storedList.list;
+			} else {
+				PluginsDataActions.fetchPluginsList( category, _DEFAULT_FIRST_PAGE );
+			}
+			_shortLists[ category ] = storedList ? storedList.list : [];
 		}
 		return {
 			fetching: !! _fetching[ category ],
-			list: _shortLists[ category ] || [],
+			list: _shortLists[ category ] || []
 		};
 	},
 
@@ -50,7 +89,7 @@ const PluginsListsStore = {
 		}
 		return {
 			fetching: _fetching[ category ] !== false,
-			list: _fullLists[ category ] || [],
+			list: _fullLists[ category ] || []
 		};
 	},
 
@@ -69,13 +108,13 @@ const PluginsListsStore = {
 		}
 		return {
 			fetching: isSearching,
-			list: _fullLists.search || [],
+			list: _fullLists.search || []
 		};
 	},
 
 	emitChange: function() {
 		this.emit( 'change' );
-	},
+	}
 };
 
 PluginsListsStore.dispatchToken = Dispatcher.register( function( payload ) {
@@ -113,4 +152,4 @@ PluginsListsStore.dispatchToken = Dispatcher.register( function( payload ) {
 // Add the Store to the emitter so we can emit change events.
 emitter( PluginsListsStore );
 
-export default PluginsListsStore;
+module.exports = PluginsListsStore;

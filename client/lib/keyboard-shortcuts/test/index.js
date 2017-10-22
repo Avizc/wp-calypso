@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,10 +6,18 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import KeyboardShortcuts from 'lib/keyboard-shortcuts';
+import useFilesystemMocks from 'test/helpers/use-filesystem-mocks';
 
-describe( 'KeyboardShortcuts', () => {
-	test( 'should emit events to subscribers', () => {
+describe( 'KeyboardShortcuts', function() {
+	let KeyboardShortcuts;
+
+	useFilesystemMocks( __dirname );
+
+	before( () => {
+		KeyboardShortcuts = require( 'lib/keyboard-shortcuts' );
+	} );
+
+	it( 'should emit events to subscribers', function() {
 		var arbitraryData = 'hello, world?',
 			eventResult = '',
 			handleEvent = function( data ) {

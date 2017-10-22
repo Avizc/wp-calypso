@@ -1,23 +1,22 @@
-/** @format */
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import deepFreeze from 'deep-freeze';
-import { map } from 'lodash';
 import sinon from 'sinon';
+import { map } from 'lodash';
+import deepFreeze from 'deep-freeze';
 
 /**
  * Internal dependencies
  */
-import { requestTags, receiveTagsSuccess, receiveTagsError } from '../';
-import { NOTICE_CREATE } from 'state/action-types';
-import { http } from 'state/data-layer/wpcom-http/actions';
-import { fromApi } from 'state/data-layer/wpcom/read/tags/utils';
 import {
 	requestTags as requestTagsAction,
 	receiveTags as receiveTagsAction,
 } from 'state/reader/tags/items/actions';
+import { requestTags, receiveTagsSuccess, receiveTagsError } from '../';
+import { fromApi } from 'state/data-layer/wpcom/read/tags/utils';
+import { http } from 'state/data-layer/wpcom-http/actions';
+import { NOTICE_CREATE } from 'state/action-types';
 
 const successfulFollowedTagsResponse = deepFreeze( {
 	tags: [
@@ -53,7 +52,7 @@ const slug = 'chickens';
 describe( 'wpcom-api', () => {
 	describe( 'request tags', () => {
 		describe( '#requestTags', () => {
-			test( 'single tag: should dispatch HTTP request to tag endpoint', () => {
+			it( 'single tag: should dispatch HTTP request to tag endpoint', () => {
 				const action = requestTagsAction( slug );
 				const dispatch = sinon.spy();
 
@@ -67,11 +66,11 @@ describe( 'wpcom-api', () => {
 						path: `/read/tags/${ slug }`,
 						onSuccess: action,
 						onFailure: action,
-					} )
+					} ),
 				);
 			} );
 
-			test( 'multiple tags: should dispatch HTTP request to tags endpoint', () => {
+			it( 'multiple tags: should dispatch HTTP request to tags endpoint', () => {
 				const action = requestTagsAction();
 				const dispatch = sinon.spy();
 
@@ -85,32 +84,32 @@ describe( 'wpcom-api', () => {
 						path: '/read/tags',
 						onSuccess: action,
 						onFailure: action,
-					} )
+					} ),
 				);
 			} );
 		} );
 
 		describe( '#receiveTagsResponse', () => {
-			test( 'single tag: should normalize + dispatch', () => {
+			it( 'single tag: should normalize + dispatch', () => {
 				const action = requestTagsAction( slug );
 				const dispatch = sinon.spy();
 
-				receiveTagsSuccess( { dispatch }, action, successfulSingleTagResponse );
+				receiveTagsSuccess( { dispatch }, action, null, successfulSingleTagResponse );
 
 				expect( dispatch ).to.have.been.calledOnce;
 				expect( dispatch ).to.have.been.calledWith(
 					receiveTagsAction( {
 						payload: fromApi( successfulSingleTagResponse ),
 						resetFollowingData: false,
-					} )
+					} ),
 				);
 			} );
 
-			test( 'multiple tags: should dispatch the tags', () => {
+			it( 'multiple tags: should dispatch the tags', () => {
 				const action = requestTagsAction();
 				const dispatch = sinon.spy();
 
-				receiveTagsSuccess( { dispatch }, action, successfulFollowedTagsResponse );
+				receiveTagsSuccess( { dispatch }, action, null, successfulFollowedTagsResponse );
 
 				const transformedResponse = map( fromApi( successfulFollowedTagsResponse ), tag => ( {
 					...tag,
@@ -122,18 +121,18 @@ describe( 'wpcom-api', () => {
 					receiveTagsAction( {
 						payload: transformedResponse,
 						resetFollowingData: true,
-					} )
+					} ),
 				);
 			} );
 		} );
 
 		describe( '#receiveTagsError', () => {
-			test( 'should dispatch an error notice', () => {
+			it( 'should dispatch an error notice', () => {
 				const action = requestTagsAction( slug );
 				const dispatch = sinon.spy();
 				const error = 'could not find tag(s)';
 
-				receiveTagsError( { dispatch }, action, error );
+				receiveTagsError( { dispatch }, action, null, error );
 
 				expect( dispatch ).to.have.been.calledTwice;
 				expect( dispatch ).to.have.been.calledWithMatch( {

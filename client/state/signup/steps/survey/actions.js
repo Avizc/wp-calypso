@@ -1,15 +1,12 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { SIGNUP_STEPS_SURVEY_SET } from 'state/action-types';
 import {
 	composeAnalytics,
 	recordCustomAdWordsRemarketingEvent,
 	recordCustomFacebookConversionEvent,
-	withAnalytics,
+	withAnalytics
 } from 'state/analytics/actions';
 
 export function setSurvey( survey ) {
@@ -21,8 +18,10 @@ export function setSurvey( survey ) {
 			recordCustomAdWordsRemarketingEvent( attributes ),
 			recordCustomFacebookConversionEvent( 'VerticalSelectedEvent', attributes )
 		)
-	)( {
-		type: SIGNUP_STEPS_SURVEY_SET,
-		survey,
-	} );
+	)(
+		{
+			type: SIGNUP_STEPS_SURVEY_SET,
+			survey
+		}
+	);
 }

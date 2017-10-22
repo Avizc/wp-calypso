@@ -1,17 +1,20 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assign, filter, map, pick, sortBy, transform } from 'lodash';
-import sanitizeHtml from 'sanitize-html';
+var pick = require( 'lodash/pick' ),
+	assign = require( 'lodash/assign' ),
+	map = require( 'lodash/map' ),
+	filter = require( 'lodash/filter' ),
+	transform = require( 'lodash/transform' ),
+	sortBy = require( 'lodash/sortBy' ),
+	sanitizeHtml = require( 'sanitize-html' );
 
 /**
  * Internal dependencies
  */
-import { decodeEntities } from 'lib/formatting';
-import { parseHtml } from 'lib/formatting';
+var decodeEntities = require( 'lib/formatting' ).decodeEntities,
+	parseHtml = require( 'lib/formatting' ).parseHtml,
+	PluginUtils;
 
 /**
  * @param  {Object} site       Site Object
@@ -53,10 +56,9 @@ function filterNoticesBy( site, pluginSlug, log ) {
 	return false;
 }
 
-const PluginUtils = {
+PluginUtils = {
 	whiteListPluginData: function( plugin ) {
-		return pick(
-			plugin,
+		return pick( plugin,
 			'action_links',
 			'active',
 			'author',
@@ -92,12 +94,12 @@ const PluginUtils = {
 		if ( ! authorElementSource ) {
 			return '';
 		}
-		return decodeEntities( authorElementSource.replace( /(<([^>]+)>)/gi, '' ) );
+		return decodeEntities( authorElementSource.replace( /(<([^>]+)>)/ig, '' ) );
 	},
 
 	extractAuthorUrl: function( authorElementSource ) {
-		const match = /<a\s+(?:[^>]*?\s+)?href="([^"]*)"/.exec( authorElementSource );
-		return match && match[ 1 ] ? match[ 1 ] : '';
+		var match = /<a\s+(?:[^>]*?\s+)?href="([^"]*)"/.exec( authorElementSource );
+		return ( match && match[ 1 ] ? match[ 1 ] : '' );
 	},
 
 	extractScreenshots: function( screenshotsHtml ) {
@@ -114,7 +116,7 @@ const PluginUtils = {
 			if ( img[ 0 ] && img[ 0 ].src ) {
 				return {
 					url: img[ 0 ].src,
-					caption: captionP[ 0 ] ? captionP[ 0 ].textContent : null,
+					caption: captionP[ 0 ] ? captionP[ 0 ].textContent : null
 				};
 			}
 		} );
@@ -126,7 +128,7 @@ const PluginUtils = {
 
 	normalizeCompatibilityList: function( compatibilityList ) {
 		function splitInNumbers( version ) {
-			const splittedVersion = version.split( '.' ).map( function( versionComponent ) {
+			let splittedVersion = version.split( '.' ).map( function( versionComponent ) {
 				return Number.parseInt( versionComponent, 10 );
 			} );
 			while ( splittedVersion.length < 3 ) {
@@ -134,54 +136,12 @@ const PluginUtils = {
 			}
 			return splittedVersion;
 		}
-		const sortedCompatibility = sortBy( Object.keys( compatibilityList ).map( splitInNumbers ), [
-			0,
-			1,
-			2,
-		] );
+		let sortedCompatibility = sortBy( Object.keys( compatibilityList ).map( splitInNumbers ), [ 0, 1, 2 ] );
 		return sortedCompatibility.map( function( version ) {
 			if ( version.length && version[ version.length - 1 ] === 0 ) {
 				version.pop();
 			}
 			return version.join( '.' );
-		} );
-	},
-
-	sanitizeSectionContent: content => {
-		return sanitizeHtml( content, {
-			allowedTags: [
-				'h4',
-				'h5',
-				'h6',
-				'blockquote',
-				'code',
-				'b',
-				'i',
-				'em',
-				'strong',
-				'a',
-				'p',
-				'img',
-				'ul',
-				'ol',
-				'li',
-			],
-			allowedAttributes: { a: [ 'href', 'target', 'rel' ], img: [ 'src' ] },
-			allowedSchemes: [ 'http', 'https' ],
-			transformTags: {
-				h1: 'h3',
-				h2: 'h3',
-				a: ( tagName, attribs ) => {
-					return {
-						tagName: 'a',
-						attribs: {
-							...pick( attribs, [ 'href' ] ),
-							target: '_blank',
-							rel: 'external noopener noreferrer',
-						},
-					};
-				},
-			},
 		} );
 	},
 
@@ -202,21 +162,37 @@ const PluginUtils = {
 					returnData.author_url = plugin.author_url || PluginUtils.extractAuthorUrl( item );
 					break;
 				case 'sections':
-					const cleanItem = {};
-					for ( const sectionKey of Object.keys( item ) ) {
-						cleanItem[ sectionKey ] = PluginUtils.sanitizeSectionContent( item[ sectionKey ] );
+					let cleanItem = {};
+					for ( let sectionKey of Object.keys( item ) ) {
+						cleanItem[ sectionKey ] = sanitizeHtml( item[ sectionKey ], {
+							allowedTags: [ 'h4', 'h5', 'h6', 'blockquote', 'code', 'b', 'i', 'em', 'strong', 'a', 'p', 'img', 'ul', 'ol', 'li' ],
+							allowedAttributes: { a: [ 'href', 'target', 'rel' ], img: [ 'src' ] },
+							allowedSchemes: [ 'http', 'https' ],
+							transformTags: {
+								h1: 'h3',
+								h2: 'h3',
+								a: function( tagName, attribs ) {
+									return {
+										tagName: 'a',
+										attribs: {
+											...pick( attribs, [ 'href' ] ),
+											target: '_blank',
+											rel: 'external noopener noreferrer'
+										}
+									};
+								}
+							}
+						} );
 					}
 					returnData.sections = cleanItem;
-					returnData.screenshots = cleanItem.screenshots
-						? PluginUtils.extractScreenshots( cleanItem.screenshots )
-						: null;
+					returnData.screenshots = cleanItem.screenshots ? PluginUtils.extractScreenshots( cleanItem.screenshots ) : null;
 					break;
 				case 'num_ratings':
 				case 'rating':
 					returnData[ key ] = parseInt( item, 10 );
 					break;
 				case 'ratings':
-					for ( const prop in item ) {
+					for ( let prop in item ) {
 						item[ prop ] = parseInt( item[ prop ], 10 );
 					}
 					returnData[ key ] = item;
@@ -243,7 +219,9 @@ const PluginUtils = {
 		if ( ! pluginsList ) {
 			return [];
 		}
-		return map( pluginsList, pluginData => PluginUtils.normalizePluginData( pluginData ) );
+		return pluginsList.map( function( pluginData ) {
+			return PluginUtils.normalizePluginData( pluginData );
+		} );
 	},
 
 	/**
@@ -257,7 +235,7 @@ const PluginUtils = {
 	 */
 	filterNotices: function( logs, site, pluginSlug ) {
 		return filter( logs, filterNoticesBy.bind( this, site, pluginSlug ) );
-	},
+	}
 };
 
-export default PluginUtils;
+module.exports = PluginUtils;

@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:auth:store' );
+var debug = require( 'debug' )( 'calypso:auth:store' );
 
 /**
  * Internal dependencies
@@ -23,7 +18,7 @@ const initialState = {
 	requires2fa: false,
 	inProgress: false,
 	errorLevel: false,
-	errorMessage: false,
+	errorMessage: false
 };
 
 function handleAuthError( error, data ) {

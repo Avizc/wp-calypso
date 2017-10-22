@@ -1,34 +1,34 @@
-/** @format */
 /**
  * External dependencies
  */
+import { assert } from 'chai';
 import React from 'react';
 import ReactDomServer from 'react-dom/server';
+import mockery from 'mockery';
+import useMockery from 'test/helpers/use-mockery';
+import noop from 'lodash/noop';
 
 /**
  * Internal dependencies
  */
-import LayoutLoggedOut from 'layout/logged-out';
+import { createReduxStore } from 'state';
 
-jest.mock( 'lib/analytics', () => {} );
+describe( 'index', function() {
+	context( 'when trying to renderToString() LayoutLoggedOut ', function() {
+		useMockery();
 
-describe( 'index', () => {
-	describe( 'when trying to renderToString() LayoutLoggedOut ', () => {
-		test( "doesn't throw an exception", () => {
-			const LayoutLoggedOutFactory = React.createFactory( LayoutLoggedOut );
-			const props = {
-				store: {
-					dispatch: () => {},
-					getState: () => ( {
-						ui: {},
-					} ),
-					subscribe: () => {},
-				},
+		before( function() {
+			mockery.registerMock( 'lib/analytics', noop );
+
+			const LayoutLoggedOut = require( 'layout/logged-out' );
+			this.LayoutLoggedOutFactory = React.createFactory( LayoutLoggedOut );
+			this.props = {
+				store: createReduxStore(),
 			};
+		} );
 
-			expect(
-				ReactDomServer.renderToString.bind( ReactDomServer, LayoutLoggedOutFactory( props ) )
-			).not.toThrow();
+		it( "doesn't throw an exception", function() {
+			assert.doesNotThrow( ReactDomServer.renderToString.bind( ReactDomServer, this.LayoutLoggedOutFactory( this.props ) ) );
 		} );
 	} );
 } );

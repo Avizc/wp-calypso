@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,12 +6,16 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { selectSiteId } from '../actions';
-import { HELP_CONTACT_FORM_SITE_SELECT } from 'state/action-types';
+import {
+	HELP_CONTACT_FORM_SITE_SELECT
+} from 'state/action-types';
+import {
+	selectSiteId,
+} from '../actions';
 
 describe( 'actions', () => {
 	describe( '#selectSiteId()', () => {
-		test( 'should return an action object', () => {
+		it( 'should return an action object', () => {
 			const action = selectSiteId( 1 );
 
 			expect( action ).to.eql( {

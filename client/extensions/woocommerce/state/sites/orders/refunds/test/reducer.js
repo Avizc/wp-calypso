@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,22 +7,24 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import order from '../../test/fixtures/order';
-import { isSaving } from '../reducer';
+import {
+	isSaving,
+} from '../reducer';
 import {
 	WOOCOMMERCE_ORDER_REFUND_CREATE,
 	WOOCOMMERCE_ORDER_REFUND_CREATE_SUCCESS,
 	WOOCOMMERCE_ORDER_REFUND_CREATE_FAILURE,
 } from 'woocommerce/state/action-types';
+import order from '../../test/fixtures/order';
 
 describe( 'reducer', () => {
 	describe( 'isSaving', () => {
-		test( 'should have no change by default', () => {
+		it( 'should have no change by default', () => {
 			const newState = isSaving( undefined, {} );
 			expect( newState ).to.eql( {} );
 		} );
 
-		test( 'should store the currently refunding order', () => {
+		it( 'should store the currently refunding order', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REFUND_CREATE,
 				siteId: 123,
@@ -34,7 +34,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { 45: true } );
 		} );
 
-		test( 'should should show that the refund request has finished on success', () => {
+		it( 'should should show that the refund request has finished on success', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REFUND_CREATE_SUCCESS,
 				siteId: 123,
@@ -46,7 +46,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { 45: false } );
 		} );
 
-		test( 'should should show that the refund request has finished on failure', () => {
+		it( 'should should show that the refund request has finished on failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REFUND_CREATE_FAILURE,
 				siteId: 123,

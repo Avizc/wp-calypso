@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,29 +9,29 @@ import { expect } from 'chai';
 import { canCurrentUserManagePlugins } from '../';
 
 describe( 'canCurrentUserManagePlugins()', () => {
-	test( 'should return false if no capabilities information exist in state', () => {
+	it( 'should return false if no capabilities information exist in state', () => {
 		const state = {
 			currentUser: {
-				capabilities: {},
-			},
+				capabilities: {}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.false;
 	} );
 
-	test( 'should return false if one site capability exists without referring if the user can manage it or not', () => {
+	it( 'should return false if one site capability exists without referring if the user can manage it or not', () => {
 		const state = {
 			currentUser: {
 				capabilities: {
 					2916284: {
-						edit_pages: true,
-					},
-				},
-			},
+						edit_pages: true
+					}
+				}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.false;
 	} );
 
-	test( 'should return false if several sites capabilities exists without referring if the user can manage it or not', () => {
+	it( 'should return false if several sites capabilities exists without referring if the user can manage it or not', () => {
 		const state = {
 			currentUser: {
 				capabilities: {
@@ -43,14 +41,14 @@ describe( 'canCurrentUserManagePlugins()', () => {
 					2916285: {
 						edit_posts: false,
 					},
-					2916286: {},
-				},
-			},
+					2916286: {}
+				}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.false;
 	} );
 
-	test( 'should return false if sites capabilities explicitly tell the user can not manage', () => {
+	it( 'should return false if sites capabilities explicitly tell the user can not manage', () => {
 		const state = {
 			currentUser: {
 				capabilities: {
@@ -64,27 +62,27 @@ describe( 'canCurrentUserManagePlugins()', () => {
 					},
 					2916286: {
 						manage_options: false,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.false;
 	} );
 
-	test( 'should return true if just one site capability exists and the user can manage it', () => {
+	it( 'should return true if just one site capability exists and the user can manage it', () => {
 		const state = {
 			currentUser: {
 				capabilities: {
 					2916284: {
 						manage_options: true,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.true;
 	} );
 
-	test( 'should return true if many sites capabilities exist and the user can manage in all of them', () => {
+	it( 'should return true if many sites capabilities exist and the user can manage in all of them', () => {
 		const state = {
 			currentUser: {
 				capabilities: {
@@ -98,14 +96,14 @@ describe( 'canCurrentUserManagePlugins()', () => {
 					},
 					2916286: {
 						manage_options: true,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.true;
 	} );
 
-	test( 'should return true if many sites capabilities exist and the user can manage in just one', () => {
+	it( 'should return true if many sites capabilities exist and the user can manage in just one', () => {
 		const state = {
 			currentUser: {
 				capabilities: {
@@ -119,9 +117,9 @@ describe( 'canCurrentUserManagePlugins()', () => {
 					},
 					2916286: {
 						manage_options: false,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		expect( canCurrentUserManagePlugins( state ) ).be.true;
 	} );

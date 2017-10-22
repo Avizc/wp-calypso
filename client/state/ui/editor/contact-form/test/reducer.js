@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -16,29 +14,25 @@ import {
 	EDITOR_CONTACT_FORM_FIELD_ADD,
 	EDITOR_CONTACT_FORM_FIELD_REMOVE,
 	EDITOR_CONTACT_FORM_FIELD_UPDATE,
-	EDITOR_CONTACT_FORM_SETTINGS_UPDATE,
+	EDITOR_CONTACT_FORM_SETTINGS_UPDATE
 } from 'state/action-types';
 
-describe( "editor's contact form state reducer", () => {
+describe( 'editor\'s contact form state reducer', () => {
 	let reducer;
 
-	beforeAll( () => {
+	before( () => {
 		reducer = require( '../reducer' );
 	} );
 
-	test( 'should return the default contact form when neither state nor action is provided', () => {
+	it( 'should return the default contact form when neither state nor action is provided', () => {
 		const state = reducer( undefined, {} );
 
 		assert.deepEqual( state, CONTACT_FORM_DEFAULT );
-		assert.notStrictEqual(
-			state,
-			CONTACT_FORM_DEFAULT,
-			'returned state is strictly equal to CONTACT_FORM_DEFAULT.'
-		);
+		assert.notStrictEqual( state, CONTACT_FORM_DEFAULT, 'returned state is strictly equal to CONTACT_FORM_DEFAULT.' );
 	} );
 
 	describe( 'load form', () => {
-		test( 'should override the state with the provided contact form', () => {
+		it( 'should override the state with the provided contact form', () => {
 			const contactForm = deepFreeze( {
 				to: 'user@example.com',
 				subject: 'here be dragons',
@@ -46,42 +40,34 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 
 			const state = reducer( null, {
 				type: EDITOR_CONTACT_FORM_LOAD,
-				contactForm,
+				contactForm
 			} );
 
 			assert.deepEqual( state, contactForm );
-			assert.notStrictEqual(
-				state,
-				contactForm,
-				'the returned state and contactForm are strictly equal.'
-			);
-			assert.notStrictEqual(
-				state.fields,
-				contactForm.fields,
-				'fields on the returned state and contactForm are strictly equal.'
-			);
+			assert.notStrictEqual( state, contactForm, 'the returned state and contactForm are strictly equal.' );
+			assert.notStrictEqual( state.fields, contactForm.fields, 'fields on the returned state and contactForm are strictly equal.' );
 		} );
 	} );
 
 	describe( 'add default field', () => {
-		test( 'should add the default new field to the provided state', () => {
+		it( 'should add the default new field to the provided state', () => {
 			const contactForm = deepFreeze( {
 				fields: [
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
-				type: EDITOR_CONTACT_FORM_FIELD_ADD,
+				type: EDITOR_CONTACT_FORM_FIELD_ADD
 			} );
 
 			assert.deepEqual( state, {
@@ -90,123 +76,111 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Email' },
 					{ label: 'Website' },
 					{ label: 'Comment' },
-					{ label: 'Text', type: 'text', isExpanded: true },
-				],
+					{ label: 'Text', type: 'text', isExpanded: true }
+				]
 			} );
 		} );
 
-		test( 'should add the default new field to the inital state when no state is provided', () => {
+		it( 'should add the default new field to the inital state when no state is provided', () => {
 			const state = reducer( undefined, { type: EDITOR_CONTACT_FORM_FIELD_ADD } );
 
-			assert.deepEqual( state, {
-				fields: [
-					{ label: 'Name', type: 'name', required: true },
-					{ label: 'Email', type: 'email', required: true },
-					{ label: 'Website', type: 'url' },
-					{ label: 'Comment', type: 'textarea', required: true },
-					{ label: 'Text', type: 'text', isExpanded: true },
-				],
-			} );
-			assert.deepEqual( CONTACT_FORM_DEFAULT, {
-				fields: [
-					{ label: 'Name', type: 'name', required: true },
-					{ label: 'Email', type: 'email', required: true },
-					{ label: 'Website', type: 'url' },
-					{ label: 'Comment', type: 'textarea', required: true },
-				],
-			} );
+			assert.deepEqual( state, { fields: [
+				{ label: 'Name', type: 'name', required: true },
+				{ label: 'Email', type: 'email', required: true },
+				{ label: 'Website', type: 'url' },
+				{ label: 'Comment', type: 'textarea', required: true },
+				{ label: 'Text', type: 'text', isExpanded: true }
+			] } );
+			assert.deepEqual( CONTACT_FORM_DEFAULT, { fields: [
+				{ label: 'Name', type: 'name', required: true },
+				{ label: 'Email', type: 'email', required: true },
+				{ label: 'Website', type: 'url' },
+				{ label: 'Comment', type: 'textarea', required: true }
+			] } );
 		} );
 	} );
 
 	describe( 'remove field', () => {
-		test( 'should remove a field from the provided state by index', () => {
+		it( 'should remove a field from the provided state by index', () => {
 			const contactForm = deepFreeze( {
 				fields: [
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_REMOVE,
-				index: 2,
+				index: 2
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'Name' }, { label: 'Email' }, { label: 'Comment' } ],
+				fields: [
+					{ label: 'Name' },
+					{ label: 'Email' },
+					{ label: 'Comment' }
+				]
 			} );
 		} );
 
-		test( 'should not mutate the inital state when no state is provided', () => {
+		it( 'should not mutate the inital state when no state is provided', () => {
 			const state = reducer( undefined, {
 				type: EDITOR_CONTACT_FORM_FIELD_REMOVE,
-				index: 2,
+				index: 2
 			} );
 
 			assert.deepEqual( state, {
 				fields: [
 					{ label: 'Name', type: 'name', required: true },
 					{ label: 'Email', type: 'email', required: true },
-					{ label: 'Comment', type: 'textarea', required: true },
-				],
+					{ label: 'Comment', type: 'textarea', required: true }
+				]
 			} );
-			assert.deepEqual(
-				CONTACT_FORM_DEFAULT,
-				{
-					fields: [
-						{ label: 'Name', type: CONTACT_FORM_FIELD_TYPES.name, required: true },
-						{ label: 'Email', type: CONTACT_FORM_FIELD_TYPES.email, required: true },
-						{ label: 'Website', type: CONTACT_FORM_FIELD_TYPES.website },
-						{ label: 'Comment', type: CONTACT_FORM_FIELD_TYPES.textarea, required: true },
-					],
-				},
-				'contact form default values were mutated.'
-			);
+			assert.deepEqual( CONTACT_FORM_DEFAULT, {
+				fields: [
+					{ label: 'Name', type: CONTACT_FORM_FIELD_TYPES.name, required: true },
+					{ label: 'Email', type: CONTACT_FORM_FIELD_TYPES.email, required: true },
+					{ label: 'Website', type: CONTACT_FORM_FIELD_TYPES.website },
+					{ label: 'Comment', type: CONTACT_FORM_FIELD_TYPES.textarea, required: true }
+				]
+			}, 'contact form default values were mutated.' );
 		} );
 	} );
 
 	describe( 'reset global state', () => {
-		test( "should add the default new field to the state's fields list", () => {
-			const state = reducer(
-				{
-					fields: [ { label: 'Name' }, { label: 'Email' } ],
-				},
-				{
-					type: EDITOR_CONTACT_FORM_CLEAR,
-				}
-			);
+		it( 'should add the default new field to the state\'s fields list', () => {
+			const state = reducer( {
+				fields: [
+					{ label: 'Name' },
+					{ label: 'Email' }
+				]
+			}, {
+				type: EDITOR_CONTACT_FORM_CLEAR
+			} );
 
 			assert.deepEqual( state, CONTACT_FORM_DEFAULT );
-			assert.notStrictEqual(
-				state,
-				CONTACT_FORM_DEFAULT,
-				'the returned state and the default contact form are strictly equal.'
-			);
-			assert.notStrictEqual(
-				state.fields,
-				CONTACT_FORM_DEFAULT.fields,
-				'the fields on the returned state and the default contact form are strictly equal.'
-			);
+			assert.notStrictEqual( state, CONTACT_FORM_DEFAULT, 'the returned state and the default contact form are strictly equal.' );
+			assert.notStrictEqual( state.fields, CONTACT_FORM_DEFAULT.fields, 'the fields on the returned state and the default contact form are strictly equal.' );
 		} );
 	} );
 
 	describe( 'update field', () => {
-		test( 'should update a field by index', () => {
+		it( 'should update a field by index', () => {
 			const contactForm = deepFreeze( {
 				fields: [
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 2,
-				field: { label: 'Web Address', type: 'url', required: true },
+				field: { label: 'Web Address', type: 'url', required: true }
 			} );
 
 			assert.deepEqual( state, {
@@ -214,144 +188,174 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Web Address', type: 'url', required: true },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 		} );
 
-		test( 'should update field options', () => {
+		it( 'should update field options', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'Drop Down List', type: 'radio', options: 'option one,option two' } ],
+				fields: [
+					{ label: 'Drop Down List', type: 'radio', options: 'option one,option two' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: { options: 'Option One,Option Two,Option Three' },
+				field: { options: 'Option One,Option Two,Option Three' }
 			} );
 
 			assert.deepEqual( state, {
 				fields: [
-					{ label: 'Drop Down List', type: 'radio', options: 'Option One,Option Two,Option Three' },
-				],
+					{ label: 'Drop Down List', type: 'radio', options: 'Option One,Option Two,Option Three' }
+				]
 			} );
 		} );
 
-		test( 'should remove the field options when chaning from radio', () => {
+		it( 'should remove the field options when chaning from radio', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'Drop Down List', type: 'radio', options: 'option1,option2,option3' } ],
+				fields: [
+					{ label: 'Drop Down List', type: 'radio', options: 'option1,option2,option3' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { type: 'text' } ),
+				field: deepFreeze( { type: 'text' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'Drop Down List', type: 'text' } ],
+				fields: [
+					{ label: 'Drop Down List', type: 'text' }
+				]
 			} );
 		} );
 
-		test( 'should remove the field options when chaning from drop down', () => {
+		it( 'should remove the field options when chaning from drop down', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'Drop Down List', type: 'select', options: 'option1,option2,option3' } ],
+				fields: [
+					{ label: 'Drop Down List', type: 'select', options: 'option1,option2,option3' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { type: 'text' } ),
+				field: deepFreeze( { type: 'text' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'Drop Down List', type: 'text' } ],
+				fields: [
+					{ label: 'Drop Down List', type: 'text' }
+				]
 			} );
 		} );
 
-		test( 'should add default options when changing to radio', () => {
+		it( 'should add default options when changing to radio', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'Name', type: 'text' } ],
+				fields: [
+					{ label: 'Name', type: 'text' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { type: 'radio' } ),
+				field: deepFreeze( { type: 'radio' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'Name', type: 'radio', options: 'Option One,Option Two' } ],
+				fields: [
+					{ label: 'Name', type: 'radio', options: 'Option One,Option Two' }
+				]
 			} );
 		} );
 
-		test( 'should add default options when changing to drop down', () => {
+		it( 'should add default options when changing to drop down', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'Name', type: 'text' } ],
+				fields: [
+					{ label: 'Name', type: 'text' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { type: 'select' } ),
+				field: deepFreeze( { type: 'select' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'Name', type: 'select', options: 'Option One,Option Two' } ],
+				fields: [
+					{ label: 'Name', type: 'select', options: 'Option One,Option Two' }
+				]
 			} );
 		} );
 
-		test( 'should preserve options when changing between radio and drop down', () => {
+		it( 'should preserve options when changing between radio and drop down', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'List', type: 'select', options: 'option1,option2' } ],
+				fields: [
+					{ label: 'List', type: 'select', options: 'option1,option2' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { type: 'radio' } ),
+				field: deepFreeze( { type: 'radio' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'List', type: 'radio', options: 'option1,option2' } ],
+				fields: [
+					{ label: 'List', type: 'radio', options: 'option1,option2' }
+				]
 			} );
 		} );
 
-		test( 'should allow empty options for radio buttons', () => {
+		it( 'should allow empty options for radio buttons', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'List', type: 'radio', options: 'option1,option2' } ],
+				fields: [
+					{ label: 'List', type: 'radio', options: 'option1,option2' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { options: '' } ),
+				field: deepFreeze( { options: '' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'List', type: 'radio', options: '' } ],
+				fields: [
+					{ label: 'List', type: 'radio', options: '' }
+				]
 			} );
 		} );
 
-		test( 'should allow empty options for drop down lists', () => {
+		it( 'should allow empty options for drop down lists', () => {
 			const contactForm = deepFreeze( {
-				fields: [ { label: 'List', type: 'select', options: 'option1,option2' } ],
+				fields: [
+					{ label: 'List', type: 'select', options: 'option1,option2' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_FIELD_UPDATE,
 				index: 0,
-				field: deepFreeze( { options: '' } ),
+				field: deepFreeze( { options: '' } )
 			} );
 
 			assert.deepEqual( state, {
-				fields: [ { label: 'List', type: 'select', options: '' } ],
+				fields: [
+					{ label: 'List', type: 'select', options: '' }
+				]
 			} );
 		} );
 	} );
 
 	describe( 'update settings', () => {
-		test( 'should update the form destination address', () => {
+		it( 'should update the form destination address', () => {
 			const contactForm = deepFreeze( {
 				to: 'user@example.com',
 				subject: 'here be dragons',
@@ -359,13 +363,13 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_SETTINGS_UPDATE,
-				settings: { to: 'someone@example.com' },
+				settings: { to: 'someone@example.com' }
 			} );
 
 			assert.deepEqual( state, {
@@ -375,12 +379,12 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 		} );
 
-		test( 'should update the form subject line', () => {
+		it( 'should update the form subject line', () => {
 			const contactForm = deepFreeze( {
 				to: 'user@example.com',
 				subject: 'here be dragons',
@@ -388,13 +392,13 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 
 			const state = reducer( contactForm, {
 				type: EDITOR_CONTACT_FORM_SETTINGS_UPDATE,
-				settings: { subject: 'to boldly go' },
+				settings: { subject: 'to boldly go' }
 			} );
 
 			assert.deepEqual( state, {
@@ -404,8 +408,8 @@ describe( "editor's contact form state reducer", () => {
 					{ label: 'Name' },
 					{ label: 'Email' },
 					{ label: 'Website' },
-					{ label: 'Comment' },
-				],
+					{ label: 'Comment' }
+				]
 			} );
 		} );
 	} );

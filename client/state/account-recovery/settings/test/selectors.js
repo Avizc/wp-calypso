@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -19,14 +17,21 @@ import {
 	isAccountRecoveryEmailActionInProgress,
 	isAccountRecoveryPhoneActionInProgress,
 	isValidatingAccountRecoveryPhone,
+
 	hasSentAccountRecoveryEmailValidation,
 	hasSentAccountRecoveryPhoneValidation,
+
 	shouldPromptAccountRecoveryEmailValidationNotice,
 	shouldPromptAccountRecoveryPhoneValidationNotice,
+
 	getAccountRecoveryEmail,
 	getAccountRecoveryPhone,
 } from '../selectors';
-import { dummyNewPhone, dummyNewEmail } from './test-data';
+
+import {
+	dummyNewPhone,
+	dummyNewEmail,
+} from './test-data';
 
 describe( '#account-recovery/settings/selectors', () => {
 	const stateBeforeFetching = {
@@ -63,51 +68,51 @@ describe( '#account-recovery/settings/selectors', () => {
 	};
 
 	describe( '#isAccountRecoverySettingsReady', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isAccountRecoverySettingsReady( stateBeforeFetching ) );
 		} );
 
-		test( 'should return true if exists', () => {
+		it( 'should return true if exists', () => {
 			assert.isTrue( isAccountRecoverySettingsReady( stateAfterFetching ) );
 		} );
 	} );
 
 	describe( '#isAccountRecoveryEmailValidated:', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isAccountRecoveryEmailValidated( stateBeforeFetching ) );
 		} );
 
-		test( 'should return the emailValidated field', () => {
+		it( 'should return the emailValidated field', () => {
 			assert.isTrue( isAccountRecoveryEmailValidated( stateAfterFetching ) );
 		} );
 	} );
 
 	describe( '#isAccountRecoveryPhoneValidated:', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isAccountRecoveryPhoneValidated( stateBeforeFetching ) );
 		} );
 
-		test( 'should return the phoneValidated field', () => {
+		it( 'should return the phoneValidated field', () => {
 			assert.isTrue( isAccountRecoveryPhoneValidated( stateAfterFetching ) );
 		} );
 	} );
 
 	describe( '#getAccountRecoveryEmail:', () => {
-		test( 'should return a default value on absence', () => {
+		it( 'should return a default value on absence', () => {
 			assert.equal( getAccountRecoveryEmail( stateBeforeFetching ), '' );
 		} );
 
-		test( 'should return the email field', () => {
+		it( 'should return the email field', () => {
 			assert.equal( getAccountRecoveryEmail( stateAfterFetching ), dummyNewEmail );
 		} );
 	} );
 
 	describe( '#getAccountRecoveryPhone', () => {
-		test( 'should return a default value on absence', () => {
+		it( 'should return a default value on absence', () => {
 			assert.isNull( getAccountRecoveryPhone( stateBeforeFetching ) );
 		} );
 
-		test( 'should return the phone field', () => {
+		it( 'should return the phone field', () => {
 			assert.deepEqual( getAccountRecoveryPhone( stateAfterFetching ), {
 				countryCode: dummyNewPhone.country_code,
 				countryNumericCode: dummyNewPhone.country_numeric_code,
@@ -137,21 +142,21 @@ describe( '#account-recovery/settings/selectors', () => {
 	};
 
 	describe( '#isUpdatingAccountRecoveryPhone', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isUpdatingAccountRecoveryPhone( stateBeforeUpdating ) );
 		} );
 
-		test( 'should return isUpdating.phone', () => {
+		it( 'should return isUpdating.phone', () => {
 			assert.isTrue( isUpdatingAccountRecoveryPhone( stateDuringUpdating ) );
 		} );
 	} );
 
 	describe( '#isUpdatingAccountRecoveryEmail', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isUpdatingAccountRecoveryEmail( stateBeforeUpdating ) );
 		} );
 
-		test( 'should return isUpdating.email', () => {
+		it( 'should return isUpdating.email', () => {
 			assert.isTrue( isUpdatingAccountRecoveryEmail( stateDuringUpdating ) );
 		} );
 	} );
@@ -176,55 +181,55 @@ describe( '#account-recovery/settings/selectors', () => {
 	};
 
 	describe( '#isDeletingAccountRecoveryPhone', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isDeletingAccountRecoveryPhone( stateBeforeDeleting ) );
 		} );
 
-		test( 'should return isDeleting.phone', () => {
+		it( 'should return isDeleting.phone', () => {
 			assert.isTrue( isDeletingAccountRecoveryPhone( stateDuringDeleting ) );
 		} );
 	} );
 
 	describe( '#isDeletingAccountRecoveryEmail', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			assert.isFalse( isDeletingAccountRecoveryEmail( stateBeforeDeleting ) );
 		} );
 
-		test( 'should return isDeleting.email', () => {
+		it( 'should return isDeleting.email', () => {
 			assert.isTrue( isDeletingAccountRecoveryEmail( stateDuringDeleting ) );
 		} );
 	} );
 
 	describe( '#isAccountRecoveryEmailActionInProgress', () => {
-		test( 'should return true if the whole data is not in place yet', () => {
+		it( 'should return true if the whole data is not in place yet', () => {
 			assert.isTrue( isAccountRecoveryEmailActionInProgress( stateBeforeFetching ) );
 		} );
 
-		test( 'should return true if isUpdating.email is set', () => {
+		it( 'should return true if isUpdating.email is set', () => {
 			assert.isTrue( isAccountRecoveryEmailActionInProgress( stateDuringUpdating ) );
 		} );
 
-		test( 'should return true if isDeleting.email is set', () => {
+		it( 'should return true if isDeleting.email is set', () => {
 			assert.isTrue( isAccountRecoveryEmailActionInProgress( stateDuringDeleting ) );
 		} );
 	} );
 
 	describe( '#isAccountRecoveryPhoneActionInProgress', () => {
-		test( 'should return true if the whole data is not in place yet', () => {
+		it( 'should return true if the whole data is not in place yet', () => {
 			assert.isTrue( isAccountRecoveryPhoneActionInProgress( stateBeforeFetching ) );
 		} );
 
-		test( 'should return true if isUpdating.email is set', () => {
+		it( 'should return true if isUpdating.email is set', () => {
 			assert.isTrue( isAccountRecoveryPhoneActionInProgress( stateDuringUpdating ) );
 		} );
 
-		test( 'should return true if isDeleting.email is set', () => {
+		it( 'should return true if isDeleting.email is set', () => {
 			assert.isTrue( isAccountRecoveryPhoneActionInProgress( stateDuringDeleting ) );
 		} );
 	} );
 
 	describe( '#hasSentAccountRecoveryEmailValidation', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -236,7 +241,7 @@ describe( '#account-recovery/settings/selectors', () => {
 			assert.isFalse( hasSentAccountRecoveryEmailValidation( state ) );
 		} );
 
-		test( 'should return hasSentValidation.email', () => {
+		it( 'should return hasSentValidation.email', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -252,7 +257,7 @@ describe( '#account-recovery/settings/selectors', () => {
 	} );
 
 	describe( '#hasSentAccountRecoveryPhoneValidation', () => {
-		test( 'should return false on absence', () => {
+		it( 'should return false on absence', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -264,7 +269,7 @@ describe( '#account-recovery/settings/selectors', () => {
 			assert.isFalse( hasSentAccountRecoveryPhoneValidation( state ) );
 		} );
 
-		test( 'should return hasSentValidation.phone', () => {
+		it( 'should return hasSentValidation.phone', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -280,7 +285,7 @@ describe( '#account-recovery/settings/selectors', () => {
 	} );
 
 	describe( '#isValidatingAccountRecoveryPhone', () => {
-		test( 'should return isValidatingPhone', () => {
+		it( 'should return isValidatingPhone', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -294,7 +299,7 @@ describe( '#account-recovery/settings/selectors', () => {
 	} );
 
 	describe( '#shouldPromptAccountRecoveryEmailValidationNotice', () => {
-		test( 'should prompt if the email exists and is not validated.', () => {
+		it( 'should prompt if the email exists and is not validated.', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -313,21 +318,21 @@ describe( '#account-recovery/settings/selectors', () => {
 			assert.isTrue( shouldPromptAccountRecoveryEmailValidationNotice( state ) );
 		} );
 
-		test( 'should not prompt if the settings data is not ready.', () => {
+		it( 'should not prompt if the settings data is not ready.', () => {
 			assert.isFalse( shouldPromptAccountRecoveryEmailValidationNotice( stateBeforeFetching ) );
 		} );
 
-		test( 'should not prompt if isUpdating.email is set.', () => {
+		it( 'should not prompt if isUpdating.email is set.', () => {
 			assert.isFalse( shouldPromptAccountRecoveryEmailValidationNotice( stateDuringUpdating ) );
 		} );
 
-		test( 'should not prompt if isDeleting.email is set.', () => {
+		it( 'should not prompt if isDeleting.email is set.', () => {
 			assert.isFalse( shouldPromptAccountRecoveryEmailValidationNotice( stateDuringDeleting ) );
 		} );
 	} );
 
 	describe( '#shouldPromptAccountRecoveryPhoneValidationNotice', () => {
-		test( 'should prompt if the phone exists and is not validated.', () => {
+		it( 'should prompt if the phone exists and is not validated.', () => {
 			const state = {
 				accountRecovery: {
 					settings: {
@@ -351,15 +356,15 @@ describe( '#account-recovery/settings/selectors', () => {
 			assert.isTrue( shouldPromptAccountRecoveryPhoneValidationNotice( state ) );
 		} );
 
-		test( 'should not prompt if the settings data is not ready.', () => {
+		it( 'should not prompt if the settings data is not ready.', () => {
 			assert.isFalse( shouldPromptAccountRecoveryPhoneValidationNotice( stateBeforeFetching ) );
 		} );
 
-		test( 'should not prompt if isUpdating.phone is set.', () => {
+		it( 'should not prompt if isUpdating.phone is set.', () => {
 			assert.isFalse( shouldPromptAccountRecoveryPhoneValidationNotice( stateDuringUpdating ) );
 		} );
 
-		test( 'should not prompt if isDeleting.phone is set.', () => {
+		it( 'should not prompt if isDeleting.phone is set.', () => {
 			assert.isFalse( shouldPromptAccountRecoveryPhoneValidationNotice( stateDuringDeleting ) );
 		} );
 	} );

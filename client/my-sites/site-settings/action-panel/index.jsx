@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -12,7 +9,11 @@ import React from 'react';
 import Card from 'components/card';
 
 const ActionPanel = ( { children } ) => {
-	return <Card className="settings-action-panel">{ children }</Card>;
+	return (
+		<Card className="settings-action-panel">
+			{ children }
+		</Card>
+	);
 };
 
 export default ActionPanel;

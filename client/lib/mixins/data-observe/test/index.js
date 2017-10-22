@@ -1,38 +1,33 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assert } from 'chai';
+var assert = require( 'chai' ).assert;
 
 /**
  * Internal dependencies
  */
-/* eslint-disable no-restricted-imports */
-import observe from 'lib/mixins/data-observe';
-/* eslint-enable no-restricted-imports */
+var observe = require( 'lib/mixins/data-observe' );
 
-describe( 'observe()', () => {
-	test( 'should return proper mixin with no arguments', () => {
+describe( 'observe()', function() {
+	it( 'should return proper mixin with no arguments', function() {
 		assertMixin( observe() );
 	} );
-	test( 'should return proper mixin with one argument', () => {
+	it( 'should return proper mixin with one argument', function() {
 		assertMixin( observe( 'baba' ) );
 	} );
-	test( 'should return proper mixin with more than one argument', () => {
+	it( 'should return proper mixin with more than one argument', function() {
 		assertMixin( observe( 'baba', 'dyado', 'winkwink' ) );
 	} );
 
-	describe( 'componentDidMount()', () => {
-		test( 'should call .on() on the props with the names as arguments', () => {
+	describe( 'componentDidMount()', function() {
+		it( 'should call .on() on the props with the names as arguments', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'baba', 'dyado', 'pancho' );
 			mixin.componentDidMount.call( context );
 			assert.deepEqual( [ 'baba', 'dyado' ], context.onCalls );
 			assert.deepEqual( [], context.offCalls );
 		} );
-		test( 'should not call .on() if the props are missing', () => {
+		it( 'should not call .on() if the props are missing', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'wink', 'blurp', 'foo' );
 			mixin.componentDidMount.call( context );
@@ -41,54 +36,49 @@ describe( 'observe()', () => {
 		} );
 	} );
 
-	describe( 'componentWillUnmount', () => {
-		test( 'should call .off() on the props with the names as arguments', () => {
+	describe( 'componentWillUnmount', function() {
+		it( 'should call .off() on the props with the names as arguments', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'baba', 'non-existant' );
-			mixin.componentWillUnmount.call( context );
+				mixin.componentWillUnmount.call( context );
 			assert.deepEqual( [], context.onCalls );
 			assert.deepEqual( [ 'baba' ], context.offCalls );
 		} );
-		test( 'should not call .off() on the props if the props are missing', () => {
+		it( 'should not call .off() on the props if the props are missing', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'non-existant' );
-			mixin.componentWillUnmount.call( context );
+				mixin.componentWillUnmount.call( context );
 			assert.deepEqual( [], context.onCalls );
 			assert.deepEqual( [], context.offCalls );
 		} );
 	} );
 
-	describe( 'componentWillReceiveProps', () => {
-		test( 'should not do anything if props did not change', () => {
+	describe( 'componentWillReceiveProps', function() {
+		it( 'should not do anything if props did not change', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'baba', 'dyado', 'wink' );
-			mixin.componentWillReceiveProps.call( context, context.props );
+				mixin.componentWillReceiveProps.call( context, context.props );
 			assert.deepEqual( [], context.onCalls );
 			assert.deepEqual( [], context.offCalls );
 		} );
-		test( 'should re-bind the event handlers if the props reference changed', () => {
+		it( 'should re-bind the event handlers if the props reference changed', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'baba', 'dyado' );
-			mixin.componentWillReceiveProps.call( context, {
-				baba: context.props.baba,
-				dyado: mockEventEmitter( context, 'dyado' ),
-			} );
+				mixin.componentWillReceiveProps.call( context, {baba: context.props.baba, dyado: mockEventEmitter( context, 'dyado' )} );
 			assert.deepEqual( [ 'dyado' ], context.onCalls );
 			assert.deepEqual( [ 'dyado' ], context.offCalls );
 		} );
-		test( 'should only unbind the event if the prop goes missing, but not bind it', () => {
+		it( 'should only unbind the event if the prop goes missing, but not bind it', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext( 'baba', 'dyado' );
-			mixin.componentWillReceiveProps.call( context, { baba: context.props.baba } );
+				mixin.componentWillReceiveProps.call( context, {baba: context.props.baba} );
 			assert.deepEqual( [], context.onCalls );
 			assert.deepEqual( [ 'dyado' ], context.offCalls );
 		} );
-		test( 'should only bind the event if the prop appears, but not unbind it', () => {
+		it( 'should only bind the event if the prop appears, but not unbind it', function() {
 			var mixin = observe( 'baba', 'dyado' ),
 				context = mockContext();
-			mixin.componentWillReceiveProps.call( context, {
-				baba: mockEventEmitter( context, 'baba' ),
-			} );
+				mixin.componentWillReceiveProps.call( context, {baba: mockEventEmitter( context, 'baba' )} );
 			assert.deepEqual( [ 'baba' ], context.onCalls );
 			assert.deepEqual( [], context.offCalls );
 		} );
@@ -101,7 +91,7 @@ function mockContext() {
 			onCalls: [],
 			offCalls: [],
 			props: {},
-			update: 'callback',
+			update: 'callback'
 		};
 	propNames.forEach( function( name ) {
 		context.props[ name ] = mockEventEmitter( context, name );
@@ -120,7 +110,7 @@ function mockEventEmitter( context, name ) {
 			context.offCalls.push( name );
 			assert.deepEqual( 'change', event );
 			assert.deepEqual( 'callback', callback );
-		},
+		}
 	};
 }
 

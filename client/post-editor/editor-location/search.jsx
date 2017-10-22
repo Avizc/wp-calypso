@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -20,20 +16,20 @@ export default React.createClass( {
 
 	propTypes: {
 		onError: PropTypes.func,
-		onSelect: PropTypes.func,
+		onSelect: PropTypes.func
 	},
 
 	getDefaultProps() {
 		return {
 			onError: () => {},
-			onSelect: () => {},
+			onSelect: () => {}
 		};
 	},
 
 	getInitialState() {
 		return {
 			results: [],
-			isSearching: false,
+			isSearching: false
 		};
 	},
 
@@ -57,33 +53,30 @@ export default React.createClass( {
 
 		if ( ! address ) {
 			this.setState( {
-				results: [],
+				results: []
 			} );
 
 			return;
 		}
 
-		geocode( address )
-			.then( results => {
-				if ( ! this.mounted ) {
-					return;
-				}
+		geocode( address ).then( ( results ) => {
+			if ( ! this.mounted ) {
+				return;
+			}
 
-				this.setState( { results } );
-			} )
-			.catch( onError )
-			.then( () => {
-				if ( ! this.mounted ) {
-					return;
-				}
+			this.setState( { results } );
+		} ).catch( onError ).then( () => {
+			if ( ! this.mounted ) {
+				return;
+			}
 
-				this.setState( {
-					isSearching: false,
-				} );
+			this.setState( {
+				isSearching: false
 			} );
+		} );
 
 		this.setState( {
-			isSearching: true,
+			isSearching: true
 		} );
 	},
 
@@ -105,18 +98,17 @@ export default React.createClass( {
 					compact
 				/>
 				<ul className="editor-location__search-results">
-					{ results.map( result => {
+					{ results.map( ( result ) => {
 						return (
 							<li key={ result.formatted_address }>
 								<EditorLocationSearchResult
 									result={ result }
-									onClick={ this.onSelect.bind( null, result ) }
-								/>
+									onClick={ this.onSelect.bind( null, result ) } />
 							</li>
 						);
 					} ) }
 				</ul>
 			</div>
 		);
-	},
+	}
 } );

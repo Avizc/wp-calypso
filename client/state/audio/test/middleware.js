@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -39,7 +37,7 @@ describe( 'Audio Middleware', () => {
 		global.window = _window;
 	} );
 
-	test( 'should pass along actions without corresponding handlers', () => {
+	it( 'should pass along actions without corresponding handlers', () => {
 		const action = { type: 'UNSUPPORTED_ACTION' };
 
 		middleware( store )( next )( action );
@@ -48,7 +46,7 @@ describe( 'Audio Middleware', () => {
 		expect( next ).to.have.been.calledWith( action );
 	} );
 
-	test( 'should not play any sound when no audio support', () => {
+	it( 'should not play any sound when no audio support', () => {
 		const action = {
 			type: HAPPYCHAT_RECEIVE_EVENT,
 			event: {
@@ -65,7 +63,7 @@ describe( 'Audio Middleware', () => {
 		expect( play ).to.not.have.beenCalled;
 	} );
 
-	test( 'should play sound when receiving a new message from the operator', () => {
+	it( 'should play sound when receiving a new message from the operator', () => {
 		const action = {
 			type: HAPPYCHAT_RECEIVE_EVENT,
 			event: {

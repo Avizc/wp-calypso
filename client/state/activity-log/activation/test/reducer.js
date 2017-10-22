@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -23,24 +21,24 @@ const SITE_ID = 123456;
 const OTHER_SITE_ID = 987654;
 
 describe( '#activationRequesting()', () => {
-	test( 'should be true on request', () => {
+	it( 'should be true on request', () => {
 		const state = activationRequesting( undefined, createSiteAction( REWIND_ACTIVATE_REQUEST ) );
 		expect( state[ SITE_ID ] ).to.be.true;
 	} );
 
-	test( 'should be false on success', () => {
+	it( 'should be false on success', () => {
 		const state = activationRequesting( undefined, createSiteAction( REWIND_ACTIVATE_SUCCESS ) );
 		expect( state[ SITE_ID ] ).to.be.false;
 	} );
 
-	test( 'should be false on failure', () => {
+	it( 'should be false on failure', () => {
 		const state = activationRequesting( undefined, createSiteAction( REWIND_ACTIVATE_FAILURE ) );
 		expect( state[ SITE_ID ] ).to.be.false;
 	} );
 
-	test( 'should preserve other sites', () => {
+	it( 'should preserve other sites', () => {
 		const prevState = deepFreeze( {
-			[ OTHER_SITE_ID ]: false,
+			[ OTHER_SITE_ID ]: false
 		} );
 
 		let state = prevState;

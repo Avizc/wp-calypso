@@ -1,12 +1,11 @@
-/** @format */
 /**
  * External dependencies
  */
-import { assert, expect } from 'chai';
 import sinon from 'sinon';
+import { assert, expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal deps
  */
 import { requestSite } from '../actions';
 import {
@@ -49,7 +48,7 @@ describe( 'actions', () => {
 			request = requestSite( 1 )( spy );
 		} );
 
-		test( 'should dispatch request sync', () => {
+		it( 'should dispatch request sync', () => {
 			expect( spy ).to.have.been.calledWith( {
 				type: READER_SITE_REQUEST,
 				payload: {
@@ -58,7 +57,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch success, eventually', () => {
+		it( 'should dispatch success, eventually', function() {
 			return request.then(
 				() => {
 					expect( spy ).to.have.been.calledWith( {
@@ -72,7 +71,7 @@ describe( 'actions', () => {
 				err => {
 					assert.fail( 'Errback should not be invoked!', err );
 					return err;
-				}
+				},
 			);
 		} );
 	} );
@@ -82,13 +81,11 @@ describe( 'actions', () => {
 		let request;
 
 		useNock( nock => {
-			nock( 'https://public-api.wordpress.com:443' )
-				.get( '/rest/v1.1/read/sites/1' )
-				.reply( 404 );
+			nock( 'https://public-api.wordpress.com:443' ).get( '/rest/v1.1/read/sites/1' ).reply( 404 );
 			request = requestSite( 1 )( spy );
 		} );
 
-		test( 'should dispatch request sync', () => {
+		it( 'should dispatch request sync', () => {
 			expect( spy ).to.have.been.calledWith( {
 				type: READER_SITE_REQUEST,
 				payload: {
@@ -97,7 +94,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch error, eventually', () => {
+		it( 'should dispatch error, eventually', function() {
 			return request.then(
 				() => {
 					assert.fail( 'callback should not be invoked!', arguments );
@@ -111,7 +108,7 @@ describe( 'actions', () => {
 						},
 						error: sinon.match.instanceOf( Error ),
 					} );
-				}
+				},
 			);
 		} );
 	} );

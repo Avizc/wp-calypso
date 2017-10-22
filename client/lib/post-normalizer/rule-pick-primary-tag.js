@@ -1,10 +1,8 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import { maxBy, values } from 'lodash';
+import maxBy from 'lodash/maxBy';
+import values from 'lodash/values';
 
 /**
  * Internal Dependencies

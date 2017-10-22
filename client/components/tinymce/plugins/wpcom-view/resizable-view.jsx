@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import PureComponent from 'react-pure-render/component';
 
 export default function( Component ) {
@@ -15,11 +11,11 @@ export default function( Component ) {
 		static displayName = `ResizableView(${ componentName })`;
 
 		static propTypes = {
-			onResize: PropTypes.func,
+			onResize: PropTypes.func
 		};
 
 		static defaultProps = {
-			onResize: () => {},
+			onResize: () => {}
 		};
 
 		constructor() {
@@ -27,7 +23,7 @@ export default function( Component ) {
 
 			this.boundSetWrapperState = this.setWrapperState.bind( this );
 			this.state = {
-				wrapper: null,
+				wrapper: null
 			};
 		}
 
@@ -42,7 +38,7 @@ export default function( Component ) {
 			this.observer.observe( wrapper, {
 				attributes: true,
 				childList: true,
-				subtree: true,
+				subtree: true
 			} );
 		}
 
@@ -60,7 +56,7 @@ export default function( Component ) {
 			let childProps;
 			if ( this.state.wrapper ) {
 				childProps = {
-					width: this.state.wrapper.clientWidth,
+					width: this.state.wrapper.clientWidth
 				};
 			}
 

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
@@ -11,18 +8,18 @@ import { localize } from 'i18n-calypso';
 /**
  * Internal dependencies
  */
-import CompactCard from 'components/card/compact';
-import DocumentHead from 'components/data/document-head';
 import Main from 'components/main';
-import MeSidebarNavigation from 'me/sidebar-navigation';
+import CompactCard from 'components/card/compact';
 import QueryAccountRecoverySettings from 'components/data/query-account-recovery-settings';
-import ReauthRequired from 'me/reauth-required';
-import RecoveryEmail from './recovery-email';
-import RecoveryEmailValidationNotice from './recovery-email-validation-notice';
-import RecoveryPhone from './recovery-phone';
-import RecoveryPhoneValidationNotice from './recovery-phone-validation-notice';
+import MeSidebarNavigation from 'me/sidebar-navigation';
 import SecuritySectionNav from 'me/security-section-nav';
+import ReauthRequired from 'me/reauth-required';
 import twoStepAuthorization from 'lib/two-step-authorization';
+import RecoveryEmail from './recovery-email';
+import RecoveryPhone from './recovery-phone';
+import RecoveryEmailValidationNotice from './recovery-email-validation-notice';
+import RecoveryPhoneValidationNotice from './recovery-phone-validation-notice';
+
 import {
 	updateAccountRecoveryEmail,
 	updateAccountRecoveryPhone,
@@ -49,7 +46,7 @@ import {
 
 import { getCurrentUserEmail } from 'state/current-user/selectors';
 
-const SecurityAccountRecovery = props => (
+const SecurityAccountRecovery = ( props ) => (
 	<Main className="security-account-recovery">
 		<QueryAccountRecoverySettings />
 
@@ -59,15 +56,11 @@ const SecurityAccountRecovery = props => (
 
 		<ReauthRequired twoStepAuthorization={ twoStepAuthorization } />
 
-		<DocumentHead title={ props.translate( 'Account Recovery', { textOnly: true } ) } />
-
 		<CompactCard>
 			<p className="security-account-recovery__text">
-				{ props.translate(
-					'Keep your account safe by adding a backup email address and phone number. ' +
+				{ props.translate( 'Keep your account safe by adding a backup email address and phone number. ' +
 						'If you ever have problems accessing your account, WordPress.com will use what ' +
-						'you enter here to verify your identity.'
-				) }
+						'you enter here to verify your identity.' ) }
 			</p>
 		</CompactCard>
 
@@ -79,12 +72,12 @@ const SecurityAccountRecovery = props => (
 				deleteEmail={ props.deleteAccountRecoveryEmail }
 				isLoading={ props.accountRecoveryEmailActionInProgress }
 			/>
-			{ props.shouldPromptEmailValidationNotice && (
+			{ props.shouldPromptEmailValidationNotice &&
 				<RecoveryEmailValidationNotice
 					onResend={ props.resendAccountRecoveryEmailValidation }
 					hasSent={ props.hasSentEmailValidation }
 				/>
-			) }
+			}
 		</CompactCard>
 
 		<CompactCard>
@@ -94,20 +87,20 @@ const SecurityAccountRecovery = props => (
 				deletePhone={ props.deleteAccountRecoveryPhone }
 				isLoading={ props.accountRecoveryPhoneActionInProgress }
 			/>
-			{ props.shouldPromptPhoneValidationNotice && (
+			{ props.shouldPromptPhoneValidationNotice &&
 				<RecoveryPhoneValidationNotice
 					onResend={ props.resendAccountRecoveryPhoneValidation }
 					onValidate={ props.validateAccountRecoveryPhone }
 					hasSent={ props.hasSentPhoneValidation }
 					isValidating={ props.validatingAccountRecoveryPhone }
 				/>
-			) }
+			}
 		</CompactCard>
 	</Main>
 );
 
 export default connect(
-	state => ( {
+	( state ) => ( {
 		accountRecoveryEmail: getAccountRecoveryEmail( state ),
 		accountRecoveryEmailActionInProgress: isAccountRecoveryEmailActionInProgress( state ),
 		accountRecoveryEmailValidated: isAccountRecoveryEmailValidated( state ),

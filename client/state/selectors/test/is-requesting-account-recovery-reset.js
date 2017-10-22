@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,7 +10,7 @@ import deepFreeze from 'deep-freeze';
 import { isRequestingAccountRecoveryReset } from '../';
 
 describe( 'isRequestingAccountRecoveryReset()', () => {
-	test( 'should return the requesting status flag under the request-reset state tree.', () => {
+	it( 'should return the requesting status flag under the request-reset state tree.', () => {
 		const state = deepFreeze( {
 			accountRecovery: {
 				reset: {

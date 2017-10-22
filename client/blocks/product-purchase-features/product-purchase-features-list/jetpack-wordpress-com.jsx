@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -17,17 +14,17 @@ export default localize( ( { selectedSite, translate } ) => {
 		<div className="product-purchase-features-list__item">
 			<PurchaseDetail
 				icon="plugins"
-				title={ translate( 'Automatic Updates' ) }
+				title={ translate( 'Get the most from WordPress.com' ) }
 				description={ translate(
-					'Keep your plugins securely updated and manage your site from ' +
-						'{{a}}mobile apps{{/a}}.',
+					'Enable plugin auto-updates, browse your stats, try the improved WordPress.com editor, ' +
+					'{{a}}Download WordPress.com apps{{/a}}.',
 					{
 						components: {
-							a: <a href="https://apps.wordpress.com/" />,
-						},
+							a: <a href="https://apps.wordpress.com/" />
+						}
 					}
 				) }
-				buttonText={ translate( 'Configure auto updates' ) }
+				buttonText={ translate( 'Turn on autoupdates' ) }
 				href={ `/plugins/${ selectedSite.slug }` }
 			/>
 		</div>

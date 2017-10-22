@@ -1,26 +1,23 @@
-/** @format */
 export const initSite = [
 	{
 		slug: 'vaultpress',
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'wait',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'wait',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'wait',
-		error: null,
-	},
+		error: null
+	}
 ];
 
 export const installingSite = [
@@ -29,22 +26,20 @@ export const installingSite = [
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'install',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'wait',
-		error: null,
-	},
+		error: null
+	}
 ];
 
 export const activatingSite = [
@@ -53,22 +48,20 @@ export const activatingSite = [
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'activate',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'wait',
-		error: null,
-	},
+		error: null
+	}
 ];
 
 export const configuringSite = [
@@ -77,22 +70,20 @@ export const configuringSite = [
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'configure',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'wait',
-		error: null,
-	},
+		error: null
+	}
 ];
 
 export const finishedPluginSite = [
@@ -101,22 +92,20 @@ export const finishedPluginSite = [
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'wait',
-		error: null,
-	},
+		error: null
+	}
 ];
 
 export const finishedSite = [
@@ -125,22 +114,20 @@ export const finishedSite = [
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'done',
-		error: null,
-	},
+		error: null
+	}
 ];
 
 export const siteWithError = [
@@ -149,20 +136,18 @@ export const siteWithError = [
 		name: 'VaultPress',
 		key: 'vp-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'akismet',
 		name: 'Akismet',
 		key: 'ak-api-key',
 		status: 'done',
-		error: null,
-	},
-	{
+		error: null
+	}, {
 		slug: 'polldaddy',
 		name: 'Polldaddy',
 		key: 'pd-api-key',
 		status: 'activate',
-		error: { name: 'ErrorCode', message: 'Something went wrong.' },
-	},
+		error: { name: 'ErrorCode', message: 'Something went wrong.' }
+	}
 ];

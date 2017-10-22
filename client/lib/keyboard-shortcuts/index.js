@@ -1,24 +1,20 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 // only require keymaster if this is a browser environment
-const keymaster = typeof window === 'undefined' ? undefined : require( 'keymaster' ),
+var keymaster = ( typeof window === 'undefined' ) ? undefined : require( 'keymaster' ),
 	defaultFilter = keymaster ? keymaster.filter : undefined;
 
 /**
  * Internal dependencies
  */
-import Emitter from 'lib/mixins/emitter';
-import KeyBindings from 'lib/keyboard-shortcuts/key-bindings';
+var Emitter = require( 'lib/mixins/emitter' ),
+	keyBindings = require( 'lib/keyboard-shortcuts/key-bindings' ).get();
 
 /**
  * Module variables
  */
-let flatKeyBindings = [];
-const keyBindings = KeyBindings.get();
+var flatKeyBindings = [];
 
 // flatten the key-bindings object to create an array of key-bindings
 Object.keys( keyBindings ).forEach( function( category ) {
@@ -117,10 +113,7 @@ KeyboardShortcuts.prototype.bindShortcut = function( eventName, keys, type, chec
 			keys = keys.join( '+' );
 			keymaster( keys, function( event, handler ) {
 				// if the notifications panel is open, do not handle any presses besides `n` to toggle the panel
-				if (
-					self.isNotificationsOpen &&
-					( self._getKey( event ) !== 'n' && event.keyCode !== 27 )
-				) {
+				if ( self.isNotificationsOpen && ( self._getKey( event ) !== 'n' && event.keyCode !== 27 ) ) {
 					return;
 				}
 
@@ -188,4 +181,4 @@ KeyboardShortcuts.prototype.setNotificationsOpen = function( isOpen ) {
 Emitter( KeyboardShortcuts.prototype );
 
 // Return a single instance of KeyboardShortcuts, which will be cached by webpack
-export default new KeyboardShortcuts( flatKeyBindings );
+module.exports = new KeyboardShortcuts( flatKeyBindings );

@@ -1,11 +1,7 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize, moment } from 'i18n-calypso';
 import { noop } from 'lodash';
@@ -38,8 +34,8 @@ class PostScheduleClock extends Component {
 		this.adjustHour = event => this.handleKeyDown( event, 'hour' );
 		this.adjustMinute = event => this.handleKeyDown( event, 'minute' );
 
-		this.setAm = event => this.setAmPm( event, 'AM' );
-		this.setPm = event => this.setAmPm( event, 'PM' );
+		this.setAm = ( event ) => this.setAmPm( event, 'AM' );
+		this.setPm = ( event ) => this.setAmPm( event, 'PM' );
 	}
 
 	handleKeyDown( event, field ) {
@@ -73,7 +69,11 @@ class PostScheduleClock extends Component {
 	}
 
 	getTimeValues() {
-		const { amPmReference, hourReference, minuteRef } = this.refs;
+		const {
+			amPmReference,
+			hourReference,
+			minuteRef
+		} = this.refs;
 
 		const modifiers = {};
 		const hour = parseAndValidateNumber( hourReference.value );
@@ -84,10 +84,7 @@ class PostScheduleClock extends Component {
 		}
 
 		if ( this.props.is12hour && amPmReference ) {
-			if (
-				typeof modifiers.hour === 'undefined' ||
-				( amPmReference.value && modifiers.hour > 12 ) === 'PM'
-			) {
+			if ( 'undefined' === typeof modifiers.hour || ( 'PM' === amPmReference.value && modifiers.hour > 12 ) ) {
 				modifiers.hour = Number( hourReference.value.substr( -1 ) );
 			}
 
@@ -132,7 +129,14 @@ class PostScheduleClock extends Component {
 	}
 
 	renderTimezoneSection() {
-		const { date, gmtOffset, siteId, siteSlug, timezone, translate } = this.props;
+		const {
+			date,
+			gmtOffset,
+			siteId,
+			siteSlug,
+			timezone,
+			translate
+		} = this.props;
 
 		if ( ! ( timezone || isValidGMTOffset( gmtOffset ) ) ) {
 			return;
@@ -155,28 +159,32 @@ class PostScheduleClock extends Component {
 
 		const popoverPosition = viewport.isMobile() ? 'top' : 'right';
 		const timezoneText = timezone
-			? `${ timezone.replace( /\_/gi, ' ' ) } ${ tzDateOffset }`
+			? `${ timezone.replace( /\_/ig, ' ' ) } ${ tzDateOffset }`
 			: `UTC${ convertHoursToHHMM( gmtOffset ) }`;
 
 		const timezoneInfo = translate(
 			'This site timezone (%(timezoneText)s) will be used for publishing. ' +
-				'You can change it in {{a}}General Settings{{/a}}.',
-			{
+			'You can change it in {{a}}General Settings{{/a}}.', {
 				args: { timezoneText },
 				components: {
-					a: <a href={ `/settings/general/${ siteSlug || siteId }` } />,
-				},
+					a: <a href={ `/settings/general/${ siteSlug || siteId }` } />
+				}
 			}
 		);
 
 		return (
 			<span>
 				<div className="post-schedule__clock-timezone">
-					{ translate( 'This site timezone is %(diff)sh from your local timezone.', {
-						args: { diff: convertMinutesToHHMM( diffInMinutes ) },
-					} ) }
+					{
+						translate( 'This site timezone is %(diff)sh from your local timezone.', {
+							args: { diff: convertMinutesToHHMM( diffInMinutes ) }
+						} )
+					}
 
-					<InfoPopover className="post-schedule__timezone-info" position={ popoverPosition }>
+					<InfoPopover
+						className="post-schedule__timezone-info"
+						position={ popoverPosition }
+					>
 						{ timezoneInfo }
 					</InfoPopover>
 				</div>
@@ -196,8 +204,7 @@ class PostScheduleClock extends Component {
 					value={ date.format( is12hour ? 'hh' : 'HH' ) }
 					onChange={ this.setTime }
 					onKeyDown={ this.adjustHour }
-					type="text"
-				/>
+					type="text" />
 
 				<span className="post-schedule__clock-divisor">:</span>
 
@@ -208,30 +215,16 @@ class PostScheduleClock extends Component {
 					value={ date.format( 'mm' ) }
 					onChange={ this.setTime }
 					onKeyDown={ this.adjustMinute }
-					type="text"
-				/>
+					type="text" />
 
 				{ is12hour && (
 					<span>
-						<input
-							type="hidden"
-							ref="amPmReference"
-							name="post-schedule__clock_am-pm"
-							value={ date.format( 'A' ) }
-						/>
+						<input type="hidden" ref="amPmReference" name="post-schedule__clock_am-pm" value={ date.format( 'A' ) } />
 						<SegmentedControl compact>
-							<ControlItem
-								value="am"
-								onClick={ this.setAm }
-								selected={ 'AM' === date.format( 'A' ) }
-							>
+							<ControlItem value="am" onClick={ this.setAm } selected={ 'AM' === date.format( 'A' ) }>
 								{ translate( 'AM' ) }
 							</ControlItem>
-							<ControlItem
-								value="pm"
-								onClick={ this.setPm }
-								selected={ 'PM' === date.format( 'A' ) }
-							>
+							<ControlItem value="pm" onClick={ this.setPm } selected={ 'PM' === date.format( 'A' ) }>
 								{ translate( 'PM' ) }
 							</ControlItem>
 						</SegmentedControl>
@@ -250,13 +243,15 @@ PostScheduleClock.propTypes = {
 	gmtOffset: PropTypes.number,
 	siteId: PropTypes.number,
 	siteSlug: PropTypes.string,
-	onChange: PropTypes.func,
+	onChange: PropTypes.func
 };
 
 PostScheduleClock.defaultProps = {
-	onChange: noop,
+	onChange: noop
 };
 
-export default connect( ( state, { siteId } ) => ( {
-	is12hour: is12hr( getSiteSetting( state, siteId, 'time_format' ) ),
-} ) )( localize( PostScheduleClock ) );
+export default connect(
+	( state, { siteId } ) => ( {
+		is12hour: is12hr( getSiteSetting( state, siteId, 'time_format' ) ),
+	} ),
+)( localize( PostScheduleClock ) ) ;

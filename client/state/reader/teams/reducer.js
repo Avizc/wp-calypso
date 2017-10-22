@@ -1,9 +1,3 @@
-/** @format */
-/**
- * External Dependencies
- */
-import { get } from 'lodash';
-
 /**
  * Internal dependencies
  */
@@ -14,14 +8,9 @@ import { itemsSchema } from './schema';
 export const items = createReducer(
 	[],
 	{
-		[ READER_TEAMS_RECEIVE ]: ( state, action ) => {
-			if ( action.error ) {
-				return state;
-			}
-			return get( action, [ 'payload', 'teams' ], state );
-		},
+		[ READER_TEAMS_RECEIVE ]: ( state, action ) => action.payload.teams,
 	},
-	itemsSchema
+	itemsSchema,
 );
 
 export const isRequesting = createReducer( false, {

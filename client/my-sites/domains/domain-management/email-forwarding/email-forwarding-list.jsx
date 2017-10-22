@@ -1,43 +1,38 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-
-import { localize } from 'i18n-calypso';
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import EmailForwardingItem from './email-forwarding-item';
+var EmailForwardingItem = require( './email-forwarding-item' );
 
-const EmailForwardingList = React.createClass( {
+var EmailForwardingList = React.createClass( {
 	render: function() {
 		var emailForwardingItems,
 			{ list, hasLoadedFromServer } = this.props.emailForwarding;
 
 		if ( ! list && ! hasLoadedFromServer ) {
-			return <span>{ this.props.translate( 'Loading…' ) }</span>;
+			return <span>{ this.translate( 'Loading…' ) }</span>;
 		}
 
 		if ( ! list ) {
 			return null;
 		}
 
-		emailForwardingItems = list.map( emailForwarding => {
+		emailForwardingItems = list.map( ( emailForwarding ) => {
 			return (
 				<EmailForwardingItem
 					key={ emailForwarding.email }
 					emailData={ emailForwarding }
 					selectedSite={ this.props.selectedSite }
-				/>
+					/>
 			);
 		} );
 
 		return <ul className="email-forwarding__list">{ emailForwardingItems }</ul>;
-	},
+	}
 } );
 
-export default localize( EmailForwardingList );
+module.exports = EmailForwardingList;

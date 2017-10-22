@@ -1,24 +1,26 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 import { requestTimezones } from 'state/timezones/actions';
+import { isRequestingTimezones } from 'state/selectors';
 
 export class QueryTimezones extends Component {
 	static propTypes = {
-		requestTimezones: PropTypes.func,
+		isRequesting: PropTypes.bool,
+		requestTimezones: PropTypes.func
 	};
 
 	componentDidMount() {
+		if ( this.props.requesting ) {
+			return;
+		}
+
 		this.props.requestTimezones();
 	}
 
@@ -27,4 +29,9 @@ export class QueryTimezones extends Component {
 	}
 }
 
-export default connect( null, { requestTimezones } )( QueryTimezones );
+export default connect(
+	( state ) => ( {
+		requesting: isRequestingTimezones( state )
+	} ),
+	{ requestTimezones }
+)( QueryTimezones );

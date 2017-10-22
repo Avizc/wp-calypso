@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import { find } from 'lodash';
 
 /**
@@ -18,7 +15,7 @@ export default function pickCanonicalImage( post ) {
 		canonicalImage = {
 			uri: url,
 			width,
-			height,
+			height
 		};
 	} else if ( post.content_images && post.content_images.length ) {
 		const candidateImage = find( post.content_images, isCandidateForCanonicalImage );
@@ -26,7 +23,7 @@ export default function pickCanonicalImage( post ) {
 			canonicalImage = {
 				uri: candidateImage.src,
 				width: candidateImage.width,
-				height: candidateImage.height,
+				height: candidateImage.height
 			};
 		}
 	}

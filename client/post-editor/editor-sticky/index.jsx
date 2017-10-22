@@ -1,11 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
 import React from 'react';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
@@ -26,14 +21,14 @@ const EditorSticky = React.createClass( {
 	displayName: 'EditorSticky',
 
 	propTypes: {
-		postId: PropTypes.number,
-		siteId: PropTypes.number,
-		sticky: PropTypes.bool,
+		postId: React.PropTypes.number,
+		siteId: React.PropTypes.number,
+		sticky: React.PropTypes.bool
 	},
 
 	getInitialState: function() {
 		return {
-			tooltip: false,
+			tooltip: false
 		};
 	},
 
@@ -53,50 +48,45 @@ const EditorSticky = React.createClass( {
 		recordEvent( 'Changed Sticky Setting', stickyEventLabel );
 
 		this.props.editPost( this.props.siteId, this.props.postId, {
-			sticky: ! this.props.sticky,
+			sticky: ! this.props.sticky
 		} );
 		this.setState( { tooltip: false } );
 	},
 
-	enableTooltip: function() {
-		this.setState( { tooltip: true } );
-	},
-
-	disableTooltip: function() {
-		this.setState( { tooltip: false } );
-	},
-
 	render: function() {
-		const classes = classnames( 'editor-sticky', { 'is-sticky': this.props.sticky } );
+		const classes = classnames(
+			'editor-sticky',
+			{ 'is-sticky': this.props.sticky }
+		);
 
 		return (
 			<Button
 				borderless
 				className={ classes }
 				onClick={ this.toggleStickyStatus }
-				onMouseEnter={ this.enableTooltip }
-				onMouseLeave={ this.disableTooltip }
-				aria-label={ this.props.translate( 'Stick post to the front page' ) }
+				onMouseEnter={ () => this.setState( { tooltip: true } ) }
+				onMouseLeave={ () => this.setState( { tooltip: false } ) }
+				aria-label={ this.translate( 'Stick post to the front page' ) }
 				ref="stickyPostButton"
 			>
 				<Gridicon icon="bookmark" />
-				{ this.props.sticky && (
+				{ this.props.sticky &&
 					<Tooltip
 						className="editor-sticky__tooltip"
 						context={ this.refs && this.refs.stickyPostButton }
 						isVisible={ this.state.tooltip }
 						position="bottom left"
 					>
-						<span>{ this.props.translate( 'Marked as sticky' ) }</span>
+						<span>{ this.translate( 'Marked as sticky' ) }</span>
 					</Tooltip>
-				) }
+				}
 			</Button>
 		);
-	},
+	}
 } );
 
 export default connect(
-	state => {
+	( state ) => {
 		const postId = getEditorPostId( state );
 		const siteId = getSelectedSiteId( state );
 		const sticky = getEditedPostValue( state, siteId, postId, 'sticky' );
@@ -104,8 +94,8 @@ export default connect(
 		return {
 			postId,
 			siteId,
-			sticky,
+			sticky
 		};
 	},
 	{ editPost }
-)( localize( EditorSticky ) );
+)( EditorSticky );

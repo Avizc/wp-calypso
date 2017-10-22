@@ -1,16 +1,13 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import Dispatcher from 'dispatcher';
+var Dispatcher = require( 'dispatcher' );
 
 /**
  * Internal dependencies
  */
-import Emitter from 'lib/mixins/emitter';
-import LocaleSuggestionActions from './actions';
+var Emitter = require( 'lib/mixins/emitter' ),
+	LocaleSuggestionActions = require( './actions' );
 
 var localeSuggestions = null;
 
@@ -25,7 +22,7 @@ var LocaleSuggestionStore = {
 	receiveLocaleSuggestions: function( newLocaleSuggestions ) {
 		localeSuggestions = newLocaleSuggestions;
 		LocaleSuggestionStore.emit( 'change' );
-	},
+	}
 };
 
 Emitter( LocaleSuggestionStore );
@@ -40,4 +37,4 @@ LocaleSuggestionStore.dispatchToken = Dispatcher.register( function( payload ) {
 	}
 } );
 
-export default LocaleSuggestionStore;
+module.exports = LocaleSuggestionStore;

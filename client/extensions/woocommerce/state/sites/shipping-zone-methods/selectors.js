@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { find, get, isArray, isObject } from 'lodash';
 
 /**
@@ -37,11 +34,7 @@ export const getShippingZoneMethod = ( state, id, siteId = getSelectedSiteId( st
  * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
  * @return {boolean} Whether the shipping methods for the given zone have been successfully loaded from the server
  */
-export const areShippingZoneMethodsLoaded = (
-	state,
-	zoneId,
-	siteId = getSelectedSiteId( state )
-) => {
+export const areShippingZoneMethodsLoaded = ( state, zoneId, siteId = getSelectedSiteId( state ) ) => {
 	const zones = getAPIShippingZones( state, siteId );
 	if ( ! isArray( zones ) ) {
 		return false;
@@ -56,11 +49,7 @@ export const areShippingZoneMethodsLoaded = (
  * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
  * @return {boolean} Whether the shipping methods for the given zone are currently being retrieved from the server
  */
-export const areShippingZoneMethodsLoading = (
-	state,
-	zoneId,
-	siteId = getSelectedSiteId( state )
-) => {
+export const areShippingZoneMethodsLoading = ( state, zoneId, siteId = getSelectedSiteId( state ) ) => {
 	const zones = getAPIShippingZones( state, siteId );
 	if ( ! isArray( zones ) ) {
 		return false;

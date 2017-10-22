@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,12 +7,19 @@ import { spy } from 'sinon';
 /**
  * Internal dependencies
  */
-import { key, clear, setItem, getItem, removeItem, length } from '../localstorage-bypass';
+import {
+	key,
+	clear,
+	setItem,
+	getItem,
+	removeItem,
+	length,
+} from '../localstorage-bypass';
 
 describe( 'localstorage-bypass', () => {
 	// Spy on the original localStorage functions
 	const _setItem = spy();
-	const _getItem = spy( x => x );
+	const _getItem = spy( ( x ) => x );
 	const _removeItem = spy();
 	let db = {};
 
@@ -26,7 +31,7 @@ describe( 'localstorage-bypass', () => {
 	} );
 
 	describe( 'length', () => {
-		test( 'returns the number of keys in dummy storage', () => {
+		it( 'returns the number of keys in dummy storage', () => {
 			db.one = 'a';
 			db.two = 'b';
 			expect( length( db )() ).to.equal( 2 );
@@ -36,7 +41,7 @@ describe( 'localstorage-bypass', () => {
 	} );
 
 	describe( 'clear', () => {
-		test( 'clears all keys', () => {
+		it( 'clears all keys', () => {
 			db.one = 1;
 			db.two = 2;
 			clear( db )();
@@ -45,7 +50,7 @@ describe( 'localstorage-bypass', () => {
 	} );
 
 	describe( 'key', () => {
-		test( 'returns a specific key', () => {
+		it( 'returns a specific key', () => {
 			db.first = 'a';
 			db.second = 'b';
 
@@ -53,24 +58,24 @@ describe( 'localstorage-bypass', () => {
 			expect( key( db )( 1 ) ).to.equal( 'second' );
 		} );
 
-		test( "returns null for a key that doesn't exist", () => {
+		it( 'returns null for a key that doesn\'t exist', () => {
 			expect( key( db )( 2 ) ).to.be.null;
 		} );
 	} );
 
 	describe( 'setItem', () => {
-		test( 'sets an item in memory store', () => {
+		it( 'sets an item in memory store', () => {
 			setItem( db, [], _setItem )( 'key', 'value' );
 			expect( db.key ).to.equal( 'value' );
 		} );
 
-		test( 'calls the original setItem function for an allowed key', () => {
+		it( 'calls the original setItem function for an allowed key', () => {
 			setItem( db, [ 'key' ], _setItem )( 'key', 'value' );
 			expect( db.key ).to.be.undefined;
 			expect( _setItem ).to.have.been.calledWith( 'key', 'value' );
 		} );
 
-		test( 'overrides an existing value', () => {
+		it( 'overrides an existing value', () => {
 			db.existing = 'abc';
 			setItem( db, [], _setItem )( 'existing', 'def' );
 			expect( db ).to.deep.equal( { existing: 'def' } );
@@ -83,16 +88,16 @@ describe( 'localstorage-bypass', () => {
 			db.second = 'def';
 		} );
 
-		test( 'gets an item in memory store', () => {
+		it( 'gets an item in memory store', () => {
 			expect( getItem( db, [], _getItem )( 'first' ) ).to.equal( 'abc' );
 		} );
 
-		test( 'calls the original getItem function for an allowed key', () => {
+		it( 'calls the original getItem function for an allowed key', () => {
 			expect( getItem( db, [ 'first' ], _getItem )( 'first' ) ).to.equal( 'first' );
 			expect( _getItem ).to.have.been.calledWith( 'first' );
 		} );
 
-		test( "returns null for a key that doesn't exist", () => {
+		it( 'returns null for a key that doesn\'t exist', () => {
 			expect( getItem( db, [], _getItem )( 'missing' ) ).to.be.null;
 		} );
 	} );
@@ -103,24 +108,24 @@ describe( 'localstorage-bypass', () => {
 			db.second = 'def';
 		} );
 
-		test( 'removes an item in memory store', () => {
+		it( 'removes an item in memory store', () => {
 			removeItem( db, [], _removeItem )( 'first' );
 			expect( db.first ).to.be.undefined;
 		} );
 
-		test( 'calls the original removeItem function for an allowed key', () => {
+		it( 'calls the original removeItem function for an allowed key', () => {
 			removeItem( db, [ 'first' ], _removeItem )( 'first' );
 			expect( db.first ).to.equal( 'abc' );
 			expect( _removeItem ).to.have.been.calledWith( 'first' );
 		} );
 
-		test( "has no effect when a key doesn't already exist", () => {
+		it( 'has no effect when a key doesn\'t already exist', () => {
 			removeItem( db, [], _removeItem )( 'missing' );
 			expect( db ).to.deep.equal( { first: 'abc', second: 'def' } );
-		} );
+		} )
 	} );
 
-	test( 'should add a key, read it, then remove it', () => {
+	it( 'should add a key, read it, then remove it', () => {
 		setItem( db, [], _setItem )( 'test', 'value' );
 		expect( getItem( db, [], _getItem )( 'test' ) ).to.equal( 'value' );
 		removeItem( db, [], _removeItem )( 'test' );

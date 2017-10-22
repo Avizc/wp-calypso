@@ -1,17 +1,15 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { assert } from 'chai';
-import { shallow } from 'enzyme';
 import React from 'react';
+import { shallow } from 'enzyme';
 import sinon from 'sinon';
 
-describe( 'ButtonGroup', () => {
+describe( 'ButtonGroup', function() {
 	let sandbox, ButtonGroup, Button;
 
-	beforeEach( () => {
+	beforeEach( function() {
 		sandbox = sinon.sandbox.create();
 		sandbox.stub( console, 'error' );
 		sandbox.stub( console, 'log' );
@@ -20,36 +18,27 @@ describe( 'ButtonGroup', () => {
 		Button = require( 'components/button' );
 	} );
 
-	afterEach( () => {
+	afterEach( function() {
 		sandbox.restore();
 	} );
 
-	test( 'should have ButtonGroup class', () => {
+	it( 'should have ButtonGroup class', function() {
 		const buttonGroup = shallow( <ButtonGroup /> );
 		assert.equal( 1, buttonGroup.find( '.button-group' ).length );
 	} );
 
-	test( 'should contains the same number of .button nodes than <Button>s it receives', () => {
-		const buttonGroup = shallow(
-			<ButtonGroup>
-				<Button>test</Button>
-				<Button>test2</Button>
-			</ButtonGroup>
-		);
+	it( 'should contains the same number of .button nodes than <Button>s it receives', function() {
+		const buttonGroup = shallow( <ButtonGroup><Button>test</Button><Button>test2</Button></ButtonGroup> );
 		assert.equal( 2, buttonGroup.find( Button ).length );
 	} );
 
-	test( 'should get the busy `is-busy` class when passed the `busy` prop', () => {
+	it( 'should get the busy `is-busy` class when passed the `busy` prop', function() {
 		const buttonGroup = shallow( <ButtonGroup busy /> );
 		assert.equal( 1, buttonGroup.find( '.is-busy' ).length );
 	} );
 
-	test( 'should throw an error if any of the children is not a <Button>', () => {
-		shallow(
-			<ButtonGroup>
-				<div id="test">test</div>
-			</ButtonGroup>
-		);
+	it( 'should throw an error if any of the children is not a <Button>', function() {
+		shallow( <ButtonGroup><div id="test">test</div></ButtonGroup> );
 
 		/* eslint-disable no-console */
 		sinon.assert.calledWithMatch( console.error, 'All children elements should be a Button.' );

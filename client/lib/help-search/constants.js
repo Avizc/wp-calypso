@@ -1,11 +1,5 @@
-/**
- * External dependencies
- *
- * @format
- */
+var keyMirror = require( 'key-mirror' );
 
-import keyMirror from 'key-mirror';
-
-export const action = keyMirror( {
-	SET_HELP_LINKS: null,
+module.exports.action = keyMirror( {
+	SET_HELP_LINKS: null
 } );

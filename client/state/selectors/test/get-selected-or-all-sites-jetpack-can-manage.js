@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,11 +10,11 @@ import { getSelectedOrAllSitesJetpackCanManage } from '../';
 import { userState } from './fixtures/user-state';
 
 describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
-	test( 'should return an empty array if no sites exist in state', () => {
+	it( 'should return an empty array if no sites exist in state', () => {
 		const state = {
 			...userState,
 			sites: {
-				items: {},
+				items: {}
 			},
 			ui: { selectedSiteId: 2916284 },
 		};
@@ -24,7 +22,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 		expect( sites ).to.eql( [] );
 	} );
 
-	test( 'should return an empty array if the sites existing do not verify jetpack canManage conditions', () => {
+	it( 'should return an empty array if the sites existing do not verify jetpack canManage conditions', () => {
 		const state = {
 			...userState,
 			sites: {
@@ -33,7 +31,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						ID: 2916288,
 						visible: true,
 					},
-				},
+				}
 			},
 			ui: {},
 		};
@@ -41,7 +39,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 		expect( sites ).to.eql( [] );
 	} );
 
-	test( 'should return an array with one site if just one site exists and verifies jetpack canManage conditions', () => {
+	it( 'should return an array with one site if just one site exists and verifies jetpack canManage conditions', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -51,7 +49,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						edit_pages: true,
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -62,7 +60,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 							jetpack_version: '3.3',
 						},
 					},
-				},
+				}
 			},
 			ui: {},
 		};
@@ -71,7 +69,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 		expect( sites[ 0 ].ID ).to.eql( 2916288 );
 	} );
 
-	test( 'should return an array with all the sites that verify jetpack canManage conditions', () => {
+	it( 'should return an array with all the sites that verify jetpack canManage conditions', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -85,7 +83,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						edit_pages: true,
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -94,8 +92,8 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						jetpack: true,
 						options: {
 							active_modules: [ 'manage' ],
-							jetpack_version: '5.0',
-						},
+							jetpack_version: '5.0'
+						}
 					},
 					2916287: {
 						ID: 2916287,
@@ -104,10 +102,10 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						ID: 2916289,
 						jetpack: true,
 						options: {
-							jetpack_version: '3.4',
-						},
+							jetpack_version: '3.4'
+						}
 					},
-				},
+				}
 			},
 			ui: {},
 		};
@@ -117,7 +115,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 		expect( sites[ 1 ].ID ).to.eql( 2916289 );
 	} );
 
-	test( 'should return an array with the selected site if it verifies jetpack canManage conditions', () => {
+	it( 'should return an array with the selected site if it verifies jetpack canManage conditions', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -131,7 +129,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						edit_pages: true,
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -140,7 +138,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						jetpack: true,
 						options: {
 							active_modules: null,
-							jetpack_version: '3.5',
+							jetpack_version: '3.5'
 						},
 					},
 					2916289: {
@@ -148,10 +146,10 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						jetpack: true,
 						options: {
 							active_modules: [ 'manage' ],
-							jetpack_version: '3.4',
+							jetpack_version: '3.4'
 						},
 					},
-				},
+				}
 			},
 			ui: { selectedSiteId: 2916289 },
 		};
@@ -160,7 +158,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 		expect( sites[ 0 ].ID ).to.eql( 2916289 );
 	} );
 
-	test( 'should return an empty array if the selected site can not be managed', () => {
+	it( 'should return an empty array if the selected site can not be managed', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -172,7 +170,7 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 					2916287: {
 						manage_options: false,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -180,17 +178,17 @@ describe( 'getSelectedOrAllSitesJetpackCanManage()', () => {
 						ID: 2916286,
 						jetpack: true,
 						options: {
-							jetpack_version: '3.5',
+							jetpack_version: '3.5'
 						},
 					},
 					2916287: {
 						ID: 2916287,
 						jetpack: true,
 						options: {
-							jetpack_version: '3.5',
+							jetpack_version: '3.5'
 						},
-					},
-				},
+					}
+				}
 			},
 			ui: { selectedSiteId: 2916287 },
 		};

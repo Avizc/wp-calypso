@@ -1,10 +1,11 @@
 /**
  * Exernal dependencies
- *
- * @format
  */
-
-import { find, indexOf, isEmpty, merge, pick } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import find from 'lodash/find';
+import indexOf from 'lodash/indexOf';
+import pick from 'lodash/pick';
+import merge from 'lodash/merge';
 
 /**
  * Internal dependencies
@@ -14,14 +15,10 @@ import steps from 'signup/config/steps';
 import flows from 'signup/config/flows';
 import { defaultFlowName } from 'signup/config/flows';
 import formState from 'lib/form-state';
-import userFactory from 'lib/user';
-const user = userFactory();
+const user = require( 'lib/user' )();
 
 function getFlowName( parameters ) {
-	const flow =
-		parameters.flowName && isFlowName( parameters.flowName )
-			? parameters.flowName
-			: defaultFlowName;
+	const flow = ( parameters.flowName && isFlowName( parameters.flowName ) ) ? parameters.flowName : defaultFlowName;
 	return maybeFilterFlowName( flow, flows.filterFlowName );
 }
 
@@ -56,10 +53,7 @@ function isStepSectionName( pathFragment ) {
 }
 
 function getLocale( parameters ) {
-	return find(
-		pick( parameters, [ 'flowName', 'stepName', 'stepSectionName', 'lang' ] ),
-		isLocale
-	);
+	return find( pick( parameters, [ 'flowName', 'stepName', 'stepSectionName', 'lang' ] ), isLocale );
 }
 
 function isLocale( pathFragment ) {
@@ -84,7 +78,7 @@ function getStepUrl( flowName, stepName, stepSectionName, localeSlug ) {
 }
 
 function getValidPath( parameters ) {
-	const locale = getLocale( parameters ),
+	var locale = getLocale( parameters ),
 		flowName = getFlowName( parameters ),
 		currentFlowSteps = flows.getFlow( flowName ).steps,
 		stepName = getStepName( parameters ) || currentFlowSteps[ 0 ],
@@ -113,14 +107,17 @@ function getFlowSteps( flowName ) {
 }
 
 function getValueFromProgressStore( { signupProgress, stepName, fieldName } ) {
-	const siteStepProgress = find( signupProgress, step => step.stepName === stepName );
+	const siteStepProgress = find(
+		signupProgress,
+		step => step.stepName === stepName
+	);
 	return siteStepProgress ? siteStepProgress[ fieldName ] : null;
 }
 
-function mergeFormWithValue( { form, fieldName, fieldValue } ) {
+function mergeFormWithValue( { form, fieldName, fieldValue} ) {
 	if ( ! formState.getFieldValue( form, fieldName ) ) {
 		return merge( form, {
-			[ fieldName ]: { value: fieldValue },
+			[ fieldName ]: { value: fieldValue }
 		} );
 	}
 	return form;
@@ -128,19 +125,6 @@ function mergeFormWithValue( { form, fieldName, fieldValue } ) {
 
 function getDestination( destination, dependencies, flowName ) {
 	return flows.filterDestination( destination, dependencies, flowName );
-}
-
-function getThemeForDesignType( designType ) {
-	switch ( designType ) {
-		case 'blog':
-			return 'pub/independent-publisher-2';
-		case 'grid':
-			return 'pub/altofocus';
-		case 'page':
-			return 'pub/dara';
-		default:
-			return 'pub/twentyseventeen';
-	}
 }
 
 export default {
@@ -155,6 +139,5 @@ export default {
 	getNextStepName: getNextStepName,
 	getValueFromProgressStore: getValueFromProgressStore,
 	getDestination: getDestination,
-	mergeFormWithValue: mergeFormWithValue,
-	getThemeForDesignType: getThemeForDesignType,
+	mergeFormWithValue: mergeFormWithValue
 };

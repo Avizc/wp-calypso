@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -18,6 +14,7 @@ import FormFieldset from 'components/forms/form-fieldset';
 import FormLabel from 'components/forms/form-label';
 
 class TaxesOptions extends Component {
+
 	static propTypes = {
 		onCheckboxChange: PropTypes.func.isRequired,
 		pricesIncludeTaxes: PropTypes.bool,
@@ -36,26 +33,20 @@ class TaxesOptions extends Component {
 				<Card>
 					<FormFieldset>
 						<FormLabel>
-							<FormCheckbox
-								checked={ pricesIncludeTaxes || false }
-								name="pricesIncludeTaxes"
-								onChange={ onCheckboxChange }
-							/>
-							<span>{ translate( 'Taxes are included in product prices' ) }</span>
+							<FormCheckbox checked={ pricesIncludeTaxes || false } name="pricesIncludeTaxes" onChange={ onCheckboxChange } />
+								<span>{ translate( 'Taxes are included in product prices' ) }</span>
 						</FormLabel>
+					</FormFieldset>
+					<FormFieldset>
 						<FormLabel>
-							<FormCheckbox
-								checked={ shippingIsTaxable || false }
-								name="shippingIsTaxable"
-								onChange={ onCheckboxChange }
-							/>
-							<span>{ translate( 'Charge taxes on shipping costs' ) }</span>
+							<FormCheckbox checked={ shippingIsTaxable || false } name="shippingIsTaxable" onChange={ onCheckboxChange } />
+								<span>{ translate( 'Charge taxes on shipping costs' ) }</span>
 						</FormLabel>
 					</FormFieldset>
 				</Card>
 			</div>
 		);
-	};
+	}
 }
 
 export default localize( TaxesOptions );

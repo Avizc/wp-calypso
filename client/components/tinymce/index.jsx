@@ -1,27 +1,25 @@
 /**
- * External dependencies
- *
- * @format
+ * External Dependencies
  */
+const ReactDom = require( 'react-dom' ),
+	React = require( 'react' ),
+	classnames = require( 'classnames' ),
+	autosize = require( 'autosize' ),
+	forEach = require( 'lodash/forEach' ),
+	assign = require( 'lodash/assign' ),
+	tinymce = require( 'tinymce/tinymce' );
 
-import { assign, forEach } from 'lodash';
-import ReactDom from 'react-dom';
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import autosize from 'autosize';
-import tinymce from 'tinymce/tinymce';
-import 'tinymce/themes/modern/theme.js';
+require( 'tinymce/themes/modern/theme.js' );
 
 // TinyMCE plugins
-import 'tinymce/plugins/colorpicker/plugin.js';
-import 'tinymce/plugins/directionality/plugin.js';
-import 'tinymce/plugins/hr/plugin.js';
-import 'tinymce/plugins/lists/plugin.js';
-import 'tinymce/plugins/media/plugin.js';
-import 'tinymce/plugins/paste/plugin.js';
-import 'tinymce/plugins/tabfocus/plugin.js';
-import 'tinymce/plugins/textcolor/plugin.js';
+require( 'tinymce/plugins/colorpicker/plugin.js' );
+require( 'tinymce/plugins/directionality/plugin.js' );
+require( 'tinymce/plugins/hr/plugin.js' );
+require( 'tinymce/plugins/lists/plugin.js' );
+require( 'tinymce/plugins/media/plugin.js' );
+require( 'tinymce/plugins/paste/plugin.js' );
+require( 'tinymce/plugins/tabfocus/plugin.js' );
+require( 'tinymce/plugins/textcolor/plugin.js' );
 
 // TinyMCE plugins that we've forked or written ourselves
 import wpcomPlugin from './plugins/wpcom/plugin.js';
@@ -45,7 +43,6 @@ import afterTheDeadlinePlugin from './plugins/after-the-deadline/plugin';
 import wptextpatternPlugin from './plugins/wptextpattern/plugin';
 import toolbarPinPlugin from './plugins/toolbar-pin/plugin';
 import insertMenuPlugin from './plugins/insert-menu/plugin';
-import embedPlugin from './plugins/embed/plugin';
 import embedReversalPlugin from './plugins/embed-reversal/plugin';
 import EditorHtmlToolbar from 'post-editor/editor-html-toolbar';
 import mentionsPlugin from './plugins/mentions/plugin';
@@ -73,22 +70,19 @@ import wpEmojiPlugin from './plugins/wpemoji/plugin';
 	afterTheDeadlinePlugin,
 	wptextpatternPlugin,
 	toolbarPinPlugin,
-	embedPlugin,
 	embedReversalPlugin,
 	markdownPlugin,
 	wpEmojiPlugin,
 	simplePaymentsPlugin,
-].forEach( initializePlugin => initializePlugin() );
+].forEach( ( initializePlugin ) => initializePlugin() );
 
 /**
  * Internal Dependencies
  */
-import userFactory from 'lib/user';
-
-const user = userFactory();
-import i18n from './i18n';
-import viewport from 'lib/viewport';
-import config from 'config';
+const user = require( 'lib/user' )(),
+	i18n = require( './i18n' ),
+	viewport = require( 'lib/viewport' ),
+	config = require( 'config' );
 import { decodeEntities, wpautop, removep } from 'lib/formatting';
 
 /**
@@ -115,12 +109,11 @@ const EVENTS = {
 	show: 'onShow',
 	submit: 'onSubmit',
 	undo: 'onUndo',
-	setContent: 'onSetContent',
+	setContent: 'onSetContent'
 };
 
 const PLUGINS = [
 	'colorpicker',
-	'embed',
 	'hr',
 	'lists',
 	'media',
@@ -159,54 +152,51 @@ mentionsPlugin();
 PLUGINS.push( 'wpcom/mentions' );
 
 const CONTENT_CSS = [
-	window.app.staticUrls[ 'tinymce/skins/wordpress/wp-content.css' ],
-	'//s1.wp.com/wp-includes/css/dashicons.css?v=20150727',
-	window.app.staticUrls[ 'editor.css' ],
-	'https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese',
+	window.app.tinymceWpSkin,
+	'//s1.wp.com/wp-includes/css/dashicons.css',
+	window.app.tinymceEditorCss,
+	'//fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese',
 ];
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'TinyMCE',
 
 	propTypes: {
-		isNew: PropTypes.bool,
-		mode: PropTypes.string,
-		tabIndex: PropTypes.number,
-		onActivate: PropTypes.func,
-		onBlur: PropTypes.func,
-		onChange: PropTypes.func,
-		onDeactivate: PropTypes.func,
-		onFocus: PropTypes.func,
-		onHide: PropTypes.func,
-		onInit: PropTypes.func,
-		onInput: PropTypes.func,
-		onKeyUp: PropTypes.func,
-		onMouseUp: PropTypes.func,
-		onRedo: PropTypes.func,
-		onRemove: PropTypes.func,
-		onReset: PropTypes.func,
-		onShow: PropTypes.func,
-		onSubmit: PropTypes.func,
-		onSetContent: PropTypes.func,
-		onUndo: PropTypes.func,
-		onTextEditorChange: PropTypes.func,
+		mode: React.PropTypes.string,
+		onActivate: React.PropTypes.func,
+		onBlur: React.PropTypes.func,
+		onChange: React.PropTypes.func,
+		onDeactivate: React.PropTypes.func,
+		onFocus: React.PropTypes.func,
+		onHide: React.PropTypes.func,
+		onInit: React.PropTypes.func,
+		onRedo: React.PropTypes.func,
+		onRemove: React.PropTypes.func,
+		onReset: React.PropTypes.func,
+		onShow: React.PropTypes.func,
+		onSubmit: React.PropTypes.func,
+		onUndo: React.PropTypes.func,
+		onSetContent: React.PropTypes.func,
+		tabIndex: React.PropTypes.number,
+		isNew: React.PropTypes.bool,
+		onTextEditorChange: React.PropTypes.func,
+		onKeyUp: React.PropTypes.func
 	},
 
 	contextTypes: {
-		store: PropTypes.object,
+		store: React.PropTypes.object
 	},
 
 	getDefaultProps: function() {
 		return {
 			mode: 'tinymce',
-			isNew: false,
+			isNew: false
 		};
 	},
 
 	getInitialState: function() {
 		return {
-			content: '',
-			selection: null,
+			content: ''
 		};
 	},
 
@@ -241,11 +231,11 @@ export default React.createClass( {
 			}
 
 			this.bindEditorEvents();
-			editor.on( 'SetTextAreaContent', event => this.setTextAreaContent( event.content ) );
-			editor.once(
-				'PostRender',
-				this.toggleEditor.bind( this, { autofocus: ! this.props.isNew } )
-			);
+			editor.on( 'SetTextAreaContent', ( event ) => this.setTextAreaContent( event.content ) );
+
+			if ( ! viewport.isMobile() ) {
+				editor.once( 'PostRender', this.toggleEditor.bind( this, { autofocus: ! this.props.isNew } ) );
+			}
 		}.bind( this );
 
 		this.localize();
@@ -264,34 +254,34 @@ export default React.createClass( {
 				alignleft: [
 					{
 						selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li',
-						styles: { textAlign: 'left' },
+						styles: { textAlign: 'left' }
 					},
 					{
 						selector: 'img,table,dl.wp-caption',
-						classes: 'alignleft',
-					},
+						classes: 'alignleft'
+					}
 				],
 				aligncenter: [
 					{
 						selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li',
-						styles: { textAlign: 'center' },
+						styles: { textAlign: 'center' }
 					},
 					{
 						selector: 'img,table,dl.wp-caption',
-						classes: 'aligncenter',
-					},
+						classes: 'aligncenter'
+					}
 				],
 				alignright: [
 					{
 						selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li',
-						styles: { textAlign: 'right' },
+						styles: { textAlign: 'right' }
 					},
 					{
 						selector: 'img,table,dl.wp-caption',
-						classes: 'alignright',
-					},
+						classes: 'alignright'
+					}
 				],
-				strikethrough: { inline: 'del' },
+				strikethrough: { inline: 'del' }
 			},
 			relative_urls: false,
 			remove_script_host: false,
@@ -326,8 +316,7 @@ export default React.createClass( {
 			autoresize_bottom_margin: viewport.isMobile() ? 10 : 50,
 
 			toolbar1: `wpcom_insert_menu,formatselect,bold,italic,bullist,numlist,link,blockquote,alignleft,aligncenter,alignright,spellchecker,wp_more,${ ltrButton }wpcom_advanced`,
-			toolbar2:
-				'strikethrough,underline,hr,alignjustify,forecolor,pastetext,removeformat,wp_charmap,outdent,indent,undo,redo,wp_help',
+			toolbar2: 'strikethrough,underline,hr,alignjustify,forecolor,pastetext,removeformat,wp_charmap,outdent,indent,undo,redo,wp_help',
 			toolbar3: '',
 			toolbar4: '',
 
@@ -336,7 +325,8 @@ export default React.createClass( {
 			body_class: 'content post-type-post post-status-draft post-format-standard locale-en-us',
 			add_unload_trigger: false,
 
-			setup: setup,
+			setup: setup
+
 		} );
 
 		autosize( ReactDom.findDOMNode( this.refs.text ) );
@@ -350,14 +340,11 @@ export default React.createClass( {
 	},
 
 	destroyEditor() {
-		forEach(
-			EVENTS,
-			function( eventHandler, eventName ) {
-				if ( this.props[ eventHandler ] ) {
-					this._editor.off( eventName, this.props[ eventHandler ] );
-				}
-			}.bind( this )
-		);
+		forEach( EVENTS, function( eventHandler, eventName ) {
+			if ( this.props[ eventHandler ] ) {
+				this._editor.off( eventName, this.props[ eventHandler ] );
+			}
+		}.bind( this ) );
 
 		tinymce.remove( this._editor );
 		this._editor = null;
@@ -371,18 +358,15 @@ export default React.createClass( {
 	bindEditorEvents: function( prevProps ) {
 		prevProps = prevProps || {};
 
-		forEach(
-			EVENTS,
-			function( eventHandler, eventName ) {
-				if ( prevProps[ eventHandler ] !== this.props[ eventHandler ] ) {
-					if ( this.props[ eventHandler ] ) {
-						this._editor.on( eventName, this.props[ eventHandler ] );
-					} else {
-						this._editor.off( eventName, this.props[ eventHandler ] );
-					}
+		forEach( EVENTS, function( eventHandler, eventName ) {
+			if ( prevProps[ eventHandler ] !== this.props[ eventHandler ] ) {
+				if ( this.props[ eventHandler ] ) {
+					this._editor.on( eventName, this.props[ eventHandler ] );
+				} else {
+					this._editor.off( eventName, this.props[ eventHandler ] );
 				}
-			}.bind( this )
-		);
+			}
+		}.bind( this ) );
 	},
 
 	toggleEditor: function( options = { autofocus: true } ) {
@@ -394,7 +378,7 @@ export default React.createClass( {
 			this._editor.hide();
 			this.doAutosizeUpdate();
 			if ( options.autofocus ) {
-				this.focusEditor();
+				this.focusEditor( );
 			}
 			return;
 		}
@@ -410,11 +394,7 @@ export default React.createClass( {
 			const textNode = ReactDom.findDOMNode( this.refs.text );
 
 			// Collapse selection to avoid scrolling to the bottom of the textarea
-			if ( this.state.selection ) {
-				this.selectTextInTextArea( this.state.selection );
-			} else {
-				textNode.setSelectionRange( 0, 0 );
-			}
+			textNode.setSelectionRange( 0, 0 );
 
 			// Browser is not Internet Explorer 11
 			if ( 11 !== tinymce.Env.ie ) {
@@ -454,12 +434,9 @@ export default React.createClass( {
 	},
 
 	setTextAreaContent: function( content ) {
-		this.setState(
-			{
-				content: decodeEntities( content ),
-			},
-			this.doAutosizeUpdate
-		);
+		this.setState( {
+			content: decodeEntities( content )
+		}, this.doAutosizeUpdate );
 	},
 
 	setEditorContent: function( content, args = {} ) {
@@ -473,29 +450,6 @@ export default React.createClass( {
 		}
 
 		this.setTextAreaContent( content );
-	},
-
-	setSelection: function( selection ) {
-		this.setState( {
-			selection,
-		} );
-	},
-
-	selectTextInTextArea: function( selection ) {
-		// only valid in the text area mode and if we have selection
-		if ( ! selection ) {
-			return;
-		}
-
-		const textNode = ReactDom.findDOMNode( this.refs.text );
-
-		const start = selection.start;
-		const end = selection.end || selection.start;
-		// Collapse selection to avoid scrolling to the bottom of the textarea
-		textNode.setSelectionRange( start, end );
-
-		// clear out the selection from the state
-		this.setState( { selection: null } );
 	},
 
 	onTextAreaChange: function( event ) {
@@ -538,28 +492,17 @@ export default React.createClass( {
 		const { mode } = this.props;
 		const className = classnames( {
 			tinymce: true,
-			'is-visible': mode === 'html',
+			'is-visible': mode === 'html'
 		} );
 
-		/*
-		 * Using `classnames()` here is partly a hack to avoid the linter complaining that the
-		 * container is named `tinymce-container` instead of `tinymce`. Ideally the containing
-		 * `div` and the `textarea` should be refactored so that the `div` has the `tinymce`
-		 * class, but that would interfere with higher priority fixes. This component is slated
-		 * for some refactoring in the near future, so that will be a more convenient time to
-		 * clean this up.
-		 */
-		const containerClassName = classnames( 'tinymce-container', 'editor-mode-' + mode );
-
 		return (
-			<div className={ containerClassName }>
-				{ 'html' === mode &&
-				config.isEnabled( 'post-editor/html-toolbar' ) && (
+			<div>
+				{ 'html' === mode && config.isEnabled( 'post-editor/html-toolbar' ) &&
 					<EditorHtmlToolbar
 						content={ this.refs.text }
 						onToolbarChangeContent={ this.onToolbarChangeContent }
 					/>
-				) }
+				}
 				<textarea
 					ref="text"
 					className={ className }
@@ -570,5 +513,5 @@ export default React.createClass( {
 				/>
 			</div>
 		);
-	},
+	}
 } );

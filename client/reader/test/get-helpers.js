@@ -1,11 +1,10 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import { getSiteUrl, getSiteName } from '../get-helpers';
 
@@ -14,31 +13,45 @@ describe( '#getSiteUrl', () => {
 	const feedWithUrl = { URL: 'feedWithUrl.com' };
 	const feedWithFeedUrl = { feed_URL: 'feedwithFeedUrl.com' };
 	const postWithSiteUrl = { site_URL: 'postWithSiteUrl' };
+	const postWithFeedUrl = { feed_URL: 'postWithFeedUrl' };
 
-	test( 'should favor site over feed if both exist', () => {
+	it( 'should favor site over feed if both exist', () => {
 		const siteUrl = getSiteUrl( { site: siteWithUrl, feed: feedWithUrl } );
 		expect( siteUrl ).eql( siteWithUrl.URL );
 	} );
 
-	test( 'should get title from site if feed does not exist', () => {
+	it( 'should get title from site if feed does not exist', () => {
 		const siteUrl = getSiteUrl( { site: siteWithUrl } );
 		expect( siteUrl ).eql( siteWithUrl.URL );
 	} );
 
-	test( 'should get title from feed if site does not exist', () => {
+	it( 'should get title from feed if site does not exist', () => {
 		const siteUrl = getSiteUrl( { feed: feedWithUrl } );
 		expect( siteUrl ).eql( feedWithUrl.URL );
 
 		const siteUrl2 = getSiteUrl( { feed: feedWithFeedUrl } );
-		expect( siteUrl2 ).eql( 'feedwithFeedUrl.com' );
+		expect( siteUrl2 ).eql( false );
 	} );
 
-	test( 'should grab url from post if its there', () => {
+	it( 'should not use the feed_URL', () => {
+		const siteUrl2 = getSiteUrl( { feed: feedWithFeedUrl } );
+		expect( siteUrl2 ).not.ok;
+
+		const feedUrl = getSiteUrl( { post: postWithFeedUrl } );
+		expect( feedUrl ).not.ok;
+	} );
+
+	it( 'should get title from site if feed does not exist', () => {
+		const siteUrl = getSiteUrl( { site: siteWithUrl } );
+		expect( siteUrl ).eql( siteWithUrl.URL );
+	} );
+
+	it( 'should grab url from post if its there', () => {
 		const siteUrl = getSiteUrl( { post: postWithSiteUrl } );
 		expect( siteUrl ).eql( postWithSiteUrl.site_URL );
 	} );
 
-	test( 'should return false if cannot find a reasonable url', () => {
+	it( 'should return false if cannot find a reasonable url', () => {
 		const noArg = getSiteUrl();
 		expect( noArg ).not.ok;
 
@@ -64,14 +77,14 @@ describe( '#getSiteName', () => {
 	const allFeeds = [ feedWithName, feedWithTitle, feedWithTitleAndName, feedWithError ];
 	const postWithSiteName = { site_name: 'postSiteName' };
 
-	test( 'should favor site title over everything', () => {
+	it( 'should favor site title over everything', () => {
 		allFeeds.forEach( feed => {
 			const siteName = getSiteName( { site: siteWithTitleAndDomain, feed } );
 			expect( siteName ).eql( siteWithTitleAndDomain.title );
 		} );
 	} );
 
-	test( 'should fallback to feed if site title doesnt exist', () => {
+	it( 'should fallback to feed if site title doesnt exist', () => {
 		const siteName = getSiteName( { site: {}, feed: feedWithName } );
 		expect( siteName ).eql( feedWithName.name );
 
@@ -79,21 +92,21 @@ describe( '#getSiteName', () => {
 		expect( siteTitle ).eql( feedWithTitle.title );
 	} );
 
-	test( 'should fallback to post if neither site or feed exist', () => {
+	it( 'should fallback to post if neither site or feed exist', () => {
 		expect( getSiteName( { site: {}, feed: {}, post: postWithSiteName } ) ).eql(
-			postWithSiteName.site_name
+			postWithSiteName.site_name,
 		);
 
 		expect( getSiteName( { post: postWithSiteName } ) ).eql( postWithSiteName.site_name );
 	} );
 
-	test( 'should fallback to domain name if cannot find title', () => {
+	it( 'should fallback to domain name if cannot find title', () => {
 		expect( getSiteName( { site: siteWithDomain, post: {} } ) ).eql( siteWithDomain.domain );
 
 		expect( getSiteName( { feed: feedWithUrl } ) ).eql( 'feedwithurl.com' );
 	} );
 
-	test( 'should return null if nothing was found', () => {
+	it( 'should return null if nothing was found', () => {
 		expect( getSiteName() ).eql( null );
 
 		expect( getSiteName( { feed: {}, site: {}, post: {} } ) ).eql( null );

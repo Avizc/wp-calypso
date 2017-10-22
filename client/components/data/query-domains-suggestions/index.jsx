@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -26,6 +22,7 @@ function getQueryObject( props ) {
 }
 
 class QueryDomainsSuggestions extends Component {
+
 	constructor( props ) {
 		super( props );
 		this.requestDomainsSuggestions = this.requestDomainsSuggestions.bind( this );
@@ -42,13 +39,11 @@ class QueryDomainsSuggestions extends Component {
 	}
 
 	componentWillReceiveProps( nextProps ) {
-		if (
-			nextProps.requestingDomainsSuggestions ||
+		if ( nextProps.requestingDomainsSuggestions ||
 			( this.props.query === nextProps.query &&
 				this.props.vendor === nextProps.vendor &&
 				this.props.quantity === nextProps.quantity &&
-				this.props.includeSubdomain === nextProps.includeSubdomain )
-		) {
+				this.props.includeSubdomain === nextProps.includeSubdomain ) ) {
 			return;
 		}
 		this.requestDomainsSuggestions( nextProps );
@@ -65,22 +60,19 @@ QueryDomainsSuggestions.propTypes = {
 	quantity: PropTypes.number,
 	includeSubdomain: PropTypes.bool,
 	requestingDomainsSuggestions: PropTypes.bool,
-	requestDomainsSuggestions: PropTypes.func,
+	requestDomainsSuggestions: PropTypes.func
 };
 
 QueryDomainsSuggestions.defaultProps = {
 	requestDomainsSuggestions: () => {},
 	includeSubdomain: false,
-	quantity: 5,
+	quantity: 5
 };
 
 export default connect(
 	( state, ownProps ) => {
 		return {
-			requestingDomainsSuggestions: isRequestingDomainsSuggestions(
-				state,
-				getQueryObject( ownProps )
-			),
+			requestingDomainsSuggestions: isRequestingDomainsSuggestions( state, getQueryObject( ownProps ) )
 		};
 	},
 	{ requestDomainsSuggestions }

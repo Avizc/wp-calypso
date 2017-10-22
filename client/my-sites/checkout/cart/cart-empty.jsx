@@ -1,28 +1,21 @@
 /**
  * External dependencies
- *
- * @format
  */
+var React = require( 'react' ),
+	page = require( 'page' ),
+	startsWith = require( 'lodash/startsWith' );
 
-import { startsWith } from 'lodash';
-import { localize } from 'i18n-calypso';
-import React from 'react';
-import page from 'page';
-
-const CartEmpty = React.createClass( {
+var CartEmpty = React.createClass({
 	render: function() {
 		return (
 			<div>
 				<div className="cart-empty">
-					{ this.props.translate( 'There are no items in your cart.' ) }
+					{ this.translate( 'There are no items in your cart.' ) }
 				</div>
 				<div className="cart-buttons">
-					<button className="cart-checkout-button button is-primary" onClick={ this.handleClick }>
-						{ this.shouldShowPlanButton() ? (
-							this.props.translate( 'Add a Plan' )
-						) : (
-							this.props.translate( 'Add a Domain' )
-						) }
+					<button className="cart-checkout-button button is-primary"
+							onClick={ this.handleClick }>
+							{ this.shouldShowPlanButton() ? this.translate( 'Add a Plan' ) : this.translate( 'Add a Domain' ) }
 					</button>
 				</div>
 			</div>
@@ -39,10 +32,8 @@ const CartEmpty = React.createClass( {
 	handleClick: function( event ) {
 		event.preventDefault();
 
-		page(
-			( this.shouldShowPlanButton() ? '/plans/' : '/domains/add/' ) + this.props.selectedSite.slug
-		);
-	},
-} );
+		page( ( this.shouldShowPlanButton() ? '/plans/' : '/domains/add/' ) + this.props.selectedSite.slug );
+	}
+});
 
-export default localize( CartEmpty );
+module.exports = CartEmpty;

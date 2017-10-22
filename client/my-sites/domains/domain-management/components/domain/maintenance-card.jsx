@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
+import React from 'react' ;
 
 /**
  * Internal dependencies
@@ -20,11 +17,10 @@ const MaintenanceCard = ( { selectedDomainName, translate } ) => {
 		<EmptyContent
 			title={ translate( '{{strong}}.%(tld)s{{/strong}} is undergoing maintenance', {
 				components: { strong: <strong /> },
-				args: { tld },
+				args: { tld }
 			} ) }
 			line={ translate( 'No changes are allowed during that time. Please check back shortly.' ) }
-			illustration={ '/calypso/images/illustrations/whoops.svg' }
-		/>
+			illustration={ '/calypso/images/drake/drake-whoops.svg' } />
 	);
 };
 

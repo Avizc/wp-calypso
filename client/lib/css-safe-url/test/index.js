@@ -1,17 +1,15 @@
-/** @format */
-
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import cssSafeUrl from '../';
 
 describe( 'css-safe-url', () => {
-	test( 'should escape parens', () => {
+	it( 'should escape parens', () => {
 		expect( cssSafeUrl( 'http://foo.com/()/' ) ).to.equal( 'http://foo.com/\\(\\)/' );
 	} );
 } );

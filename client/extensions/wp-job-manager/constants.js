@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { translate } from 'i18n-calypso';
 
 export const Tabs = {
@@ -18,15 +15,5 @@ export const Tabs = {
 	PAGES: {
 		label: translate( 'Pages' ),
 		slug: 'pages',
-	},
+	}
 };
-
-export const Steps = {
-	CONFIRMATION: 'confirmation',
-	INTRO: 'intro',
-	PAGE_SETUP: 'page-setup',
-};
-
-export const SetupPath = '/extensions/wp-job-manager/setup';
-
-export const MinPluginVersion = '1.28.0';

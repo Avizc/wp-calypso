@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -11,8 +8,10 @@ import React from 'react';
  */
 import { localize } from 'i18n-calypso';
 
-export default localize( props => {
-	const { youtubeId } = props;
+export default localize( ( props ) => {
+	const {
+		youtubeId
+	} = props;
 
 	return (
 		<div className="help-courses__course-video">
@@ -20,8 +19,7 @@ export default localize( props => {
 				<iframe
 					className="help-courses__course-video-embed-iframe"
 					src={ `https://www.youtube.com/embed/${ youtubeId }?rel=0&showinfo=0` }
-					allowFullScreen
-				/>
+					allowFullScreen />
 			</div>
 		</div>
 	);

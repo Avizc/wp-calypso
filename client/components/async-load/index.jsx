@@ -1,21 +1,13 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { omit } from 'lodash';
 
 export default class AsyncLoad extends Component {
 	static propTypes = {
-		placeholder: PropTypes.node,
 		require: PropTypes.func.isRequired,
-	};
-
-	static defaultProps = {
-		placeholder: <div className="async-load__placeholder" />,
+		placeholder: PropTypes.node
 	};
 
 	constructor() {
@@ -23,7 +15,7 @@ export default class AsyncLoad extends Component {
 
 		this.state = {
 			require: null,
-			component: null,
+			component: null
 		};
 	}
 
@@ -47,8 +39,7 @@ export default class AsyncLoad extends Component {
 
 	require() {
 		const requireFunction = this.props.require;
-
-		requireFunction( component => {
+		requireFunction( ( component ) => {
 			if ( this.props.require === requireFunction ) {
 				this.setState( { component } );
 			}
@@ -57,11 +48,14 @@ export default class AsyncLoad extends Component {
 
 	render() {
 		if ( this.state.component ) {
-			const props = omit( this.props, [ 'placeholder', 'require' ] );
-
+			const props = omit( this.props, [ 'require', 'placeholder' ] );
 			return <this.state.component { ...props } />;
 		}
 
-		return this.props.placeholder;
+		if ( this.props.placeholder ) {
+			return this.props.placeholder;
+		}
+
+		return <div className="async-load" />;
 	}
 }

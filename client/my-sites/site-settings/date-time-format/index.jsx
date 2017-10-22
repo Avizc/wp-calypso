@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 import { capitalize, includes } from 'lodash';
 
@@ -17,7 +13,10 @@ import DateFormatOption from './date-format-option';
 import StartOfWeekOption from './start-of-week-option';
 import TimeFormatOption from './time-format-option';
 import { defaultDateFormats, defaultTimeFormats } from './default-formats';
-import { getLocalizedDate, phpToMomentDatetimeFormat } from './utils';
+import {
+	getLocalizedDate,
+	phpToMomentDatetimeFormat,
+} from './utils';
 
 export class DateTimeFormat extends Component {
 	static propTypes = {
@@ -46,7 +45,12 @@ export class DateTimeFormat extends Component {
 	};
 
 	componentWillReceiveProps( nextProps ) {
-		const { fields: { date_format: dateFormat, time_format: timeFormat } } = nextProps;
+		const {
+			fields: {
+				date_format: dateFormat,
+				time_format: timeFormat,
+			},
+		} = nextProps;
 
 		if ( ! this.state.isLoadingSettings || '' === dateFormat || '' === timeFormat ) {
 			return;
@@ -102,11 +106,19 @@ export class DateTimeFormat extends Component {
 
 		return (
 			<div>
-				<div className="date-time-format__title">{ translate( 'Date and Time Format' ) }</div>
+				<div className="date-time-format__title">
+					{ translate( 'Date and Time Format' ) }
+				</div>
 				<div className="date-time-format__info">
-					{ dateFormat && phpToMomentDatetimeFormat( localizedDate, dateFormat ) } &bull;{' '}
-					{ timeFormat && phpToMomentDatetimeFormat( localizedDate, timeFormat ) } &bull;{' '}
-					{ translate( 'Week starts on %s', { args: weekday } ) }
+					{
+						dateFormat &&
+							phpToMomentDatetimeFormat( localizedDate, dateFormat )
+					} &bull; {
+						timeFormat &&
+							phpToMomentDatetimeFormat( localizedDate, timeFormat )
+					} &bull; {
+						translate( 'Week starts on %s', { args: weekday } )
+					}
 				</div>
 			</div>
 		);
@@ -125,13 +137,16 @@ export class DateTimeFormat extends Component {
 			isSavingSettings,
 		} = this.props;
 
-		const { customDateFormat, customTimeFormat } = this.state;
+		const {
+			customDateFormat,
+			customTimeFormat,
+		} = this.state;
 
 		const localizedDate = getLocalizedDate( timezoneString );
 
 		return (
 			<FoldableCard
-				className="date-time-format site-settings__foldable-card"
+				className="date-time-format"
 				clickableHeader
 				header={ this.getCardHeader() }
 			>

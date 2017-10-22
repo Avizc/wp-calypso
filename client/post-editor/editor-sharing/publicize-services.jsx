@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { groupBy, map } from 'lodash';
 
@@ -19,34 +15,35 @@ import { getSiteUserConnections } from 'state/sharing/publicize/selectors';
 
 export const EditorSharingPublicizeServices = ( { connections, post, newConnectionPopup } ) => (
 	<ul className="editor-sharing__publicize-services">
-		{ map( groupBy( connections, 'label' ), ( groupedConnections, label ) => (
+		{ map( groupBy( connections, 'label' ), ( groupedConnections, label ) =>
 			<li key={ label } className="editor-sharing__publicize-service">
 				<h5 className="editor-sharing__publicize-service-heading">{ label }</h5>
-				{ groupedConnections.map( connection => (
+				{ groupedConnections.map( ( connection ) =>
 					<EditorSharingPublicizeConnection
 						key={ connection.ID }
 						post={ post }
 						connection={ connection }
 						onRefresh={ newConnectionPopup }
-						label={ label }
-					/>
-				) ) }
+						label = { label } />
+				) }
 			</li>
-		) ) }
+		) }
 	</ul>
 );
 
 EditorSharingPublicizeServices.propTypes = {
 	connections: PropTypes.array.isRequired,
 	post: PropTypes.object,
-	newConnectionPopup: PropTypes.func.isRequired,
+	newConnectionPopup: PropTypes.func.isRequired
 };
 
-export default connect( state => {
-	const siteId = getSelectedSiteId( state );
-	const userId = getCurrentUserId( state );
+export default connect(
+	( state ) => {
+		const siteId = getSelectedSiteId( state );
+		const userId = getCurrentUserId( state );
 
-	return {
-		connections: getSiteUserConnections( state, siteId, userId ),
-	};
-} )( EditorSharingPublicizeServices );
+		return {
+			connections: getSiteUserConnections( state, siteId, userId ),
+		};
+	},
+)( EditorSharingPublicizeServices );

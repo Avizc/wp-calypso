@@ -1,35 +1,15 @@
-/** @format */
 /**
  * External dependencies
  */
-import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { localize } from 'i18n-calypso';
-
-/**
- * Internal Dependencies
- */
+import React, { PropTypes } from 'react';
 import AutoDirection from 'components/auto-direction';
-import Emojify from 'components/emojify';
 
-class PostCommentContent extends React.Component {
-	static propTypes = {
-		content: PropTypes.string.isRequired,
-		isPlaceholder: PropTypes.bool,
-		className: PropTypes.string,
-		setWithDimensionsRef: PropTypes.func,
-	};
-
-	static defaultProps = {
-		setWithDimensionsRef: () => {},
-	};
-
+export default class PostCommentContent extends React.Component {
 	render() {
 		// Don't trust comment content unless it was provided by the API
 		if ( this.props.isPlaceholder ) {
 			return (
-				<div className={ classNames( 'comments__comment-content', this.props.className ) }>
+				<div className="comments__comment-content">
 					{ this.props.content.split( '\n' ).map( ( item, key ) => {
 						return (
 							<span key={ key }>
@@ -41,22 +21,21 @@ class PostCommentContent extends React.Component {
 				</div>
 			);
 		}
+
 		/*eslint-disable react/no-danger*/
 		return (
 			<AutoDirection>
-				<div className={ classNames( 'comments__comment-content-wrapper', this.props.className ) }>
-					<Emojify>
-						<div
-							className="comments__comment-content"
-							ref={ this.props.setWithDimensionsRef }
-							dangerouslySetInnerHTML={ { __html: this.props.content } }
-						/>
-					</Emojify>
-				</div>
+				<div
+					className="comments__comment-content"
+					dangerouslySetInnerHTML={ { __html: this.props.content } }
+				/>
 			</AutoDirection>
 		);
 		/*eslint-enable react/no-danger*/
 	}
 }
 
-export default localize( PostCommentContent );
+PostCommentContent.propTypes = {
+	content: PropTypes.string.isRequired,
+	isPlaceholder: PropTypes.bool,
+};

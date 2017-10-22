@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -24,5 +20,5 @@ export default function EditorSharing( { post, site } ) {
 
 EditorSharing.propTypes = {
 	site: PropTypes.object,
-	post: PropTypes.object,
+	post: PropTypes.object
 };

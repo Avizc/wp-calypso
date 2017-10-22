@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,27 +9,27 @@ import { expect } from 'chai';
 import { isRequestingBillingTransactions } from '../';
 
 describe( 'isRequestingBillingTransactions()', () => {
-	test( 'should return true if the billing transactions are being fetched', () => {
+	it( 'should return true if the billing transactions are being fetched', () => {
 		const state = {
 			billingTransactions: {
-				requesting: true,
-			},
+				requesting: true
+			}
 		};
 		const output = isRequestingBillingTransactions( state );
 		expect( output ).to.be.true;
 	} );
 
-	test( 'should return false if the billing transactions are currently not being fetched', () => {
+	it( 'should return false if the billing transactions are currently not being fetched', () => {
 		const state = {
 			billingTransactions: {
-				requesting: false,
-			},
+				requesting: false
+			}
 		};
 		const output = isRequestingBillingTransactions( state );
 		expect( output ).to.be.false;
 	} );
 
-	test( 'should return false if the billing transactions have never been requested', () => {
+	it( 'should return false if the billing transactions have never been requested', () => {
 		const output = isRequestingBillingTransactions( {} );
 		expect( output ).to.be.false;
 	} );

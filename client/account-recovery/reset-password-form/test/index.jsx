@@ -1,19 +1,15 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
+import React from 'react';
 import { expect } from 'chai';
 import { shallow, mount } from 'enzyme';
 import { identity } from 'lodash';
-import React from 'react';
 
 /**
  * Internal dependencies
  */
+import useFakeDom from 'test/helpers/use-fake-dom';
 import { ResetPasswordFormComponent } from '..';
 import ResetOptionSet from '../reset-option-set';
 
@@ -38,17 +34,22 @@ describe( 'ResetPasswordForm', () => {
 		'.reset-password-form__sms-option.secondary',
 	];
 
-	test( 'should render as expected', () => {
+	it( 'should render as expected', () => {
 		const wrapper = shallow(
-			<ResetPasswordFormComponent resetOptions={ exampleResetOptions } translate={ identity } />
+			<ResetPasswordFormComponent
+				resetOptions={ exampleResetOptions }
+				translate={ identity }
+			/>
 		);
 
 		expect( wrapper.find( ResetOptionSet ) ).to.have.length( 2 );
 		expect( wrapper.find( '.reset-password-form__submit-button' ).prop( 'disabled' ) ).to.be.ok;
 	} );
 
-	describe( 'fields', () => {
-		test( 'should be disabled while isRequesting is true.', () => {
+	context( 'fields', () => {
+		useFakeDom();
+
+		it( 'should be disabled while isRequesting is true.', function() {
 			const wrapper = mount(
 				<ResetPasswordFormComponent
 					resetOptions={ exampleResetOptions }
@@ -64,27 +65,34 @@ describe( 'ResetPasswordForm', () => {
 		} );
 	} );
 
-	describe( 'submit button', () => {
-		test( 'should be disabled if no reset option is selected', () => {
+	context( 'submit button', () => {
+		useFakeDom();
+
+		it( 'should be disabled if no reset option is selected', function() {
 			const wrapper = mount(
-				<ResetPasswordFormComponent resetOptions={ exampleResetOptions } translate={ identity } />
+				<ResetPasswordFormComponent
+					resetOptions={ exampleResetOptions }
+					translate={ identity }
+				/>
 			);
 
 			// Expect the button to be disabled
 			expect( wrapper.find( '.reset-password-form__submit-button' ).prop( 'disabled' ) ).to.be.ok;
 		} );
 
-		test( 'should be enabled if a reset option is selected', () => {
+		it( 'should be enabled if a reset option is selected', function() {
 			const wrapper = mount(
-				<ResetPasswordFormComponent resetOptions={ exampleResetOptions } translate={ identity } />
+				<ResetPasswordFormComponent
+					resetOptions={ exampleResetOptions }
+					translate={ identity }
+				/>
 			);
 			wrapper.setState( { selectedMethod: 'primary_email' } );
 
-			expect( wrapper.find( '.reset-password-form__submit-button' ).prop( 'disabled' ) ).to.not.be
-				.ok;
+			expect( wrapper.find( '.reset-password-form__submit-button' ).prop( 'disabled' ) ).to.not.be.ok;
 		} );
 
-		test( 'should be disabled when isRequesting is true.', () => {
+		it( 'should be disabled when isRequesting is true.', function() {
 			const wrapper = mount(
 				<ResetPasswordFormComponent
 					resetOptions={ exampleResetOptions }

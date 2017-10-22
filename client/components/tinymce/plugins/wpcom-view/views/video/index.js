@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import ShortcodeUtils from 'lib/shortcode';
 import VideoView from './view';
 
@@ -15,8 +12,8 @@ export function match( content ) {
 			index: nextMatch.index,
 			content: nextMatch.content,
 			options: {
-				shortcode: nextMatch.shortcode,
-			},
+				shortcode: nextMatch.shortcode
+			}
 		};
 	}
 }

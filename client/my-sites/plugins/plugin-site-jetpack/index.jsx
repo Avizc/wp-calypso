@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -23,15 +19,15 @@ import Site from 'blocks/site';
 
 const PluginSiteJetpack = React.createClass( {
 	propTypes: {
-		site: PropTypes.object,
-		plugin: PropTypes.object,
-		notices: PropTypes.object,
-		allowedActions: PropTypes.shape( {
-			activation: PropTypes.bool,
-			autoupdate: PropTypes.bool,
-			remove: PropTypes.bool,
+		site: React.PropTypes.object,
+		plugin: React.PropTypes.object,
+		notices: React.PropTypes.object,
+		allowedActions: React.PropTypes.shape( {
+			activation: React.PropTypes.bool,
+			autoupdate: React.PropTypes.bool,
+			remove: React.PropTypes.bool,
 		} ),
-		isAutoManaged: PropTypes.bool,
+		isAutoManaged: React.PropTypes.bool,
 	},
 
 	getDefaultProps: function() {
@@ -46,21 +42,14 @@ const PluginSiteJetpack = React.createClass( {
 	},
 
 	renderInstallButton: function() {
-		var installInProgress = PluginsLog.isInProgressAction(
-			this.props.site.ID,
-			this.props.plugin.slug,
-			'INSTALL_PLUGIN'
-		);
+		var installInProgress = PluginsLog.isInProgressAction( this.props.site.ID, this.props.plugin.slug, 'INSTALL_PLUGIN' );
 
-		return (
-			<PluginInstallButton
-				isEmbed={ true }
-				notices={ this.props.notices }
-				selectedSite={ this.props.site }
-				plugin={ this.props.plugin }
-				isInstalling={ installInProgress }
-			/>
-		);
+		return <PluginInstallButton
+			isEmbed={ true }
+			notices={ this.props.notices }
+			selectedSite={ this.props.site }
+			plugin={ this.props.plugin }
+			isInstalling={ installInProgress } />;
 	},
 
 	renderInstallPlugin: function() {
@@ -69,8 +58,8 @@ const PluginSiteJetpack = React.createClass( {
 				compact
 				className="plugin-site-jetpack"
 				header={ <Site site={ this.props.site } indicator={ false } /> }
-				actionButton={ this.renderInstallButton() }
-			/>
+				actionButton={ this.renderInstallButton() } >
+			</FoldableCard>
 		);
 	},
 
@@ -84,56 +73,36 @@ const PluginSiteJetpack = React.createClass( {
 		const showAutoManagedMessage = this.props.isAutoManaged;
 
 		return (
-			<FoldableCard
-				compact
+			<FoldableCard compact
 				clickableHeader
 				className="plugin-site-jetpack"
 				header={ <Site site={ this.props.site } indicator={ false } /> }
-				summary={
-					<PluginUpdateIndicator
-						site={ this.props.site }
-						plugin={ this.props.plugin }
-						notices={ this.props.notices }
-						expanded={ false }
-					/>
-				}
-				expandedSummary={
-					<PluginUpdateIndicator
-						site={ this.props.site }
-						plugin={ this.props.plugin }
-						notices={ this.props.notices }
-						expanded={ true }
-					/>
-				}
-			>
+				summary={ <PluginUpdateIndicator site={ this.props.site } plugin={ this.props.plugin } notices={ this.props.notices } expanded={ false } /> }
+				expandedSummary={ <PluginUpdateIndicator site={ this.props.site } plugin={ this.props.plugin } notices={ this.props.notices } expanded={ true } /> }
+				>
 				<div>
-					{ canToggleActivation && (
-						<PluginActivateToggle
-							site={ this.props.site }
-							plugin={ this.props.site.plugin }
-							notices={ this.props.notices }
-						/>
-					) }
-					{ canToggleAutoupdate && (
-						<PluginAutoupdateToggle
-							site={ this.props.site }
-							plugin={ this.props.site.plugin }
-							notices={ this.props.notices }
-							wporg={ true }
-						/>
-					) }
-					{ canToggleRemove && (
-						<PluginRemoveButton
-							plugin={ this.props.site.plugin }
-							site={ this.props.site }
-							notices={ this.props.notices }
-						/>
-					) }
-					{ showAutoManagedMessage && (
+					{ canToggleActivation && <PluginActivateToggle
+						site={ this.props.site }
+						plugin={ this.props.site.plugin }
+						notices={ this.props.notices } /> }
+					{ canToggleAutoupdate && <PluginAutoupdateToggle
+						site={ this.props.site }
+						plugin={ this.props.site.plugin }
+						notices={ this.props.notices }
+						wporg={ true } /> }
+					{ canToggleRemove && <PluginRemoveButton
+						plugin={ this.props.site.plugin }
+						site={ this.props.site }
+						notices={ this.props.notices } /> }
+
+					{ showAutoManagedMessage &&
 						<div className="plugin-site-jetpack__automanage-notice">
-							{ this.props.translate( 'Auto-managed on this site' ) }
+						{ this.props.translate( '%(pluginName)s is automatically managed on this site',
+							{ args: { pluginName: this.props.plugin.name } } )
+						}
 						</div>
-					) }
+					}
+
 				</div>
 			</FoldableCard>
 		);
@@ -145,10 +114,7 @@ const PluginSiteJetpack = React.createClass( {
 				compact
 				className="plugin-site-jetpack has-manage-error"
 				header={ <Site site={ this.props.site } indicator={ false } /> }
-				actionButton={
-					<PluginSiteDisabledManage site={ this.props.site } plugin={ this.props.plugin } />
-				}
-			/>
+				actionButton={ <PluginSiteDisabledManage site={ this.props.site } plugin={ this.props.plugin } /> } />
 		);
 	},
 
@@ -157,11 +123,7 @@ const PluginSiteJetpack = React.createClass( {
 			return null;
 		}
 
-		if (
-			! ( typeof this.props.site.canManage === 'function'
-				? this.props.site.canManage()
-				: this.props.site.canManage )
-		) {
+		if ( ! this.props.site.canManage() ) {
 			return this.renderManageWarning();
 		}
 
@@ -170,7 +132,7 @@ const PluginSiteJetpack = React.createClass( {
 		}
 
 		return this.renderPluginSite();
-	},
+	}
 } );
 
 export default localize( PluginSiteJetpack );

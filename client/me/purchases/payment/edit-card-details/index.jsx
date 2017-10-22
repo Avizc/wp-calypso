@@ -1,12 +1,8 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 /**
  * Internal Dependencies

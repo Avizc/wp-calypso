@@ -11,11 +11,9 @@ Create a product on the remote site via API. May also call action creator callba
 
 ## Actions
 
-### `fetchProducts( siteId: number, params )`
+### `fetchProducts( siteId: number, page )`
 
 Pull products from the remote site. Does not run if a specific server page is already loading.
-Params passed here go through to the API endpoint for things like `page` or `offset`
-Default `per_page` is 10 if none is specified.
 
 
 ## Reducer
@@ -50,11 +48,11 @@ Products are collected in `products`, `isLoading` indicates which pages are bein
 
 ## Selectors
 
-### `areProductsLoaded( state, params, [siteId] )`
+### `areProductsLoaded( state, page, [siteId] )`
 
 Whether the product list on a given page has been successfully loaded from the server. Optional `siteId`, will default to currently selected site.
 
-### `areProductsLoading( state, params, [siteId] )`
+### `areProductsLoading( state, page, [siteId] )`
 
 Whether the product list on a given page is currently being retrieved from the server. Optional `siteId`, will default to currently selected site.
 

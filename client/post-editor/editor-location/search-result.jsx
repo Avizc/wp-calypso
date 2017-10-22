@@ -1,23 +1,19 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 export default React.createClass( {
 	displayName: 'EditorLocationSearchResult',
 
 	propTypes: {
 		result: PropTypes.object.isRequired,
-		onClick: PropTypes.func,
+		onClick: PropTypes.func
 	},
 
 	getDefaultProps() {
 		return {
-			onClick: () => {},
+			onClick: () => {}
 		};
 	},
 
@@ -29,5 +25,5 @@ export default React.createClass( {
 				{ result.formatted_address }
 			</div>
 		);
-	},
+	}
 } );

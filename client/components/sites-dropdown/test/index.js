@@ -1,33 +1,42 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
+import React from 'react';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
-import { noop } from 'lodash';
-import React from 'react';
 import sinon from 'sinon';
+import noop from 'lodash/noop';
 
 /**
  * Internal dependencies
  */
-import { SitesDropdown } from '..';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
+import useFilesystemMocks from 'test/helpers/use-filesystem-mocks';
 
-jest.mock( 'lib/user', () => () => {} );
+describe( 'index', function() {
+	useFakeDom();
 
-describe( 'index', () => {
-	describe( 'component rendering', () => {
-		test( 'should render a dropdown component initially closed', () => {
+	useFilesystemMocks( __dirname );
+
+	useMockery( mockery => {
+		mockery.registerSubstitute( 'matches-selector', 'component-matches-selector' );
+	} );
+
+	let SitesDropdown;
+
+	before( function() {
+		SitesDropdown = require( '..' ).SitesDropdown;
+	} );
+
+	describe( 'component rendering', function() {
+		it( 'should render a dropdown component initially closed', function() {
 			const sitesDropdown = shallow( <SitesDropdown /> );
 			expect( sitesDropdown.hasClass( 'sites-dropdown' ) ).to.be.true;
 			expect( sitesDropdown.hasClass( 'is-open' ) ).to.be.false;
 		} );
 
-		test( 'should toggle the dropdown, when it is clicked', () => {
+		it( 'should toggle the dropdown, when it is clicked', function() {
 			const toggleOpenSpy = sinon.spy( SitesDropdown.prototype, 'toggleOpen' );
 			const sitesDropdown = shallow( <SitesDropdown /> );
 
@@ -40,22 +49,22 @@ describe( 'index', () => {
 		} );
 	} );
 
-	describe( 'component state', () => {
-		test( 'should initially consider as selected the selectedOrPrimarySiteId prop', () => {
+	describe( 'component state', function() {
+		it( 'should initially consider as selected the selectedOrPrimarySiteId prop', function() {
 			const sitesDropdown = shallow( <SitesDropdown selectedSiteId={ 1234567 } /> );
 			expect( sitesDropdown.instance().state.selectedSiteId ).to.be.equal( 1234567 );
 		} );
 	} );
 
-	describe( 'selectSite', () => {
-		test( 'should update the `selectedSiteSlug`, and `open` state properties', () => {
+	describe( 'selectSite', function() {
+		it( 'should update the `selectedSiteSlug`, and `open` state properties', function() {
 			const setStateSpy = sinon.spy();
 			const siteSelectedSpy = sinon.spy();
 			const fakeContext = {
 				setState: setStateSpy,
 				props: {
 					onSiteSelect: siteSelectedSpy,
-				},
+				}
 			};
 
 			SitesDropdown.prototype.selectSite.call( fakeContext, 12345 );
@@ -68,14 +77,14 @@ describe( 'index', () => {
 		} );
 	} );
 
-	describe( 'onClose', () => {
-		test( 'should set `open` state property to false', () => {
+	describe( 'onClose', function() {
+		it( 'should set `open` state property to false', function() {
 			const setStateSpy = sinon.spy();
 			const fakeContext = {
 				setState: setStateSpy,
 				props: {
-					onClose: noop,
-				},
+					onClose: noop
+				}
 			};
 
 			SitesDropdown.prototype.onClose.call( fakeContext );
@@ -84,13 +93,13 @@ describe( 'index', () => {
 			sinon.assert.calledWith( setStateSpy, { open: false } );
 		} );
 
-		test( 'should run the component `onClose` hook, when it is provided', () => {
+		it( 'should run the component `onClose` hook, when it is provided', function() {
 			const onCloseSpy = sinon.spy();
 			const fakeContext = {
 				setState: noop,
 				props: {
-					onClose: onCloseSpy,
-				},
+					onClose: onCloseSpy
+				}
 			};
 
 			SitesDropdown.prototype.onClose.call( fakeContext );
@@ -98,19 +107,16 @@ describe( 'index', () => {
 		} );
 	} );
 
-	describe( 'getSelectedSite', () => {
-		xit(
-			'should return a site on the basis of the component `selectedSiteSlug` state property',
-			function() {
-				const fakeState = {
-					selectedSiteId: 42,
-				};
-				const selectedSite = SitesDropdown.prototype.getSelectedSite.call( { state: fakeState } );
-				expect( selectedSite ).to.be.eql( {
-					ID: 42,
-					slug: 'foo.wordpress.com',
-				} );
-			}
-		);
+	describe( 'getSelectedSite', function() {
+		xit( 'should return a site on the basis of the component `selectedSiteSlug` state property', function() {
+			const fakeState = {
+				selectedSiteId: 42
+			};
+			const selectedSite = SitesDropdown.prototype.getSelectedSite.call( { state: fakeState } );
+			expect( selectedSite ).to.be.eql( {
+				ID: 42,
+				slug: 'foo.wordpress.com'
+			} );
+		} );
 	} );
 } );

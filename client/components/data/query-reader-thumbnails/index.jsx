@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -40,13 +36,18 @@ class QueryReaderThumbnails extends Component {
 
 QueryReaderThumbnails.propTypes = {
 	shouldRequestThumbnail: PropTypes.bool,
-	requestThumbnail: PropTypes.func,
+	requestThumbnail: PropTypes.func
 };
 
 const mapStateToProps = ( state, ownProps ) => ( {
 	shouldRequestThumbnail: ! getThumbnailForIframe( state, ownProps.embedUrl ),
 } );
 
-const mapDispatchToProps = dispatch => bindActionCreators( { requestThumbnail }, dispatch );
+const mapDispatchToProps = ( dispatch ) => (
+	bindActionCreators( { requestThumbnail }, dispatch )
+);
 
-export default connect( mapStateToProps, mapDispatchToProps )( QueryReaderThumbnails );
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)( QueryReaderThumbnails );

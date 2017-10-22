@@ -1,34 +1,46 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import { assert } from 'chai';
+import { assert } from 'chai' ;
 
 /**
  * Internal dependencies
  */
-import actions from './fixtures/actions';
-import multiSite from './fixtures/multi-site';
-import plugins from './fixtures/plugins';
-import site from './fixtures/site';
-import updatePluginData from './fixtures/updated-plugin';
-import Dispatcher from 'dispatcher';
-import PluginsStore from 'lib/plugins/store';
+import useMockery from 'test/helpers/use-mockery';
+import useFakeDom from 'test/helpers/use-fake-dom';
 import { useFakeTimers } from 'test/helpers/use-sinon';
 
-jest.mock( 'lib/sites-list', () => require( './mocks/sites-list' ) );
-jest.mock( 'lib/analytics', () => ( {} ) );
+import plugins from './fixtures/plugins';
+import site from './fixtures/site';
+import multiSite from './fixtures/multi-site';
+import actions from './fixtures/actions';
+import updatePluginData from './fixtures/updated-plugin';
+import mockedSitesList from './mocks/sites-list';
+
+/**
+ * setup a react test enviroment
+ */
 
 describe( 'Plugins Store', () => {
-	test( 'Store should be an object', () => {
+	let Dispatcher, PluginsStore;
+
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/sites-list', mockedSitesList );
+		mockery.registerMock( 'lib/analytics', {} );
+	} );
+
+	useFakeDom();
+
+	beforeEach( () => {
+		Dispatcher = require( 'dispatcher' );
+		PluginsStore = require( 'lib/plugins/store' );
+	} );
+
+	it( 'Store should be an object', () => {
 		assert.isObject( PluginsStore );
 	} );
 
-	test( 'Store should have method emitChange', () => {
+	it( 'Store should have method emitChange', () => {
 		assert.isFunction( PluginsStore.emitChange );
 	} );
 
@@ -37,136 +49,131 @@ describe( 'Plugins Store', () => {
 			Dispatcher.handleServerAction( actions.fetched );
 		} );
 
-		test( 'Should update the store on RECEIVE_PLUGINS', () => {
+		it( 'Should update the store on RECEIVE_PLUGINS', () => {
 			assert.isNotNull( PluginsStore.getSitePlugins( site ) );
 		} );
 
 		describe( 'getPlugin method', () => {
-			test( 'Store should have method getPlugin', () => {
+			it( 'Store should have method getPlugin', () => {
 				assert.isFunction( PluginsStore.getPlugin );
 			} );
 
-			test( 'should return an object', () => {
+			it( 'should return an object', () => {
 				assert.isObject( PluginsStore.getPlugin( site, 'akismet' ) );
 			} );
 
-			test( 'should accept sites as an array of objects or object', () => {
-				assert.deepEqual(
-					PluginsStore.getPlugin( site, 'akismet' ),
-					PluginsStore.getPlugin( [ site ], 'akismet' )
-				);
+			it( 'should accept sites as an array of objects or object', () => {
+				assert.deepEqual( PluginsStore.getPlugin( site, 'akismet' ), PluginsStore.getPlugin( [ site ], 'akismet' ) );
 			} );
 
-			test( 'should return an object with attribute sites array', () => {
+			it( 'should return an object with attribute sites array', () => {
 				const Plugin = PluginsStore.getPlugin( site, 'akismet' );
 				assert.isArray( Plugin.sites );
 			} );
 		} );
 
 		describe( 'getPlugins method', () => {
-			test( 'Store should have method getPlugins', () => {
+			it( 'Store should have method getPlugins', () => {
 				assert.isFunction( PluginsStore.getPlugins );
 			} );
 
-			test( 'should return an array of objects', () => {
+			it( 'should return an array of objects', () => {
 				const Plugins = PluginsStore.getPlugins( site );
 				assert.isArray( Plugins );
 				assert.isObject( Plugins[ 0 ] );
 			} );
 
-			test( 'should return an object with attribute sites array', () => {
+			it( 'should return an object with attribute sites array', () => {
 				const Plugins = PluginsStore.getPlugins( site );
 				assert.isArray( Plugins[ 0 ].sites );
 				assert.isObject( Plugins[ 0 ].sites[ 0 ] );
 			} );
 
-			test( 'should return the same object as getPlugin', () => {
+			it( 'should return the same object as getPlugin', () => {
 				const Plugins = PluginsStore.getPlugins( site ),
 					Plugin = PluginsStore.getPlugin( site, Plugins[ 0 ].slug );
 				assert.deepEqual( Plugins[ 0 ], Plugin );
 			} );
 
-			test( 'should return active Plugins', () => {
+			it( 'should return active Plugins', () => {
 				const Plugins = PluginsStore.getPlugins( site, 'active' ),
 					Plugin = PluginsStore.getPlugin( site, Plugins[ 0 ].slug );
 				assert.deepEqual( Plugins[ 0 ], Plugin );
 				assert.isTrue( Plugins[ 0 ].active );
 			} );
 
-			test( 'should return inactive Plugins', () => {
+			it( 'should return inactive Plugins', () => {
 				const Plugins = PluginsStore.getPlugins( site, 'inactive' ),
 					Plugin = PluginsStore.getPlugin( site, Plugins[ 0 ].slug );
 				assert.deepEqual( Plugins[ 0 ], Plugin );
 				assert.isFalse( Plugins[ 0 ].active );
 			} );
 
-			test( 'should return needs update Plugins', () => {
+			it( 'should return needs update Plugins', () => {
 				const Plugins = PluginsStore.getPlugins( site, 'updates' ),
 					Plugin = PluginsStore.getPlugin( site, Plugins[ 0 ].slug );
 				assert.deepEqual( Plugins[ 0 ], Plugin );
 				assert.isObject( Plugins[ 0 ].update );
 			} );
 
-			test( 'should return all Plugin', () => {
+			it( 'should return all Plugin', () => {
 				const Plugins = PluginsStore.getPlugins( site, 'all' );
 				assert.equal( Plugins.length, plugins.length );
 			} );
 
-			test( 'should return none Plugin', () => {
+			it( 'should return none Plugin', () => {
 				const Plugins = PluginsStore.getPlugins( site, 'none' );
 				assert.equal( Plugins.length, 0 );
 			} );
 		} );
 
 		describe( 'getSitePlugin method', () => {
-			test( 'Store should have method getSitePlugin', () => {
+			it( 'Store should have method getSitePlugin', () => {
 				assert.isFunction( PluginsStore.getSitePlugin );
 			} );
 
-			test( 'Should have return a plugin object for a site', () => {
+			it( 'Should have return a plugin object for a site', () => {
 				const Aksimet = PluginsStore.getSitePlugin( site, 'akismet' );
 				assert.isObject( Aksimet );
 			} );
 
-			test( "Should have return undefined for a site if the plugin doesn't exist", () => {
+			it( 'Should have return undefined for a site if the plugin doesn\'t exist', () => {
 				assert.isUndefined( PluginsStore.getSitePlugin( site, 'non-plugin-slug' ) );
 			} );
 		} );
 
 		describe( 'getSitePlugins method', () => {
-			test( 'Store should have method getSitePlugins', () => {
+			it( 'Store should have method getSitePlugins', () => {
 				assert.isFunction( PluginsStore.getSitePlugins );
 			} );
 
-			test( 'Should have return Array of Objects', () => {
+			it( 'Should have return Array of Objects', () => {
 				const Plugins = PluginsStore.getSitePlugins( site );
 				assert.isArray( Plugins );
 				assert.isObject( Plugins[ 0 ] );
 			} );
 
-			test( "Should have return undefined if site doesn't exist", () => {
-				assert.isUndefined(
-					PluginsStore.getSitePlugins( {
-						ID: 1,
-						jetpack: false,
-						plan: { product_slug: 'free_plan' },
-					} )
-				);
+			it( 'Should have return undefined if site doesn\'t exist', () => {
+				assert.isUndefined( PluginsStore.getSitePlugins( {
+					ID: 1,
+					jetpack: false,
+					plan: { product_slug: 'free_plan' }
+				} ) );
 			} );
 		} );
 
 		describe( 'getSites method', () => {
-			test( 'Store should have method getSites', () => {
+			it( 'Store should have method getSites', () => {
 				assert.isFunction( PluginsStore.getSites );
 			} );
 
-			test( 'Should return Array of Objects', () => {
+			it( 'Should return Array of Objects', () => {
 				const Sites = PluginsStore.getSites( site, 'akismet' );
 				assert.isArray( Sites );
 				assert.isObject( Sites[ 0 ] );
 			} );
 
-			test( 'Should return Array of Objects that has the pluginSlug as a attribute', () => {
+			it( 'Should return Array of Objects that has the pluginSlug as a attribute', () => {
 				const Sites = PluginsStore.getSites( site, 'akismet' );
 				assert.isArray( Sites );
 				assert.isObject( Sites[ 0 ] );
@@ -174,35 +181,35 @@ describe( 'Plugins Store', () => {
 			} );
 		} );
 
-		test( 'Should return an empty array if RECEIVE_PLUGINS errors', () => {
+		it( 'Should return an empty array if RECEIVE_PLUGINS errors', () => {
 			Dispatcher.handleServerAction( actions.fetchedError );
 			const UpdatedStore = PluginsStore.getPlugins( {
 				ID: 123,
 				jetpack: false,
-				plan: { product_slug: 'free_plan' },
+				plan: { product_slug: 'free_plan' }
 			} );
 			assert.lengthOf( UpdatedStore, 0 );
 		} );
 
-		test( 'Should not set value of the site if NOT_ALLOWED_TO_RECEIVE_PLUGINS errors', () => {
+		it( 'Should not set value of the site if NOT_ALLOWED_TO_RECEIVE_PLUGINS errors', () => {
 			Dispatcher.handleServerAction( actions.fetchedNotAllowed );
 			const UpdatedStore = PluginsStore.getPlugins( { ID: 123 } );
 			assert.isDefined( UpdatedStore );
 			assert.lengthOf( UpdatedStore, 0 );
 		} );
 
-		test( 'Should not be set as "fetching" after NOT_ALLOWED_TO_RECEIVE_PLUGINS is triggered', () => {
+		it( 'Should not be set as "fetching" after NOT_ALLOWED_TO_RECEIVE_PLUGINS is triggered', () => {
 			Dispatcher.handleServerAction( actions.fetchedNotAllowed );
 			assert.isFalse( PluginsStore.isFetchingSite( { ID: 123 } ) );
 		} );
 	} );
 
 	describe( 'Fetch Plugins Again', () => {
-		beforeAll( () => {
+		before( () => {
 			Dispatcher.handleServerAction( actions.fetched );
 		} );
 
-		test( 'should contain the list of latest plugins', () => {
+		it( 'should contain the list of latest plugins', () => {
 			const Plugins = PluginsStore.getSitePlugins( site );
 			let PluginsAgain = [];
 
@@ -214,23 +221,23 @@ describe( 'Plugins Store', () => {
 			assert.lengthOf( PluginsAgain, 2 );
 		} );
 
-		afterAll( () => {
+		after( () => {
 			// Return things to the way they were.
 			Dispatcher.handleServerAction( actions.fetched );
 		} );
 	} );
 
 	describe( 'Fetch Plugins MultiSite', () => {
-		beforeAll( () => {
+		before( () => {
 			Dispatcher.handleServerAction( actions.fetchedMultiSite );
 		} );
 
-		test( 'should contain the list of latest plugins', () => {
+		it( 'should contain the list of latest plugins', () => {
 			const Plugins = PluginsStore.getSitePlugins( multiSite );
 			assert.lengthOf( Plugins, 3 );
 		} );
 
-		afterAll( () => {
+		after( () => {
 			// Return things to the way they were.
 			Dispatcher.handleServerAction( actions.fetched );
 		} );
@@ -239,18 +246,18 @@ describe( 'Plugins Store', () => {
 	describe( 'Remove Plugin', () => {
 		let Plugins;
 
-		beforeAll( () => {
+		before( () => {
 			Dispatcher.handleServerAction( actions.fetched );
 			Plugins = PluginsStore.getPlugins( [ site ] );
 		} );
 
-		test( 'it should remove the plugin from the sites list', () => {
+		it( 'it should remove the plugin from the sites list', () => {
 			Dispatcher.handleServerAction( actions.removedPlugin );
 			const PluginsAfterRemoval = PluginsStore.getPlugins( [ site ] );
 			assert.equal( Plugins.length, PluginsAfterRemoval.length + 1 );
 		} );
 
-		test( 'it should bring the plugin back if there is an error while removing the plugin', () => {
+		it( 'it should bring the plugin back if there is an error while removing the plugin', () => {
 			Dispatcher.handleViewAction( actions.removedPluginError );
 			const PluginsAfterRemoval = PluginsStore.getPlugins( [ site ] );
 			assert.equal( Plugins.length, PluginsAfterRemoval.length );
@@ -266,7 +273,7 @@ describe( 'Plugins Store', () => {
 				HelloDolly = PluginsStore.getSitePlugin( site, 'hello-dolly' );
 			} );
 
-			test( "doesn't remove update when lauched", () => {
+			it( 'doesn\'t remove update when lauched', () => {
 				assert.isNotNull( HelloDolly.update );
 			} );
 		} );
@@ -280,11 +287,11 @@ describe( 'Plugins Store', () => {
 				HelloDolly = PluginsStore.getSitePlugin( site, 'hello-dolly' );
 			} );
 
-			test( 'should set lastUpdated', () => {
+			it( 'should set lastUpdated', () => {
 				assert.isNotNull( HelloDolly.update.lastUpdated );
 			} );
 
-			test( 'should update the plugin data', () => {
+			it( 'should update the plugin data', () => {
 				assert.equal( HelloDolly.version, updatePluginData.version );
 				assert.equal( HelloDolly.author, updatePluginData.author );
 				assert.equal( HelloDolly.description, updatePluginData.description );
@@ -299,7 +306,7 @@ describe( 'Plugins Store', () => {
 				HelloDolly = PluginsStore.getSitePlugin( site, 'hello-dolly' );
 			} );
 
-			test( 'should remove lastUpdated', () => {
+			it( 'should remove lastUpdated', () => {
 				assert.isNull( HelloDolly.update );
 			} );
 		} );
@@ -310,7 +317,7 @@ describe( 'Plugins Store', () => {
 				HelloDolly = PluginsStore.getSitePlugin( site, 'hello-dolly' );
 			} );
 
-			test( 'should set update to an object', () => {
+			it( 'should set update to an object', () => {
 				assert.isObject( HelloDolly.update );
 			} );
 		} );
@@ -318,35 +325,35 @@ describe( 'Plugins Store', () => {
 
 	describe( 'Activate Plugin', () => {
 		describe( 'Activaiting Plugin', () => {
-			test( 'Should set active = true if plugin is being activated', () => {
+			it( 'Should set active = true if plugin is being activated', () => {
 				Dispatcher.handleViewAction( actions.activatePlugin );
 				assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Succesfully Activated Plugin', () => {
-			test( 'Should set active = true', () => {
+			it( 'Should set active = true', () => {
 				Dispatcher.handleViewAction( actions.activatedPlugin );
 				assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Error while Activating Plugin', () => {
-			test( 'Should set active = false', () => {
+			it( 'Should set active = false', () => {
 				Dispatcher.handleServerAction( actions.activatedPluginError );
 				assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Error while Activating Plugin with activation_error', () => {
-			test( 'Should set active = true if plugin is being activated with error plugin already active', () => {
+			it( 'Should set active = true if plugin is being activated with error plugin already active', () => {
 				Dispatcher.handleServerAction( actions.activatedPluginErrorAlreadyActive );
 				assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Error while Activating Broken Plugin', () => {
-			test( 'Should set active = false', () => {
+			it( 'Should set active = false', () => {
 				Dispatcher.handleServerAction( actions.activatedBrokenPluginError );
 				assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
@@ -355,28 +362,28 @@ describe( 'Plugins Store', () => {
 
 	describe( 'Deactivate Plugin', () => {
 		describe( 'Deactivating Plugin', () => {
-			test( 'Should set active = false if plugin is being activated', () => {
+			it( 'Should set active = false if plugin is being activated', () => {
 				Dispatcher.handleViewAction( actions.deactivatePlugin );
 				assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Succesfully Deactivated Plugin', () => {
-			test( 'Should set active = false', () => {
+			it( 'Should set active = false', () => {
 				Dispatcher.handleViewAction( actions.deactivatedPlugin );
 				assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Error while Deactivating Plugin', () => {
-			test( 'Should set active = true', () => {
+			it( 'Should set active = true', () => {
 				Dispatcher.handleServerAction( actions.deactivatedPluginError );
 				assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
 		} );
 
 		describe( 'Error while Deactivating Plugin with deactivation_error', () => {
-			test( 'Should set active = false if plugin is being deactivated with error plugin already deactived', () => {
+			it( 'Should set active = false if plugin is being deactivated with error plugin already deactived', () => {
 				Dispatcher.handleServerAction( actions.deactivatedPluginErrorAlreadyNotActive );
 				assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).active );
 			} );
@@ -384,34 +391,34 @@ describe( 'Plugins Store', () => {
 	} );
 
 	describe( 'Enable AutoUpdates for Plugin', () => {
-		test( 'Should set autoupdate = true if autoupdates are being enabled', () => {
+		it( 'Should set autoupdate = true if autoupdates are being enabled', () => {
 			Dispatcher.handleViewAction( actions.enableAutoupdatePlugin );
 			assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).autoupdate );
 		} );
 
-		test( 'Should set autoupdate = true after autoupdates enabling was successfully', () => {
+		it( 'Should set autoupdate = true after autoupdates enabling was successfully', () => {
 			Dispatcher.handleServerAction( actions.enabledAutoupdatePlugin );
 			assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).autoupdate );
 		} );
 
-		test( 'Should set autoupdate = false after autoupdates enabling errored ', () => {
+		it( 'Should set autoupdate = false after autoupdates enabling errored ', () => {
 			Dispatcher.handleServerAction( actions.enabledAutoupdatePluginError );
 			assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).autoupdate );
 		} );
 	} );
 
 	describe( 'Disable AutoUpdated for Plugins', () => {
-		test( 'Should set autoupdate = false if autoupdates are being disabled', () => {
+		it( 'Should set autoupdate = false if autoupdates are being disabled', () => {
 			Dispatcher.handleViewAction( actions.disableAutoupdatePlugin );
 			assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).autoupdate, false );
 		} );
 
-		test( 'Should set autoupdate = false after autoupdates disabling was successfully', () => {
+		it( 'Should set autoupdate = false after autoupdates disabling was successfully', () => {
 			Dispatcher.handleServerAction( actions.disabledAutoupdatePlugin );
 			assert.isFalse( PluginsStore.getSitePlugin( site, 'developer' ).autoupdate, false );
 		} );
 
-		test( 'Should set autoupdate = true after autoupdates disabling errored ', () => {
+		it( 'Should set autoupdate = true after autoupdates disabling errored ', () => {
 			Dispatcher.handleServerAction( actions.disabledAutoupdatePluginError );
 			assert.isTrue( PluginsStore.getSitePlugin( site, 'developer' ).autoupdate, true );
 		} );

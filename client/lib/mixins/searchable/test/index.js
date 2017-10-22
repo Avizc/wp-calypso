@@ -1,15 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import assert from 'assert';
+var assert = require( 'assert' );
 
 /**
  * Internal dependencies
  */
-import Searchable from '../';
+var Searchable = require( '../' );
 
 var makeCollection = function() {
 	var Collection = function() {
@@ -19,25 +16,25 @@ var makeCollection = function() {
 				author: 'bob ralian',
 				urls: {
 					public: 'wordpress.com',
-					private: 'notwordpress.com',
+					private: 'notwordpress.com'
 				},
 				editor: {
 					primary: 'Susan',
-					secondary: 'Kyle',
-				},
+					secondary: 'Kyle'
+				}
 			},
 			{
 				title: 'another title',
 				author: 'Jill',
 				urls: {
 					public: 'test.com',
-					private: 'blah.com',
+					private: 'blah.com'
 				},
 				editor: {
 					primary: 'Edith',
-					secondary: 'Susan',
-				},
-			},
+					secondary: 'Susan'
+				}
+			}
 		];
 	};
 
@@ -48,9 +45,9 @@ var makeCollection = function() {
 	return Collection;
 };
 
-describe( 'index', () => {
-	describe( 'searchNodes as array', () => {
-		test( 'should find node', () => {
+describe( 'index', function() {
+	describe( 'searchNodes as array', function() {
+		it( 'should find node', function() {
 			var Collection = makeCollection(),
 				collection;
 			Searchable( Collection.prototype, [ 'title', 'author' ] );
@@ -60,7 +57,7 @@ describe( 'index', () => {
 			assert.equal( collection.search( 'title' ).length, 2 );
 		} );
 
-		test( 'should not find a node', () => {
+		it( 'should not find a node', function() {
 			var Collection = makeCollection(),
 				collection;
 			Searchable( Collection.prototype, [ 'title', 'author' ] );
@@ -69,8 +66,8 @@ describe( 'index', () => {
 		} );
 	} );
 
-	describe( 'searchNodes as string', () => {
-		test( 'should find node', () => {
+	describe( 'searchNodes as string', function() {
+		it( 'should find node', function() {
 			var Collection = makeCollection(),
 				collection;
 			Searchable( Collection.prototype, 'title' );
@@ -79,7 +76,7 @@ describe( 'index', () => {
 			assert.equal( collection.search( 'title' ).length, 2 );
 		} );
 
-		test( 'should not find a node', () => {
+		it( 'should not find a node', function() {
 			var Collection = makeCollection(),
 				collection;
 			Searchable( Collection.prototype, 'title' );
@@ -88,29 +85,27 @@ describe( 'index', () => {
 		} );
 	} );
 
-	describe( 'searchNodes as object', () => {
-		test( 'should find node', () => {
+	describe( 'searchNodes as object', function() {
+		it( 'should find node', function() {
 			var Collection = makeCollection(),
 				collection;
-			Searchable( Collection.prototype, [
-				'title',
+			Searchable( Collection.prototype, [ 'title',
 				'author',
 				{ urls: [ 'public', 'private' ] },
-				{ editor: [ 'primary' ] },
+				{ editor: [ 'primary' ] }
 			] );
 			collection = new Collection();
 			assert.equal( collection.search( 'test.com' ).length, 1 );
 			assert.equal( collection.search( 'title' ).length, 2 );
 		} );
 
-		test( 'should not find a node', () => {
+		it( 'should not find a node', function() {
 			var Collection = makeCollection(),
 				collection;
-			Searchable( Collection.prototype, [
-				'title',
+			Searchable( Collection.prototype, [ 'title',
 				'author',
 				{ urls: [ 'public', 'private' ] },
-				{ editor: [ 'primary' ] },
+				{ editor: [ 'primary' ] }
 			] );
 
 			collection = new Collection();

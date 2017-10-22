@@ -1,12 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
-import { noop } from 'lodash';
+import noop from 'lodash/noop';
 
 /**
  * Internal dependencies
@@ -16,21 +12,21 @@ import DropZone from 'components/drop-zone';
 import MediaActions from 'lib/media/actions';
 import { userCan } from 'lib/site/utils';
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaLibraryDropZone',
 
 	propTypes: {
-		site: PropTypes.object,
-		fullScreen: PropTypes.bool,
-		onAddMedia: PropTypes.func,
-		trackStats: PropTypes.bool,
+		site: React.PropTypes.object,
+		fullScreen: React.PropTypes.bool,
+		onAddMedia: React.PropTypes.func,
+		trackStats: React.PropTypes.bool
 	},
 
 	getDefaultProps: function() {
 		return {
 			fullScreen: true,
 			onAddMedia: noop,
-			trackStats: true,
+			trackStats: true
 		};
 	},
 
@@ -80,8 +76,7 @@ export default React.createClass( {
 			<DropZone
 				fullScreen={ this.props.fullScreen }
 				onVerifyValidTransfer={ this.isValidTransfer }
-				onFilesDrop={ this.uploadFiles }
-			/>
+				onFilesDrop={ this.uploadFiles } />
 		);
-	},
+	}
 } );

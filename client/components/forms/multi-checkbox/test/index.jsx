@@ -1,33 +1,23 @@
-/**
- * @format
- * @jest-environment jsdom
- */
+var assert = require( 'assert' ),
+	ReactDom = require( 'react-dom' ),
+	React = require( 'react' ),
+	TestUtils = require( 'react-addons-test-utils' ),
+	MultiCheckbox = require( '../' );
 
-/**
- * External dependencies
- */
-import assert from 'assert';
-import React from 'react';
-import TestUtils from 'react-dom/test-utils';
-import ReactDom from 'react-dom';
+describe( 'index', function() {
+	var options = [
+		{ value: 1, label: 'One' },
+		{ value: 2, label: 'Two' }
+	];
+	require( 'test/helpers/use-fake-dom' )();
 
-/**
- * Internal dependencies
- */
-import MultiCheckbox from '../';
-
-describe( 'index', () => {
-	var options = [ { value: 1, label: 'One' }, { value: 2, label: 'Two' } ];
-
-	afterEach( () => {
+	afterEach( function() {
 		ReactDom.unmountComponentAtNode( document.body );
 	} );
 
-	describe( 'rendering', () => {
-		test( 'should render a set of checkboxes', () => {
-			var checkboxes = TestUtils.renderIntoDocument(
-					<MultiCheckbox name="favorite_colors" options={ options } />
-				),
+	describe( 'rendering', function() {
+		it( 'should render a set of checkboxes', function() {
+			var checkboxes = TestUtils.renderIntoDocument( <MultiCheckbox name="favorite_colors" options={ options } /> ),
 				labels = TestUtils.scryRenderedDOMComponentsWithTag( checkboxes, 'label' );
 
 			assert.equal( options.length, labels.length );
@@ -40,45 +30,31 @@ describe( 'index', () => {
 			} );
 		} );
 
-		test( 'should accept an array of checked values', () => {
-			var checkboxes = TestUtils.renderIntoDocument(
-					<MultiCheckbox
-						name="favorite_colors"
-						options={ options }
-						checked={ [ options[ 0 ].value ] }
-					/>
-				),
+		it( 'should accept an array of checked values', function() {
+			var checkboxes = TestUtils.renderIntoDocument( <MultiCheckbox name="favorite_colors" options={ options } checked={ [ options[ 0 ].value ] } /> ),
 				labels = TestUtils.scryRenderedDOMComponentsWithTag( checkboxes, 'label' );
 
 			assert.equal( true, labels[ 0 ].querySelector( 'input' ).checked );
 			assert.equal( false, labels[ 1 ].querySelector( 'input' ).checked );
 		} );
 
-		test( 'should accept an array of defaultChecked', () => {
-			var checkboxes = TestUtils.renderIntoDocument(
-					<MultiCheckbox
-						name="favorite_colors"
-						options={ options }
-						defaultChecked={ [ options[ 0 ].value ] }
-					/>
-				),
+		it( 'should accept an array of defaultChecked', function() {
+			var checkboxes = TestUtils.renderIntoDocument( <MultiCheckbox name="favorite_colors" options={ options } defaultChecked={ [ options[ 0 ].value ] } /> ),
 				labels = TestUtils.scryRenderedDOMComponentsWithTag( checkboxes, 'label' );
 
 			assert.equal( true, labels[ 0 ].querySelector( 'input' ).checked );
 			assert.equal( false, labels[ 1 ].querySelector( 'input' ).checked );
 		} );
 
-		test( 'should accept an onChange event handler', done => {
-			var checkboxes = TestUtils.renderIntoDocument(
-					<MultiCheckbox name="favorite_colors" options={ options } onChange={ finishTest } />
-				),
+		it( 'should accept an onChange event handler', function( done ) {
+			var checkboxes = TestUtils.renderIntoDocument( <MultiCheckbox name="favorite_colors" options={ options } onChange={ finishTest } /> ),
 				labels = TestUtils.scryRenderedDOMComponentsWithTag( checkboxes, 'label' );
 
 			TestUtils.Simulate.change( labels[ 0 ].querySelector( 'input' ), {
 				target: {
 					value: options[ 0 ].value,
-					checked: true,
-				},
+					checked: true
+				}
 			} );
 
 			function finishTest( event ) {
@@ -87,21 +63,17 @@ describe( 'index', () => {
 			}
 		} );
 
-		test( 'should accept a disabled boolean', () => {
-			var checkboxes = TestUtils.renderIntoDocument(
-					<MultiCheckbox name="favorite_colors" options={ options } disabled={ true } />
-				),
+		it( 'should accept a disabled boolean', function() {
+			var checkboxes = TestUtils.renderIntoDocument( <MultiCheckbox name="favorite_colors" options={ options } disabled={ true } /> ),
 				labels = TestUtils.scryRenderedDOMComponentsWithTag( checkboxes, 'label' );
 
 			assert.ok( labels[ 0 ].querySelector( 'input' ).disabled );
 			assert.ok( labels[ 1 ].querySelector( 'input' ).disabled );
 		} );
 
-		test( 'should transfer props to the rendered element', () => {
+		it( 'should transfer props to the rendered element', function() {
 			var className = 'transferred-class',
-				checkboxes = TestUtils.renderIntoDocument(
-					<MultiCheckbox name="favorite_colors" options={ options } className={ className } />
-				),
+				checkboxes = TestUtils.renderIntoDocument( <MultiCheckbox name="favorite_colors" options={ options } className={ className } /> ),
 				div = TestUtils.findRenderedDOMComponentWithTag( checkboxes, 'div' );
 
 			assert.notEqual( -1, div.className.indexOf( className ) );

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
@@ -13,17 +10,23 @@ import GridIcon from 'gridicons';
  * Internal dependencies
  */
 import { localize } from 'i18n-calypso';
-import getHappychatConnectionStatus from 'state/happychat/selectors/get-happychat-connection-status';
 import {
-	blur,
-	focus,
+	getHappychatConnectionStatus
+} from 'state/happychat/selectors';
+import {
 	openChat,
 	closeChat,
 	minimizeChat,
-	minimizedChat,
-} from 'state/happychat/ui/actions';
-import isHappychatMinimizing from 'state/happychat/selectors/is-happychat-minimizing';
-import isHappychatOpen from 'state/happychat/selectors/is-happychat-open';
+	minimizedChat
+} from 'state/ui/happychat/actions';
+import {
+	blur,
+	focus,
+} from 'state/happychat/actions';
+import {
+	isHappychatMinimizing,
+	isHappychatOpen,
+} from 'state/ui/happychat/selectors';
 import HappychatConnection from './connection';
 import Composer from './composer';
 import Notices from './notices';
@@ -34,7 +37,7 @@ import Timeline from './timeline';
  */
 const Title = localize( ( { onCloseChat, translate } ) => (
 	<div className="happychat__active-toolbar">
-		<h4>{ translate( 'Support Chat' ) }</h4>
+	<h4>{ translate( 'Support Chat' ) }</h4>
 		<div onClick={ onCloseChat }>
 			<GridIcon icon="cross" />
 		</div>
@@ -54,7 +57,11 @@ class Happychat extends React.Component {
 	}
 
 	render() {
-		const { isChatOpen, isMinimizing, onCloseChat } = this.props;
+		const {
+			isChatOpen,
+			isMinimizing,
+			onCloseChat,
+		} = this.props;
 
 		return (
 			<div className="happychat">
@@ -62,9 +69,8 @@ class Happychat extends React.Component {
 				<div
 					className={ classnames( 'happychat__container', {
 						'is-open': isChatOpen,
-						'is-minimizing': isMinimizing,
-					} ) }
-				>
+						'is-minimizing': isMinimizing
+					} ) } >
 					<div className="happychat__title">
 						<Title onCloseChat={ onCloseChat } />
 					</div>
@@ -85,7 +91,7 @@ const mapState = state => {
 	};
 };
 
-const mapDispatch = dispatch => {
+const mapDispatch = ( dispatch ) => {
 	return {
 		onOpenChat() {
 			dispatch( openChat() );

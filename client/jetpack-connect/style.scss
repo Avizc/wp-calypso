@@ -10,6 +10,7 @@
 				top: 4px;
 			}
 		}
+
 	}
 
 	.formatted-header{
@@ -25,10 +26,6 @@
 	.button.is-primary {
 		width: 320px;
 	}
-
-	.jetpack-connect__happychat-button {
-		text-align: center;
-	}
 }
 
 .jetpack-connect__main-error {
@@ -41,10 +38,6 @@
 				position: relative;
 				top: 4px;
 			}
-		}
-
-		.jetpack-connect__happychat-button {
-			text-align: center;
 		}
 	}
 }
@@ -492,29 +485,6 @@
 	margin-bottom: 16px;
 }
 
-.jetpack-connect__plans-nav-buttons {
-	text-align: center;
-	margin-bottom: 17px;
-
-	.button .gridicon {
-		padding-left: 4px;
-		margin-right: -5px;
-	}
-}
-
-.jetpack-connect__happychat-button {
-	background: none;
-	border: none;
-	color: darken( $gray, 20% );
-	font-weight: normal;
-	padding: 16px 24px;
-	text-align: left;
-	width: 100%;
-
-	&:hover {
-		color: $blue-medium;
-	}
-}
 
 .jetpack-connect__plans {
 	.plan-features__header-figure {
@@ -546,20 +516,4 @@
 	.formatted-header.is-without-subhead {
 		margin-bottom: 8px;
 	}
-
-	.logged-out-form__links,
-	.jetpack-connect__happychat-button {
-		text-align: center;
-	}
-
-	.logged-out-form__link-item {
-		.gridicon {
-			position: relative;
-			top: 4px;
-		}
-	}
-}
-
-.jetpack-connect__auth-form-header-image {
-	text-align: center;
 }

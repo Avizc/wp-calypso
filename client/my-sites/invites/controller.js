@@ -1,14 +1,11 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import ReactDom from 'react-dom';
 import React from 'react';
 import store from 'store';
 import page from 'page';
-import { find, get, isEmpty, pick } from 'lodash';
+import get from 'lodash/get';
 import debugModule from 'debug';
 import i18n from 'i18n-calypso';
 
@@ -23,6 +20,9 @@ import { getRedirectAfterAccept } from 'my-sites/invites/utils';
 import { acceptInvite as acceptInviteAction } from 'lib/invites/actions';
 import _user from 'lib/user';
 import i18nUtils from 'lib/i18n-utils';
+import pick from 'lodash/pick';
+import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
 
 /**
  * Module variables
@@ -81,14 +81,17 @@ export function acceptInvite( context ) {
 	}
 
 	renderWithReduxStore(
-		React.createElement( InviteAccept, {
-			siteId: context.params.site_id,
-			inviteKey: context.params.invitation_key,
-			activationKey: context.params.activation_key,
-			authKey: context.params.auth_key,
-			locale: getLocale( context.params ),
-			path: context.path,
-		} ),
+		React.createElement(
+			InviteAccept,
+			{
+				siteId: context.params.site_id,
+				inviteKey: context.params.invitation_key,
+				activationKey: context.params.activation_key,
+				authKey: context.params.auth_key,
+				locale: getLocale( context.params ),
+				path: context.path
+			}
+		),
 		document.getElementById( 'primary' ),
 		context.store
 	);

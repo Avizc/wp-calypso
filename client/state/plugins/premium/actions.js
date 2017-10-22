@@ -1,11 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import wpcom from 'lib/wp';
-import { get, keys } from 'lodash';
+const wpcom = require( 'lib/wp' );
+import keys from 'lodash/keys';
+import get from 'lodash/get';
 
 /**
  * Internal dependencies
@@ -19,7 +17,7 @@ import {
 	PLUGIN_SETUP_ACTIVATE,
 	PLUGIN_SETUP_CONFIGURE,
 	PLUGIN_SETUP_FINISH,
-	PLUGIN_SETUP_ERROR,
+	PLUGIN_SETUP_ERROR
 } from 'state/action-types';
 
 /**
@@ -27,9 +25,9 @@ import {
  */
 const _fetching = {};
 
-const normalizePluginInstructions = data => {
+const normalizePluginInstructions = ( data ) => {
 	const _plugins = data.keys;
-	return keys( _plugins ).map( slug => {
+	return keys( _plugins ).map( ( slug ) => {
 		const apiKey = _plugins[ slug ];
 		return {
 			slug: slug,
@@ -61,7 +59,7 @@ function install( site, plugin, dispatch ) {
 		site: site,
 		plugin: plugin,
 		data: null,
-		error: null,
+		error: null
 	} );
 
 	if ( plugin.active ) {
@@ -74,54 +72,19 @@ function install( site, plugin, dispatch ) {
 		return;
 	}
 
-	getPluginHandler( site, plugin.slug )
-		.install()
-		.then( data => {
-			dispatch( {
-				type: PLUGIN_SETUP_ACTIVATE,
-				siteId: site.ID,
-				slug: plugin.slug,
-			} );
-
-			data.key = plugin.key;
-			activate( site, data, dispatch );
-		} )
-		.catch( error => {
-			if ( error.name === 'PluginAlreadyInstalledError' ) {
-				update( site, plugin, dispatch );
-			} else {
-				dispatch( {
-					type: PLUGIN_SETUP_ERROR,
-					siteId: site.ID,
-					slug: plugin.slug,
-					error,
-				} );
-				Dispatcher.handleServerAction( {
-					type: 'RECEIVE_INSTALLED_PLUGIN',
-					action: 'INSTALL_PLUGIN',
-					site: site,
-					plugin: plugin,
-					data: null,
-					error: error,
-				} );
-			}
+	getPluginHandler( site, plugin.slug ).install().then( ( data ) => {
+		dispatch( {
+			type: PLUGIN_SETUP_ACTIVATE,
+			siteId: site.ID,
+			slug: plugin.slug,
 		} );
-}
 
-function update( site, plugin, dispatch ) {
-	getPluginHandler( site, plugin.id )
-		.updateVersion()
-		.then( data => {
-			dispatch( {
-				type: PLUGIN_SETUP_ACTIVATE,
-				siteId: site.ID,
-				slug: plugin.slug,
-			} );
-
-			data.key = plugin.key;
-			activate( site, data, dispatch );
-		} )
-		.catch( error => {
+		data.key = plugin.key;
+		activate( site, data, dispatch );
+	} ).catch( ( error ) => {
+		if ( error.name === 'PluginAlreadyInstalledError' ) {
+			update( site, plugin, dispatch );
+		} else {
 			dispatch( {
 				type: PLUGIN_SETUP_ERROR,
 				siteId: site.ID,
@@ -134,13 +97,42 @@ function update( site, plugin, dispatch ) {
 				site: site,
 				plugin: plugin,
 				data: null,
-				error: error,
+				error: error
 			} );
+		}
+	} );
+}
+
+function update( site, plugin, dispatch ) {
+	getPluginHandler( site, plugin.id ).updateVersion().then( ( data ) => {
+		dispatch( {
+			type: PLUGIN_SETUP_ACTIVATE,
+			siteId: site.ID,
+			slug: plugin.slug,
 		} );
+
+		data.key = plugin.key;
+		activate( site, data, dispatch );
+	} ).catch( ( error ) => {
+		dispatch( {
+			type: PLUGIN_SETUP_ERROR,
+			siteId: site.ID,
+			slug: plugin.slug,
+			error,
+		} );
+		Dispatcher.handleServerAction( {
+			type: 'RECEIVE_INSTALLED_PLUGIN',
+			action: 'INSTALL_PLUGIN',
+			site: site,
+			plugin: plugin,
+			data: null,
+			error: error
+		} );
+	} );
 }
 
 function activate( site, plugin, dispatch ) {
-	const success = data => {
+	const success = ( data ) => {
 		dispatch( {
 			type: PLUGIN_SETUP_CONFIGURE,
 			siteId: site.ID,
@@ -152,37 +144,34 @@ function activate( site, plugin, dispatch ) {
 			site: site,
 			plugin: data,
 			data: data,
-			error: null,
+			error: null
 		} );
 
 		autoupdate( site, data );
 		configure( site, plugin, dispatch );
 	};
 
-	getPluginHandler( site, plugin.id )
-		.activate()
-		.then( success )
-		.catch( error => {
-			if ( error.name === 'ActivationErrorError' || error.name === 'ActivationError' ) {
-				// Technically it failed, but only because it's already active.
-				success( plugin );
-				return;
-			}
-			dispatch( {
-				type: PLUGIN_SETUP_ERROR,
-				siteId: site.ID,
-				slug: plugin.slug,
-				error,
-			} );
-			Dispatcher.handleServerAction( {
-				type: 'RECEIVE_INSTALLED_PLUGIN',
-				action: 'INSTALL_PLUGIN',
-				site: site,
-				plugin: plugin,
-				data: null,
-				error: error,
-			} );
+	getPluginHandler( site, plugin.id ).activate().then( success ).catch( ( error ) => {
+		if ( error.name === 'ActivationErrorError' || error.name === 'ActivationError' ) {
+			// Technically it failed, but only because it's already active.
+			success( plugin );
+			return;
+		}
+		dispatch( {
+			type: PLUGIN_SETUP_ERROR,
+			siteId: site.ID,
+			slug: plugin.slug,
+			error,
 		} );
+		Dispatcher.handleServerAction( {
+			type: 'RECEIVE_INSTALLED_PLUGIN',
+			action: 'INSTALL_PLUGIN',
+			site: site,
+			plugin: plugin,
+			data: null,
+			error: error
+		} );
+	} );
 }
 
 function autoupdate( site, plugin ) {
@@ -200,7 +189,7 @@ function configure( site, plugin, dispatch ) {
 			break;
 	}
 	if ( ! option || ! plugin.key ) {
-		const optionError = new Error( "We can't configure this plugin." );
+		const optionError = new Error( 'We can\'t configure this plugin.' );
 		optionError.name = 'ConfigError';
 		dispatch( {
 			type: PLUGIN_SETUP_ERROR,
@@ -212,7 +201,7 @@ function configure( site, plugin, dispatch ) {
 	}
 	let optionValue = plugin.key;
 	// VP 1.8.4+ expects a different format for this option.
-	if ( 'vaultpress' === plugin.slug && versionCompare( plugin.version, '1.8.3', '>' ) ) {
+	if ( ( 'vaultpress' === plugin.slug ) && versionCompare( plugin.version, '1.8.3', '>' ) ) {
 		optionValue = JSON.stringify( {
 			key: plugin.key,
 			action: 'register',
@@ -227,35 +216,28 @@ function configure( site, plugin, dispatch ) {
 			is_array: false,
 		};
 
-		return wpcom
-			.undocumented()
-			.site( site.ID )
-			.setOption( query, ( error, data ) => {
-				if (
-					! error &&
-					'vaultpress' === plugin.slug &&
-					versionCompare( plugin.version, '1.8.3', '>' )
-				) {
-					const response = JSON.parse( data.option_value );
-					if ( 'response' === response.action && 'broken' === response.status ) {
-						error = new Error( response.error );
-						error.name = 'RegisterError';
-					}
+		return wpcom.undocumented().site( site.ID ).setOption( query, ( error, data ) => {
+			if ( ( ! error ) && ( 'vaultpress' === plugin.slug ) && versionCompare( plugin.version, '1.8.3', '>' ) ) {
+				const response = JSON.parse( data.option_value );
+				if ( 'response' === response.action && 'broken' === response.status ) {
+					error = new Error( response.error );
+					error.name = 'RegisterError';
 				}
-				if ( error ) {
-					dispatch( {
-						type: PLUGIN_SETUP_ERROR,
-						siteId: site.ID,
-						slug: plugin.slug,
-						error,
-					} );
-				}
+			}
+			if ( error ) {
 				dispatch( {
-					type: PLUGIN_SETUP_FINISH,
+					type: PLUGIN_SETUP_ERROR,
 					siteId: site.ID,
 					slug: plugin.slug,
+					error,
 				} );
+			}
+			dispatch( {
+				type: PLUGIN_SETUP_FINISH,
+				siteId: site.ID,
+				slug: plugin.slug,
 			} );
+		} );
 	};
 
 	// We don't need to check for VaultPress
@@ -263,37 +245,34 @@ function configure( site, plugin, dispatch ) {
 		return saveOption();
 	}
 
-	return wpcom
-		.undocumented()
-		.site( site.ID )
-		.getOption( { option_name: option }, ( getError, getData ) => {
-			if ( get( getData, 'option_value' ) === optionValue ) {
-				// Already registered with this key
-				dispatch( {
-					type: PLUGIN_SETUP_FINISH,
-					siteId: site.ID,
-					slug: plugin.slug,
-				} );
-				return;
-			} else if ( getData.option_value ) {
-				// Already registered with another key
-				const alreadyRegistered = new Error();
-				alreadyRegistered.code = 'already_registered';
-				dispatch( {
-					type: PLUGIN_SETUP_ERROR,
-					siteId: site.ID,
-					slug: plugin.slug,
-					error: alreadyRegistered,
-				} );
-				return;
-			}
-			return saveOption();
-		} );
+	return wpcom.undocumented().site( site.ID ).getOption( { option_name: option }, ( getError, getData ) => {
+		if ( get( getData, 'option_value' ) === optionValue ) {
+			// Already registered with this key
+			dispatch( {
+				type: PLUGIN_SETUP_FINISH,
+				siteId: site.ID,
+				slug: plugin.slug,
+			} );
+			return;
+		} else if ( getData.option_value ) {
+			// Already registered with another key
+			const alreadyRegistered = new Error();
+			alreadyRegistered.code = 'already_registered';
+			dispatch( {
+				type: PLUGIN_SETUP_ERROR,
+				siteId: site.ID,
+				slug: plugin.slug,
+				error: alreadyRegistered,
+			} );
+			return;
+		}
+		return saveOption();
+	} );
 }
 
 export default {
 	fetchInstallInstructions: function( siteId ) {
-		return dispatch => {
+		return ( dispatch ) => {
 			if ( _fetching[ siteId ] ) {
 				return;
 			}
@@ -321,14 +300,14 @@ export default {
 				dispatch( {
 					type: PLUGIN_SETUP_INSTRUCTIONS_RECEIVE,
 					siteId,
-					data,
+					data
 				} );
 			} );
 		};
 	},
 
 	installPlugin: function( plugin, site ) {
-		return dispatch => {
+		return ( dispatch ) => {
 			// Starting Install
 			dispatch( {
 				type: PLUGIN_SETUP_INSTALL,
@@ -338,5 +317,5 @@ export default {
 
 			install( site, plugin, dispatch );
 		};
-	},
+	}
 };

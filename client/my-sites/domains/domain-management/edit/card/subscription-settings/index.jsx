@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -17,10 +13,10 @@ import { type as domainTypes } from 'lib/domains/constants';
 
 class SubscriptionSettings extends React.Component {
 	static propTypes = {
-		type: PropTypes.string.isRequired,
-		siteSlug: PropTypes.string,
-		subscriptionId: PropTypes.string,
-		onClick: PropTypes.func.isRequired,
+		type: React.PropTypes.string.isRequired,
+		siteSlug: React.PropTypes.string,
+		subscriptionId: React.PropTypes.string,
+		onClick: React.PropTypes.func.isRequired,
 	};
 
 	getLink() {
@@ -40,8 +36,7 @@ class SubscriptionSettings extends React.Component {
 			<Button
 				className="subscription-settings"
 				href={ this.getLink() }
-				onClick={ this.props.onClick }
-			>
+				onClick={ this.props.onClick }>
 				{ this.props.translate( 'Payment Settings' ) }
 			</Button>
 		);

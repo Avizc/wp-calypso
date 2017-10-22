@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import photon from 'photon';
 import { parse as parseUrl } from 'url';
 

@@ -1,21 +1,20 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 import { spy } from 'sinon';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
-import { requestFollow, receiveFollow, followError } from '../';
 import { NOTICE_CREATE } from 'state/action-types';
-import { bypassDataLayer } from 'state/data-layer/utils';
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { follow, unfollow } from 'state/reader/follows/actions';
+import { requestFollow, receiveFollow, followError } from '../';
+import { local } from 'state/data-layer/utils';
 
 describe( 'requestFollow', () => {
-	test( 'should dispatch a http request', () => {
+	it( 'should dispatch a http request', () => {
 		const dispatch = spy();
 		const action = follow( 'http://example.com' );
 		const getState = () => ( {
@@ -41,7 +40,7 @@ describe( 'requestFollow', () => {
 				},
 				onSuccess: action,
 				onFailure: action,
-			} )
+			} ),
 		);
 
 		expect( dispatch ).to.be.calledWithMatch( {
@@ -52,7 +51,7 @@ describe( 'requestFollow', () => {
 } );
 
 describe( 'receiveFollow', () => {
-	test( 'should dispatch updateFollow with new subscription info', () => {
+	it( 'should dispatch updateFollow with new subscription info', () => {
 		const dispatch = spy();
 		const action = follow( 'http://example.com' );
 		const response = {
@@ -67,9 +66,9 @@ describe( 'receiveFollow', () => {
 				is_owner: false,
 			},
 		};
-		receiveFollow( { dispatch }, action, response );
+		receiveFollow( { dispatch }, action, null, response );
 		expect( dispatch ).to.be.calledWith(
-			bypassDataLayer(
+			local(
 				follow( 'http://example.com', {
 					ID: 1,
 					URL: 'http://example.com',
@@ -79,34 +78,34 @@ describe( 'receiveFollow', () => {
 					date_subscribed: 211636800000,
 					delivery_methods: {},
 					is_owner: false,
-				} )
-			)
+				} ),
+			),
 		);
 	} );
 
-	test( 'should dispatch an error notice when subscribed is false', () => {
+	it( 'should dispatch an error notice when subscribed is false', () => {
 		const dispatch = spy();
 		const action = follow( 'http://example.com' );
 		const response = {
 			subscribed: false,
 		};
 
-		receiveFollow( { dispatch }, action, response );
+		receiveFollow( { dispatch }, action, null, response );
 		expect( dispatch ).to.be.calledWithMatch( {
 			type: NOTICE_CREATE,
 			notice: { status: 'is-error' },
 		} );
-		expect( dispatch ).to.be.calledWith( bypassDataLayer( unfollow( 'http://example.com' ) ) );
+		expect( dispatch ).to.be.calledWith( local( unfollow( 'http://example.com' ) ) );
 	} );
 } );
 
 describe( 'followError', () => {
-	test( 'should dispatch an error notice', () => {
+	it( 'should dispatch an error notice', () => {
 		const dispatch = spy();
 		const action = follow( 'http://example.com' );
 
 		followError( { dispatch }, action );
 		expect( dispatch ).to.be.calledWithMatch( { type: NOTICE_CREATE } );
-		expect( dispatch ).to.be.calledWith( bypassDataLayer( unfollow( 'http://example.com' ) ) );
+		expect( dispatch ).to.be.calledWith( local( unfollow( 'http://example.com' ) ) );
 	} );
 } );

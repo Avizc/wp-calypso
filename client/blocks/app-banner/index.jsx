@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import ReactDom from 'react-dom';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { localize } from 'i18n-calypso';
@@ -19,32 +14,22 @@ import Card from 'components/card';
 import { getSectionName } from 'state/ui/selectors';
 import { getPreference, isFetchingPreferences } from 'state/preferences/selectors';
 import { isNotificationsOpen } from 'state/selectors';
-import {
-	bumpStat,
-	composeAnalytics,
-	recordTracksEvent,
-	withAnalytics,
-} from 'state/analytics/actions';
+import { recordTracksEvent, withAnalytics } from 'state/analytics/actions';
 import { savePreference } from 'state/preferences/actions';
 import TrackComponentView from 'lib/analytics/track-component-view';
-import { getSelectedSiteId } from 'state/ui/selectors';
-import { get, identity, includes, noop } from 'lodash';
+import {
+	identity,
+	includes,
+	noop
+} from 'lodash';
 import {
 	ALLOWED_SECTIONS,
-	EDITOR,
-	NOTES,
-	READER,
-	STATS,
 	getAppBannerData,
 	getNewDismissTimes,
 	getCurrentSection,
 	isDismissed,
 	APP_BANNER_DISMISS_TIMES_PREFERENCE,
 } from './utils';
-import versionCompare from 'lib/version-compare';
-
-const IOS_REGEX = /iPad|iPod|iPhone/i;
-const ANDROID_REGEX = /Android (\d+(\.\d+)?(\.\d+)?)/i;
 
 class AppBanner extends Component {
 	static propTypes = {
@@ -53,33 +38,16 @@ class AppBanner extends Component {
 		recordAppBannerOpen: PropTypes.func,
 		userAgent: PropTypes.string,
 		// connected
-		currentSection: PropTypes.string,
-		dismissedUntil: PropTypes.object,
-		fetchingPreferences: PropTypes.bool,
+		currentSection: React.PropTypes.string,
+		dismissedUntil: React.PropTypes.object,
+		fetchingPreferences: React.PropTypes.bool,
 	};
 
 	static defaultProps = {
 		saveDismissTime: noop,
 		translate: identity,
 		recordAppBannerOpen: noop,
-		userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
-	};
-
-	stopBubblingEvents = event => {
-		event.stopPropagation();
-	};
-
-	preventNotificationsClose = appBanner => {
-		if ( ! appBanner && this.appBannerNode ) {
-			this.appBannerNode.removeEventListener( 'mousedown', this.stopBubblingEvents, false );
-			this.appBannerNode.removeEventListener( 'touchstart', this.stopBubblingEvents, false );
-			return;
-		}
-		if ( appBanner ) {
-			this.appBannerNode = ReactDom.findDOMNode( appBanner );
-			this.appBannerNode.addEventListener( 'mousedown', this.stopBubblingEvents, false );
-			this.appBannerNode.addEventListener( 'touchstart', this.stopBubblingEvents, false );
-		}
+		userAgent: ( typeof window !== 'undefined' ) ? navigator.userAgent : '',
 	};
 
 	isVisible() {
@@ -89,21 +57,18 @@ class AppBanner extends Component {
 	}
 
 	isiOS() {
-		return IOS_REGEX.test( this.props.userAgent );
+		return /iPad|iPod|iPhone/i.test( this.props.userAgent );
 	}
 
 	isAndroid() {
-		const match = ANDROID_REGEX.exec( this.props.userAgent );
-		const version = get( match, '1', '0' );
-		//intents are only supported on Android 4.4+
-		return versionCompare( version, '4.4', '>=' );
+		return /Android/i.test( this.props.userAgent );
 	}
 
 	isMobile() {
 		return this.isiOS() || this.isAndroid();
 	}
 
-	dismiss = event => {
+	dismiss = ( event ) => {
 		event.preventDefault();
 		const { currentSection, dismissedUntil } = this.props;
 
@@ -115,23 +80,12 @@ class AppBanner extends Component {
 	};
 
 	getDeepLink() {
-		const { currentSection } = this.props;
-
+		// TODO: update with real deep links when we get them
+		// just linking to respective app stores for now
 		if ( this.isAndroid() ) {
-			//TODO: update when section deep links are available.
-			switch ( currentSection ) {
-				case EDITOR:
-					return 'intent://editor/#Intent;scheme=wordpress;package=org.wordpress.android;end';
-				case NOTES:
-					return 'intent://editor/#Intent;scheme=wordpress;package=org.wordpress.android;end';
-				case READER:
-					return 'intent://editor/#Intent;scheme=wordpress;package=org.wordpress.android;end';
-				case STATS:
-					return 'intent://editor/#Intent;scheme=wordpress;package=org.wordpress.android;end';
-			}
+			return 'market://details?id=org.wordpress.android';
 		}
 
-		//TODO: update when deferred deep links are available
 		if ( this.isiOS() ) {
 			return 'itms://itunes.apple.com/us/app/wordpress/id335703880?mt=8';
 		}
@@ -157,17 +111,12 @@ class AppBanner extends Component {
 		const { title, copy } = getAppBannerData( translate, currentSection );
 
 		return (
-			<Card
-				className={ classNames( 'app-banner', 'is-compact', currentSection ) }
-				ref={ this.preventNotificationsClose }
-			>
+			<Card className={ classNames( 'app-banner', 'is-compact', currentSection ) }>
 				<TrackComponentView
 					eventName="calypso_mobile_app_banner_impression"
 					eventProperties={ {
 						page: currentSection,
 					} }
-					statGroup="calypso_mobile_app_banner"
-					statName="impression"
 				/>
 				<div className="app-banner__text-content">
 					<div className="app-banner__title">
@@ -180,12 +129,17 @@ class AppBanner extends Component {
 				<div className="app-banner__buttons">
 					<Button
 						className="app-banner__open-button"
+						target="_blank"
+						rel="noopener noreferrer"
 						onClick={ this.openApp }
 						href={ this.getDeepLink() }
 					>
 						{ translate( 'Open in app' ) }
 					</Button>
-					<a className="app-banner__no-thanks-button" onClick={ this.dismiss }>
+					<a
+						className="app-banner__no-thanks-button"
+						onClick={ this.dismiss }
+					>
 						{ translate( 'No thanks' ) }
 					</a>
 				</div>
@@ -194,7 +148,7 @@ class AppBanner extends Component {
 	}
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ( state ) => {
 	const sectionName = getSectionName( state );
 	const isNotesOpen = isNotificationsOpen( state );
 
@@ -202,27 +156,15 @@ const mapStateToProps = state => {
 		dismissedUntil: getPreference( state, APP_BANNER_DISMISS_TIMES_PREFERENCE ),
 		currentSection: getCurrentSection( sectionName, isNotesOpen ),
 		fetchingPreferences: isFetchingPreferences( state ),
-		siteId: getSelectedSiteId( state ),
 	};
 };
 
 const mapDispatchToProps = {
-	recordAppBannerOpen: sectionName =>
-		composeAnalytics(
-			recordTracksEvent( 'calypso_mobile_app_banner_open', { page: sectionName } ),
-			bumpStat( 'calypso_mobile_app_banner', 'banner_open' )
-		),
-	saveDismissTime: ( sectionName, currentDimissTimes ) =>
-		withAnalytics(
-			composeAnalytics(
-				recordTracksEvent( 'calypso_mobile_app_banner_dismiss', { page: sectionName } ),
-				bumpStat( 'calypso_mobile_app_banner', 'banner_dismiss' )
-			),
-			savePreference(
-				APP_BANNER_DISMISS_TIMES_PREFERENCE,
-				getNewDismissTimes( sectionName, currentDimissTimes )
-			)
-		),
+	recordAppBannerOpen: ( sectionName ) => recordTracksEvent( 'calypso_mobile_app_banner_open', { page: sectionName } ),
+	saveDismissTime: ( sectionName, currentDimissTimes ) => withAnalytics(
+		recordTracksEvent( 'calypso_mobile_app_banner_dismiss', { page: sectionName } ),
+		savePreference( APP_BANNER_DISMISS_TIMES_PREFERENCE, getNewDismissTimes( sectionName, currentDimissTimes ) )
+	),
 };
 
 export default connect( mapStateToProps, mapDispatchToProps )( localize( AppBanner ) );

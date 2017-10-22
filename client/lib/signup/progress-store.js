@@ -1,21 +1,22 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assign, clone, find, get, isEmpty, map, omit } from 'lodash';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:signup-progress-store' );
-import store from 'store';
+var debug = require( 'debug' )( 'calypso:signup-progress-store' ), // eslint-disable-line no-unused-vars
+	store = require( 'store' ),
+	assign = require( 'lodash/assign' ),
+	omit = require( 'lodash/omit' ),
+	find = require( 'lodash/find' ),
+	map = require( 'lodash/map' ),
+	isEmpty = require( 'lodash/isEmpty' ),
+	clone = require( 'lodash/clone' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import emitter from 'lib/mixins/emitter';
-import SignupDependencyStore from './dependency-store';
-import steps from 'signup/config/steps';
+var Dispatcher = require( 'dispatcher' ),
+	emitter = require( 'lib/mixins/emitter' ),
+	SignupDependencyStore = require( './dependency-store' ),
+	steps = require( 'signup/config/steps' );
 
 /**
  * Constants
@@ -34,7 +35,7 @@ var SignupProgressStore = {
 	reset: function() {
 		signupProgress = [];
 		store.remove( STORAGE_KEY );
-	},
+	}
 };
 
 emitter( SignupProgressStore );
@@ -76,12 +77,10 @@ function updateOrAddStep( step ) {
 }
 
 function setStepInvalid( step, errors ) {
-	updateOrAddStep(
-		assign( {}, step, {
-			status: 'invalid',
-			errors: errors,
-		} )
-	);
+	updateOrAddStep( assign( {}, step, {
+		status: 'invalid',
+		errors: errors
+	} ) );
 }
 
 function saveStep( step ) {
@@ -93,8 +92,7 @@ function saveStep( step ) {
 }
 
 function submitStep( step ) {
-	const stepHasApiRequestFunction =
-			steps[ step.stepName ] && steps[ step.stepName ].apiRequestFunction,
+	const stepHasApiRequestFunction = steps[ step.stepName ] && steps[ step.stepName ].apiRequestFunction,
 		status = stepHasApiRequestFunction ? 'pending' : 'completed';
 
 	updateOrAddStep( assign( {}, step, { status } ) );
@@ -134,18 +132,6 @@ function handleChange() {
 	store.set( STORAGE_KEY, omitUserData( signupProgress ) );
 }
 
-function addStorableDependencies( step, action ) {
-	const unstorableDependencies = get( steps, [ step.stepName, 'unstorableDependencies' ] );
-
-	if ( isEmpty( action.providedDependencies ) ) {
-		return step;
-	}
-
-	const providedDependencies = omit( action.providedDependencies, unstorableDependencies );
-
-	return { ...step, providedDependencies };
-}
-
 SignupProgressStore.dispatchToken = Dispatcher.register( function( payload ) {
 	var action = payload.action,
 		step = addTimestamp( action.data );
@@ -161,20 +147,20 @@ SignupProgressStore.dispatchToken = Dispatcher.register( function( payload ) {
 			loadProgressFromCache();
 			break;
 		case 'SAVE_SIGNUP_STEP':
-			saveStep( addStorableDependencies( step, action ) );
+			saveStep( step );
 			break;
 		case 'SUBMIT_SIGNUP_STEP':
 			debug( 'submit step' );
-			submitStep( addStorableDependencies( step, action ) );
+			submitStep( step );
 			break;
 		case 'PROCESS_SIGNUP_STEP':
-			processStep( addStorableDependencies( step, action ) );
+			processStep( step );
 			break;
 		case 'PROCESSED_SIGNUP_STEP':
 			debug( 'complete step' );
-			completeStep( addStorableDependencies( step, action ) );
+			completeStep( step );
 			break;
 	}
 } );
 
-export default SignupProgressStore;
+module.exports = SignupProgressStore;

@@ -1,9 +1,7 @@
-/** @format */
 /**
  * External Dependencies
  */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes, Component } from 'react';
 import { stringify } from 'qs';
 
 /**

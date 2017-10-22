@@ -1,29 +1,25 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assign } from 'lodash';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:media' );
+var debug = require( 'debug' )( 'calypso:media' ),
+	assign = require( 'lodash/assign' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import wpcom from 'lib/wp';
-import MediaUtils from './utils';
-import PostEditStore from 'lib/posts/post-edit-store';
-import MediaStore from './store';
-import MediaListStore from './list-store';
-import MediaValidationStore from './validation-store';
+var Dispatcher = require( 'dispatcher' ),
+	wpcom = require( 'lib/wp' ),
+	MediaUtils = require( './utils' ),
+	PostEditStore = require( 'lib/posts/post-edit-store' ),
+	MediaStore = require( './store' ),
+	MediaListStore = require( './list-store' ),
+	MediaValidationStore = require( './validation-store' );
 
 /**
  * Module variables
  */
 const MediaActions = {
-	_fetching: {},
+	_fetching: {}
 };
 
 /**
@@ -35,7 +31,7 @@ MediaActions.setQuery = function( siteId, query ) {
 	Dispatcher.handleViewAction( {
 		type: 'SET_MEDIA_QUERY',
 		siteId: siteId,
-		query: query,
+		query: query
 	} );
 };
 
@@ -49,23 +45,20 @@ MediaActions.fetch = function( siteId, itemId ) {
 	Dispatcher.handleViewAction( {
 		type: 'FETCH_MEDIA_ITEM',
 		siteId: siteId,
-		id: itemId,
+		id: itemId
 	} );
 
 	debug( 'Fetching media for %d using ID %d', siteId, itemId );
-	wpcom
-		.site( siteId )
-		.media( itemId )
-		.get( function( error, data ) {
-			Dispatcher.handleServerAction( {
-				type: 'RECEIVE_MEDIA_ITEM',
-				error: error,
-				siteId: siteId,
-				data: data,
-			} );
-
-			delete MediaActions._fetching[ fetchKey ];
+	wpcom.site( siteId ).media( itemId ).get( function( error, data ) {
+		Dispatcher.handleServerAction( {
+			type: 'RECEIVE_MEDIA_ITEM',
+			error: error,
+			siteId: siteId,
+			data: data
 		} );
+
+		delete MediaActions._fetching[ fetchKey ];
+	} );
 };
 
 MediaActions.fetchNextPage = function( siteId ) {
@@ -75,7 +68,7 @@ MediaActions.fetchNextPage = function( siteId ) {
 
 	Dispatcher.handleViewAction( {
 		type: 'FETCH_MEDIA_ITEMS',
-		siteId: siteId,
+		siteId: siteId
 	} );
 
 	const query = MediaListStore.getNextPageQuery( siteId );
@@ -85,7 +78,7 @@ MediaActions.fetchNextPage = function( siteId ) {
 			error: error,
 			siteId: siteId,
 			data: data,
-			query: query,
+			query: query
 		} );
 	};
 
@@ -99,10 +92,7 @@ MediaActions.fetchNextPage = function( siteId ) {
 };
 
 const getExternalUploader = service => ( file, siteId ) => {
-	return wpcom
-		.undocumented()
-		.site( siteId )
-		.uploadExternalMedia( service, [ file.guid ] );
+	return wpcom.undocumented().site( siteId ).uploadExternalMedia( service, [ file.guid ] );
 };
 
 const getFileUploader = () => ( file, siteId ) => {
@@ -115,13 +105,13 @@ const getFileUploader = () => ( file, siteId ) => {
 	if ( post && post.ID ) {
 		file = {
 			parent_id: post.ID,
-			[ isUrl ? 'url' : 'file' ]: file,
+			[ isUrl ? 'url' : 'file' ]: file
 		};
 	} else if ( file.fileContents ) {
 		//if there's no parent_id, but the file object is wrapping a Blob
 		//(contains fileContents, fileName etc) still wrap it in a new object
 		file = {
-			file: file,
+			file: file
 		};
 	}
 
@@ -160,7 +150,7 @@ function uploadFiles( uploader, files, siteId ) {
 		Dispatcher.handleViewAction( {
 			type: 'CREATE_MEDIA_ITEM',
 			siteId: siteId,
-			data: transientMedia,
+			data: transientMedia
 		} );
 
 		// Abort upload if file fails to pass validation.
@@ -173,22 +163,18 @@ function uploadFiles( uploader, files, siteId ) {
 			// resolve before starting this item's upload
 			const action = { type: 'RECEIVE_MEDIA_ITEM', id: transientMedia.ID, siteId };
 
-			return uploader( file, siteId )
-				.then( data => {
-					Dispatcher.handleServerAction(
-						Object.assign( action, {
-							data: data.media[ 0 ],
-						} )
-					);
-					// also refetch media limits
-					Dispatcher.handleServerAction( {
-						type: 'FETCH_MEDIA_LIMITS',
-						siteId: siteId,
-					} );
-				} )
-				.catch( error => {
-					Dispatcher.handleServerAction( Object.assign( action, { error } ) );
+			return uploader( file, siteId ).then( ( data ) => {
+				Dispatcher.handleServerAction( Object.assign( action, {
+					data: data.media[ 0 ]
+				} ) );
+				// also refetch media limits
+				Dispatcher.handleServerAction( {
+					type: 'FETCH_MEDIA_LIMITS',
+					siteId: siteId
 				} );
+			} ).catch( ( error ) => {
+				Dispatcher.handleServerAction( Object.assign( action, { error } ) );
+			} );
 		} );
 	}, Promise.resolve() );
 }
@@ -215,7 +201,7 @@ MediaActions.edit = function( siteId, item ) {
 	Dispatcher.handleViewAction( {
 		type: 'RECEIVE_MEDIA_ITEM',
 		siteId: siteId,
-		data: newItem,
+		data: newItem
 	} );
 };
 
@@ -233,23 +219,15 @@ MediaActions.update = function( siteId, item, editMediaFile = false ) {
 	const updateAction = {
 		type: 'RECEIVE_MEDIA_ITEM',
 		siteId,
-		data: newItem,
+		data: newItem
 	};
 
 	if ( item.media ) {
 		// Show a fake transient media item that can be rendered into the list immediately,
 		// even before the media has persisted to the server
-		updateAction.data = {
-			...newItem,
-			...MediaUtils.createTransientMedia( item.media ),
-			ID: mediaId,
-		};
+		updateAction.data = { ...newItem, ...MediaUtils.createTransientMedia( item.media ), ID: mediaId };
 	} else if ( editMediaFile && item.media_url ) {
-		updateAction.data = {
-			...newItem,
-			...MediaUtils.createTransientMedia( item.media_url ),
-			ID: mediaId,
-		};
+		updateAction.data = { ...newItem, ...MediaUtils.createTransientMedia( item.media_url ), ID: mediaId };
 	}
 
 	if ( editMediaFile && updateAction.data ) {
@@ -270,7 +248,9 @@ MediaActions.update = function( siteId, item, editMediaFile = false ) {
 				type: 'RECEIVE_MEDIA_ITEM',
 				error: error,
 				siteId: siteId,
-				data: editMediaFile ? { ...data, isDirty: true } : data,
+				data: editMediaFile
+					? { ...data, isDirty: true }
+					: data
 			} );
 		} );
 };
@@ -284,26 +264,23 @@ MediaActions.delete = function( siteId, item ) {
 	Dispatcher.handleViewAction( {
 		type: 'REMOVE_MEDIA_ITEM',
 		siteId: siteId,
-		data: item,
+		data: item
 	} );
 
 	debug( 'Deleting media from %d by ID %d', siteId, item.ID );
-	wpcom
-		.site( siteId )
-		.media( item.ID )
-		.delete( function( error, data ) {
-			Dispatcher.handleServerAction( {
-				type: 'REMOVE_MEDIA_ITEM',
-				error: error,
-				siteId: siteId,
-				data: data,
-			} );
-			// also refetch storage limits
-			Dispatcher.handleServerAction( {
-				type: 'FETCH_MEDIA_LIMITS',
-				siteId: siteId,
-			} );
+	wpcom.site( siteId ).media( item.ID ).delete( function( error, data ) {
+		Dispatcher.handleServerAction( {
+			type: 'REMOVE_MEDIA_ITEM',
+			error: error,
+			siteId: siteId,
+			data: data
 		} );
+		// also refetch storage limits
+		Dispatcher.handleServerAction( {
+			type: 'FETCH_MEDIA_LIMITS',
+			siteId: siteId
+		} );
+	} );
 };
 
 MediaActions.setLibrarySelectedItems = function( siteId, items ) {
@@ -311,7 +288,7 @@ MediaActions.setLibrarySelectedItems = function( siteId, items ) {
 	Dispatcher.handleViewAction( {
 		type: 'SET_MEDIA_LIBRARY_SELECTED_ITEMS',
 		siteId: siteId,
-		data: items,
+		data: items
 	} );
 };
 
@@ -320,7 +297,7 @@ MediaActions.clearValidationErrors = function( siteId, itemId ) {
 	Dispatcher.handleViewAction( {
 		type: 'CLEAR_MEDIA_VALIDATION_ERRORS',
 		siteId: siteId,
-		itemId: itemId,
+		itemId: itemId
 	} );
 };
 
@@ -329,7 +306,7 @@ MediaActions.clearValidationErrorsByType = function( siteId, type ) {
 	Dispatcher.handleViewAction( {
 		type: 'CLEAR_MEDIA_VALIDATION_ERRORS',
 		siteId: siteId,
-		errorType: type,
+		errorType: type
 	} );
 };
 
@@ -341,4 +318,4 @@ MediaActions.sourceChanged = function( siteId ) {
 	} );
 };
 
-export default MediaActions;
+module.exports = MediaActions;

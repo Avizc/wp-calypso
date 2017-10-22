@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
@@ -27,21 +24,23 @@ class NpsSurveyExample extends PureComponent {
 		isClosed: false,
 	};
 
-	handleClose = afterClose => {
+	handleClose = ( afterClose ) => {
 		this.setState( {
 			isClosed: true,
 		} );
 		afterClose();
-	};
+	}
 
 	render() {
 		return (
 			<div>
-				{ ! this.state.isClosed && (
-					<NpsSurvey name="api-valid-test-survey" onClose={ this.handleClose } />
-				) }
-				{ this.state.isClosed &&
-				this.props.hasAnswered && (
+				{ ! this.state.isClosed &&
+					<NpsSurvey
+						name="api-valid-test-survey"
+						onClose={ this.handleClose }
+					/>
+				}
+				{ this.state.isClosed && this.props.hasAnswered &&
 					<div>
 						User closed survey after submitting:
 						<ul>
@@ -49,16 +48,23 @@ class NpsSurveyExample extends PureComponent {
 							<li>Score: { this.props.surveyScore }</li>
 						</ul>
 					</div>
-				) }
-				{ this.state.isClosed &&
-				this.props.hasAnsweredWithNoScore && <div>User dismissed survey without submitting.</div> }
-				{ this.state.isClosed && this.props.isSubmitFailure && <div>Error submitting survey.</div> }
+				}
+				{ this.state.isClosed && this.props.hasAnsweredWithNoScore &&
+					<div>
+						User dismissed survey without submitting.
+					</div>
+				}
+				{ this.state.isClosed && this.props.isSubmitFailure &&
+					<div>
+						Error submitting survey.
+					</div>
+				}
 			</div>
 		);
 	}
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ( state ) => {
 	return {
 		isSubmitted: isNpsSurveySubmitted( state ),
 		isSubmitFailure: isNpsSurveySubmitFailure( state ),
@@ -69,7 +75,9 @@ const mapStateToProps = state => {
 	};
 };
 
-const ConnectedNpsSurveyExample = connect( mapStateToProps )( NpsSurveyExample );
+const ConnectedNpsSurveyExample = connect(
+	mapStateToProps,
+)( NpsSurveyExample );
 
 ConnectedNpsSurveyExample.displayName = NpsSurveyExample.displayName;
 

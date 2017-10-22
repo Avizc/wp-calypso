@@ -1,12 +1,10 @@
 /**
  * Returns an object representing the image editor transform
- * 
  *
- * @format
- * @param {Object}  state Global state tree
+ * @param  {Object}  state Global state tree
  * @return {Object}  image editor transform { degrees, scaleX, scaleY }
+ *
  */
-
 export function getImageEditorTransform( state ) {
 	return state.ui.editor.imageEditor.transform;
 }

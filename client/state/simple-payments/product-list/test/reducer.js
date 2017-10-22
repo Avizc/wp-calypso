@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,21 +6,22 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { items } from '../reducer';
 import {
 	SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE,
 	SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE_DELETE,
 	SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE_UPDATE,
 } from 'state/action-types';
 
+import { items } from '../reducer';
+
 describe( 'reducer', () => {
 	describe( 'items()', () => {
-		test( 'defaults to an empty object', () => {
+		it( 'defaults to an empty object', () => {
 			const state = items( undefined, {} );
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'adds products when received', () => {
+		it( 'adds products when received', () => {
 			const action = {
 				type: SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE,
 				siteId: 12345,
@@ -32,7 +31,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( { 12345: action.products } );
 		} );
 
-		test( 'replaces products with the same siteId when received', () => {
+		it( 'replaces products with the same siteId when received', () => {
 			const action = {
 				type: SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE,
 				siteId: 12345,
@@ -42,41 +41,31 @@ describe( 'reducer', () => {
 			expect( state[ 12345 ] ).to.eql( action.products );
 		} );
 
-		test( 'deletes products matching the ID when deleted', () => {
+		it( 'deletes products matching the ID when deleted', () => {
 			const action = {
 				type: SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE_DELETE,
 				siteId: 12345,
 				productId: 'best-product',
 			};
-			const initialState = {
-				12345: [ { ID: 'cool-thing' }, { ID: 'best-product' }, { ID: 'worst-product' } ],
-			};
+			const initialState = { 12345: [ { ID: 'cool-thing' }, { ID: 'best-product' }, { ID: 'worst-product' } ] };
 			const state = items( initialState, action );
 			expect( state[ 12345 ] ).to.eql( [ { ID: 'cool-thing' }, { ID: 'worst-product' } ] );
 		} );
 
-		test( 'updates products matching the ID when updated', () => {
+		it( 'updates products matching the ID when updated', () => {
 			const action = {
 				type: SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE_UPDATE,
 				siteId: 12345,
 				product: { ID: 'best-product', flavor: 'blue' },
 			};
 			const initialState = {
-				12345: [
-					{ ID: 'cool-thing' },
-					{ ID: 'best-product', flavor: 'green' },
-					{ ID: 'worst-product' },
-				],
+				12345: [ { ID: 'cool-thing' }, { ID: 'best-product', flavor: 'green' }, { ID: 'worst-product' } ],
 			};
 			const state = items( initialState, action );
-			expect( state[ 12345 ] ).to.eql( [
-				{ ID: 'cool-thing' },
-				{ ID: 'best-product', flavor: 'blue' },
-				{ ID: 'worst-product' },
-			] );
+			expect( state[ 12345 ] ).to.eql( [ { ID: 'cool-thing' }, { ID: 'best-product', flavor: 'blue' }, { ID: 'worst-product' } ] );
 		} );
 
-		test( 'adds product to front if product does not exist when updated', () => {
+		it( 'adds product to front if product does not exist when updated', () => {
 			const action = {
 				type: SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE_UPDATE,
 				siteId: 12345,
@@ -86,15 +75,10 @@ describe( 'reducer', () => {
 				12345: [ { ID: 'cool-thing' }, { ID: 'best-product' }, { ID: 'worst-product' } ],
 			};
 			const state = items( initialState, action );
-			expect( state[ 12345 ] ).to.eql( [
-				action.product,
-				{ ID: 'cool-thing' },
-				{ ID: 'best-product' },
-				{ ID: 'worst-product' },
-			] );
+			expect( state[ 12345 ] ).to.eql( [ action.product, { ID: 'cool-thing' }, { ID: 'best-product' }, { ID: 'worst-product' } ] );
 		} );
 
-		test( 'adds product if product does not exist when updated and state is empty', () => {
+		it( 'adds product if product does not exist when updated and state is empty', () => {
 			const action = {
 				type: SIMPLE_PAYMENTS_PRODUCTS_LIST_RECEIVE_UPDATE,
 				siteId: 12345,

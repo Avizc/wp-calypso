@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 /**
  * Constants
@@ -95,12 +92,7 @@ export function getMyPostCount( state, siteId, postType, status ) {
  * @param  {Function} countSelector Selector from which to retrieve raw counts
  * @return {Number}                 Normalized post counts
  */
-export function getNormalizedPostCounts(
-	state,
-	siteId,
-	postType,
-	countSelector = getAllPostCounts
-) {
+export function getNormalizedPostCounts( state, siteId, postType, countSelector = getAllPostCounts ) {
 	const counts = countSelector( state, siteId, postType );
 
 	return POST_STATUSES.reduce( ( memo, status ) => {
@@ -124,7 +116,7 @@ export function getNormalizedPostCounts(
 
 		return {
 			...memo,
-			[ key ]: ( memo[ key ] || 0 ) + count,
+			[ key ]: ( memo[ key ] || 0 ) + count
 		};
 	}, {} );
 }

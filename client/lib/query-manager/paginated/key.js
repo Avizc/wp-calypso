@@ -1,8 +1,7 @@
-/** @format */
 /**
  * External dependencies
  */
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies

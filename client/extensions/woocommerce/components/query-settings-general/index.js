@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { localize } from 'i18n-calypso';
@@ -14,10 +10,7 @@ import { localize } from 'i18n-calypso';
  * Internal dependencies
  */
 import { fetchSettingsGeneral } from 'woocommerce/state/sites/settings/general/actions';
-import {
-	areSettingsGeneralLoaded,
-	areSettingsGeneralLoadError,
-} from 'woocommerce/state/sites/settings/general/selectors';
+import { areSettingsGeneralLoaded, areSettingsGeneralLoadError } from 'woocommerce/state/sites/settings/general/selectors';
 import { errorNotice, removeNotice } from 'state/notices/actions';
 
 class QuerySettingsGeneral extends Component {
@@ -27,18 +20,15 @@ class QuerySettingsGeneral extends Component {
 
 	showRetryNotice( siteId ) {
 		const noticeId = 'query-settings-general-retry';
-		this.props.actions.errorNotice(
-			this.props.translate( "Some of your site settings couldn't be retrieved." ),
-			{
-				id: noticeId,
-				showDismiss: false,
-				button: this.props.translate( 'Try again' ),
-				onClick: () => {
-					this.fetch( siteId );
-					this.props.actions.removeNotice( noticeId );
-				},
+		this.props.actions.errorNotice( this.props.translate( 'Some of your site settings couldn\'t be retrieved.' ), {
+			id: noticeId,
+			showDismiss: false,
+			button: this.props.translate( 'Try again' ),
+			onClick: () => {
+				this.fetch( siteId );
+				this.props.actions.removeNotice( noticeId );
 			}
-		);
+		} );
 	}
 
 	componentWillMount() {
@@ -76,18 +66,16 @@ QuerySettingsGeneral.propTypes = {
 };
 
 export default connect(
-	state => ( {
+	( state ) => ( {
 		loaded: areSettingsGeneralLoaded( state ),
 		error: areSettingsGeneralLoadError( state ),
 	} ),
-	dispatch => ( {
+	( dispatch ) => ( {
 		actions: bindActionCreators(
 			{
 				fetchSettingsGeneral,
 				errorNotice,
 				removeNotice,
-			},
-			dispatch
-		),
-	} )
-)( localize( QuerySettingsGeneral ) );
+			}, dispatch
+		)
+	} ) )( localize( QuerySettingsGeneral ) );

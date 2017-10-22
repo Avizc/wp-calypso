@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get, orderBy } from 'lodash';
 
 /**
@@ -12,12 +9,11 @@ import { get, orderBy } from 'lodash';
 import { enrichPublicizeActionsWithConnections } from 'state/selectors/utils/';
 import createSelector from 'lib/create-selector';
 
-const getPublishedActions = ( state, siteId, postId ) =>
-	orderBy(
-		get( state, [ 'sharing', 'publicize', 'sharePostActions', 'published', siteId, postId ], [] ),
-		[ 'share_date' ],
-		[ 'desc' ]
-	);
+const getPublishedActions = ( state, siteId, postId ) => ( orderBy( get(
+	state,
+	[ 'sharing', 'publicize', 'sharePostActions', 'published', siteId, postId ],
+	[],
+), [ 'share_date' ], [ 'desc' ] ) );
 
 /**
  * Return a share-published-actions array propagaring data from publicize connections.

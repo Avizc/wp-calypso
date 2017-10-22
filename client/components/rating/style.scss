@@ -1,15 +1,9 @@
 .rating {
-	position: relative;
+	width: 80px;
+	color: $blue-medium;
+	line-height: 1;
 
-	.rating__overlay,
-	.rating__star-outline {
-		display: flex;
-		left: 0;
-		position: absolute;
-		top: 0;
-
-		.gridicon {
-			fill: $blue-medium;
-		}
+	.noticon-rating-empty {
+		color: lighten( $gray, 20% );
 	}
 }

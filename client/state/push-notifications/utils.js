@@ -1,10 +1,9 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
-import { isServiceWorkerSupported } from 'lib/service-worker';
+import {
+	isServiceWorkerSupported,
+} from 'lib/service-worker';
 
 export function isUnsupportedChromeVersion() {
 	if ( window && window.chrome && window.navigator.appVersion ) {
@@ -27,11 +26,14 @@ export function isPushNotificationsSupported() {
 }
 
 export function isPushNotificationsDenied() {
-	return ! ( 'Notification' in window ) || 'denied' === window.Notification.permission;
+	return (
+		( ! ( 'Notification' in window ) ) ||
+		'denied' === window.Notification.permission
+	);
 }
 
 export function isOpera() {
-	return getOperaVersion() !== -1;
+	return getOperaVersion() !== -1
 }
 
 export function getOperaVersion() {

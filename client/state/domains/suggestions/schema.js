@@ -1,4 +1,3 @@
-/** @format */
 export const itemsSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -13,9 +12,9 @@ export const itemsSchema = {
 					domain_name: { type: 'string' },
 					cost: { type: 'string' },
 					product_id: { type: 'integer' },
-					product_slug: { type: 'string' },
-				},
-			},
-		},
-	},
+					product_slug: { type: 'string' }
+				}
+			}
+		}
+	}
 };

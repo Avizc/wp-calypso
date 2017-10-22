@@ -1,57 +1,75 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
+import { noop } from 'lodash';
 import React from 'react';
+import mockery from 'mockery';
 
 /**
  * Internal dependencies
  */
-import { EditorGroundControl } from '../';
-
-jest.mock( 'blocks/site', () => require( 'components/empty-component' ) );
-jest.mock( 'components/card', () => require( 'components/empty-component' ) );
-jest.mock( 'components/popover', () => require( 'components/empty-component' ) );
-jest.mock( 'components/post-schedule', () => require( 'components/empty-component' ) );
-jest.mock( 'components/sticky-panel', () => require( 'components/empty-component' ) );
-jest.mock( 'lib/posts/actions', () => ( {
-	edit: () => {},
-} ) );
-jest.mock( 'lib/posts/actions', () => ( {
-	recordEvent: () => {},
-	recordStat: () => {},
-} ) );
-jest.mock( 'lib/user', () => () => {} );
-jest.mock( 'post-editor/edit-post-status', () => require( 'components/empty-component' ) );
-jest.mock( 'post-editor/editor-status-label', () => require( 'components/empty-component' ) );
+import EmptyComponent from 'test/helpers/react/empty-component';
+import useMockery from 'test/helpers/use-mockery';
+import useFakeDom from 'test/helpers/use-fake-dom';
 
 /**
  * Module variables
  */
 const MOCK_SITE = {
 	capabilities: {
-		publish_posts: true,
+		publish_posts: true
 	},
-	options: {},
+	options: {}
 };
 
-describe( 'EditorGroundControl', () => {
-	describe( '#getPreviewLabel()', () => {
-		test( 'should return View if the site is a Jetpack site and the post is published', () => {
+describe( 'EditorGroundControl', function() {
+	let shallow, i18n, EditorGroundControl;
+
+	useMockery();
+	useFakeDom();
+
+	before( function() {
+		shallow = require( 'enzyme' ).shallow;
+		i18n = require( 'i18n-calypso' );
+
+		mockery.registerMock( 'components/card', EmptyComponent );
+		mockery.registerMock( 'components/popover', EmptyComponent );
+		mockery.registerMock( 'blocks/site', EmptyComponent );
+		mockery.registerMock( 'post-editor/edit-post-status', EmptyComponent );
+		mockery.registerMock( 'post-editor/editor-status-label', EmptyComponent );
+		mockery.registerMock( 'components/sticky-panel', EmptyComponent );
+		mockery.registerMock( 'components/post-list-fetcher', EmptyComponent );
+		mockery.registerMock( 'components/post-schedule', EmptyComponent );
+		mockery.registerMock( 'lib/posts/actions', { edit: noop } );
+		mockery.registerMock( 'lib/posts/stats', {
+			recordEvent: noop,
+			recordStat: noop
+		} );
+		EditorGroundControl = require( '../' );
+
+		EditorGroundControl.prototype.translate = i18n.translate;
+		EditorGroundControl.prototype.moment = i18n.moment;
+	} );
+
+	after( function() {
+		delete EditorGroundControl.prototype.translate;
+		delete EditorGroundControl.prototype.moment;
+	} );
+
+	describe( '#getPreviewLabel()', function() {
+		it( 'should return View if the site is a Jetpack site and the post is published', function() {
 			var tree = shallow(
-				<EditorGroundControl savedPost={ { status: 'publish' } } site={ { jetpack: true } } />
+				<EditorGroundControl
+					savedPost={ { status: 'publish' } }
+					site={ { jetpack: true } }
+				/>
 			).instance();
 
 			expect( tree.getPreviewLabel() ).to.equal( 'View' );
 		} );
 
-		test( 'should return Preview if the post was not originally published', () => {
+		it( 'should return Preview if the post was not originally published', function() {
 			var tree = shallow(
 				<EditorGroundControl
 					savedPost={ { status: 'draft' } }
@@ -64,76 +82,70 @@ describe( 'EditorGroundControl', () => {
 		} );
 	} );
 
-	describe( '#isSaveAvailable()', () => {
-		test( 'should return false if form is saving', () => {
+	describe( '#isSaveEnabled()', function() {
+		it( 'should return false if form is saving', function() {
 			var tree = shallow( <EditorGroundControl isSaving /> ).instance();
 
-			expect( tree.isSaveAvailable() ).to.be.false;
+			expect( tree.isSaveEnabled() ).to.be.false;
 		} );
 
-		test( 'should return false if saving is blocked', () => {
+		it( 'should return false if saving is blocked', function() {
 			var tree = shallow( <EditorGroundControl isSaveBlocked /> ).instance();
 
-			expect( tree.isSaveAvailable() ).to.be.false;
+			expect( tree.isSaveEnabled() ).to.be.false;
 		} );
 
-		test( 'should return false if post does not exist', () => {
-			var tree = shallow(
-				<EditorGroundControl isSaving={ false } hasContent isDirty />
-			).instance();
+		it( 'should return false if post does not exist', function() {
+			var tree = shallow( <EditorGroundControl isSaving={ false } hasContent isDirty /> ).instance();
 
-			expect( tree.isSaveAvailable() ).to.be.false;
+			expect( tree.isSaveEnabled() ).to.be.false;
 		} );
 
-		test( 'should return true if dirty and post has content and post is not published', () => {
-			var tree = shallow(
-				<EditorGroundControl isSaving={ false } post={ {} } hasContent isDirty />
-			).instance();
+		it( 'should return true if dirty and post has content and post is not published', function() {
+			var tree = shallow( <EditorGroundControl isSaving={ false } post={ {} } hasContent isDirty /> ).instance();
 
-			expect( tree.isSaveAvailable() ).to.be.true;
+			expect( tree.isSaveEnabled() ).to.be.true;
 		} );
 
-		test( 'should return false if dirty, but post has no content', () => {
+		it( 'should return false if dirty, but post has no content', function() {
 			var tree = shallow( <EditorGroundControl isSaving={ false } isDirty /> ).instance();
 
-			expect( tree.isSaveAvailable() ).to.be.false;
+			expect( tree.isSaveEnabled() ).to.be.false;
 		} );
 
-		test( 'should return false if dirty and post is published', () => {
-			var tree = shallow(
-				<EditorGroundControl isSaving={ false } post={ { status: 'publish' } } isDirty />
-			).instance();
+		it( 'should return false if dirty and post is published', function() {
+			var tree = shallow( <EditorGroundControl isSaving={ false } post={ { status: 'publish' } } isDirty /> ).instance();
 
-			expect( tree.isSaveAvailable() ).to.be.false;
+			expect( tree.isSaveEnabled() ).to.be.false;
 		} );
 	} );
 
-	describe( '#isPreviewEnabled()', () => {
-		test( 'should return true if post is not empty', () => {
+	describe( '#isPreviewEnabled()', function() {
+		it( 'should return true if post is not empty', function() {
 			var tree = shallow( <EditorGroundControl post={ {} } isNew hasContent isDirty /> ).instance();
 
 			expect( tree.isPreviewEnabled() ).to.be.true;
 		} );
 
-		test( 'should return false if saving is blocked', () => {
+		it( 'should return false if saving is blocked', function() {
 			var tree = shallow( <EditorGroundControl isSaveBlocked /> ).instance();
 
 			expect( tree.isPreviewEnabled() ).to.be.false;
 		} );
 
-		test( 'should return true even if form is publishing', () => {
+		it( 'should return true even if form is publishing', function() {
 			var tree = shallow( <EditorGroundControl post={ {} } hasContent isPublishing /> ).instance();
 
 			expect( tree.isPreviewEnabled() ).to.be.true;
 		} );
 
-		test( 'should return false if not dirty', () => {
+		it( 'should return false if not dirty', function() {
 			var tree = shallow( <EditorGroundControl post={ {} } isDirty={ false } isNew /> ).instance();
 
 			expect( tree.isPreviewEnabled() ).to.be.false;
 		} );
 
-		test( 'should return false if post has no content', () => {
+		it( 'should return false if post has no content', function() {
 			var tree = shallow( <EditorGroundControl post={ {} } hasContent={ false } /> ).instance();
 
 			expect( tree.isPreviewEnabled() ).to.be.false;

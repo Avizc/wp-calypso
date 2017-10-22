@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -23,6 +19,8 @@ import {
 	siteSupportsJetpackSettingsUi,
 } from 'state/sites/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
+import config from 'config';
+import { abtest } from 'lib/abtest';
 
 const Composing = ( {
 	eventTracker,
@@ -42,7 +40,12 @@ const Composing = ( {
 	return (
 		<div>
 			<CardComponent className="composing__card site-settings">
-				<PublishConfirmation />
+				{
+					config.isEnabled( 'post-editor/delta-post-publish-flow' ) &&
+					abtest( 'postPublishConfirmation' ) === 'showPublishConfirmation' &&
+					<PublishConfirmation />
+				}
+
 				<DefaultPostFormat
 					eventTracker={ eventTracker }
 					fields={ fields }
@@ -52,7 +55,7 @@ const Composing = ( {
 				/>
 			</CardComponent>
 
-			{ jetpackSettingsUISupported && (
+			{ jetpackSettingsUISupported &&
 				<AfterTheDeadline
 					fields={ fields }
 					handleToggle={ handleToggle }
@@ -60,8 +63,8 @@ const Composing = ( {
 					isSavingSettings={ isSavingSettings }
 					setFieldValue={ setFieldValue }
 				/>
-			) }
-			{ hasDateTimeFormats && (
+			}
+			{ hasDateTimeFormats &&
 				<DateTimeFormat
 					fields={ fields }
 					handleSelect={ handleSelect }
@@ -69,7 +72,7 @@ const Composing = ( {
 					isSavingSettings={ isSavingSettings }
 					updateFields={ updateFields }
 				/>
-			) }
+			}
 		</div>
 	);
 };
@@ -92,12 +95,14 @@ Composing.propTypes = {
 	updateFields: PropTypes.func.isRequired,
 };
 
-export default connect( state => {
-	const siteId = getSelectedSiteId( state );
-	const siteIsJetpack = isJetpackSite( state, siteId );
+export default connect(
+	( state ) => {
+		const siteId = getSelectedSiteId( state );
+		const siteIsJetpack = isJetpackSite( state, siteId );
 
-	return {
-		hasDateTimeFormats: ! siteIsJetpack || isJetpackMinimumVersion( state, siteId, '4.7' ),
-		jetpackSettingsUISupported: siteIsJetpack && siteSupportsJetpackSettingsUi( state, siteId ),
-	};
-} )( Composing );
+		return {
+			hasDateTimeFormats: ! siteIsJetpack || isJetpackMinimumVersion( state, siteId, '4.7' ),
+			jetpackSettingsUISupported: siteIsJetpack && siteSupportsJetpackSettingsUi( state, siteId ),
+		};
+	}
+)( Composing );

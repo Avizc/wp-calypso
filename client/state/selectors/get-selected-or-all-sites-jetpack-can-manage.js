@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import createSelector from 'lib/create-selector';
 import { getSelectedOrAllSites, canCurrentUser } from 'state/selectors';
 import { isJetpackSite } from 'state/sites/selectors';
@@ -15,12 +12,7 @@ import { isJetpackSite } from 'state/sites/selectors';
  * @return {Array}        Array of Sites objects with the result
  */
 export default createSelector(
-	state =>
-		getSelectedOrAllSites( state ).filter(
-			site =>
-				isJetpackSite( state, site.ID ) &&
-				site.canManage &&
-				canCurrentUser( state, site.ID, 'manage_options' )
-		),
-	state => [ state.ui.selectedSiteId, state.sites.items, state.currentUser.capabilities ]
+	( state ) => getSelectedOrAllSites( state ).filter( ( site ) =>	isJetpackSite( state, site.ID ) &&
+			site.canManage && canCurrentUser( state, site.ID, 'manage_options' ) ),
+	( state ) => [ state.ui.selectedSiteId, state.sites.items, state.currentUser.capabilities ]
 );

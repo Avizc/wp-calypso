@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import schemaValidator from 'is-my-json-valid';
-import { get, identity, noop } from 'lodash';
+import { get, noop } from 'lodash';
 
 /**
  * Returns response data from an HTTP request success action if available
@@ -13,7 +9,7 @@ import { get, identity, noop } from 'lodash';
  * @param {Object} action may contain HTTP response data
  * @returns {?*} response data if available
  */
-export const getData = action => get( action, 'meta.dataLayer.data', undefined );
+export const getData = action => get( action, 'meta.dataLayer.data', null );
 
 /**
  * Returns error data from an HTTP request failure action if available
@@ -21,7 +17,7 @@ export const getData = action => get( action, 'meta.dataLayer.data', undefined )
  * @param {Object} action may contain HTTP response error data
  * @returns {?*} error data if available
  */
-export const getError = action => get( action, 'meta.dataLayer.error', undefined );
+export const getError = action => get( action, 'meta.dataLayer.error', null );
 
 /**
  * Returns (response) headers data from an HTTP request action if available
@@ -29,7 +25,7 @@ export const getError = action => get( action, 'meta.dataLayer.error', undefined
  * @param {Object} action may contain HTTP response headers data
  * @returns {?*} headers data if available
  */
-export const getHeaders = action => get( action, 'meta.dataLayer.headers', undefined );
+export const getHeaders = action => get( action, 'meta.dataLayer.headers', null );
 
 /**
  * @typedef {Object} ProgressData
@@ -44,62 +40,7 @@ export const getHeaders = action => get( action, 'meta.dataLayer.headers', undef
  * @returns {Object|null} progress data if available
  * @returns {ProgressData}
  */
-export const getProgress = action => get( action, 'meta.dataLayer.progress', undefined );
-
-class SchemaError extends Error {
-	constructor( errors ) {
-		super( 'Failed to validate with JSON schema' );
-		this.schemaErrors = errors;
-	}
-}
-
-class TransformerError extends Error {
-	constructor( error, transformer, data ) {
-		super( error.message );
-		this.transformer = transformer;
-		this.inputData = data;
-	}
-}
-
-export const makeParser = ( schema, schemaOptions = {}, transformer = identity ) => {
-	const options = Object.assign( { verbose: true }, schemaOptions );
-	const validator = schemaValidator( schema, options );
-
-	// filter out unwanted properties even though we may have let them slip past validation
-	// note: this property does not nest deeply into the data structure, that is, properties
-	// of a property that aren't in the schema could still come through since only the top
-	// level of properties are pruned
-	const filter = schemaValidator.filter( { ...schema, additionalProperties: false } );
-
-	const validate = data => {
-		if ( ! validator( data ) ) {
-			throw new SchemaError( validator.errors );
-		}
-
-		return filter( data );
-	};
-
-	const transform = data => {
-		try {
-			return transformer( data );
-		} catch ( e ) {
-			throw new TransformerError( e, transformer, data );
-		}
-	};
-
-	// the actual parser
-	return data => transform( validate( data ) );
-};
-
-/**
- * @type Object default dispatchRequest options
- * @property {Function} fromApi validates and transforms API response data
- * @property {Function} onProgress called on progress events
- */
-const defaultOptions = {
-	fromApi: identity,
-	onProgress: noop,
-};
+export const getProgress = action => get( action, 'meta.dataLayer.progress', null );
 
 /**
  * Dispatches to appropriate function based on HTTP request meta
@@ -124,40 +65,29 @@ const defaultOptions = {
  *   onSuccess  :: ReduxStore -> Action -> Dispatcher -> ResponseData
  *   onError    :: ReduxStore -> Action -> Dispatcher -> ErrorData
  *   onProgress :: ReduxStore -> Action -> Dispatcher -> ProgressData
- *   fromApi    :: ResponseData -> [ Boolean, Data ]
  *
  * @param {Function} initiator called if action lacks response meta; should create HTTP request
  * @param {Function} onSuccess called if the action meta includes response data
  * @param {Function} onError called if the action meta includes error data
- * @param {Object} options configures additional dispatching behaviors
- + @param {Function} [options.fromApi] maps between API data and Calypso data
- + @param {Function} [options.onProgress] called on progress events when uploading
+ * @param {Function} [onProgress] called on progress events when uploading. The default
+ *                                behavior of this optional handler is to do nothing.
  * @returns {?*} please ignore return values, they are undefined
  */
-export const dispatchRequest = ( initiator, onSuccess, onError, options = {} ) => (
-	store,
-	action
-) => {
-	const { fromApi, onProgress } = { ...defaultOptions, ...options };
-
+export const dispatchRequest = ( initiator, onSuccess, onError, onProgress = noop ) => ( store, action, next ) => {
 	const error = getError( action );
-	if ( undefined !== error ) {
-		return onError( store, action, error );
+	if ( error ) {
+		return onError( store, action, next, error );
 	}
 
 	const data = getData( action );
-	if ( undefined !== data ) {
-		try {
-			return onSuccess( store, action, fromApi( data ) );
-		} catch ( err ) {
-			return onError( store, action, err );
-		}
+	if ( data ) {
+		return onSuccess( store, action, next, data );
 	}
 
 	const progress = getProgress( action );
-	if ( undefined !== progress ) {
-		return onProgress( store, action, progress );
+	if ( progress ) {
+		return onProgress( store, action, next, progress );
 	}
 
-	return initiator( store, action );
+	return initiator( store, action, next );
 };

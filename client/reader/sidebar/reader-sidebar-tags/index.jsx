@@ -1,23 +1,22 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import closest from 'component-closest';
 import { localize } from 'i18n-calypso';
 import { identity } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import ExpandableSidebarMenu from '../expandable';
 import ReaderSidebarTagsList from './list';
 import QueryReaderFollowedTags from 'components/data/query-reader-followed-tags';
-import { recordAction, recordGaEvent, recordTrack } from 'reader/stats';
-import { requestFollowTag, requestUnfollowTag } from 'state/reader/tags/items/actions';
 import { getReaderFollowedTags } from 'state/selectors';
+import { requestFollowTag, requestUnfollowTag } from 'state/reader/tags/items/actions';
+
+import { recordAction, recordGaEvent, recordTrack } from 'reader/stats';
 
 export class ReaderSidebarTags extends Component {
 	static propTypes = {
@@ -94,5 +93,5 @@ export default connect(
 	{
 		followTag: requestFollowTag,
 		unfollowTag: requestUnfollowTag,
-	}
+	},
 )( localize( ReaderSidebarTags ) );

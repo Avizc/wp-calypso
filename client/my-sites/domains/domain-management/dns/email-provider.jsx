@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { isEmpty, trim } from 'lodash';
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
-import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
@@ -18,65 +14,51 @@ import FormFooter from 'my-sites/domains/domain-management/components/form-foote
 import FormInputValidation from 'components/forms/form-input-validation';
 import FormLabel from 'components/forms/form-label';
 import FormTextInput from 'components/forms/form-text-input';
-import { errorNotice, successNotice } from 'state/notices/actions';
+import notices from 'notices';
 import * as upgradesActions from 'lib/upgrades/actions';
 
 class EmailProvider extends Component {
-	state = {
-		token: '',
-		submitting: false,
-	};
+	constructor( props ) {
+		super( props );
+		this.state = { token: '', submitting: false };
+	}
 
-	onChange = event => {
+	onChange = ( event ) => {
 		const { value } = event.target;
-
 		this.setState( { token: trim( value ) } );
-	};
+	}
 
-	onAddDnsRecords = event => {
+	onAddDnsRecords = ( event ) => {
 		event.preventDefault();
 		this.setState( { submitting: true } );
 
 		const { domain, translate, template } = this.props;
 		let variables = {
 			token: this.state.token,
-			domain,
+			domain
 		};
 
 		if ( template.modifyVariables ) {
 			variables = template.modifyVariables( variables );
 		}
 
-		upgradesActions.applyDnsTemplate(
-			domain,
-			template.dnsTemplateProvider,
-			template.dnsTemplateService,
-			variables,
-			error => {
-				if ( error ) {
-					this.props.errorNotice(
-						error.message ||
-							translate( "We weren't able to add DNS records for this service. Please try again." )
-					);
-				} else {
-					this.props.successNotice(
-						translate( "Hooray! We've successfully added DNS records for this service." ),
-						{
-							duration: 5000,
-						}
-					);
-				}
-
-				this.setState( { submitting: false } );
+		upgradesActions.applyDnsTemplate( domain, template.dnsTemplateProvider, template.dnsTemplateService, variables, ( error ) => {
+			if ( error ) {
+				notices.error( error.message || translate( 'We weren\'t able to add DNS records for this service. Please try again.' ) );
+			} else {
+				notices.success( translate( 'Hooray! We\'ve successfully added DNS records for this service.' ), {
+					duration: 5000
+				} );
 			}
-		);
-	};
+
+			this.setState( { submitting: false } );
+		} );
+	}
 
 	render() {
-		const { template, translate } = this.props;
-		const { token, submitting } = this.state;
-		const { name, label, placeholder, validationPattern } = template;
-		const isDataValid = token.match( validationPattern );
+		const { translate } = this.props,
+			{ name, label, placeholder, validationPattern } = this.props.template,
+			isDataValid = this.state.token.match( validationPattern );
 
 		return (
 			<form className="dns__template-form">
@@ -87,22 +69,25 @@ class EmailProvider extends Component {
 							id="dns-template-token"
 							key={ `dns-templates-token-${ name }` }
 							name="token"
-							isError={ ! isEmpty( token ) && ! isDataValid }
+							isError={ ! isEmpty( this.state.token ) && ! isDataValid }
 							onChange={ this.onChange }
-							placeholder={ placeholder }
-						/>
-						{ token &&
-						! isDataValid && <FormInputValidation text={ translate( 'Invalid Token' ) } isError /> }
+							placeholder={ placeholder } />
+						{ this.state.token && ! isDataValid &&
+						<FormInputValidation text={ translate( 'Invalid Token' ) } isError={ true } /> }
 					</FormFieldset>
 
 					<FormFooter>
-						<FormButton disabled={ ! isDataValid || submitting } onClick={ this.onAddDnsRecords }>
-							{ translate( 'Set up %(providerName)s', {
-								args: { providerName: name },
-								comment:
-									'%(providerName)s will be replaced with the name of the service ' +
-									'provider that this template is used for, for example G Suite or Office 365',
-							} ) }
+						<FormButton
+							disabled={ ! isDataValid || this.state.submitting }
+							onClick={ this.onAddDnsRecords }>
+							{ translate(
+								'Set up %(providerName)s',
+								{
+									args: { providerName: name },
+									comment: '%(providerName)s will be replaced with the name of the service ' +
+										'provider that this template is used for, for example G Suite or Office 365'
+								}
+							) }
 						</FormButton>
 					</FormFooter>
 				</div>
@@ -111,7 +96,4 @@ class EmailProvider extends Component {
 	}
 }
 
-export default connect( null, {
-	errorNotice,
-	successNotice,
-} )( localize( EmailProvider ) );
+export default localize( EmailProvider );

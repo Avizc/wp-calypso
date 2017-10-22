@@ -1,5 +1,4 @@
-/** @format */
-export default {
+module.exports = {
 	ID: 1234,
 	URL: 'http://example.com',
 	canUpdateFiles: true,
@@ -28,5 +27,5 @@ export default {
 	jp_version: '3.6',
 	user_can_manage: true,
 	visible: true,
-	wpcom_url: 'example.com',
+	wpcom_url: 'example.com'
 };

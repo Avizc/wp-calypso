@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,25 +9,25 @@ import { expect } from 'chai';
 import {
 	getNormalizedTermsQuery,
 	getSerializedTermsQuery,
-	getSerializedTermsQueryWithoutPage,
+	getSerializedTermsQueryWithoutPage
 } from '../utils';
 
 describe( 'utils', () => {
 	describe( 'getNormalizedTermsQuery()', () => {
-		test( 'should exclude default values', () => {
+		it( 'should exclude default values', () => {
 			const query = getNormalizedTermsQuery( {
 				page: 2,
-				number: 100,
+				number: 100
 			} );
 
 			expect( query ).to.eql( {
-				page: 2,
+				page: 2
 			} );
 		} );
 	} );
 
 	describe( 'getSerializedTermsQuery()', () => {
-		test( 'should return a JSON string of a normalized query', () => {
+		it( 'should return a JSON string of a normalized query', () => {
 			const serializedQuery = getSerializedTermsQuery( {
 				search: 'ribs',
 				page: 1,
@@ -38,10 +36,10 @@ describe( 'utils', () => {
 			expect( serializedQuery ).to.equal( '{"search":"ribs"}' );
 		} );
 
-		test( 'should lowercase the result', () => {
+		it( 'should lowercase the result', () => {
 			const serializedQuery = getSerializedTermsQuery( {
 				search: 'Chicken',
-				page: '2',
+				page: '2'
 			} );
 
 			expect( serializedQuery ).to.equal( '{"search":"chicken","page":"2"}' );
@@ -49,10 +47,10 @@ describe( 'utils', () => {
 	} );
 
 	describe( 'getSerializedTermsQueryWithoutPage()', () => {
-		test( 'should return a JSON string of a normalized query without page', () => {
+		it( 'should return a JSON string of a normalized query without page', () => {
 			const serializedQuery = getSerializedTermsQueryWithoutPage( {
 				search: 'Chicken',
-				page: '2',
+				page: '2'
 			} );
 
 			expect( serializedQuery ).to.equal( '{"search":"chicken"}' );

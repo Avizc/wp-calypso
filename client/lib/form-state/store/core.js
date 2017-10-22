@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { changeFieldValue } from '../';
 
 function core() {
@@ -25,7 +22,7 @@ function core() {
 			}
 
 			return next;
-		},
+		}
 	};
 }
 

@@ -1,7 +1,5 @@
 /**
  * Internal dependencies
- *
- * @format
  */
 
 import { GOOGLE_CREDITS } from './service-types';

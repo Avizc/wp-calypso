@@ -1,12 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
-import { some } from 'lodash';
+import React, { PropTypes } from 'react';
+import some from 'lodash/some';
 import classNames from 'classnames';
 
 /**
@@ -20,13 +16,13 @@ export default React.createClass( {
 
 	propTypes: {
 		siteId: PropTypes.number,
-		settings: PropTypes.object,
+		settings: PropTypes.object
 	},
 
 	getInitialState() {
 		return {
 			isLoading: true,
-			shortcode: generateGalleryShortcode( this.props.settings ),
+			shortcode: generateGalleryShortcode( this.props.settings )
 		};
 	},
 
@@ -38,7 +34,7 @@ export default React.createClass( {
 
 		this.setState( {
 			isLoading: true,
-			shortcode,
+			shortcode
 		} );
 	},
 
@@ -48,7 +44,7 @@ export default React.createClass( {
 		}
 
 		this.setState( {
-			isLoading: false,
+			isLoading: false
 		} );
 	},
 
@@ -56,7 +52,7 @@ export default React.createClass( {
 		const { siteId, settings } = this.props;
 		const { isLoading, shortcode } = this.state;
 		const classes = classNames( 'editor-media-modal-gallery__preview-shortcode', {
-			'is-loading': isLoading || some( settings.items, 'transient' ),
+			'is-loading': isLoading || some( settings.items, 'transient' )
 		} );
 
 		return (
@@ -66,5 +62,6 @@ export default React.createClass( {
 				</GalleryShortcode>
 			</div>
 		);
-	},
+	}
+
 } );

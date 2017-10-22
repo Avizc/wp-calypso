@@ -1,13 +1,9 @@
 /**
- * External dependencies
- *
- * @format
+ * External dependencies.
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { debounce, forEach, isEqual, map } from 'lodash';
+import { forEach, isEqual, map } from 'lodash';
 
 /**
  * Internal dependencies.
@@ -15,18 +11,21 @@ import { debounce, forEach, isEqual, map } from 'lodash';
 import {
 	getDocumentHeadFormattedTitle,
 	getDocumentHeadLink,
-	getDocumentHeadMeta,
+	getDocumentHeadMeta
 } from 'state/document-head/selectors';
 import {
 	setDocumentHeadTitle as setTitle,
 	setDocumentHeadLink as setLink,
 	setDocumentHeadMeta as setMeta,
-	setDocumentHeadUnreadCount as setUnreadCount,
+	setDocumentHeadUnreadCount as setUnreadCount
 } from 'state/document-head/actions';
 
 class DocumentHead extends Component {
 	componentWillMount() {
-		const { title, unreadCount } = this.props;
+		const {
+			title,
+			unreadCount
+		} = this.props;
 
 		if ( this.props.title !== undefined ) {
 			this.props.setTitle( title );
@@ -46,7 +45,8 @@ class DocumentHead extends Component {
 	}
 
 	componentDidMount() {
-		this.setFormattedTitle( this.props.formattedTitle );
+		const { formattedTitle } = this.props;
+		document.title = formattedTitle;
 
 		this.refreshHeadTags();
 	}
@@ -69,7 +69,7 @@ class DocumentHead extends Component {
 		}
 
 		if ( nextProps.formattedTitle !== this.props.formattedTitle ) {
-			this.setFormattedTitle( nextProps.formattedTitle );
+			document.title = nextProps.formattedTitle;
 		}
 
 		this.refreshHeadTags( nextProps );
@@ -85,9 +85,7 @@ class DocumentHead extends Component {
 	ensureTag( tagName, properties ) {
 		const propertiesSelector = map( properties, ( value, key ) => {
 			if ( value !== undefined && typeof value === 'string' ) {
-				const escapedValueInSelector = value
-					.toString()
-					.replace( /([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g, '\\$1' );
+				const escapedValueInSelector = value.toString().replace( /([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g, '\\$1' );
 				return `[${ key }="${ escapedValueInSelector }"]`;
 			}
 			return `[${ key }]`;
@@ -103,14 +101,6 @@ class DocumentHead extends Component {
 		}
 	}
 
-	componentWillUnmount() {
-		this.setFormattedTitle.cancel();
-	}
-
-	setFormattedTitle = debounce( ( title ) => {
-		document.title = title;
-	} )
-
 	render() {
 		return null;
 	}
@@ -124,7 +114,7 @@ DocumentHead.propTypes = {
 	setTitle: PropTypes.func.isRequired,
 	setLink: PropTypes.func.isRequired,
 	setMeta: PropTypes.func.isRequired,
-	setUnreadCount: PropTypes.func.isRequired,
+	setUnreadCount: PropTypes.func.isRequired
 };
 
 export default connect(
@@ -137,6 +127,6 @@ export default connect(
 		setTitle,
 		setLink,
 		setMeta,
-		setUnreadCount,
+		setUnreadCount
 	}
 )( DocumentHead );

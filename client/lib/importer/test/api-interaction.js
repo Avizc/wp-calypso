@@ -1,18 +1,12 @@
-/** @format */
-/**
- * External dependencies
- */
 import { expect } from 'chai';
-import { partial } from 'lodash';
-
-/**
- * Internal dependencies
- */
-import { fetchState } from '../actions';
-import store from '../store';
 import Dispatcher from 'dispatcher';
-import { IMPORTS_STORE_RESET } from 'state/action-types';
+import partial from 'lodash/partial';
+
 import { nock, useNock } from 'test/helpers/use-nock';
+
+import { fetchState } from '../actions';
+import { IMPORTS_STORE_RESET } from 'state/action-types';
+import store from '../store';
 
 const testSiteId = 'en.blog.wordpress.com';
 const fetchTestState = partial( fetchState, testSiteId );
@@ -30,7 +24,7 @@ describe( 'Importer store', () => {
 	beforeEach( resetStore );
 
 	describe( 'API integration', () => {
-		test( 'should hydrate if the API returns a blank body', done => {
+		it( 'should hydrate if the API returns a blank body', done => {
 			expect( hydratedState(), 'before fetch' ).to.be.false;
 
 			queuePayload( 'no-imports' );
@@ -42,7 +36,7 @@ describe( 'Importer store', () => {
 				.catch( done );
 		} );
 
-		test( 'should hydrate if the API returns a defunct importer', done => {
+		it( 'should hydrate if the API returns a defunct importer', done => {
 			expect( hydratedState(), 'before fetch' ).to.be.false;
 
 			queuePayload( 'defunct-importer' );

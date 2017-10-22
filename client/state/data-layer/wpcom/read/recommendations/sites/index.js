@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -23,7 +22,7 @@ export const requestRecommendedSites = ( { dispatch }, action ) => {
 			apiVersion: '1.2',
 			onSuccess: action,
 			onFailure: action,
-		} )
+		} ),
 	);
 };
 
@@ -42,7 +41,7 @@ export const fromApi = response => {
 	} ) );
 };
 
-export const receiveRecommendedSitesResponse = ( store, action, response ) => {
+export const receiveRecommendedSitesResponse = ( store, action, next, response ) => {
 	if ( ! response.sites ) {
 		return;
 	}
@@ -52,7 +51,7 @@ export const receiveRecommendedSitesResponse = ( store, action, response ) => {
 			sites: fromApi( response ),
 			seed: action.payload.seed,
 			offset: action.payload.offset,
-		} )
+		} ),
 	);
 };
 

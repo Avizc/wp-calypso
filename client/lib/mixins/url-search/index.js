@@ -1,30 +1,26 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:url-search' );
-import page from 'page';
+var debug = require( 'debug' )( 'calypso:url-search' ),
+	page = require( 'page' );
 
 /**
  * Internal dependencies
  */
-import buildUrl from 'lib/build-url';
+var buildUrl = require( './build-url' );
 
-export default {
+module.exports = {
+
 	getInitialState: function() {
 		return {
-			searchOpen: false,
+			searchOpen: false
 		};
 	},
 
 	componentWillReceiveProps: function( nextProps ) {
 		if ( ! nextProps.search ) {
 			this.setState( {
-				searchOpen: false,
+				searchOpen: false
 			} );
 		}
 	},
@@ -33,7 +29,7 @@ export default {
 		var searchURL;
 
 		this.setState( {
-			searchOpen: false !== keywords,
+			searchOpen: ( false !== keywords )
 		} );
 
 		if ( this.onSearch ) {
@@ -54,6 +50,7 @@ export default {
 	},
 
 	getSearchOpen: function() {
-		return this.state.searchOpen !== false || this.props.search;
-	},
+		return ( this.state.searchOpen !== false || this.props.search );
+	}
+
 };

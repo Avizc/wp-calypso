@@ -1,14 +1,11 @@
-/** @format */
 /**
  * External dependencies
  */
 import React from 'react';
-import { connect } from 'react-redux';
 import url from 'url';
 import { defer } from 'lodash';
 import config from 'config';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import qs from 'qs';
 import page from 'page';
 import SocialLogo from 'social-logos';
@@ -17,17 +14,19 @@ import { localize } from 'i18n-calypso';
 /**
  * Internal dependencies
  */
-import ReaderPopoverMenu from 'components/reader-popover/menu';
+import PopoverMenu from 'components/popover/menu';
 import PopoverMenuItem from 'components/popover/menu-item';
 import Gridicon from 'gridicons';
 import * as stats from 'reader/stats';
+import SitesPopover from 'components/sites-popover';
 import { preload as preloadSection } from 'sections-preload';
-import SiteSelector from 'components/site-selector';
-import { getPrimarySiteId } from 'state/selectors';
+import User from 'lib/user';
 
 /**
  * Local variables
  */
+
+const user = User();
 const actionMap = {
 	twitter( post ) {
 		const twitterUrlProperties = {
@@ -79,9 +78,13 @@ function buildQuerystringForPost( post ) {
 	return qs.stringify( args );
 }
 
+function canShareToWordPress() {
+	return !! user.get().primarySiteSlug;
+}
+
 class ReaderShare extends React.Component {
 	static propTypes = {
-		iconSize: PropTypes.number,
+		iconSize: React.PropTypes.number,
 	};
 
 	static defaultProps = {
@@ -125,10 +128,11 @@ class ReaderShare extends React.Component {
 	toggle = event => {
 		event.preventDefault();
 		if ( ! this.state.showingMenu ) {
+			const target = canShareToWordPress() ? 'wordpress' : 'external';
 			stats.recordAction( 'open_share' );
-			stats.recordGaEvent( 'Opened Share' );
+			stats.recordGaEvent( 'Opened Share to ' + target );
 			stats.recordTrack( 'calypso_reader_share_opened', {
-				has_sites: this.props.hasSites,
+				target,
 			} );
 		}
 		this.deferMenuChange( ! this.state.showingMenu );
@@ -169,7 +173,6 @@ class ReaderShare extends React.Component {
 	}
 
 	render() {
-		const { translate } = this.props;
 		const buttonClasses = classnames( {
 			'reader-share__button': true,
 			'ignore-click': true,
@@ -189,55 +192,46 @@ class ReaderShare extends React.Component {
 				<span key="button" ref="shareButton" className={ buttonClasses }>
 					<Gridicon icon="share" size={ this.props.iconSize } />
 					<span className="reader-share__button-label">
-						{ translate( 'Share', { comment: 'Share the post' } ) }
+						{ this.props.translate( 'Share', { comment: 'Share the post' } ) }
 					</span>
 				</span>,
-				this.state.showingMenu && (
-					<ReaderPopoverMenu
-						key="menu"
-						context={ this.refs && this.refs.shareButton }
-						isVisible={ this.state.showingMenu }
-						onClose={ this.closeExternalShareMenu }
-						position={ this.props.position }
-						className="popover reader-share__popover"
-						popoverTitle={ translate( 'Share on' ) }
-					>
-						<PopoverMenuItem
-							action="facebook"
-							className="reader-share__popover-item"
-							title={ translate( 'Share on Facebook' ) }
-							focusOnHover={ false }
-						>
-							<SocialLogo icon="facebook" />
-							<span>Facebook</span>
-						</PopoverMenuItem>
-						<PopoverMenuItem
-							action="twitter"
-							className="reader-share__popover-item"
-							title={ translate( 'Share on Twitter' ) }
-							focusOnHover={ false }
-						>
-							<SocialLogo icon="twitter" />
-							<span>Twitter</span>
-						</PopoverMenuItem>
-						{ this.props.hasSites && (
-							<SiteSelector
-								className="reader-share__site-selector"
-								siteBasePath="/post"
-								onSiteSelect={ this.pickSiteToShareTo }
-								showAddNewSite={ false }
-								indicator={ false }
-								autoFocus={ false }
+				this.state.showingMenu &&
+					( canShareToWordPress()
+						? <SitesPopover
+								key="menu"
+								header={
+									<div>
+										{ this.props.translate( 'Share on:' ) }
+									</div>
+								}
+								context={ this.refs && this.refs.shareButton }
+								visible={ this.state.showingMenu }
 								groups={ true }
+								onSiteSelect={ this.pickSiteToShareTo }
+								onClose={ this.closeMenu }
+								position={ this.props.position }
+								className="reader-share__sites-popover"
 							/>
-						) }
-					</ReaderPopoverMenu>
-				),
-			]
+						: <PopoverMenu
+								key="menu"
+								context={ this.refs && this.refs.shareButton }
+								isVisible={ this.state.showingMenu }
+								onClose={ this.closeExternalShareMenu }
+								position={ this.props.position }
+								className="popover reader-share__popover"
+							>
+								<PopoverMenuItem action="twitter" className="reader-share__popover-item">
+									<SocialLogo icon="twitter" />
+									<span>Twitter</span>
+								</PopoverMenuItem>
+								<PopoverMenuItem action="facebook" className="reader-share__popover-item">
+									<SocialLogo icon="facebook" />
+									<span>Facebook</span>
+								</PopoverMenuItem>
+							</PopoverMenu> ),
+			],
 		);
 	}
 }
 
-export default connect( state => ( {
-	hasSites: !! getPrimarySiteId( state ),
-} ) )( localize( ReaderShare ) );
+export default localize( ReaderShare );

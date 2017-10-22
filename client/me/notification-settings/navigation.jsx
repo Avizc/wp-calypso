@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
-
-import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -15,7 +10,8 @@ import SectionNav from 'components/section-nav';
 import NavTabs from 'components/section-nav/tabs';
 import NavItem from 'components/section-nav/item';
 
-const NotificationSettingsNavigation = React.createClass( {
+export default React.createClass( {
+
 	displayName: 'NotificationSettingsNavigation',
 
 	render() {
@@ -23,12 +19,12 @@ const NotificationSettingsNavigation = React.createClass( {
 			this.navItem( '/me/notifications' ),
 			this.navItem( '/me/notifications/comments' ),
 			this.navItem( '/me/notifications/updates' ),
-			this.navItem( '/me/notifications/subscriptions' ),
+			this.navItem( '/me/notifications/subscriptions' )
 		];
 
 		return (
 			<SectionNav selectedText={ this.getSelectedText() }>
-				<NavTabs label="Section" selectedText={ this.getSelectedText() }>
+				<NavTabs label='Section' selectedText={ this.getSelectedText() }>
 					{ navItems }
 				</NavTabs>
 			</SectionNav>
@@ -37,16 +33,18 @@ const NotificationSettingsNavigation = React.createClass( {
 
 	itemLabels() {
 		return {
-			'/me/notifications': this.props.translate( 'Notifications' ),
-			'/me/notifications/comments': this.props.translate( 'Comments' ),
-			'/me/notifications/updates': this.props.translate( 'Updates' ),
-			'/me/notifications/subscriptions': this.props.translate( 'Reader Subscriptions' ),
+			'/me/notifications': this.translate( 'Notifications' ),
+			'/me/notifications/comments': this.translate( 'Comments' ),
+			'/me/notifications/updates': this.translate( 'Updates' ),
+			'/me/notifications/subscriptions': this.translate( 'Reader Subscriptions' )
 		};
 	},
 
 	navItem( path ) {
 		return (
-			<NavItem path={ path } key={ path } selected={ this.props.path === path }>
+			<NavItem path={ path }
+					key={ path }
+					selected={ this.props.path === path }>
 				{ this.itemLabels()[ path ] }
 			</NavItem>
 		);
@@ -56,5 +54,3 @@ const NotificationSettingsNavigation = React.createClass( {
 		return this.itemLabels()[ this.props.path ];
 	},
 } );
-
-export default localize( NotificationSettingsNavigation );

@@ -1,14 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
+import React, { Component, PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -19,7 +15,9 @@ import {
 	getOptedOutofTaxesSetup,
 	getTriedCustomizerDuringInitialSetup,
 } from 'woocommerce/state/sites/setup-choices/selectors';
-import { setFinishedInitialSetup } from 'woocommerce/state/sites/setup-choices/actions';
+import {
+	setFinishedInitialSetup,
+} from 'woocommerce/state/sites/setup-choices/actions';
 import SetupFooter from './setup-footer';
 import SetupHeader from './setup-header';
 import SetupTasks from './setup-tasks';
@@ -35,13 +33,13 @@ class SetupTasksView extends Component {
 		} ),
 	};
 
-	onFinished = event => {
+	onFinished = ( event ) => {
 		event.preventDefault();
 		analytics.tracks.recordEvent( 'calypso_woocommerce_dashboard_action_click', {
 			action: 'finished',
 		} );
 		this.props.setFinishedInitialSetup( this.props.site.ID, true );
-	};
+	}
 
 	render = () => {
 		const { allTasksCompleted, site, translate } = this.props;
@@ -53,27 +51,26 @@ class SetupTasksView extends Component {
 				<SetupHeader
 					imageSource={ '/calypso/images/extensions/woocommerce/woocommerce-setup.svg' }
 					imageWidth={ 160 }
-					title={ translate( "Let's set up your store" ) }
-					subtitle={ translate(
-						'Here are the things you’ll need to do before you can start taking orders.'
-					) }
+					title={ translate( 'Let\'s set up your store' ) }
+					subtitle={ translate( 'Here are the things you’ll need to do before you can start taking orders.' ) }
 				/>
-				<SetupTasks site={ site } />
+				<SetupTasks
+					site={ site }
+				/>
 				<SetupFooter
 					onClick={ this.onFinished }
-					label={ translate( "I'm finished setting up" ) }
+					label={ translate( 'I\'m finished setting up' ) }
 					primary={ allTasksCompleted }
 				/>
 			</div>
 		);
-	};
+	}
 }
 
 function mapStateToProps( state ) {
 	// TODO - add test for hasProducts, paymentsAreSetUp and taxesAreSetUp
 	// when those selectors become available
-	const allTasksCompleted =
-		getOptedOutOfShippingSetup( state ) &&
+	const allTasksCompleted = getOptedOutOfShippingSetup( state ) &&
 		getOptedOutofTaxesSetup( state ) &&
 		getTriedCustomizerDuringInitialSetup( state ) &&
 		areAnyShippingMethodsEnabled( state );

@@ -1,25 +1,24 @@
-/** @format */
 /**
  * External dependencies
  */
-import { expect } from 'chai';
-import { shallow } from 'enzyme';
-import { identity } from 'lodash';
 import React from 'react';
+import { shallow } from 'enzyme';
+import { expect } from 'chai';
 import { spy } from 'sinon';
+import { identity } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { Count } from '../';
 
-describe( 'Count', () => {
-	test( 'should use the correct class name', () => {
+describe( 'Count', function() {
+	it( 'should use the correct class name', function() {
 		const count = shallow( <Count count={ 23 } numberFormat={ identity } /> );
 		expect( count ).to.have.className( 'count' );
 	} );
 
-	test( 'should call provided as prop numberFormat function', () => {
+	it( 'should call provided as prop numberFormat function', function() {
 		const numberFormatSpy = spy();
 		shallow( <Count count={ 23 } numberFormat={ numberFormatSpy } /> );
 		expect( numberFormatSpy ).to.have.been.calledWith( 23 );

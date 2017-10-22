@@ -1,11 +1,9 @@
-/** @format */
 /**
  * External Dependencies
  */
 import React from 'react';
 import classnames from 'classnames';
 import page from 'page';
-import PropTypes from 'prop-types';
 import qs from 'qs';
 import { get, defer } from 'lodash';
 import Gridicon from 'gridicons';
@@ -19,9 +17,10 @@ import { preload } from 'sections-preload';
 import SitesPopover from 'components/sites-popover';
 import Button from 'components/button';
 import { markSeen as markPostSeen } from 'lib/feed-post-store/actions';
+
 import { recordGaEvent, recordAction, recordTrackForPost } from 'reader/stats';
 import { getDailyPostType } from './helper';
-import { getPrimarySiteId } from 'state/selectors';
+import { getPrimarySiteId } from 'state/selectors';
 import { getSiteSlug } from 'state/sites/selectors';
 import { getCurrentUser } from 'state/current-user/selectors';
 
@@ -55,18 +54,18 @@ export class DailyPostButton extends React.Component {
 	}
 
 	static propTypes = {
-		post: PropTypes.object.isRequired,
-		site: PropTypes.object.isRequired,
-		position: PropTypes.string,
-		tagName: PropTypes.string,
-		canParticipate: PropTypes.bool.isRequired,
-		primarySiteSlug: PropTypes.string,
-		onlyOneSite: PropTypes.bool.isRequired,
+		post: React.PropTypes.object.isRequired,
+		site: React.PropTypes.object.isRequired,
+		position: React.PropTypes.string,
+		tagName: React.PropTypes.string,
+		canParticipate: React.PropTypes.bool.isRequired,
+		primarySiteSlug: React.PropTypes.string,
+		onlyOneSite: React.PropTypes.bool.isRequired
 	};
 
 	static defaultProps = {
 		position: 'top',
-		tagName: 'span',
+		tagName: 'li',
 	};
 
 	componentDidMount() {
@@ -174,13 +173,14 @@ export class DailyPostButton extends React.Component {
 	}
 }
 
-export default connect( state => {
-	const primarySiteId = getPrimarySiteId( state );
-	const user = getCurrentUser( state );
-	const visibleSiteCount = get( user, 'visible_site_count', 0 );
-	return {
-		canParticipate: !! primarySiteId,
-		primarySiteSlug: getSiteSlug( state, primarySiteId ),
-		onlyOneSite: visibleSiteCount === 1,
-	};
-} )( DailyPostButton );
+export default connect(
+	state => {
+		const primarySiteId = getPrimarySiteId( state );
+		const user = getCurrentUser( state );
+		const visibleSiteCount = get( user, 'visible_site_count', 0 );
+		return {
+			canParticipate: !! primarySiteId,
+			primarySiteSlug: getSiteSlug( state, primarySiteId ),
+			onlyOneSite: visibleSiteCount === 1
+		};
+	} )( DailyPostButton );

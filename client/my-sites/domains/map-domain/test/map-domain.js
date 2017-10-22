@@ -1,42 +1,39 @@
 /**
- * @format
- * @jest-environment jsdom
+ * External Dependencies
  */
-
-/**
- * External dependencies
- */
+import React from 'react';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
-import pageSpy from 'page';
-import React from 'react';
+import { spy } from 'sinon';
 
 /**
  * Internal dependencies
  */
-import { MapDomain } from '..';
-import MapDomainStep from 'components/domains/map-domain-step';
-import HeaderCake from 'components/header-cake';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 import paths from 'my-sites/domains/paths';
 
-jest.mock( 'lib/user', () => () => {} );
-jest.mock( 'page', () => {
-	const { spy } = require( 'sinon' );
-	const pageSpy = spy();
-
-	pageSpy.redirect = spy();
-
-	return pageSpy;
-} );
-
 describe( 'MapDomain component', () => {
+	const pageSpy = spy();
+	pageSpy.redirect = spy();
+	let MapDomain, MapDomainStep, HeaderCake;
+
+	// needed, because some dependency of dependency uses `window`
+	useFakeDom();
+
+	useMockery( ( mockery ) => {
+		mockery.registerMock( 'page', pageSpy );
+		MapDomain = require( '..' ).MapDomain;
+		MapDomainStep = require( 'components/domains/map-domain-step' );
+		HeaderCake = require( 'components/header-cake' );
+	} );
+
 	beforeEach( () => {
 		pageSpy.reset();
 		pageSpy.redirect.reset();
 	} );
 
 	const defaultProps = {
-		cart: {},
 		productsList: {},
 		domainsWithPlansOnly: false,
 		translate: string => string,
@@ -49,63 +46,58 @@ describe( 'MapDomain component', () => {
 		selectedSiteSlug: 'domain.com',
 	};
 
-	test( 'does not blow up with default props', () => {
+	it( 'does not blow up with default props', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } /> );
 		expect( wrapper ).to.have.length( 1 );
 	} );
 
-	test( 'redirects if site cannot be upgraded at mounting', () => {
+	it( 'redirects if site cannot be upgraded at mounting', () => {
 		shallow( <MapDomain { ...defaultProps } isSiteUpgradeable={ false } /> );
 		expect( pageSpy.redirect ).to.have.been.calledWith( '/domains/add/mapping' );
 	} );
 
-	test( 'redirects if site cannot be upgraded at new props', () => {
+	it( 'redirects if site cannot be upgraded at new props', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } isSiteUpgradeable={ true } /> );
 		wrapper.setProps( { selectedSiteId: 501, isSiteUpgradeable: false } );
 		expect( pageSpy.redirect ).to.have.been.calledWith( '/domains/add/mapping' );
 	} );
 
-	test( 'renders a MapDomainStep', () => {
+	it( 'renders a MapDomainStep', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } /> );
 		expect( wrapper.find( MapDomainStep ) ).to.have.length( 1 );
 	} );
 
-	test( "goes back when HeaderCake's onClick is fired", () => {
+	it( "goes back when HeaderCake's onClick is fired", () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } /> );
 		expect( wrapper.find( HeaderCake ).prop( 'onClick' ) ).to.equal( wrapper.instance().goBack );
 	} );
 
-	test( 'goes back to /domains/add if no selected site', () => {
+	it( 'goes back to /domains/add if no selected site', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } selectedSite={ null } /> );
 		wrapper.instance().goBack();
 		expect( pageSpy ).to.have.been.calledWith( '/domains/add' );
 	} );
 
-	test( 'goes back to domain management for VIP sites', () => {
-		const wrapper = shallow(
-			<MapDomain
-				{ ...defaultProps }
-				selectedSiteSlug="baba"
-				selectedSite={ { ...defaultProps.selectedSite, is_vip: true } }
-			/>
-		);
+	it( 'goes back to domain management for VIP sites', () => {
+		const wrapper = shallow( <MapDomain { ...defaultProps } selectedSiteSlug="baba"
+											selectedSite={ { ...defaultProps.selectedSite, is_vip: true } } /> );
 		wrapper.instance().goBack();
 		expect( pageSpy ).to.have.been.calledWith( paths.domainManagementList( 'baba' ) );
 	} );
 
-	test( 'goes back to domain add page if non-VIP site', () => {
+	it( 'goes back to domain add page if non-VIP site', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } selectedSiteSlug="baba" /> );
 		wrapper.instance().goBack();
 		expect( pageSpy ).to.have.been.calledWith( '/domains/add/baba' );
 	} );
 
-	test( 'does not render a notice by default', () => {
+	it( 'does not render a notice by default', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } /> );
 		// we match the notice by props, because enzyme isn't matching the Notice type for some reason
 		expect( wrapper.find( { status: 'is-error' } ) ).to.have.length( 0 );
 	} );
 
-	test( 'render a notice by when there is an errorMessage in the state ', () => {
+	it( 'render a notice by when there is an errorMessage in the state ', () => {
 		const wrapper = shallow( <MapDomain { ...defaultProps } /> );
 		// we match the notice by props, because enzyme isn't matching the Notice type for some reason
 		wrapper.setState( { errorMessage: 'baba' } );

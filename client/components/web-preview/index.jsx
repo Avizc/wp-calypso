@@ -1,14 +1,11 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
-import { noop } from 'lodash';
+import noop from 'lodash/noop';
+import shallowCompare from 'react-addons-shallow-compare';
 
 /**
  * Internal dependencies
@@ -21,7 +18,7 @@ import { setPreviewShowing } from 'state/ui/actions';
 import { recordTracksEvent } from 'state/analytics/actions';
 import WebPreviewContent from './content';
 
-export class WebPreview extends PureComponent {
+export class WebPreview extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -47,6 +44,10 @@ export class WebPreview extends PureComponent {
 			document.documentElement.classList.add( 'no-scroll', 'is-previewing' );
 		}
 		this.props.setPreviewShowing( this.props.showPreview );
+	}
+
+	shouldComponentUpdate( nextProps, nextState ) {
+		return shallowCompare( this, nextProps, nextState );
 	}
 
 	componentDidUpdate( prevProps ) {
@@ -151,9 +152,9 @@ WebPreview.propTypes = {
 	// The iframe's title element, used for accessibility purposes
 	iframeTitle: PropTypes.string,
 	// Makes room for a sidebar if desired
-	hasSidebar: PropTypes.bool,
+	hasSidebar: React.PropTypes.bool,
 	// The site/post description passed to the SeoPreviewPane
-	frontPageMetaDescription: PropTypes.string,
+	frontPageMetaDescription: React.PropTypes.string,
 };
 
 WebPreview.defaultProps = {

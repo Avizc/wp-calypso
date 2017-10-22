@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -18,10 +15,14 @@ class CartSummaryBar extends React.Component {
 
 		let text = translate( 'Order Summary' );
 		if ( showItemCount && itemCount ) {
-			text = translate( 'Cart - %(count)d item', 'Cart - %(count)d items', {
-				count: itemCount,
-				args: { count: itemCount },
-			} );
+			text = translate(
+				'Cart - %(count)d item',
+				'Cart - %(count)d items',
+				{
+					count: itemCount,
+					args: { count: itemCount }
+				}
+			);
 		}
 
 		return (
@@ -31,7 +32,7 @@ class CartSummaryBar extends React.Component {
 		);
 	}
 
-	toggleVisibility = event => {
+	toggleVisibility = ( event ) => {
 		event.preventDefault();
 
 		if ( this.props.onClick ) {

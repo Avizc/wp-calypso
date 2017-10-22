@@ -1,26 +1,24 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import page from 'page';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { localize } from 'i18n-calypso';
+const page = require( 'page' ),
+	React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import { cartItems } from 'lib/cart-values';
-import config from 'config';
-import upgradesActions from 'lib/upgrades/actions';
+const cartItems = require( 'lib/cart-values' ).cartItems,
+	config = require( 'config' ),
+	upgradesActions = require( 'lib/upgrades/actions' );
 
-class AddButton extends React.PureComponent {
-	static propTypes = {
-		selectedDomainName: PropTypes.string.isRequired,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ).isRequired,
-	};
+const AddButton = React.createClass( {
+	propTypes: {
+		selectedDomainName: React.PropTypes.string.isRequired,
+		selectedSite: React.PropTypes.oneOfType( [
+			React.PropTypes.object,
+			React.PropTypes.bool
+		] ).isRequired
+	},
 
 	render() {
 		if ( ! config.isEnabled( 'upgrades/checkout' ) ) {
@@ -28,19 +26,20 @@ class AddButton extends React.PureComponent {
 		}
 
 		return (
-			<button type="button" className="button is-primary" onClick={ this.addPrivacyProtection }>
-				{ this.props.translate( 'Add Privacy Protection' ) }
+			<button
+				type="button"
+				className="button is-primary"
+				onClick={ this.addPrivacyProtection }>
+				{ this.translate( 'Add Privacy Protection' ) }
 			</button>
 		);
-	}
+	},
 
-	addPrivacyProtection = () => {
-		upgradesActions.addItem(
-			cartItems.domainPrivacyProtection( { domain: this.props.selectedDomainName } )
-		);
+	addPrivacyProtection() {
+		upgradesActions.addItem( cartItems.domainPrivacyProtection( { domain: this.props.selectedDomainName } ) );
 
 		page( '/checkout/' + this.props.selectedSite.slug );
-	};
-}
+	}
+} );
 
-export default localize( AddButton );
+module.exports = AddButton;

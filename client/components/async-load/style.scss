@@ -1,6 +1,5 @@
-/** @format */
-.async-load__placeholder {
-	background: lighten($gray, 22%);
+.async-load {
+	background: lighten( $gray, 22% );
 	border-radius: 20px;
 	content: '';
 	display: block;

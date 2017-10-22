@@ -1,49 +1,51 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
+import sinon from 'sinon';
 import { expect } from 'chai';
-import page from 'page';
 
 /**
  * Internal dependencies
  */
-import { showSelectedPost } from '../utils';
-
-jest.mock( 'lib/feed-stream-store/actions', () => ( {
-	selectItem: jest.fn(),
-} ) );
-jest.mock( 'lib/user', () => () => {} );
-jest.mock( 'page', () => ( {
-	show: require( 'sinon' ).spy(),
-} ) );
-jest.mock( 'reader/controller-helper', () => ( {
-	setLastStoreId: jest.fn(),
-} ) );
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
 describe( 'reader utils', () => {
+	const pageSpy = sinon.spy();
+
 	beforeEach( () => {
-		page.show.reset();
+		pageSpy.reset();
 	} );
 
 	describe( '#showSelectedPost', () => {
-		test( 'does not do anything if postKey argument is missing', () => {
+		let showSelectedPost;
+		useFakeDom();
+		useMockery( mockery => {
+			mockery.registerMock( 'page', {
+				show: pageSpy,
+			} );
+			mockery.registerMock( 'lib/feed-stream-store/actions', {
+				selectItem: sinon.stub(),
+			} );
+			mockery.registerMock( 'reader/controller-helper', {
+				setLastStoreId: sinon.stub(),
+			} );
+			showSelectedPost = require( '../utils' ).showSelectedPost;
+		} );
+
+		it( 'does not do anything if postKey argument is missing', () => {
 			showSelectedPost( {} );
-			expect( page.show ).to.have.not.been.called;
+			expect( pageSpy ).to.have.not.been.called;
 		} );
 
-		test( 'redirects if passed a post key', () => {
+		it( 'redirects if passed a post key', () => {
 			showSelectedPost( { postKey: { feedId: 1, postId: 5 } } );
-			expect( page.show ).to.have.been.calledOnce;
+			expect( pageSpy ).to.have.been.calledOnce;
 		} );
 
-		test( 'redirects to a #comments URL if we passed comments argument', () => {
+		it( 'redirects to a #comments URL if we passed comments argument', () => {
 			showSelectedPost( { postKey: { feedId: 1, postId: 5 }, comments: true } );
-			expect( page.show ).to.have.been.calledWithMatch( '#comments' );
+			expect( pageSpy ).to.have.been.calledWithMatch( '#comments' );
 		} );
 	} );
 } );

@@ -1,13 +1,10 @@
 /**
- * External dependencies
- *
- * @format
- */
+* External dependencies
+*/
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' );
 
-import React from 'react';
-import PureRenderMixin from 'react-pure-render/mixin';
-
-const Selects = React.createClass( {
+var Selects = React.createClass( {
 	mixins: [ PureRenderMixin ],
 
 	render: function() {
@@ -16,8 +13,7 @@ const Selects = React.createClass( {
 				<h2>
 					<a href="/devdocs/design/selects">Selects</a>
 				</h2>
-				<label>
-					Label
+				<label>Label
 					<select>
 						<option>Item One</option>
 						<option>Item Two</option>
@@ -26,7 +22,7 @@ const Selects = React.createClass( {
 					</select>
 				</label>
 
-				<br />
+				<br/>
 
 				<p>
 					Pack my
@@ -45,7 +41,7 @@ const Selects = React.createClass( {
 				</p>
 			</div>
 		);
-	},
+	}
 } );
 
-export default Selects;
+module.exports = Selects;

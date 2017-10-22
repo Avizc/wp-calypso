@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 
@@ -29,7 +25,7 @@ class ThemeEnhancements extends Component {
 	static defaultProps = {
 		isSavingSettings: false,
 		isRequestingSettings: true,
-		fields: {},
+		fields: {}
 	};
 
 	static propTypes = {
@@ -42,7 +38,10 @@ class ThemeEnhancements extends Component {
 	};
 
 	isFormPending() {
-		const { isRequestingSettings, isSavingSettings } = this.props;
+		const {
+			isRequestingSettings,
+			isSavingSettings,
+		} = this.props;
 
 		return isRequestingSettings || isSavingSettings;
 	}
@@ -81,7 +80,9 @@ class ThemeEnhancements extends Component {
 
 		return (
 			<FormFieldset>
-				<FormLegend>{ translate( 'Infinite Scroll' ) }</FormLegend>
+				<FormLegend>
+					{ translate( 'Infinite Scroll' ) }
+				</FormLegend>
 
 				<div className="theme-enhancements__info-link-container site-settings__info-link-container">
 					<InfoPopover position="left">
@@ -91,27 +92,31 @@ class ThemeEnhancements extends Component {
 					</InfoPopover>
 				</div>
 
-				{ this.renderRadio(
-					'infinite_scroll',
-					'default',
-					translate( 'Load more posts using the default theme behavior' )
-				) }
-				{ this.renderRadio(
-					'infinite_scroll',
-					'button',
-					translate( 'Load more posts in page with a button' )
-				) }
-				{ this.renderRadio(
-					'infinite_scroll',
-					'scroll',
-					translate( 'Load more posts as the reader scrolls down' )
-				) }
+				{
+					this.renderRadio( 'infinite_scroll', 'default', translate(
+						'Load more posts using the default theme behavior'
+					) )
+				}
+				{
+					this.renderRadio( 'infinite_scroll', 'button', translate(
+						'Load more posts in page with a button'
+					) )
+				}
+				{
+					this.renderRadio( 'infinite_scroll', 'scroll', translate(
+						'Load more posts as the reader scrolls down'
+					) )
+				}
 			</FormFieldset>
 		);
 	}
 
 	renderMinilevenSettings() {
-		const { selectedSiteId, minilevenModuleActive, translate } = this.props;
+		const {
+			selectedSiteId,
+			minilevenModuleActive,
+			translate
+		} = this.props;
 		const formPending = this.isFormPending();
 
 		return (
@@ -127,33 +132,31 @@ class ThemeEnhancements extends Component {
 				<JetpackModuleToggle
 					siteId={ selectedSiteId }
 					moduleSlug="minileven"
-					label={ translate( 'Enable the Jetpack Mobile theme' ) }
+					label={ translate( 'Optimize your site with a mobile-friendly theme for tablets and phones' ) }
 					disabled={ formPending }
-				/>
+					/>
 
 				<div className="theme-enhancements__module-settings site-settings__child-settings">
-					{ this.renderToggle(
-						'wp_mobile_excerpt',
-						! minilevenModuleActive,
-						translate( 'Show excerpts on front page and on archive pages instead of full posts' )
-					) }
-					{ this.renderToggle(
-						'wp_mobile_featured_images',
-						! minilevenModuleActive,
-						translate( 'Hide all featured images' )
-					) }
-					{ this.renderToggle(
-						'wp_mobile_app_promos',
-						! minilevenModuleActive,
-						translate(
+					{
+						this.renderToggle( 'wp_mobile_excerpt', ! minilevenModuleActive, translate(
+							'Show excerpts on front page and on archive pages instead of full posts'
+						) )
+					}
+					{
+						this.renderToggle( 'wp_mobile_featured_images', ! minilevenModuleActive, translate(
+							'Hide all featured images'
+						) )
+					}
+					{
+						this.renderToggle( 'wp_mobile_app_promos', ! minilevenModuleActive, translate(
 							'Show an ad for the {{link}}WordPress mobile apps{{/link}} in the footer of the mobile theme',
 							{
 								components: {
-									link: <a href="https://apps.wordpress.com/" />,
-								},
+									link: <a href="https://apps.wordpress.com/" />
+								}
 							}
-						)
-					) }
+						) )
+					}
 				</div>
 			</FormFieldset>
 		);
@@ -177,16 +180,14 @@ class ThemeEnhancements extends Component {
 	}
 }
 
-export default connect( state => {
-	const selectedSiteId = getSelectedSiteId( state );
+export default connect(
+	( state ) => {
+		const selectedSiteId = getSelectedSiteId( state );
 
-	return {
-		selectedSiteId,
-		infiniteScrollModuleActive: !! isJetpackModuleActive(
-			state,
+		return {
 			selectedSiteId,
-			'infinite-scroll'
-		),
-		minilevenModuleActive: !! isJetpackModuleActive( state, selectedSiteId, 'minileven' ),
-	};
-} )( localize( ThemeEnhancements ) );
+			infiniteScrollModuleActive: !! isJetpackModuleActive( state, selectedSiteId, 'infinite-scroll' ),
+			minilevenModuleActive: !! isJetpackModuleActive( state, selectedSiteId, 'minileven' ),
+		};
+	}
+)( localize( ThemeEnhancements ) );

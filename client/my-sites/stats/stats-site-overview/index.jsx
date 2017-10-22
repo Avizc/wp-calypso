@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -30,7 +25,7 @@ const StatsSiteOverview = React.createClass( {
 		query: PropTypes.object,
 		summaryData: PropTypes.object,
 		insights: PropTypes.bool,
-		title: PropTypes.string,
+		title: PropTypes.string
 	},
 
 	isValueLow( value ) {
@@ -53,42 +48,38 @@ const StatsSiteOverview = React.createClass( {
 							className={ this.isValueLow( views ) ? 'is-low' : null }
 							href={ siteStatsPath }
 							gridicon="visible"
-							label={ this.props.translate( 'Views', { context: 'noun' } ) }
-							value={ views }
-						/>
+							label={ this.translate( 'Views', { context: 'noun' } ) }
+							value={ views } />
 						<StatsTab
 							className={ this.isValueLow( visitors ) ? 'is-low' : null }
 							href={ siteStatsPath + '?tab=visitors' }
 							gridicon="user"
-							label={ this.props.translate( 'Visitors', { context: 'noun' } ) }
-							value={ visitors }
-						/>
+							label={ this.translate( 'Visitors', { context: 'noun' } ) }
+							value={ visitors } />
 						<StatsTab
 							className={ this.isValueLow( likes ) ? 'is-low' : null }
 							href={ siteStatsPath + '?tab=likes' }
 							gridicon="star"
-							label={ this.props.translate( 'Likes', { context: 'noun' } ) }
-							value={ likes }
-						/>
+							label={ this.translate( 'Likes', { context: 'noun' } ) }
+							value={ likes } />
 						<StatsTab
 							className={ this.isValueLow( comments ) ? 'is-low' : null }
 							href={ siteStatsPath + '?tab=comments' }
 							gridicon="comment"
-							label={ this.props.translate( 'Comments', { context: 'noun' } ) }
-							value={ comments }
-						/>
+							label={ this.translate( 'Comments', { context: 'noun' } ) }
+							value={ comments } />
 					</StatsTabs>
 				</Card>
 			</div>
 		);
-	},
+	}
 } );
 
 export default connect( ( state, ownProps ) => {
 	const { siteId, date, period, siteSlug } = ownProps;
 	const query = {
 		date,
-		period,
+		period
 	};
 	// It seems not all sites are in the sites/items subtree consistently
 	const slug = getSiteSlug( state, siteId ) || siteSlug;
@@ -96,6 +87,7 @@ export default connect( ( state, ownProps ) => {
 	return {
 		summaryData: getSiteStatsForQuery( state, siteId, 'statsSummary', query ) || {},
 		siteSlug: slug,
-		query,
+		query
 	};
-} )( localize( StatsSiteOverview ) );
+} )( StatsSiteOverview );
+

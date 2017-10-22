@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { fromJS } from 'immutable';
 
 /**
@@ -13,7 +10,7 @@ import { action as ActionTypes } from 'lib/invites/constants';
 
 const initialState = fromJS( {
 	success: {},
-	errors: {},
+	errors: {}
 } );
 
 const reducer = ( state = initialState, payload ) => {
@@ -25,6 +22,6 @@ const reducer = ( state = initialState, payload ) => {
 				.setIn( [ 'errors', action.siteId, action.role ], action.data.errors );
 	}
 	return state;
-};
+}
 
 export { initialState, reducer };

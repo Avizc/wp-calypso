@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import Gridicon from 'gridicons';
 
@@ -16,21 +12,20 @@ import Card from 'components/card';
 import { localize } from 'i18n-calypso';
 
 class ThemeDownloadCard extends React.PureComponent {
+
 	static propTypes = {
-		href: PropTypes.string,
-	};
+		href: React.PropTypes.string
+	}
 
 	render() {
 		const { href, translate } = this.props;
 
-		const downloadText = translate(
-			'This theme is available for download to be used on your {{a}}WordPress self-hosted{{/a}} installation.',
-			{
+		const downloadText =
+			translate( 'This theme is available for download to be used on your {{a}}WordPress self-hosted{{/a}} installation.', {
 				components: {
-					a: <a href={ 'https://wordpress.org' } />,
-				},
-			}
-		);
+					a: <a href={ 'https://wordpress.org' } />
+				}
+			} );
 		return (
 			<Card className="theme-download-card">
 				<Gridicon icon="cloud-download" size={ 48 } />

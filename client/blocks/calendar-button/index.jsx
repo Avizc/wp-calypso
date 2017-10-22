@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Gridicon from 'gridicons';
 import classNames from 'classnames';
 import { noop, pick } from 'lodash';
@@ -27,7 +23,7 @@ class CalendarButton extends Component {
 		closeOnEsc: PropTypes.bool,
 		disabledDays: PropTypes.array,
 		events: PropTypes.array,
-		ignoreContext: PropTypes.shape( { getDOMNode: PropTypes.function } ),
+		ignoreContext: PropTypes.shape( { getDOMNode: React.PropTypes.function } ),
 		isVisible: PropTypes.bool,
 		rootClassName: PropTypes.string,
 		selectedDay: PropTypes.object,
@@ -81,29 +77,26 @@ class CalendarButton extends Component {
 			return null;
 		}
 
-		const calendarProperties = Object.assign(
-			{},
-			pick( this.props, [
-				'autoPosition',
-				'closeOnEsc',
-				'disabledDays',
-				'events',
-				'enableOutsideDays',
-				'ignoreContext',
-				'isVisible',
-				'modifiers',
-				'rootClassName',
-				'selectedDay',
-				'showDelay',
-				'siteId',
-				'onDateChange',
-				'onMonthChange',
-				'onDayMouseEnter',
-				'onDayMouseLeave',
-				'onShow',
-				'onClose',
-			] )
-		);
+		const calendarProperties = Object.assign( {}, pick( this.props, [
+			'autoPosition',
+			'closeOnEsc',
+			'disabledDays',
+			'events',
+			'enableOutsideDays',
+			'ignoreContext',
+			'isVisible',
+			'modifiers',
+			'rootClassName',
+			'selectedDay',
+			'showDelay',
+			'siteId',
+			'onDateChange',
+			'onMonthChange',
+			'onDayMouseEnter',
+			'onDayMouseLeave',
+			'onShow',
+			'onClose',
+		] ) );
 
 		return (
 			<AsyncLoad
@@ -118,24 +111,23 @@ class CalendarButton extends Component {
 	}
 
 	renderCalendarContent() {
-		return this.props.children ? this.props.children : <Gridicon icon={ this.props.icon } />;
+		return this.props.children
+			? this.props.children
+			: ( <Gridicon icon={ this.props.icon } /> );
 	}
 
 	render() {
-		const buttonsProperties = Object.assign(
-			{},
-			pick( this.props, [
-				'compact',
-				'disabled',
-				'primary',
-				'scary',
-				'busy',
-				'href',
-				'borderless',
-				'target',
-				'rel',
-			] )
-		);
+		const buttonsProperties = Object.assign( {}, pick( this.props, [
+			'compact',
+			'disabled',
+			'primary',
+			'scary',
+			'busy',
+			'href',
+			'borderless',
+			'target',
+			'rel',
+		] ) );
 
 		return (
 			<Button

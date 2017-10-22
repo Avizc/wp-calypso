@@ -1,23 +1,22 @@
-/** @format */
 /**
  * External dependencies
  */
+import sinon from 'sinon';
 import { assert, expect } from 'chai';
 import deepFreeze from 'deep-freeze';
-import sinon from 'sinon';
 
 /**
  * Internal dependencies
  */
-import { receiveThumbnail, requestThumbnail } from '../actions';
-import sampleVimeoResponse from './fixtures/sample-vimeo-response.js';
+import useNock from 'test/helpers/use-nock';
 import {
 	READER_THUMBNAIL_REQUEST,
 	READER_THUMBNAIL_REQUEST_SUCCESS,
 	READER_THUMBNAIL_REQUEST_FAILURE,
 	READER_THUMBNAIL_RECEIVE,
 } from 'state/action-types';
-import useNock from 'test/helpers/use-nock';
+import { receiveThumbnail, requestThumbnail } from '../actions';
+import sampleVimeoResponse from './sample-vimeo-response.js';
 
 describe( 'actions', () => {
 	const spy = sinon.spy();
@@ -27,7 +26,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#receiveThumbnail', () => {
-		test( 'should return an action object', () => {
+		it( 'should return an action object', () => {
 			const embedUrl = 'embedUrl';
 			const thumbnailUrl = 'thumbnailUrl';
 			const action = receiveThumbnail( embedUrl, thumbnailUrl );
@@ -51,15 +50,11 @@ describe( 'actions', () => {
 		const youtubeThumbnailUrl = 'https://img.youtube.com/vi/UoOCrbV3ZQ/mqdefault.jpg';
 
 		useNock( nock => {
-			nock( vimeoSuccessApiUrl )
-				.get( '' )
-				.reply( 200, deepFreeze( sampleVimeoResponse ) );
-			nock( vimeoFailureApiUrl )
-				.get( '' )
-				.reply( 500, deepFreeze( {} ) );
+			nock( vimeoSuccessApiUrl ).get( '' ).reply( 200, deepFreeze( sampleVimeoResponse ) );
+			nock( vimeoFailureApiUrl ).get( '' ).reply( 500, deepFreeze( {} ) );
 		} );
 
-		test( 'vimeo: should dispatch properly when receiving a valid response', () => {
+		it( 'vimeo: should dispatch properly when receiving a valid response', () => {
 			const dispatchSpy = sinon.spy();
 			const request = requestThumbnail( successfulEmbedUrl )( dispatchSpy );
 
@@ -88,7 +83,7 @@ describe( 'actions', () => {
 				} );
 		} );
 
-		test( 'youtube: should dispatch action with thumbnail instantly', () => {
+		it( 'youtube: should dispatch action with thumbnail instantly', () => {
 			const dispatchSpy = sinon.spy();
 			requestThumbnail( youtubeEmbedUrl )( dispatchSpy );
 
@@ -100,7 +95,7 @@ describe( 'actions', () => {
 			expect( dispatchSpy.calledOnce );
 		} );
 
-		test( 'should dispatch the right actions if network request fails', () => {
+		it( 'should dispatch the right actions if network request fails', () => {
 			const dispatchSpy = sinon.spy();
 			const request = requestThumbnail( failureEmbedUrl )( dispatchSpy );
 
@@ -123,7 +118,7 @@ describe( 'actions', () => {
 				} );
 		} );
 
-		test( 'should dispatch a failure action instantly if unsupported', () => {
+		it( 'should dispatch a failure action instantly if unsupported', () => {
 			const dispatchSpy = sinon.spy();
 			requestThumbnail( unsupportedEmbedUrl )( dispatchSpy );
 

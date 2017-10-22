@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -28,8 +25,7 @@ function ThemeNotFoundError( { translate } ) {
 				title={ emptyContentTitle }
 				line={ emptyContentMessage }
 				action={ translate( 'View the showcase' ) }
-				actionURL="/themes"
-			/>
+				actionURL="/themes" />
 		</Main>
 	);
 }

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { find } from 'lodash';
 
 /*
@@ -13,5 +10,4 @@ import { find } from 'lodash';
  * @param  {Number} blogId  The blogId to find
  * @return {Object} The subscription
  */
-export default ( state, blogId ) =>
-	find( state.reader.follows.items, item => item.blog_ID == blogId ); // eslint-disable-line eqeqeq
+export default ( state, blogId ) => find( state.reader.follows.items, item => item.blog_ID == blogId ); // eslint-disable-line eqeqeq

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -54,7 +50,7 @@ class QueryUsersSuggestions extends Component {
 export default connect(
 	( state, ownProps ) => {
 		return {
-			isRequesting: isRequesting( state, ownProps.siteId ),
+			isRequesting: isRequesting( state, ownProps.siteId )
 		};
 	},
 	{ requestUserSuggestions }

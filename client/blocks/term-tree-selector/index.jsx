@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
 /**
@@ -34,20 +30,20 @@ export default React.createClass( {
 			selected: [],
 			taxonomy: 'category',
 			onChange: () => {},
-			height: 300,
+			height: 300
 		};
 	},
 
 	getInitialState() {
 		return {
-			search: '',
+			search: ''
 		};
 	},
 
 	onSearch( searchTerm ) {
 		if ( searchTerm !== this.state.search ) {
 			this.setState( {
-				search: searchTerm,
+				search: searchTerm
 			} );
 		}
 	},
@@ -59,16 +55,7 @@ export default React.createClass( {
 	},
 
 	render() {
-		const {
-			className,
-			taxonomy,
-			onChange,
-			selected,
-			createLink,
-			multiple,
-			height,
-			compact,
-		} = this.props;
+		const { className, taxonomy, onChange, selected, createLink, multiple, height, compact } = this.props;
 
 		const classes = classNames( className );
 		const { search } = this.state;
@@ -92,5 +79,5 @@ export default React.createClass( {
 				/>
 			</div>
 		);
-	},
+	}
 } );

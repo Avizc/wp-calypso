@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import wp from 'lib/wp';
 import { setError } from '../status/wc-api/actions';
 import {
@@ -14,7 +11,7 @@ import {
 } from 'woocommerce/state/action-types';
 
 export function fetchProductCategories( siteId ) {
-	return dispatch => {
+	return ( dispatch ) => {
 		const getAction = {
 			type: WOOCOMMERCE_PRODUCT_CATEGORIES_REQUEST,
 			siteId,
@@ -26,8 +23,7 @@ export function fetchProductCategories( siteId ) {
 		const apiPath = '/wc/v3/products/categories';
 
 		// TODO: Modify this to use the extensions data layer.
-		return wp.req
-			.get( { path: jpPath }, { path: apiPath } )
+		return wp.req.get( { path: jpPath }, { path: apiPath } )
 			.then( ( { data } ) => {
 				dispatch( fetchProductCategoriesSuccess( siteId, data ) );
 			} )
@@ -107,11 +103,8 @@ function isValidCategoriesArray( categories ) {
 function isValidProductCategory( category ) {
 	return (
 		category &&
-		category.id &&
-		'number' === typeof category.id &&
-		category.name &&
-		'string' === typeof category.name &&
-		category.slug &&
-		'string' === typeof category.slug
+		category.id && ( 'number' === typeof category.id ) &&
+		category.name && ( 'string' === typeof category.name ) &&
+		category.slug && ( 'string' === typeof category.slug )
 	);
 }

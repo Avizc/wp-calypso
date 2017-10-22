@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -26,9 +23,7 @@ export default React.createClass( {
 					question="Can I cancel my subscription?"
 					answer={ [
 						'Yes. We want you to love everything you do at WordPress.com, so we provide a 30-day refund on all of our plans. ',
-						<a href="#" key="manage-purchases">
-							Manage purchases
-						</a>,
+						<a href="#" key="manage-purchases">Manage purchases</a>
 					] }
 				/>
 				<FAQItem
@@ -51,9 +46,7 @@ export default React.createClass( {
 					question="Can I cancel my subscription?"
 					answer={ [
 						'Yes. We want you to love everything you do at WordPress.com, so we provide a 30-day refund on all of our plans. ',
-						<a href="#" key="manage-purchases-two">
-							Manage purchases
-						</a>,
+						<a href="#" key="manage-purchases-two">Manage purchases</a>
 					] }
 				/>
 				<FAQItem
@@ -62,5 +55,6 @@ export default React.createClass( {
 				/>
 			</FAQ>
 		);
-	},
+	}
 } );
+

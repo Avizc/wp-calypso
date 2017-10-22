@@ -1,11 +1,9 @@
-/** @format */
 /**
  * External dependencies
  */
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import Gridicon from 'gridicons';
+import React, { Component, PropTypes } from 'react';
 import { localize, getLocaleSlug } from 'i18n-calypso';
+import Gridicon from 'gridicons';
 import { noop } from 'lodash';
 
 /**
@@ -17,10 +15,13 @@ import FormLabel from 'components/forms/form-label';
 import FormTextInput from 'components/forms/form-text-input';
 import Spinner from 'components/spinner';
 
-class JetpackConnectSiteUrlInput extends PureComponent {
+class JetpackConnectSiteUrlInput extends Component {
 	static propTypes = {
 		handleOnClickTos: PropTypes.func,
-		isError: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
+		isError: PropTypes.oneOfType( [
+			PropTypes.string,
+			PropTypes.bool,
+		] ),
 		isFetching: PropTypes.bool,
 		isInstall: PropTypes.bool,
 		onChange: PropTypes.func,
@@ -36,7 +37,7 @@ class JetpackConnectSiteUrlInput extends PureComponent {
 
 	focusInput = noop;
 
-	refInput = formInputComponent => {
+	refInput = ( formInputComponent ) => {
 		this.focusInput = () => formInputComponent.focus();
 	};
 
@@ -48,7 +49,7 @@ class JetpackConnectSiteUrlInput extends PureComponent {
 		this.focusInput();
 	}
 
-	handleKeyPress = event => {
+	handleKeyPress = ( event ) => {
 		if ( 13 === event.keyCode ) {
 			this.props.onSubmit();
 		}
@@ -71,36 +72,42 @@ class JetpackConnectSiteUrlInput extends PureComponent {
 
 	renderTermsOfServiceLink() {
 		return (
-			<p className="jetpack-connect__tos-link">
-				{ this.props.translate(
+			<p className="jetpack-connect__tos-link">{
+				this.props.translate(
 					'By connecting your site you agree to our fascinating {{a}}Terms of Service{{/a}}.',
 					{
 						components: {
-							a: (
-								<a
-									className="jetpack-connect__tos-link-text"
-									href={ this.getTermsOfServiceUrl() }
-									onClick={ this.props.handleOnClickTos }
-									target="_blank"
-									rel="noopener noreferrer"
-								/>
-							),
-						},
+							a: <a
+								className="jetpack-connect__tos-link-text"
+								href={ this.getTermsOfServiceUrl() }
+								onClick={ this.props.handleOnClickTos }
+								target="_blank"
+								rel="noopener noreferrer" />
+						}
 					}
-				) }
-			</p>
+				)
+			}</p>
 		);
 	}
 
 	render() {
-		const { isError, isFetching, onChange, onSubmit, translate, url } = this.props;
-		const hasError = isError && 'notExists' !== isError;
+		const {
+			isError,
+			isFetching,
+			onChange,
+			onSubmit,
+			translate,
+			url,
+		} = this.props;
+		const hasError = isError && ( 'notExists' !== isError );
 
 		return (
 			<div>
 				<FormLabel htmlFor="siteUrl">{ translate( 'Site Address' ) }</FormLabel>
 				<div className="jetpack-connect__site-address-container">
-					<Gridicon size={ 24 } icon="globe" />
+					<Gridicon
+						size={ 24 }
+						icon="globe" />
 					<FormTextInput
 						ref={ this.refInput }
 						id="siteUrl"
@@ -112,11 +119,18 @@ class JetpackConnectSiteUrlInput extends PureComponent {
 						onKeyUp={ this.handleKeyPress }
 						value={ url }
 					/>
-					{ isFetching ? <Spinner duration={ 30 } /> : null }
+					{ isFetching
+						? <Spinner duration={ 30 } />
+						: null
+					}
 				</div>
 				<Card className="jetpack-connect__connect-button-card">
 					{ this.renderTermsOfServiceLink() }
-					<Button primary disabled={ ! url || isFetching || hasError } onClick={ onSubmit }>
+					<Button
+						primary
+						disabled={ ( ! url || isFetching || hasError ) }
+						onClick={ onSubmit }
+					>
 						{ this.renderButtonLabel() }
 					</Button>
 				</Card>

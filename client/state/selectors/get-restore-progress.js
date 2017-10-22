@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get } from 'lodash';
 
 /**
@@ -14,5 +11,9 @@ import { get } from 'lodash';
  * @return {?Object} Progress object, null if no data
  */
 export default function getRestoreProgress( state, siteId ) {
-	return get( state, [ 'activityLog', 'restoreProgress', siteId ], null );
+	return get( state, [
+		'activityLog',
+		'restoreProgress',
+		siteId,
+	], null );
 }

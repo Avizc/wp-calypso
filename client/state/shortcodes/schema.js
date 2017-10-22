@@ -1,4 +1,3 @@
-/** @format */
 export const shortcodesSchema = {
 	type: 'object',
 	patternProperties: {
@@ -11,10 +10,10 @@ export const shortcodesSchema = {
 						result: { type: 'string' },
 						shortcode: { type: 'string' },
 						scripts: { type: 'object' },
-						styles: { type: 'object' },
-					},
-				},
-			},
-		},
-	},
+						styles: { type: 'object' }
+					}
+				}
+			}
+		}
+	}
 };

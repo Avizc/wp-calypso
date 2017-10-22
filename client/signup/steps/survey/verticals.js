@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { shuffle } from 'lodash';
+import shuffle from 'lodash/shuffle';
 import { translate } from 'i18n-calypso';
 
 const verticals = [
@@ -34,6 +31,6 @@ export default {
 		if ( shuffledVerticals ) {
 			return shuffledVerticals;
 		}
-		return ( shuffledVerticals = shuffle( verticals ) );
-	},
+		return shuffledVerticals = shuffle( verticals );
+	}
 };

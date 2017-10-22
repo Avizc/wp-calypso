@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
@@ -18,7 +15,10 @@ import {
 	setupNpsSurveyDevTrigger,
 } from 'state/ui/nps-survey-notice/actions';
 import { isNpsSurveyDialogShowing } from 'state/ui/nps-survey-notice/selectors';
-import { submitNpsSurveyWithNoScore, setupNpsSurveyEligibility } from 'state/nps-survey/actions';
+import {
+	submitNpsSurveyWithNoScore,
+	setupNpsSurveyEligibility,
+} from 'state/nps-survey/actions';
 import {
 	hasAnsweredNpsSurvey,
 	hasAnsweredNpsSurveyWithNoScore,
@@ -38,14 +38,14 @@ class NpsSurveyNotice extends Component {
 		}
 
 		this.props.setNpsSurveyDialogShowing( false );
-	};
+	}
 
-	handleSurveyClose = afterClose => {
+	handleSurveyClose = ( afterClose ) => {
 		this.props.setNpsSurveyDialogShowing( false );
 
 		// slightly delay the showing of the thank you notice
 		setTimeout( afterClose, 500 );
-	};
+	}
 
 	componentDidMount() {
 		this.props.setupNpsSurveyEligibility();
@@ -67,20 +67,21 @@ class NpsSurveyNotice extends Component {
 
 	render() {
 		return (
-			this.props.isSectionAndSessionEligible && (
-				<Dialog
-					additionalClassNames="nps-survey-notice"
-					isVisible={ this.props.isNpsSurveyDialogShowing }
-					onClose={ this.handleDialogClose }
-				>
-					<NpsSurvey name={ SURVEY_NAME } onClose={ this.handleSurveyClose } />
-				</Dialog>
-			)
+			this.props.isSectionAndSessionEligible &&
+			<Dialog
+				additionalClassNames="nps-survey-notice"
+				isVisible={ this.props.isNpsSurveyDialogShowing }
+				onClose={ this.handleDialogClose }>
+				<NpsSurvey
+					name={ SURVEY_NAME }
+					onClose={ this.handleSurveyClose }
+				/>
+			</Dialog>
 		);
 	}
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ( state ) => {
 	return {
 		isNpsSurveyDialogShowing: isNpsSurveyDialogShowing( state ),
 		hasAnswered: hasAnsweredNpsSurvey( state ),
@@ -90,10 +91,13 @@ const mapStateToProps = state => {
 	};
 };
 
-export default connect( mapStateToProps, {
-	showNpsSurveyNotice,
-	setNpsSurveyDialogShowing,
-	submitNpsSurveyWithNoScore,
-	setupNpsSurveyDevTrigger,
-	setupNpsSurveyEligibility,
-} )( NpsSurveyNotice );
+export default connect(
+	mapStateToProps,
+	{
+		showNpsSurveyNotice,
+		setNpsSurveyDialogShowing,
+		submitNpsSurveyWithNoScore,
+		setupNpsSurveyDevTrigger,
+		setupNpsSurveyEligibility,
+	}
+)( NpsSurveyNotice );

@@ -1,24 +1,22 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { defer, isEmpty, pick } from 'lodash';
-import { localize } from 'i18n-calypso';
-import React from 'react';
-import titleCase from 'to-title-case';
-import { capitalPDangit } from 'lib/formatting';
+var React = require( 'react' ),
+	defer = require( 'lodash/defer' ),
+	pick = require( 'lodash/pick' ),
+	isEmpty = require( 'lodash/isEmpty' ),
+	titleCase = require( 'to-title-case' ),
+	capitalPDangit = require( 'lib/formatting' ).capitalPDangit;
 
 /**
  * Internal dependencies
  */
-import TransactionsHeader from './transactions-header';
-import tableRows from './table-rows';
+var TransactionsHeader = require( './transactions-header' ),
+	tableRows = require( './table-rows' );
 
 import SearchCard from 'components/search-card';
 
-const TransactionsTable = React.createClass( {
+var TransactionsTable = React.createClass( {
 	displayName: 'TransactionsTable',
 
 	getInitialState: function() {
@@ -30,13 +28,13 @@ const TransactionsTable = React.createClass( {
 
 		return {
 			transactions: initialTransactions,
-			filter: this.props.initialFilter,
+			filter: this.props.initialFilter
 		};
 	},
 
 	getDefaultProps: function() {
 		return {
-			header: false,
+			header: false
 		};
 	},
 
@@ -70,7 +68,7 @@ const TransactionsTable = React.createClass( {
 
 		this.setState( {
 			transactions: newTransactions,
-			filter: newFilter,
+			filter: newFilter
 		} );
 	},
 
@@ -82,19 +80,16 @@ const TransactionsTable = React.createClass( {
 		var header;
 
 		if ( false !== this.props.header ) {
-			header = (
-				<TransactionsHeader
-					onNewFilter={ this.filterTransactions }
-					transactions={ this.props.transactions }
-					filter={ this.state.filter }
-				/>
-			);
+			header = <TransactionsHeader
+				onNewFilter={ this.filterTransactions }
+				transactions={ this.props.transactions }
+				filter={ this.state.filter } />;
 		}
 
 		return (
 			<div>
 				<SearchCard
-					placeholder={ this.props.translate( 'Search all receipts…', { textOnly: true } ) }
+					placeholder={ this.translate( 'Search all receipts…', { textOnly: true } ) }
 					onSearch={ this.onSearch }
 				/>
 				<table className="billing-history__transactions">
@@ -106,7 +101,8 @@ const TransactionsTable = React.createClass( {
 	},
 
 	serviceName: function( transaction ) {
-		var item, name;
+		var item,
+			name;
 
 		if ( ! transaction.items ) {
 			name = this.serviceNameDescription( transaction );
@@ -115,7 +111,7 @@ const TransactionsTable = React.createClass( {
 			item.plan = capitalPDangit( titleCase( item.variation ) );
 			name = this.serviceNameDescription( item );
 		} else {
-			name = <strong>{ this.props.translate( 'Multiple items' ) }</strong>;
+			name = <strong>{ this.translate( 'Multiple items' ) }</strong>;
 		}
 
 		return name;
@@ -131,11 +127,7 @@ const TransactionsTable = React.createClass( {
 				</div>
 			);
 		} else {
-			description = (
-				<strong>
-					{ transaction.product } { transaction.plan }
-				</strong>
-			);
+			description = <strong>{ transaction.product } { transaction.plan }</strong>;
 		}
 
 		return description;
@@ -171,9 +163,7 @@ const TransactionsTable = React.createClass( {
 			}
 			return (
 				<tr className="billing-history__no-results">
-					<td className="billing-history__no-results-cell" colSpan="3">
-						{ noResultsText }
-					</td>
+					<td className="billing-history__no-results-cell" colSpan="3">{ noResultsText }</td>
 				</tr>
 			);
 		}
@@ -187,9 +177,7 @@ const TransactionsTable = React.createClass( {
 					<td className="billing-history__trans-app">
 						<div className="billing-history__trans-wrap">
 							<div className="billing-history__service-description">
-								<div className="billing-history__service-name">
-									{ this.serviceName( transaction ) }
-								</div>
+								<div className="billing-history__service-name">{ this.serviceName( transaction ) }</div>
 								{ this.props.transactionRenderer( transaction ) }
 							</div>
 						</div>
@@ -198,7 +186,7 @@ const TransactionsTable = React.createClass( {
 				</tr>
 			);
 		}, this );
-	},
+	}
 } );
 
-export default localize( TransactionsTable );
+module.exports = TransactionsTable;

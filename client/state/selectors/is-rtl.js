@@ -1,11 +1,7 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
-import { getLanguage } from 'lib/i18n-utils';
-import getCurrentLocaleSlug from 'state/selectors/get-current-locale-slug';
+import { getCurrentUser } from 'state/current-user/selectors';
 
 /**
  * Returns whether the current uses right-to-left directionality.
@@ -14,11 +10,9 @@ import getCurrentLocaleSlug from 'state/selectors/get-current-locale-slug';
  * @return {?Boolean}            Current user is rtl
  */
 export default function isRtl( state ) {
-	const localeSlug = getCurrentLocaleSlug( state );
-
-	if ( ! localeSlug ) {
-		return null;
+	const currentUser = getCurrentUser( state );
+	if ( currentUser && currentUser.hasOwnProperty( 'isRTL' ) ) {
+		return currentUser.isRTL;
 	}
-
-	return Boolean( getLanguage( localeSlug ).rtl );
+	return null;
 }

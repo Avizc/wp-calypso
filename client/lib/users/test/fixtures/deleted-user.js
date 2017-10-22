@@ -1,5 +1,4 @@
-/** @format */
-export default {
+module.exports = {
 	found: 4,
 	users: [
 		{
@@ -11,7 +10,7 @@ export default {
 			nice_name: 'test2',
 			profile_URL: 'http://en.gravatar.com',
 			roles: [ 'administrator' ],
-			site_ID: 1234,
+			site_ID: 1234
 		},
 
 		{
@@ -23,7 +22,7 @@ export default {
 			nice_name: 'test3',
 			profile_URL: 'http://en.gravatar.com',
 			roles: [ 'editor' ],
-			site_ID: 1234,
+			site_ID: 1234
 		},
 
 		{
@@ -35,7 +34,7 @@ export default {
 			nice_name: 'test4',
 			profile_URL: 'http://en.gravatar.com',
 			roles: [ 'editor' ],
-			site_ID: 1234,
+			site_ID: 1234
 		},
 
 		{
@@ -47,7 +46,7 @@ export default {
 			nice_name: 'test5',
 			profile_URL: 'http://en.gravatar.com',
 			roles: [ 'editor' ],
-			site_ID: 1234,
-		},
-	],
+			site_ID: 1234
+		}
+	]
 };

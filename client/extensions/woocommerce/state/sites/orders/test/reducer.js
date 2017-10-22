@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -10,9 +8,14 @@ import { keyBy } from 'lodash';
 /**
  * Internal dependencies
  */
-import { isLoading, isQueryLoading, isUpdating, items, queries, total } from '../reducer';
-import order from './fixtures/order';
-import orders from './fixtures/orders';
+import {
+	isLoading,
+	isQueryLoading,
+	isUpdating,
+	items,
+	queries,
+	totalPages,
+} from '../reducer';
 import {
 	WOOCOMMERCE_ORDER_REQUEST,
 	WOOCOMMERCE_ORDER_REQUEST_FAILURE,
@@ -24,15 +27,17 @@ import {
 	WOOCOMMERCE_ORDERS_REQUEST_FAILURE,
 	WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 } from 'woocommerce/state/action-types';
+import orders from './fixtures/orders';
+import order from './fixtures/order';
 
 describe( 'reducer', () => {
 	describe( 'isLoading', () => {
-		test( 'should have no change by default', () => {
+		it( 'should have no change by default', () => {
 			const newState = isLoading( undefined, {} );
 			expect( newState ).to.eql( {} );
 		} );
 
-		test( 'should store the currently loading order', () => {
+		it( 'should store the currently loading order', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REQUEST,
 				siteId: 123,
@@ -42,7 +47,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { 45: true } );
 		} );
 
-		test( 'should show that request has loaded on success', () => {
+		it( 'should show that request has loaded on success', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REQUEST_SUCCESS,
 				siteId: 123,
@@ -53,7 +58,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { 45: false } );
 		} );
 
-		test( 'should show that request has loaded on failure', () => {
+		it( 'should show that request has loaded on failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REQUEST_FAILURE,
 				siteId: 123,
@@ -66,58 +71,52 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'isQueryLoading', () => {
-		test( 'should have no change by default', () => {
+		it( 'should have no change by default', () => {
 			const newState = isQueryLoading( undefined, {} );
 			expect( newState ).to.eql( {} );
 		} );
 
-		test( 'should store the currently loading page', () => {
+		it( 'should store the currently loading page', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
+				page: 1,
 			};
 			const newState = isQueryLoading( undefined, action );
-			expect( newState ).to.eql( { '{}': true } );
+			expect( newState ).to.eql( { '{page:1}': true } );
 		} );
 
-		test( 'should show that request has loaded on success', () => {
+		it( 'should show that request has loaded on success', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
-				total: 4,
+				page: 1,
+				totalPages: 4,
 				orders,
 			};
-			const newState = isQueryLoading( { '{}': true }, action );
-			expect( newState ).to.eql( { '{}': false } );
+			const newState = isQueryLoading( { '{page:1}': true }, action );
+			expect( newState ).to.eql( { '{page:1}': false } );
 		} );
 
-		test( 'should show that request has loaded on failure', () => {
+		it( 'should show that request has loaded on failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_FAILURE,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
+				page: 1,
 				error: {},
 			};
-			const newState = isQueryLoading( { '{}': true }, action );
-			expect( newState ).to.eql( { '{}': false } );
+			const newState = isQueryLoading( { '{page:1}': true }, action );
+			expect( newState ).to.eql( { '{page:1}': false } );
 		} );
 	} );
 
 	describe( 'isUpdating', () => {
-		test( 'should have no change by default', () => {
+		it( 'should have no change by default', () => {
 			const newState = isUpdating( undefined, {} );
 			expect( newState ).to.eql( {} );
 		} );
 
-		test( 'should store that an order is being updated', () => {
+		it( 'should store that an order is being updated', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_UPDATE,
 				siteId: 123,
@@ -127,7 +126,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { 45: true } );
 		} );
 
-		test( 'should show that an order is done updating after success', () => {
+		it( 'should show that an order is done updating after success', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_UPDATE_SUCCESS,
 				siteId: 123,
@@ -138,7 +137,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { 45: false } );
 		} );
 
-		test( 'should show that an order is done updating after failure', () => {
+		it( 'should show that an order is done updating after failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_UPDATE_FAILURE,
 				siteId: 123,
@@ -151,19 +150,17 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'items', () => {
-		test( 'should have no change by default', () => {
+		it( 'should have no change by default', () => {
 			const newState = items( undefined, {} );
 			expect( newState ).to.eql( {} );
 		} );
 
-		test( 'should store the orders in state', () => {
+		it( 'should store the orders in state', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
-				total: 4,
+				page: 1,
+				totalPages: 4,
 				orders,
 			};
 			const newState = items( undefined, action );
@@ -171,14 +168,12 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( ordersById );
 		} );
 
-		test( 'should add new orders onto the existing order list', () => {
+		it( 'should add new orders onto the existing order list', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 2,
-				},
-				total: 4,
+				page: 2,
+				totalPages: 4,
 				orders: [ order ],
 			};
 			const originalState = deepFreeze( keyBy( orders, 'id' ) );
@@ -186,7 +181,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { ...originalState, 40: order } );
 		} );
 
-		test( 'should add new single orders onto the existing order list', () => {
+		it( 'should add new single orders onto the existing order list', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDER_REQUEST_SUCCESS,
 				siteId: 123,
@@ -198,13 +193,11 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( { ...originalState, 40: order } );
 		} );
 
-		test( 'should do nothing on a failure', () => {
+		it( 'should do nothing on a failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_FAILURE,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
+				page: 1,
 				error: {},
 			};
 			const originalState = deepFreeze( keyBy( orders, 'id' ) );
@@ -214,101 +207,89 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'queries', () => {
-		test( 'should have no change by default', () => {
+		it( 'should have no change by default', () => {
 			const newState = queries( undefined, {} );
 			expect( newState ).to.eql( {} );
 		} );
 
-		test( 'should store the order IDs for the requested page', () => {
+		it( 'should store the order IDs for the requested page', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
-				total: 4,
+				page: 1,
+				totalPages: 4,
 				orders,
 			};
 			const newState = queries( undefined, action );
-			expect( newState ).to.eql( { '{}': [ 35, 26 ] } );
+			expect( newState ).to.eql( { '{page:1}': [ 35, 26 ] } );
 		} );
 
-		test( 'should add the next page of orders as a second list', () => {
+		it( 'should add the next page of orders as a second list', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 2,
-				},
-				total: 4,
+				page: 2,
+				totalPages: 4,
 				orders: [ order ],
 			};
-			const originalState = deepFreeze( { '{}': [ 35, 26 ] } );
+			const originalState = deepFreeze( { '{page:1}': [ 35, 26 ] } );
 			const newState = queries( originalState, action );
-			expect( newState ).to.eql( { ...originalState, '{"page":2}': [ 40 ] } );
+			expect( newState ).to.eql( { ...originalState, '{page:2}': [ 40 ] } );
 		} );
 
-		test( 'should do nothing on a failure', () => {
+		it( 'should do nothing on a failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_FAILURE,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
+				page: 1,
 				error: {},
 			};
-			const originalState = deepFreeze( { '{}': [ 35, 26 ] } );
+			const originalState = deepFreeze( { '{page:1}': [ 35, 26 ] } );
 			const newState = queries( originalState, action );
 			expect( newState ).to.eql( originalState );
 		} );
 	} );
 
-	describe( 'total', () => {
-		test( 'should have no change by default', () => {
-			const newState = total( undefined, {} );
+	describe( 'totalPages', () => {
+		it( 'should have no change by default', () => {
+			const newState = totalPages( undefined, {} );
 			expect( newState ).to.eql( 1 );
 		} );
 
-		test( 'should store the total number of orders when a request loads', () => {
+		it( 'should store the total number of pages when a request loads', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
-				total: 4,
+				page: 1,
+				totalPages: 4,
 				orders,
 			};
-			const newState = total( undefined, action );
-			expect( newState ).to.eql( { '{}': 4 } );
+			const newState = totalPages( undefined, action );
+			expect( newState ).to.eql( 4 );
 		} );
 
-		test( 'should store the total number of orders on a subsequent request load', () => {
+		it( 'should store the total number of pages even on a subsequent request load', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_SUCCESS,
 				siteId: 123,
-				query: {
-					page: 2,
-				},
-				total: 4,
+				page: 2,
+				totalPages: 4,
 				orders: [ order ],
 			};
-			const originalState = deepFreeze( { '{}': 4 } );
-			const newState = total( originalState, action );
-			expect( newState ).to.eql( { '{}': 4 } );
+			const originalState = deepFreeze( 4 );
+			const newState = totalPages( originalState, action );
+			expect( newState ).to.eql( 4 );
 		} );
 
-		test( 'should do nothing on a failure', () => {
+		it( 'should do nothing on a failure', () => {
 			const action = {
 				type: WOOCOMMERCE_ORDERS_REQUEST_FAILURE,
 				siteId: 123,
-				query: {
-					page: 1,
-				},
+				page: 1,
 				error: {},
 			};
-			const originalState = deepFreeze( { '{}': 4 } );
-			const newState = total( originalState, action );
+			const originalState = deepFreeze( 4 );
+			const newState = totalPages( originalState, action );
 			expect( newState ).to.eql( originalState );
 		} );
 	} );

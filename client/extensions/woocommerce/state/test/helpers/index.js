@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { mapValues } from 'lodash';
 
 export const createState = ( { ui, site } ) => {

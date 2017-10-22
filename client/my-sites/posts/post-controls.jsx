@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import classNames from 'classnames';
@@ -166,32 +162,39 @@ const getAvailableControls = props => {
 	return controls;
 };
 
-const getControlElements = controls =>
-	controls.map( ( control, index ) => (
-		<li className={ classNames( { 'post-controls__disabled': control.disabled } ) } key={ index }>
-			<a
-				className={ `post-controls__${ control.className }` }
-				href={ control.href }
-				onClick={ control.disabled ? noop : control.onClick }
-				target={ control.target ? control.target : null }
-			>
-				<Gridicon icon={ control.icon } size={ 18 } />
-				<span>{ control.text }</span>
-			</a>
-		</li>
-	) );
+const getControlElements = controls => controls.map( ( control, index ) =>
+	<li
+		className={ classNames( { 'post-controls__disabled': control.disabled } ) }
+		key={ index }
+	>
+		<a
+			className={ `post-controls__${ control.className }` }
+			href={ control.href }
+			onClick={ control.disabled ? noop : control.onClick }
+			target={ control.target ? control.target : null }
+		>
+			<Gridicon icon={ control.icon } size={ 18 } />
+			<span>
+				{ control.text }
+			</span>
+		</a>
+	</li>
+);
 
 export const PostControls = props => {
 	const { main, more } = getAvailableControls( props );
-	const classes = classNames( 'post-controls', { 'post-controls--desk-nomore': more <= 2 } );
+	const classes = classNames(
+		'post-controls',
+		{ 'post-controls--desk-nomore': more <= 2 }
+	);
 
 	return (
 		<div className={ classes }>
-			{ more.length > 0 && (
+			{ more.length > 0 &&
 				<ul className="posts__post-controls post-controls__pane post-controls__more-options">
 					{ getControlElements( more ) }
 				</ul>
-			) }
+			}
 			<ul className="posts__post-controls post-controls__pane post-controls__main-options">
 				{ getControlElements( main ) }
 			</ul>

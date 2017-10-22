@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Gridicon from 'gridicons';
 
 /**
@@ -15,7 +10,7 @@ import Gridicon from 'gridicons';
 import analytics from 'lib/analytics';
 import titlecase from 'to-title-case';
 
-const StatsModuleHeader = React.createClass( {
+export default React.createClass( {
 	displayName: 'StatsModuleHeader',
 
 	propTypes: {
@@ -28,7 +23,7 @@ const StatsModuleHeader = React.createClass( {
 		isCollapsed: PropTypes.bool,
 		showActions: PropTypes.bool,
 		showCollapse: PropTypes.bool,
-		onActionClick: PropTypes.func,
+		onActionClick: PropTypes.func
 	},
 
 	getDefaultProps() {
@@ -36,8 +31,8 @@ const StatsModuleHeader = React.createClass( {
 			showCollapse: true,
 			showModule: true,
 			showActions: true,
-			onActionClick: () => {},
-		};
+			onActionClick: () => {}
+		}
 	},
 
 	toggleInfo: function( event ) {
@@ -51,7 +46,7 @@ const StatsModuleHeader = React.createClass( {
 		}
 
 		onActionClick( {
-			showInfo: ! showInfo,
+			showInfo: ! showInfo
 		} );
 	},
 
@@ -65,7 +60,7 @@ const StatsModuleHeader = React.createClass( {
 		}
 
 		onActionClick( {
-			showModule: ! showModule,
+			showModule: ! showModule
 		} );
 	},
 
@@ -80,15 +75,10 @@ const StatsModuleHeader = React.createClass( {
 		return (
 			<ul className="module-header-actions">
 				<li className="module-header-action toggle-info">
-					<a
-						href="#"
+					<a href="#"
 						className="module-header-action-link"
-						aria-label={ this.props.translate( 'Show or hide panel information', {
-							context: 'Stats panel action',
-						} ) }
-						title={ this.props.translate( 'Show or hide panel information', {
-							context: 'Stats panel action',
-						} ) }
+						aria-label={ this.translate( 'Show or hide panel information', { context: 'Stats panel action' } ) }
+						title={ this.translate( 'Show or hide panel information', { context: 'Stats panel action' } ) }
 						onClick={ this.toggleInfo }
 					>
 						<Gridicon icon={ infoIcon } />
@@ -105,13 +95,21 @@ const StatsModuleHeader = React.createClass( {
 				<a
 					href="#"
 					className="module-header-action-link"
-					aria-label={ this.props.translate( 'Expand or collapse panel', {
-						context: 'Stats panel action',
-					} ) }
-					title={ this.props.translate( 'Expand or collapse panel', {
-						context: 'Stats panel action',
-					} ) }
-					onClick={ this.toggleModule }
+					aria-label={
+						this.translate(
+							'Expand or collapse panel',
+							{ context: 'Stats panel action' }
+						)
+					}
+					title={
+						this.translate(
+							'Expand or collapse panel',
+							{ context: 'Stats panel action' }
+						)
+					}
+					onClick={
+						this.toggleModule
+					}
 				>
 					<Gridicon icon="chevron-down" />
 				</a>
@@ -145,7 +143,5 @@ const StatsModuleHeader = React.createClass( {
 				{ this.renderActions() }
 			</div>
 		);
-	},
+	}
 } );
-
-export default localize( StatsModuleHeader );

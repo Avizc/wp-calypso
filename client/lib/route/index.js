@@ -1,23 +1,17 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assign } from 'lodash';
+var assign = require( 'lodash/assign' );
 
 /**
  * Internal dependencies
  */
-import path from './path';
+var path = require( './path' );
 
-export default assign(
-	{
-		untrailingslashit: require( './untrailingslashit' ),
-		trailingslashit: require( './trailingslashit' ),
-		redirect: require( './redirect' ),
-		normalize: require( './normalize' ),
-		addQueryArgs: require( './add-query-args' ),
-	},
-	path
-);
+module.exports = assign( {
+	untrailingslashit: require( './untrailingslashit' ),
+	trailingslashit: require( './trailingslashit' ),
+	redirect: require( './redirect' ),
+	normalize: require( './normalize' ),
+	addQueryArgs: require( './add-query-args' )
+}, path );

@@ -1,25 +1,22 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { endsWith, noop } from 'lodash';
+import {
+	noop,
+} from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { getSelectedSite } from 'state/ui/selectors';
+import { getSelectedSite, getSelectedSiteId } from 'state/ui/selectors';
 import { isEligibleForDomainToPaidPlanUpsell } from 'state/selectors';
 import Notice from 'components/notice';
 import NoticeAction from 'components/notice/notice-action';
 import TrackComponentView from 'lib/analytics/track-component-view';
 import { recordTracksEvent } from 'state/analytics/actions';
-import { isDomainOnlySite } from 'state/selectors';
 
 const impressionEventName = 'calypso_upgrade_nudge_impression';
 const clickEventName = 'calypso_upgrade_nudge_cta_click';
@@ -28,60 +25,44 @@ const eventProperties = { cta_name: 'domain-to-paid-sidebar' };
 export class DomainToPaidPlanNotice extends Component {
 	static propTypes = {
 		translate: PropTypes.func.isRequired,
-	};
+	}
 
 	static defaultProps = {
 		translate: noop,
-	};
+	}
 
 	onClick = () => {
 		this.props.recordTracksEvent( clickEventName, eventProperties );
-	};
+	}
 
 	render() {
-		const { eligible, isConflicting, isDomainOnly, site, translate } = this.props;
+		const { eligible, site, translate } = this.props;
 
-		if ( ! site || ! eligible || isConflicting ) {
+		if ( ! site || ! eligible ) {
 			return null;
 		}
 
-		const actionLink = isDomainOnly
-			? `/start/site-selected/?siteSlug=${ encodeURIComponent(
-					site.slug
-				) }&siteId=${ encodeURIComponent( site.ID ) }`
-			: `/plans/my-plan/${ site.slug }`;
-
 		return (
-			<Notice
-				icon="info-outline"
-				isCompact
-				status="is-success"
-				showDismiss={ false }
-				text={ translate( 'Upgrade your site and save.' ) }
-			>
-				<NoticeAction onClick={ this.onClick } href={ actionLink }>
+			<Notice isCompact status="is-success" icon="info-outline">
+				{ translate( 'Upgrade your site and save.' ) }
+				<NoticeAction onClick={ this.onClick } href={ `/plans/my-plan/${ site.slug }` }>
 					{ translate( 'Go' ) }
-					<TrackComponentView
-						eventName={ impressionEventName }
-						eventProperties={ eventProperties }
-					/>
+					<TrackComponentView eventName={ impressionEventName } eventProperties={ eventProperties } />
 				</NoticeAction>
 			</Notice>
 		);
 	}
 }
 
-const mapStateToProps = state => {
-	const site = getSelectedSite( state );
-	const isDomainOnly = isDomainOnlySite( state, site.ID );
-
+const mapStateToProps = ( state ) => {
 	return {
-		eligible: isEligibleForDomainToPaidPlanUpsell( state, site.ID ),
-		isConflicting: isDomainOnly && endsWith( site.domain, '.wordpress.com' ),
-		isDomainOnly,
-		site,
+		site: getSelectedSite( state ),
+		eligible: isEligibleForDomainToPaidPlanUpsell( state, getSelectedSiteId( state ) ),
 	};
 };
 const mapDispatchToProps = { recordTracksEvent };
 
-export default connect( mapStateToProps, mapDispatchToProps )( localize( DomainToPaidPlanNotice ) );
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)( localize( DomainToPaidPlanNotice ) );

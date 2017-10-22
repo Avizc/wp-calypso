@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -25,19 +21,12 @@ import {
 	areCurrentlyEditingShippingZoneLocationsValid,
 } from 'woocommerce/state/ui/shipping/zones/locations/selectors';
 
-const ShippingZoneLocationDialog = ( {
-	siteId,
-	isVisible,
-	isAdding,
-	translate,
-	actions,
-	canSave,
-} ) => {
+const ShippingZoneLocationDialog = ( { siteId, isVisible, isAdding, translate, actions, canSave } ) => {
 	if ( ! isVisible ) {
 		return null;
 	}
 
-	const onCancel = () => actions.cancelEditLocations();
+	const onCancel = () => ( actions.cancelEditLocations() );
 	const onClose = () => {
 		if ( ! canSave ) {
 			return;
@@ -53,7 +42,7 @@ const ShippingZoneLocationDialog = ( {
 			label: isAdding ? translate( 'Add' ) : translate( 'Done' ),
 			onClick: onClose,
 			disabled: ! canSave,
-			isPrimary: true,
+			isPrimary: true
 		},
 	];
 
@@ -62,9 +51,10 @@ const ShippingZoneLocationDialog = ( {
 			additionalClassNames="shipping-zone__location-dialog woocommerce"
 			isVisible={ isVisible }
 			buttons={ buttons }
-			onClose={ onCancel }
-		>
-			<div className="shipping-zone__location-dialog-header">{ translate( 'Edit location' ) }</div>
+			onClose={ onCancel } >
+			<div className="shipping-zone__location-dialog-header">
+				{ translate( 'Edit location' ) }
+			</div>
 			<ShippingZoneLocationDialogCountries siteId={ siteId } />
 			<ShippingZoneLocationDialogSettings siteId={ siteId } />
 		</Dialog>
@@ -77,18 +67,14 @@ ShippingZoneLocationDialog.propTypes = {
 };
 
 export default connect(
-	state => ( {
+	( state ) => ( {
 		isVisible: isEditLocationsModalOpen( state ),
 		canSave: areCurrentlyEditingShippingZoneLocationsValid( state ),
 	} ),
 	( dispatch, ownProps ) => ( {
-		actions: bindActionCreatorsWithSiteId(
-			{
-				closeEditLocations,
-				cancelEditLocations,
-			},
-			dispatch,
-			ownProps.siteId
-		),
+		actions: bindActionCreatorsWithSiteId( {
+			closeEditLocations,
+			cancelEditLocations,
+		}, dispatch, ownProps.siteId ),
 	} )
 )( localize( ShippingZoneLocationDialog ) );

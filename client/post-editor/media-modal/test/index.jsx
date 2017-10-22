@@ -1,61 +1,19 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import { expect } from 'chai';
-import { shallow } from 'enzyme';
-import { translate } from 'i18n-calypso';
+import { identity, noop } from 'lodash';
 import React from 'react';
+import { shallow } from 'enzyme';
+import mockery from 'mockery';
+import { expect } from 'chai';
 
 /**
  * Internal dependencies
  */
-import { EditorMediaModal } from '../';
-import accept from 'lib/accept';
-import mediaActions from 'lib/media/actions';
-import { ModalViews } from 'state/ui/media-modal/constants';
+import useMockery from 'test/helpers/use-mockery';
+import useFakeDom from 'test/helpers/use-fake-dom';
 import { useSandbox } from 'test/helpers/use-sinon';
-
-jest.mock( 'component-closest', () => {} );
-jest.mock( 'components/dialog', () => require( 'components/empty-component' ) );
-jest.mock( 'components/popover', () => require( 'components/empty-component' ) );
-jest.mock( 'event', () => require( 'component-event' ), { virtual: true } );
-jest.mock( 'post-editor/media-modal/detail', () => ( {
-	default: require( 'components/empty-component' ),
-} ) );
-jest.mock( 'post-editor/media-modal/gallery', () => require( 'components/empty-component' ) );
-jest.mock( 'post-editor/media-modal/markup', () => ( {
-	get: x => x,
-} ) );
-jest.mock( 'post-editor/media-modal/secondary-actions', () =>
-	require( 'components/empty-component' )
-);
-jest.mock( 'lib/accept', () =>
-	require( 'sinon' )
-		.stub()
-		.callsArgWithAsync( 1, true )
-);
-jest.mock( 'lib/analytics', () => ( {
-	mc: {
-		bumpStat: () => {},
-	},
-} ) );
-jest.mock( 'lib/media/actions', () => ( {
-	delete: () => {},
-	setLibrarySelectedItems: () => {},
-} ) );
-jest.mock( 'lib/posts/actions', () => ( {
-	blockSave: () => {},
-} ) );
-jest.mock( 'lib/posts/stats', () => ( {
-	recordEvent: () => {},
-	recordState: () => {},
-} ) );
-jest.mock( 'my-sites/media-library', () => require( 'components/empty-component' ) );
+import { ModalViews } from 'state/ui/media-modal/constants';
 
 /**
  * Module variables
@@ -63,124 +21,118 @@ jest.mock( 'my-sites/media-library', () => require( 'components/empty-component'
 const DUMMY_SITE = { ID: 1 };
 const DUMMY_MEDIA = [
 	{ ID: 100, date: '2015-06-19T11:36:09-04:00', mime_type: 'image/jpeg' },
-	{ ID: 200, date: '2015-06-19T09:36:09-04:00', mime_type: 'image/jpeg' },
+	{ ID: 200, date: '2015-06-19T09:36:09-04:00', mime_type: 'image/jpeg' }
 ];
-const DUMMY_VIDEO_MEDIA = [
-	{ ID: 100, date: '2015-06-19T11:36:09-04:00', mime_type: 'video/mp4' },
-];
+const EMPTY_COMPONENT = React.createClass( {
+	render: function() {
+		return <div />;
+	}
+} );
 
-describe( 'EditorMediaModal', () => {
-	let spy, deleteMedia, onClose;
+describe( 'EditorMediaModal', function() {
+	let spy, translate, deleteMedia, accept, EditorMediaModal, setLibrarySelectedItems, onClose;
 
-	useSandbox( sandbox => {
+	translate = require( 'i18n-calypso' ).translate;
+
+	useMockery( () => {
+		mockery.registerSubstitute( 'event', 'component-event' );
+	} );
+	useFakeDom();
+	useSandbox( ( sandbox ) => {
 		spy = sandbox.spy();
-		sandbox.stub( mediaActions, 'setLibrarySelectedItems' );
-		deleteMedia = sandbox.stub( mediaActions, 'delete' );
+		setLibrarySelectedItems = sandbox.stub();
+		deleteMedia = sandbox.stub();
 		onClose = sandbox.stub();
+		accept = sandbox.stub().callsArgWithAsync( 1, true );
 	} );
 
-	afterEach( () => {
-		accept.reset();
+	before( function() {
+		// Mockery
+		mockery.registerMock( 'my-sites/media-library', EMPTY_COMPONENT );
+		mockery.registerMock( './detail', { 'default': EMPTY_COMPONENT } );
+		mockery.registerMock( './gallery', EMPTY_COMPONENT );
+		mockery.registerMock( './markup', { get: identity } );
+		mockery.registerMock( './secondary-actions', EMPTY_COMPONENT );
+		mockery.registerMock( 'components/dialog', EMPTY_COMPONENT );
+		mockery.registerMock( 'components/popover', EMPTY_COMPONENT );
+		mockery.registerMock( 'lib/accept', accept );
+		mockery.registerMock( 'lib/analytics', { mc: { bumpStat: noop } } );
+		mockery.registerMock( 'component-closest', {} );
+		mockery.registerMock( 'lib/media/actions', { 'delete': deleteMedia, setLibrarySelectedItems: setLibrarySelectedItems } );
+		mockery.registerMock( 'lib/posts/actions', { blockSave: noop } );
+		mockery.registerMock( 'lib/posts/stats', {
+			recordEvent: noop,
+			recordState: noop
+		} );
+
+		EditorMediaModal = require( '../' ).EditorMediaModal;
 	} );
 
-	test( 'should prompt to delete a single item from the list view', done => {
+	it( 'should prompt to delete a single item from the list view', function( done ) {
 		var media = DUMMY_MEDIA.slice( 0, 1 ),
 			tree;
 
 		tree = shallow(
-			<EditorMediaModal
-				site={ DUMMY_SITE }
-				mediaLibrarySelectedItems={ media }
-				translate={ translate }
-			/>
+			<EditorMediaModal site={ DUMMY_SITE } mediaLibrarySelectedItems={ media } translate={ translate } />
 		).instance();
 		tree.deleteMedia();
 
-		expect( accept ).to.have.been.calledWith(
-			'Are you sure you want to delete this item? ' +
-				'Deleted media will no longer appear anywhere on your website, including all posts, pages, and widgets. ' +
-				'This cannot be undone.'
-		);
+		expect( accept ).to.have.been.calledWith( 'Are you sure you want to permanently delete this item?' );
 		process.nextTick( function() {
 			expect( deleteMedia ).to.have.been.calledWith( DUMMY_SITE.ID, media );
 			done();
 		} );
 	} );
 
-	test( 'should prompt to delete multiple items from the list view', done => {
+	it( 'should prompt to delete multiple items from the list view', function( done ) {
 		var tree = shallow(
-			<EditorMediaModal
-				site={ DUMMY_SITE }
-				mediaLibrarySelectedItems={ DUMMY_MEDIA }
-				translate={ translate }
-			/>
+			<EditorMediaModal site={ DUMMY_SITE } mediaLibrarySelectedItems={ DUMMY_MEDIA } translate={ translate } />
 		).instance();
 		tree.deleteMedia();
 
-		expect( accept ).to.have.been.calledWith(
-			'Are you sure you want to delete these items? ' +
-				'Deleted media will no longer appear anywhere on your website, including all posts, pages, and widgets. ' +
-				'This cannot be undone.'
-		);
+		expect( accept ).to.have.been.calledWith( 'Are you sure you want to permanently delete these items?' );
 		process.nextTick( function() {
 			expect( deleteMedia ).to.have.been.calledWith( DUMMY_SITE.ID, DUMMY_MEDIA );
 			done();
 		} );
 	} );
 
-	test( 'should prompt to delete a single item from the detail view', done => {
+	it( 'should prompt to delete a single item from the detail view', function( done ) {
 		var media = DUMMY_MEDIA[ 0 ],
 			tree;
 
 		tree = shallow(
-			<EditorMediaModal
-				site={ DUMMY_SITE }
-				mediaLibrarySelectedItems={ [ media ] }
-				view={ ModalViews.DETAIL }
-			/>
+			<EditorMediaModal site={ DUMMY_SITE } mediaLibrarySelectedItems={ [ media ] } view={ ModalViews.DETAIL } />
 		).instance();
 		tree.deleteMedia();
 
-		expect( accept ).to.have.been.calledWith(
-			'Are you sure you want to delete this item? ' +
-				'Deleted media will no longer appear anywhere on your website, including all posts, pages, and widgets. ' +
-				'This cannot be undone.'
-		);
+		expect( accept ).to.have.been.calledWith( 'Are you sure you want to permanently delete this item?' );
 		process.nextTick( function() {
 			expect( deleteMedia ).to.have.been.calledWith( DUMMY_SITE.ID, media );
 			done();
 		} );
 	} );
 
-	test( 'should prompt to delete a single item from the detail view, even when multiple selected', done => {
+	it( 'should prompt to delete a single item from the detail view, even when multiple selected', function( done ) {
 		var tree = shallow(
-			<EditorMediaModal
-				site={ DUMMY_SITE }
-				mediaLibrarySelectedItems={ DUMMY_MEDIA }
-				view={ ModalViews.DETAIL }
-			/>
+			<EditorMediaModal site={ DUMMY_SITE } mediaLibrarySelectedItems={ DUMMY_MEDIA } view={ ModalViews.DETAIL } />
 		).instance();
 		tree.deleteMedia();
 
-		expect( accept ).to.have.been.calledWith(
-			'Are you sure you want to delete this item? ' +
-				'Deleted media will no longer appear anywhere on your website, including all posts, pages, and widgets. ' +
-				'This cannot be undone.'
-		);
+		expect( accept ).to.have.been.calledWith( 'Are you sure you want to permanently delete this item?' );
 		process.nextTick( function() {
 			expect( deleteMedia ).to.have.been.calledWith( DUMMY_SITE.ID, DUMMY_MEDIA[ 0 ] );
 			done();
 		} );
 	} );
 
-	test( 'should return to the list view after deleting the only item in detail view', done => {
+	it( 'should return to the list view after deleting the only item in detail view', function( done ) {
 		const tree = shallow(
 			<EditorMediaModal
 				site={ DUMMY_SITE }
 				mediaLibrarySelectedItems={ DUMMY_MEDIA.slice( 0, 1 ) }
 				view={ ModalViews.DETAIL }
-				setView={ spy }
-			/>
+				setView={ spy } />
 		).instance();
 
 		tree.deleteMedia();
@@ -191,14 +143,13 @@ describe( 'EditorMediaModal', () => {
 		} );
 	} );
 
-	test( 'should revert to an earlier media item when the last item is deleted from detail view', done => {
+	it( 'should revert to an earlier media item when the last item is deleted from detail view', function( done ) {
 		var tree = shallow(
 			<EditorMediaModal
 				site={ DUMMY_SITE }
 				mediaLibrarySelectedItems={ DUMMY_MEDIA }
 				view={ ModalViews.DETAIL }
-				setView={ spy }
-			/>
+				setView={ spy } />
 		).instance();
 		tree.setDetailSelectedIndex( 1 );
 		tree.deleteMedia();
@@ -210,14 +161,13 @@ describe( 'EditorMediaModal', () => {
 		} );
 	} );
 
-	test( 'should show no buttons if editing an image', () => {
+	it( 'should show no buttons if editing an image', () => {
 		const tree = shallow(
 			<EditorMediaModal
 				site={ DUMMY_SITE }
 				mediaLibrarySelectedItems={ [] }
 				view={ ModalViews.IMAGE_EDITOR }
-				setView={ spy }
-			/>
+				setView={ spy } />
 		).instance();
 
 		const buttons = tree.getModalButtons();
@@ -225,43 +175,12 @@ describe( 'EditorMediaModal', () => {
 		expect( buttons ).to.be.undefined;
 	} );
 
-	test( 'should show an insert button when viewing external media (no selection)', () => {
-		const tree = shallow(
-			<EditorMediaModal site={ DUMMY_SITE } view={ ModalViews.DETAIL } setView={ spy } />
-		).instance();
-
-		tree.setState( { source: 'external' } );
-		const buttons = tree.getModalButtons();
-
-		expect( buttons.length ).to.be.equals( 2 );
-		expect( buttons[ 1 ].label ).to.be.equals( 'Insert' );
-	} );
-
-	test( 'should show a insert button when 1 external image is selected', () => {
+	it( 'should show a copy button when viewing external media', () => {
 		const tree = shallow(
 			<EditorMediaModal
 				site={ DUMMY_SITE }
 				view={ ModalViews.DETAIL }
-				mediaLibrarySelectedItems={ DUMMY_MEDIA.slice( 0, 1 ) }
-				setView={ spy }
-			/>
-		).instance();
-
-		tree.setState( { source: 'external' } );
-		const buttons = tree.getModalButtons();
-
-		expect( buttons.length ).to.be.equals( 2 );
-		expect( buttons[ 1 ].label ).to.be.equals( 'Insert' );
-	} );
-
-	test( 'should show a copy button when 1 external video is selected', () => {
-		const tree = shallow(
-			<EditorMediaModal
-				site={ DUMMY_SITE }
-				view={ ModalViews.DETAIL }
-				mediaLibrarySelectedItems={ DUMMY_VIDEO_MEDIA }
-				setView={ spy }
-			/>
+				setView={ spy } />
 		).instance();
 
 		tree.setState( { source: 'external' } );
@@ -271,31 +190,13 @@ describe( 'EditorMediaModal', () => {
 		expect( buttons[ 1 ].label ).to.be.equals( 'Copy to media library' );
 	} );
 
-	test( 'should show a copy button when 2 or more external media are selected', () => {
-		const tree = shallow(
-			<EditorMediaModal
-				site={ DUMMY_SITE }
-				view={ ModalViews.DETAIL }
-				mediaLibrarySelectedItems={ DUMMY_MEDIA }
-				setView={ spy }
-			/>
-		).instance();
-
-		tree.setState( { source: 'external' } );
-		const buttons = tree.getModalButtons();
-
-		expect( buttons.length ).to.be.equals( 2 );
-		expect( buttons[ 1 ].label ).to.be.equals( 'Copy to media library' );
-	} );
-
-	test( 'should show a continue button when multiple images are selected', () => {
+	it( 'should show a continue button when multiple images are selected', () => {
 		const tree = shallow(
 			<EditorMediaModal
 				site={ DUMMY_SITE }
 				mediaLibrarySelectedItems={ DUMMY_MEDIA }
 				view={ ModalViews.DETAIL }
-				setView={ spy }
-			/>
+				setView={ spy } />
 		).instance();
 
 		const buttons = tree.getModalButtons();
@@ -303,9 +204,12 @@ describe( 'EditorMediaModal', () => {
 		expect( buttons[ 1 ].label ).to.be.equals( 'Continue' );
 	} );
 
-	test( 'should show an insert button if none or one local items are selected', () => {
+	it( 'should show an insert button if none or one local items are selected', () => {
 		const tree = shallow(
-			<EditorMediaModal site={ DUMMY_SITE } view={ ModalViews.DETAIL } setView={ spy } />
+			<EditorMediaModal
+				site={ DUMMY_SITE }
+				view={ ModalViews.DETAIL }
+				setView={ spy } />
 		).instance();
 
 		const buttons = tree.getModalButtons();
@@ -314,15 +218,14 @@ describe( 'EditorMediaModal', () => {
 	} );
 
 	describe( '#confirmSelection()', () => {
-		test( 'should close modal if viewing local media and button is pressed', done => {
+		it( 'should close modal if viewing local media and button is pressed', done => {
 			const tree = shallow(
 				<EditorMediaModal
 					site={ DUMMY_SITE }
 					mediaLibrarySelectedItems={ DUMMY_MEDIA }
 					onClose={ onClose }
 					view={ ModalViews.DETAIL }
-					setView={ spy }
-				/>
+					setView={ spy } />
 			).instance();
 
 			tree.confirmSelection();
@@ -338,79 +241,21 @@ describe( 'EditorMediaModal', () => {
 			} );
 		} );
 
-		test( 'should copy external media after loading WordPress library if 2 or more media are selected and button is pressed', done => {
+		it( 'should copy external media if viewing external media and button is pressed', done => {
 			const tree = shallow(
 				<EditorMediaModal
 					site={ DUMMY_SITE }
 					mediaLibrarySelectedItems={ DUMMY_MEDIA }
 					view={ ModalViews.DETAIL }
-					setView={ spy }
-				/>
-			).instance();
-
-			tree.setState( { source: 'external' } );
-			tree.copyExternalAfterLoadingWordPressLibrary = onClose;
-			tree.confirmSelection();
-
-			// EditorMediaModal will generate transient ID for the media selected
-			// by using uniqueId, which increments its value within the same session.
-			const transientItems = [
-				Object.assign( {}, DUMMY_MEDIA[ 0 ], { ID: 'media-1', transient: true } ),
-				Object.assign( {}, DUMMY_MEDIA[ 1 ], { ID: 'media-2', transient: true } ),
-			];
-			process.nextTick( () => {
-				expect( onClose ).to.have.been.calledWith( transientItems, 'external' );
-				done();
-			} );
-		} );
-
-		test( 'should copy external media and insert it in the editor if 1 image is selected and button is pressed', done => {
-			const SINGLE_ITEM_MEDIA = DUMMY_MEDIA.slice( 0, 1 );
-			const tree = shallow(
-				<EditorMediaModal
-					site={ DUMMY_SITE }
-					mediaLibrarySelectedItems={ SINGLE_ITEM_MEDIA }
-					view={ ModalViews.DETAIL }
-					setView={ spy }
-				/>
+					setView={ spy } />
 			).instance();
 
 			tree.setState( { source: 'external' } );
 			tree.copyExternal = onClose;
 			tree.confirmSelection();
 
-			// EditorMediaModal will generate transient ID for the media selected
-			// by using uniqueId, which increments its value within the same session.
-			const transientItems = [
-				Object.assign( {}, SINGLE_ITEM_MEDIA[ 0 ], { ID: 'media-3', transient: true } ),
-			];
 			process.nextTick( () => {
-				expect( onClose ).to.have.been.calledWith( transientItems, 'external' );
-				done();
-			} );
-		} );
-
-		test( 'should copy external after loading WordPress library if 1 video is selected and button is pressed', done => {
-			const tree = shallow(
-				<EditorMediaModal
-					site={ DUMMY_SITE }
-					mediaLibrarySelectedItems={ DUMMY_VIDEO_MEDIA }
-					view={ ModalViews.DETAIL }
-					setView={ spy }
-				/>
-			).instance();
-
-			tree.setState( { source: 'external' } );
-			tree.copyExternalAfterLoadingWordPressLibrary = onClose;
-			tree.confirmSelection();
-
-			// EditorMediaModal will generate transient ID for the media selected
-			// by using uniqueId, which increments its value within the same session.
-			const transientItems = [
-				Object.assign( {}, DUMMY_VIDEO_MEDIA[ 0 ], { ID: 'media-4', transient: true } ),
-			];
-			process.nextTick( () => {
-				expect( onClose ).to.have.been.calledWith( transientItems, 'external' );
+				expect( onClose ).to.have.been.calledWith( DUMMY_MEDIA, 'external' );
 				done();
 			} );
 		} );

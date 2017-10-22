@@ -1,13 +1,7 @@
-/** @format */
-/**
- * External dependencies
- */
-import { isArray } from 'lodash';
+import isArray from 'lodash/isArray';
 
-/**
- * Internal dependencies
- */
 import wpcom from 'lib/wp';
+
 import {
 	READER_FEED_REQUEST,
 	READER_FEED_REQUEST_SUCCESS,
@@ -23,28 +17,25 @@ export function requestFeed( feedId ) {
 				feed_ID: feedId,
 			},
 		} );
-		return wpcom
-			.undocumented()
-			.readFeed( { ID: feedId } )
-			.then(
-				function success( data ) {
-					dispatch( {
-						type: READER_FEED_REQUEST_SUCCESS,
-						payload: data,
-					} );
-					return data;
-				},
-				function failure( err ) {
-					dispatch( {
-						type: READER_FEED_REQUEST_FAILURE,
-						payload: {
-							feed_ID: feedId,
-						},
-						error: err,
-					} );
-					throw err;
-				}
-			);
+		return wpcom.undocumented().readFeed( { ID: feedId } ).then(
+			function success( data ) {
+				dispatch( {
+					type: READER_FEED_REQUEST_SUCCESS,
+					payload: data,
+				} );
+				return data;
+			},
+			function failure( err ) {
+				dispatch( {
+					type: READER_FEED_REQUEST_FAILURE,
+					payload: {
+						feed_ID: feedId,
+					},
+					error: err,
+				} );
+				throw err;
+			},
+		);
 	};
 }
 

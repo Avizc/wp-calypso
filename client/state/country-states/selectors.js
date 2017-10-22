@@ -1,13 +1,11 @@
 /**
  * Returns an array of states objects for the specified country code, or null
  * if there are not states for the country.
- * 
  *
- * @format
- * @param {String} countryCode Country code to check.
+ * @param  {Object} state       Global state tree
+ * @param  {String} countryCode Country code to check.
  * @return {?Array}             States objects, if known.
  */
-
 export function getCountryStates( state, countryCode ) {
 	return state.countryStates.items[ countryCode.toLowerCase() ] || null;
 }

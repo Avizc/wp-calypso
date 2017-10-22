@@ -1,4 +1,3 @@
-/** @format */
 export const items = {
 	12345678: {
 		isActive: true,
@@ -39,7 +38,7 @@ export const dataItems = {
 		wpcomUser: {
 			ID: 12345678,
 			login: 'automattic',
-		},
+		}
 	},
 	87654321: {
 		gravatar: '<img />',
@@ -52,6 +51,6 @@ export const dataItems = {
 		wpcomUser: {
 			ID: 12345678,
 			login: 'automattic',
-		},
+		}
 	},
 };

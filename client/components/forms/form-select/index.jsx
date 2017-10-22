@@ -1,16 +1,15 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import classNames from 'classnames';
 
-class FormSelect extends React.Component {
-	static defaultProps = {
-		isError: false,
-	};
+const FormSelect = React.createClass( {
+	getDefaultProps() {
+		return {
+			isError: false,
+		};
+	},
 
 	render() {
 		const { inputRef, className, isError, ...props } = this.props;
@@ -24,6 +23,6 @@ class FormSelect extends React.Component {
 			</select>
 		);
 	}
-}
+} );
 
 export default FormSelect;

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 import { isArray } from 'lodash';
 
@@ -22,6 +18,7 @@ import FormTextarea from 'components/forms/form-textarea';
 import PaymentMethodEditFormToggle from './payment-method-edit-form-toggle';
 
 class PaymentMethodEdit extends Component {
+
 	static propTypes = {
 		method: PropTypes.shape( {
 			settings: PropTypes.shape( {
@@ -39,24 +36,27 @@ class PaymentMethodEdit extends Component {
 		onDone: PropTypes.func.isRequired,
 	};
 
-	onEditFieldHandler = e => {
+	onEditFieldHandler = ( e ) => {
 		this.props.onEditField( e.target.name, e.target.value );
-	};
+	}
 
-	renderEditCheckbox = setting => {
+	renderEditCheckbox = ( setting ) => {
 		const checked = 'yes' === setting.value;
 		return (
 			<PaymentMethodEditFormToggle
 				checked={ checked }
 				name={ setting.id }
-				onChange={ this.onEditFieldHandler }
-			/>
+				onChange={ this.onEditFieldHandler } />
 		);
-	};
+	}
 
-	renderEditField = editField => {
+	renderEditField = ( editField ) => {
 		const { method } = this.props;
-		if ( method.fields && isArray( method.fields ) && method.fields.indexOf( editField ) < 0 ) {
+		if (
+			method.fields &&
+			isArray( method.fields ) &&
+			method.fields.indexOf( editField ) < 0
+		) {
 			return;
 		}
 		const setting = method.settings[ editField ];
@@ -71,65 +71,46 @@ class PaymentMethodEdit extends Component {
 				{ 'select' === setting.type && this.renderEditSelect( setting ) }
 			</FormFieldset>
 		);
-	};
+	}
 
-	renderEditPassword = setting => {
+	renderEditPassword = ( setting ) => {
 		return (
-			<FormPasswordInput
-				name={ setting.id }
-				onChange={ this.onEditFieldHandler }
-				value={ setting.value }
-			/>
+			<FormPasswordInput name={ setting.id } onChange={ this.onEditFieldHandler } value={ setting.value } />
 		);
-	};
+	}
 
-	renderEditSelect = setting => {
+	renderEditSelect = ( setting ) => {
 		const optionKeys = setting.options && Object.keys( setting.options );
 		return (
 			<FormSelect name={ setting.id } onChange={ this.onEditFieldHandler } value={ setting.value }>
-				{ optionKeys.map( option => {
+				{ optionKeys.map( ( option ) => {
 					return this.renderSelectOption( option, setting.options[ option ] );
 				} ) }
 			</FormSelect>
 		);
-	};
+	}
 
-	renderEditTextbox = setting => {
+	renderEditTextbox = ( setting ) => {
 		return (
-			<FormTextInput
-				name={ setting.id }
-				onChange={ this.onEditFieldHandler }
-				value={ setting.value }
-			/>
+			<FormTextInput name={ setting.id } onChange={ this.onEditFieldHandler } value={ setting.value } />
 		);
-	};
+	}
 
-	renderEditTextarea = setting => {
+	renderEditTextarea = ( setting ) => {
 		return (
-			<FormTextarea
-				name={ setting.id }
-				onChange={ this.onEditFieldHandler }
-				value={ setting.value }
-			/>
+			<FormTextarea name={ setting.id } onChange={ this.onEditFieldHandler } value={ setting.value } />
 		);
-	};
+	}
 
 	renderSelectOption = ( key, title ) => {
 		return (
-			<option key={ key } value={ key }>
-				{ title }
-			</option>
+			<option key={ key } value={ key }>{ title }</option>
 		);
-	};
+	}
 
 	buttons = [
 		{ action: 'cancel', label: this.props.translate( 'Cancel' ), onClick: this.props.onCancel },
-		{
-			action: 'save',
-			label: this.props.translate( 'Done' ),
-			onClick: this.props.onDone,
-			isPrimary: true,
-		},
+		{ action: 'save', label: this.props.translate( 'Done' ), onClick: this.props.onDone, isPrimary: true },
 	];
 
 	render() {
@@ -139,12 +120,12 @@ class PaymentMethodEdit extends Component {
 			<Dialog
 				additionalClassNames="payments__dialog woocommerce"
 				buttons={ this.buttons }
-				isVisible
-			>
+				isVisible>
 				{ settingsFieldsKeys.map( this.renderEditField ) }
 			</Dialog>
 		);
 	}
+
 }
 
 export default localize( PaymentMethodEdit );

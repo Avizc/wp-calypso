@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -13,7 +10,11 @@ import PreviewMain from './main';
 
 export default {
 	preview: function( context, next ) {
-		context.primary = <PreviewMain site={ context.params.site } />;
+		context.primary = (
+			<PreviewMain
+				site={ context.params.site }
+			/>
+		);
 		next();
 	},
 };

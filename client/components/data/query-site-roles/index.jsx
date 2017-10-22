@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -18,7 +14,7 @@ class QuerySiteRoles extends Component {
 	static propTypes = {
 		siteId: PropTypes.number.isRequired,
 		requestingSiteRoles: PropTypes.bool,
-		requestSiteRoles: PropTypes.func,
+		requestSiteRoles: PropTypes.func
 	};
 
 	componentWillMount() {
@@ -47,7 +43,7 @@ class QuerySiteRoles extends Component {
 export default connect(
 	( state, ownProps ) => {
 		return {
-			requestingSiteRoles: isRequestingSiteRoles( state, ownProps.siteId ),
+			requestingSiteRoles: isRequestingSiteRoles( state, ownProps.siteId )
 		};
 	},
 	{ requestSiteRoles }

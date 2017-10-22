@@ -1,19 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:users:actions' );
+const debug = require( 'debug' )( 'calypso:users:actions' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import wpcom from 'lib/wp';
-import UsersStore from 'lib/users/store';
+const Dispatcher = require( 'dispatcher' ),
+	wpcom = require( 'lib/wp' ),
+	UsersStore = require( 'lib/users/store' );
 
 const UsersActions = {
 	fetchUsers: fetchOptions => {
@@ -24,7 +19,7 @@ const UsersActions = {
 		debug( 'fetchUsers', fetchOptions );
 		Dispatcher.handleViewAction( {
 			type: 'FETCHING_USERS',
-			fetchOptions: fetchOptions,
+			fetchOptions: fetchOptions
 		} );
 
 		wpcom.site( fetchOptions.siteId ).usersList( fetchOptions, ( error, data ) => {
@@ -32,7 +27,7 @@ const UsersActions = {
 				type: 'RECEIVE_USERS',
 				fetchOptions: fetchOptions,
 				data: data,
-				error: error,
+				error: error
 			} );
 		} );
 	},
@@ -45,7 +40,7 @@ const UsersActions = {
 
 		Dispatcher.handleViewAction( {
 			type: 'FETCHING_UPDATED_USERS',
-			fetchOptions: fetchOptions,
+			fetchOptions: fetchOptions
 		} );
 
 		const updatedFetchOptions = UsersStore.getUpdatedParams( fetchOptions );
@@ -56,7 +51,7 @@ const UsersActions = {
 				type: 'RECEIVE_UPDATED_USERS',
 				fetchOptions: fetchOptions,
 				data: data,
-				error: error,
+				error: error
 			} );
 		} );
 	},
@@ -70,38 +65,35 @@ const UsersActions = {
 		Dispatcher.handleViewAction( {
 			type: 'DELETE_SITE_USER',
 			siteId: siteId,
-			user: user,
+			user: user
 		} );
 
 		let attributes;
 		if ( 'undefined' !== typeof reassignUserId ) {
 			attributes = {
-				reassign: reassignUserId,
+				reassign: reassignUserId
 			};
 		}
 
-		wpcom
-			.undocumented()
-			.site( siteId )
-			.deleteUser( userId, attributes, ( error, data ) => {
-				if ( error || ! data.success ) {
-					Dispatcher.handleServerAction( {
-						type: 'RECEIVE_DELETE_SITE_USER_FAILURE',
-						action: 'DELETE_SITE_USER',
-						siteId: siteId,
-						user: user,
-						error: error,
-					} );
-				} else {
-					Dispatcher.handleServerAction( {
-						type: 'RECEIVE_DELETE_SITE_USER_SUCCESS',
-						action: 'DELETE_SITE_USER',
-						siteId: siteId,
-						user: user,
-						data: data,
-					} );
-				}
-			} );
+		wpcom.undocumented().site( siteId ).deleteUser( userId, attributes, ( error, data ) => {
+			if ( error || ! data.success ) {
+				Dispatcher.handleServerAction( {
+					type: 'RECEIVE_DELETE_SITE_USER_FAILURE',
+					action: 'DELETE_SITE_USER',
+					siteId: siteId,
+					user: user,
+					error: error
+				} );
+			} else {
+				Dispatcher.handleServerAction( {
+					type: 'RECEIVE_DELETE_SITE_USER_SUCCESS',
+					action: 'DELETE_SITE_USER',
+					siteId: siteId,
+					user: user,
+					data: data
+				} );
+			}
+		} );
 	},
 
 	updateUser: ( siteId, userId, attributes ) => {
@@ -116,31 +108,28 @@ const UsersActions = {
 		Dispatcher.handleViewAction( {
 			type: 'UPDATE_SITE_USER',
 			siteId: siteId,
-			user: updatedUser,
+			user: updatedUser
 		} );
-		wpcom
-			.undocumented()
-			.site( siteId )
-			.updateUser( userId, attributes, ( error, data ) => {
-				if ( error ) {
-					debug( 'Update user error', error );
-					Dispatcher.handleServerAction( {
-						type: 'RECEIVE_UPDATE_SITE_USER_FAILURE',
-						action: 'UPDATE_SITE_USER',
-						siteId: siteId,
-						user: user,
-						error: error,
-					} );
-				} else {
-					Dispatcher.handleServerAction( {
-						type: 'RECEIVE_UPDATE_SITE_USER_SUCCESS',
-						action: 'UPDATE_SITE_USER',
-						siteId: siteId,
-						user: user,
-						data: data,
-					} );
-				}
-			} );
+		wpcom.undocumented().site( siteId ).updateUser( userId, attributes, ( error, data ) => {
+			if ( error ) {
+				debug( 'Update user error', error );
+				Dispatcher.handleServerAction( {
+					type: 'RECEIVE_UPDATE_SITE_USER_FAILURE',
+					action: 'UPDATE_SITE_USER',
+					siteId: siteId,
+					user: user,
+					error: error
+				} );
+			} else {
+				Dispatcher.handleServerAction( {
+					type: 'RECEIVE_UPDATE_SITE_USER_SUCCESS',
+					action: 'UPDATE_SITE_USER',
+					siteId: siteId,
+					user: user,
+					data: data
+				} );
+			}
+		} );
 	},
 
 	fetchUser: ( fetchOptions, login ) => {
@@ -148,30 +137,28 @@ const UsersActions = {
 
 		Dispatcher.handleViewAction( {
 			type: 'FETCHING_USERS',
-			fetchOptions: fetchOptions,
+			fetchOptions: fetchOptions
 		} );
 
-		wpcom
-			.undocumented()
-			.site( fetchOptions.siteId )
-			.getUser( login, ( error, data ) => {
-				if ( error ) {
-					Dispatcher.handleServerAction( {
-						type: 'RECEIVE_USER_FAILED',
-						fetchOptions: fetchOptions,
-						siteId: fetchOptions.siteId,
-						login: login,
-						error: error,
-					} );
-				} else {
-					Dispatcher.handleServerAction( {
-						type: 'RECEIVE_SINGLE_USER',
-						fetchOptions: fetchOptions,
-						user: data,
-					} );
-				}
-			} );
-	},
+		wpcom.undocumented().site( fetchOptions.siteId ).getUser( login, ( error, data ) => {
+			if ( error ) {
+				Dispatcher.handleServerAction( {
+					type: 'RECEIVE_USER_FAILED',
+					fetchOptions: fetchOptions,
+					siteId: fetchOptions.siteId,
+					login: login,
+					error: error
+				} );
+			} else {
+				Dispatcher.handleServerAction( {
+					type: 'RECEIVE_SINGLE_USER',
+					fetchOptions: fetchOptions,
+					user: data
+				} );
+			}
+		} );
+	}
+
 };
 
-export default UsersActions;
+module.exports = UsersActions;

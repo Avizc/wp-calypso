@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * This script generates a usage counts for the dependencies of a list of modules.
+ * This script generates a usage counts for the dependecies of a list of modules.
  * It accepts a newline-delimited list of .js and|or .jsx files
  * as its input, and writes the index to server/devdocs/components-usage-stats.json
  */
+
 var async = require( 'async' ),
-	camelCase = require( 'lodash' ).camelCase,
+	camelCase = require( 'lodash/camelCase' ),
 	config = require( 'config' ),
 	fs = require( 'fs' ),
 	fspath = require( 'path' ),

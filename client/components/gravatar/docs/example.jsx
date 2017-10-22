@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -14,10 +11,12 @@ import Gravatar from 'components/gravatar';
 import { getCurrentUser } from 'state/current-user/selectors';
 
 function GravatarExample( { currentUser } ) {
-	return <Gravatar user={ currentUser } size={ 96 } />;
+	return (
+		<Gravatar user={ currentUser } size={ 96 } />
+	);
 }
 
-const ConnectedGravatarExample = connect( state => {
+const ConnectedGravatarExample = connect( ( state ) => {
 	const currentUser = getCurrentUser( state );
 
 	if ( ! currentUser ) {
@@ -25,7 +24,7 @@ const ConnectedGravatarExample = connect( state => {
 	}
 
 	return {
-		currentUser,
+		currentUser
 	};
 } )( GravatarExample );
 

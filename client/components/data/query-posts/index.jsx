@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import shallowEqual from 'react-pure-render/shallowEqual';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -28,11 +24,9 @@ class QueryPosts extends Component {
 	}
 
 	componentWillReceiveProps( nextProps ) {
-		if (
-			this.props.siteId === nextProps.siteId &&
-			this.props.postId === nextProps.postId &&
-			shallowEqual( this.props.query, nextProps.query )
-		) {
+		if ( this.props.siteId === nextProps.siteId &&
+				this.props.postId === nextProps.postId &&
+				shallowEqual( this.props.query, nextProps.query ) ) {
 			return;
 		}
 
@@ -63,11 +57,11 @@ QueryPosts.propTypes = {
 	postId: PropTypes.number,
 	query: PropTypes.object,
 	requestingPosts: PropTypes.bool,
-	requestSitePosts: PropTypes.func,
+	requestSitePosts: PropTypes.func
 };
 
 QueryPosts.defaultProps = {
-	requestSitePosts: () => {},
+	requestSitePosts: () => {}
 };
 
 export default connect(
@@ -75,16 +69,13 @@ export default connect(
 		const { siteId, postId, query } = ownProps;
 		return {
 			requestingPost: isRequestingSitePost( state, siteId, postId ),
-			requestingPosts: isRequestingSitePostsForQuery( state, siteId, query ),
+			requestingPosts: isRequestingSitePostsForQuery( state, siteId, query )
 		};
 	},
-	dispatch => {
-		return bindActionCreators(
-			{
-				requestSitePosts,
-				requestSitePost,
-			},
-			dispatch
-		);
+	( dispatch ) => {
+		return bindActionCreators( {
+			requestSitePosts,
+			requestSitePost
+		}, dispatch );
 	}
 )( QueryPosts );

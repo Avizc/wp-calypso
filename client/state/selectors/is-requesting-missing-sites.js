@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { getCurrentUser } from 'state/current-user/selectors';
 import { getSites } from 'state/selectors';
 

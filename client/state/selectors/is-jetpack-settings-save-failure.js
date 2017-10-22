@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { getJetpackSettingsSaveRequestStatus } from './';
 
 /**

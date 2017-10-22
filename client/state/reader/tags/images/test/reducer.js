@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -8,21 +7,21 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import { items, requesting } from '../reducer';
 import {
 	READER_TAG_IMAGES_RECEIVE,
 	READER_TAG_IMAGES_REQUEST,
 	READER_TAG_IMAGES_REQUEST_SUCCESS,
 } from 'state/action-types';
+import { items, requesting } from '../reducer';
 
 describe( 'reducer', () => {
 	describe( '#items()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = items( undefined, {} );
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should insert a new image for a new tag', () => {
+		it( 'should insert a new image for a new tag', () => {
 			const original = {
 				banana: [ { url: 'http://example.com/banana1.png' } ],
 			};
@@ -38,7 +37,7 @@ describe( 'reducer', () => {
 			expect( state.apple[ 0 ] ).to.eql( newImage );
 		} );
 
-		test( 'should insert a new image for an existing tag', () => {
+		it( 'should insert a new image for an existing tag', () => {
 			const original = {
 				banana: [ { url: 'http://example.com/banana1.png' } ],
 			};
@@ -56,12 +55,12 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#requesting()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = requesting( undefined, {} );
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should index requesting state by tag', () => {
+		it( 'should index requesting state by tag', () => {
 			const tag = 'banana';
 			const state = requesting( undefined, {
 				type: READER_TAG_IMAGES_REQUEST,
@@ -72,7 +71,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate requesting state for sites', () => {
+		it( 'should accumulate requesting state for sites', () => {
 			const original = deepFreeze( {
 				pineapple: false,
 			} );
@@ -86,7 +85,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should override previous requesting state', () => {
+		it( 'should override previous requesting state', () => {
 			const original = deepFreeze( {
 				pineapple: false,
 				pen: true,

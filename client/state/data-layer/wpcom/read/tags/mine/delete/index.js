@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -8,6 +7,7 @@
  */
 import { READER_UNFOLLOW_TAG_REQUEST } from 'state/action-types';
 import { receiveUnfollowTag as receiveUnfollowTagAction } from 'state/reader/tags/items/actions';
+
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 import { errorNotice } from 'state/notices/actions';
@@ -21,7 +21,7 @@ export function requestUnfollow( store, action ) {
 			apiVersion: '1.1',
 			onSuccess: action,
 			onFailure: action,
-		} )
+		} ),
 	);
 }
 
@@ -33,7 +33,7 @@ export function requestUnfollow( store, action ) {
  */
 export const fromApi = apiResponse => apiResponse.removed_tag;
 
-export function receiveUnfollowTag( store, action, apiResponse ) {
+export function receiveUnfollowTag( store, action, next, apiResponse ) {
 	if ( apiResponse.subscribed ) {
 		receiveError( store, action );
 		return;
@@ -42,11 +42,11 @@ export function receiveUnfollowTag( store, action, apiResponse ) {
 	store.dispatch(
 		receiveUnfollowTagAction( {
 			payload: fromApi( apiResponse ),
-		} )
+		} ),
 	);
 }
 
-export function receiveError( store, action, error ) {
+export function receiveError( store, action, next, error ) {
 	const errorText = translate( 'Could not unfollow tag: %(tag)s', {
 		args: { tag: action.payload.slug },
 	} );

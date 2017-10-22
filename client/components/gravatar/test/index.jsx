@@ -1,11 +1,9 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
 import React from 'react';
+import { shallow } from 'enzyme';
 
 /**
  * Internal dependencies
@@ -24,11 +22,11 @@ describe( 'Gravatar', () => {
 
 	const genericUser = {
 		avatar_URL: avatarUrl,
-		display_name: 'Bob The Tester',
+		display_name: 'Bob The Tester'
 	};
 
-	describe( 'rendering', () => {
-		test( 'should render an image given a user with valid avatar_URL, with default width and height 32', () => {
+	describe( 'rendering', function() {
+		it( 'should render an image given a user with valid avatar_URL, with default width and height 32', function() {
 			const gravatar = shallow( <Gravatar user={ genericUser } /> );
 			const img = gravatar.find( 'img' );
 
@@ -39,8 +37,10 @@ describe( 'Gravatar', () => {
 			expect( img.prop( 'height' ) ).to.equal( 32 );
 		} );
 
-		test( 'should update the width and height when given a size attribute', () => {
-			const gravatar = shallow( <Gravatar user={ genericUser } size={ 100 } /> );
+		it( 'should update the width and height when given a size attribute', function() {
+			const gravatar = shallow(
+				<Gravatar user={ genericUser } size={ 100 } />
+			);
 			const img = gravatar.find( 'img' );
 
 			expect( img.length ).to.equal( 1 );
@@ -50,33 +50,37 @@ describe( 'Gravatar', () => {
 			expect( img.prop( 'height' ) ).to.equal( 100 );
 		} );
 
-		test( 'should update source image when given imgSize attribute', () => {
-			const gravatar = shallow( <Gravatar user={ genericUser } imgSize={ 200 } /> );
+		it( 'should update source image when given imgSize attribute', function() {
+			const gravatar = shallow(
+				<Gravatar user={ genericUser } imgSize={ 200 } />
+			);
 			const img = gravatar.find( 'img' );
 
 			expect( img.length ).to.equal( 1 );
-			expect( img.prop( 'src' ) ).to.equal(
-				`https://0.gravatar.com/avatar/${ gravatarHash }?s=200&d=mm`
-			);
+			expect( img.prop( 'src' ) ).to
+				.equal( `https://0.gravatar.com/avatar/${ gravatarHash }?s=200&d=mm` );
 			expect( img.hasClass( 'gravatar' ) ).to.equal( true );
 			expect( img.prop( 'width' ) ).to.equal( 32 );
 			expect( img.prop( 'height' ) ).to.equal( 32 );
 		} );
 
-		test( 'should serve a default image if no avatar_URL available', () => {
+		it( 'should serve a default image if no avatar_URL available', function() {
 			const noImageUser = { display_name: 'Bob The Tester' };
 			const gravatar = shallow( <Gravatar user={ noImageUser } /> );
 			const img = gravatar.find( 'img' );
 
 			expect( img.length ).to.equal( 1 );
-			expect( img.prop( 'src' ) ).to.equal( 'https://www.gravatar.com/avatar/0?s=96&d=mm' );
+			expect( img.prop( 'src' ) )
+				.to.equal( 'https://www.gravatar.com/avatar/0?s=96&d=mm' );
 			expect( img.hasClass( 'gravatar' ) ).to.equal( true );
 			expect( img.prop( 'width' ) ).to.equal( 32 );
 			expect( img.prop( 'height' ) ).to.equal( 32 );
 		} );
 
-		test( 'should allow overriding the alt attribute', () => {
-			const gravatar = shallow( <Gravatar user={ genericUser } alt="Another Alt" /> );
+		it( 'should allow overriding the alt attribute', function() {
+			const gravatar = shallow(
+				<Gravatar user={ genericUser } alt="Another Alt" />
+			);
 			const img = gravatar.find( 'img' );
 
 			expect( img.length ).to.equal( 1 );
@@ -88,22 +92,21 @@ describe( 'Gravatar', () => {
 		} );
 
 		// I believe jetpack sites could have custom avatars, so can't assume it's always a gravatar
-		test( 'should promote non-secure avatar urls to secure', () => {
+		it( 'should promote non-secure avatar urls to secure', function() {
 			const nonSecureUrlUser = { avatar_URL: 'http://www.example.com/avatar' };
 			const gravatar = shallow( <Gravatar user={ nonSecureUrlUser } /> );
 			const img = gravatar.find( 'img' );
 
 			expect( img.length ).to.equal( 1 );
-			expect( img.prop( 'src' ) ).to.equal(
-				'https://i2.wp.com/www.example.com/avatar?resize=96%2C96'
-			);
+			expect( img.prop( 'src' ) )
+				.to.equal( 'https://i2.wp.com/www.example.com/avatar?resize=96%2C96' );
 			expect( img.hasClass( 'gravatar' ) ).to.equal( true );
 			expect( img.prop( 'width' ) ).to.equal( 32 );
 			expect( img.prop( 'height' ) ).to.equal( 32 );
 		} );
 
-		describe( 'when Gravatar fails to load', () => {
-			test( 'should render a span element', () => {
+		describe( 'when Gravatar fails to load',  function() {
+			it( 'should render a span element', function() {
 				const gravatar = shallow( <Gravatar user={ genericUser } /> );
 
 				// simulate the Gravatar not loading
@@ -117,8 +120,12 @@ describe( 'Gravatar', () => {
 				expect( span.hasClass( 'is-missing' ) ).to.equal( true );
 			} );
 
-			test( 'should show temp image if it exists', () => {
-				const gravatar = shallow( <Gravatar tempImage={ 'tempImage' } user={ genericUser } /> );
+			it( 'should show temp image if it exists', function() {
+				const gravatar = shallow(
+					<Gravatar
+						tempImage={ 'tempImage' }
+						user={ genericUser } />
+				);
 
 				// simulate the Gravatar not loading
 				gravatar.setState( { failedToLoad: true } );

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import tinymce from 'tinymce/tinymce';
 import { includes, partial } from 'lodash';
 
@@ -66,8 +63,7 @@ function embedReversal( editor ) {
 		}
 
 		// If so, queue a request for reversal
-		wpcom
-			.undocumented()
+		wpcom.undocumented()
 			.site( getSelectedSiteId( store.getState() ) )
 			.embedReversal( markup )
 			.then( partial( replaceMarkup, markup ) )

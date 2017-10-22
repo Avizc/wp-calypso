@@ -1,10 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 
 /**
@@ -27,12 +23,11 @@ const BlogStickers = ( { blogId, teams, stickers } ) => {
 	return (
 		<div className="blog-stickers">
 			{ isTeamMember &&
-			stickers &&
-			stickers.length > 0 && (
+				stickers &&
+				stickers.length > 0 &&
 				<InfoPopover rootClassName="blog-stickers__popover">
 					<BlogStickersList stickers={ stickers } />
-				</InfoPopover>
-			) }
+				</InfoPopover> }
 			{ ! stickers && <QueryBlogStickers blogId={ blogId } /> }
 			{ ! teams && <QueryReaderTeams /> }
 		</div>
@@ -40,7 +35,7 @@ const BlogStickers = ( { blogId, teams, stickers } ) => {
 };
 
 BlogStickers.propTypes = {
-	blogId: PropTypes.number.isRequired,
+	blogId: React.PropTypes.number.isRequired,
 };
 
 export default connect( ( state, ownProps ) => {

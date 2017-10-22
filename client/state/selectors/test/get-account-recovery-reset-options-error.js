@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,7 +9,7 @@ import { assert } from 'chai';
 import { getAccountRecoveryResetOptionsError } from '../';
 
 describe( 'getAccountRecoveryResetOptionsError()', () => {
-	test( 'should return the error under account recovery state tree.', () => {
+	it( 'should return the error under account recovery state tree.', () => {
 		const expectedError = {
 			status: 404,
 			message: 'Something wrong!',
@@ -29,11 +27,11 @@ describe( 'getAccountRecoveryResetOptionsError()', () => {
 		assert.deepEqual( getAccountRecoveryResetOptionsError( state ), expectedError );
 	} );
 
-	test( 'should return null if no error exists.', () => {
+	it( 'should return null if no error exists.', () => {
 		const state = {
 			accountRecovery: {
 				reset: {
-					options: {},
+					options: {}
 				},
 			},
 		};

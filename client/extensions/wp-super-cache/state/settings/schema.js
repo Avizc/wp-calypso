@@ -1,4 +1,3 @@
-/** @format */
 export const itemsSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -11,7 +10,7 @@ export const itemsSchema = {
 				cache_compression: { type: 'boolean' },
 				cache_direct_pages: {
 					type: 'array',
-					items: { type: 'string' },
+					items: { type: 'string' }
 				},
 				cache_disable_locking: { type: 'boolean' },
 				cache_gc_email_me: { type: 'boolean' },
@@ -25,7 +24,6 @@ export const itemsSchema = {
 				cache_mod_rewrite: { type: 'boolean' },
 				cache_next_gc: { type: 'integer' },
 				cache_path: { type: 'string' },
-				cache_path_url: { type: 'string' },
 				cache_rebuild: { type: 'boolean' },
 				cache_rejected_uri: { type: 'string' },
 				cache_rejected_user_agent: { type: 'string' },
@@ -64,8 +62,8 @@ export const itemsSchema = {
 						pages: { type: 'boolean' },
 						search: { type: 'boolean' },
 						single: { type: 'boolean' },
-						tag: { type: 'boolean' },
-					},
+						tag: { type: 'boolean' }
+					}
 				},
 				post_count: { type: 'string' },
 				preload_email_volume: { type: 'string' },
@@ -82,7 +80,7 @@ export const itemsSchema = {
 				wp_super_cache_front_page_clear: { type: 'boolean' },
 				wp_super_cache_front_page_text: { type: 'string' },
 				wp_super_cache_front_page_notification: { type: 'boolean' },
-			},
-		},
-	},
+			}
+		}
+	}
 };

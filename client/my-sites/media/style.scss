@@ -2,9 +2,7 @@
 	max-width: 100%;
 
 	.media-library__list {
-		@include breakpoint( ">660px" ) {
-			padding: 0;
-		}
+		padding: 0;
 	}
 }
 

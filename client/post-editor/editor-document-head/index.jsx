@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -47,7 +43,9 @@ function EditorDocumentHead( { translate, siteId, type, typeObject, newPost } ) 
 
 	return (
 		<div>
-			{ siteId && 'page' !== type && 'post' !== type && <QueryPostTypes siteId={ siteId } /> }
+			{ siteId && 'page' !== type && 'post' !== type && (
+				<QueryPostTypes siteId={ siteId } />
+			) }
 			<DocumentHead title={ title } />
 		</div>
 	);
@@ -58,10 +56,10 @@ EditorDocumentHead.propTypes = {
 	siteId: PropTypes.number,
 	type: PropTypes.string,
 	typeObject: PropTypes.object,
-	newPost: PropTypes.bool,
+	newPost: PropTypes.bool
 };
 
-export default connect( state => {
+export default connect( ( state ) => {
 	const siteId = getSelectedSiteId( state );
 	const postId = getEditorPostId( state );
 	const type = getEditedPostValue( state, siteId, postId, 'type' );
@@ -70,6 +68,6 @@ export default connect( state => {
 		siteId,
 		type,
 		typeObject: getPostType( state, siteId, type ),
-		newPost: isEditorNewPost( state ),
+		newPost: isEditorNewPost( state )
 	};
 } )( localize( EditorDocumentHead ) );

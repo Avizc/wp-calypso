@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,9 +7,21 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import { timezonesReceive } from '../actions';
-import timezonesReducer, { byContinents, labels, rawOffsets } from '../reducer';
 import { useSandbox } from 'test/helpers/use-sinon';
+
+import timezonesReducer, {
+	byContinents,
+	labels,
+	isRequesting,
+	rawOffsets,
+} from '../reducer';
+
+import {
+	requestTimezones,
+	timezonesRequestSuccess,
+	timezonesReceive,
+	timezonesRequestFailure,
+} from '../actions';
 
 describe( 'reducer', () => {
 	let sandbox;
@@ -21,20 +31,21 @@ describe( 'reducer', () => {
 		sandbox.stub( console, 'warn' );
 	} );
 
-	test( 'should export expected reducer keys', () => {
+	it( 'should export expected reducer keys', () => {
 		expect( timezonesReducer( undefined, {} ) ).to.have.keys( [
 			'byContinents',
 			'labels',
 			'rawOffsets',
+			'isRequesting'
 		] );
 	} );
 
 	describe( '#rawOffsets()', () => {
-		test( 'should default to an empty action object', () => {
+		it( 'should default to an empty action object', () => {
 			expect( rawOffsets( undefined, {} ) ).to.eql( {} );
 		} );
 
-		test( 'should index `rawOffsets` state', () => {
+		it( 'should index `rawOffsets` state', () => {
 			const initialState = undefined;
 
 			const action = timezonesReceive( {
@@ -42,7 +53,7 @@ describe( 'reducer', () => {
 					'UTC+0': 'UTC',
 					'UTC-12': 'UTC-12',
 					'UTC-11.5': 'UTC-11:30',
-				},
+				}
 			} );
 
 			const expectedState = {
@@ -55,7 +66,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should override `rawOffsets` state', () => {
+		it( 'should override `rawOffsets` state', () => {
 			const initialState = {
 				'UTC+13.75': 'UTC+13:45',
 				'UTC+14': 'UTC+14',
@@ -67,7 +78,7 @@ describe( 'reducer', () => {
 					'UTC+0': 'UTC',
 					'UTC-12': 'UTC-12',
 					'UTC-11.5': 'UTC-11:30',
-				},
+				}
 			} );
 
 			const expectedState = {
@@ -80,12 +91,12 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should persist state', () => {
+		it( 'should persist state', () => {
 			const initialState = {
 				rawOffsets: {
 					'UTC+13.75': 'UTC+13:45',
 					'UTC+14': 'UTC+14',
-				},
+				}
 			};
 			deepFreeze( initialState );
 
@@ -96,7 +107,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should load persisted state', () => {
+		it( 'should load persisted state', () => {
 			const initialState = {
 				'UTC+0': 'UTC',
 				'UTC+13.75': 'UTC+13:45',
@@ -110,7 +121,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should not load invalid persisted state', () => {
+		it( 'should not load invalid persisted state', () => {
 			const initialStateONE = { rawOffsets: { foo: 'bar' } };
 			deepFreeze( initialStateONE );
 			const newStateONE = rawOffsets( initialStateONE, { type: 'DESERIALIZE' } );
@@ -126,11 +137,11 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#labels()', () => {
-		test( 'should default to an empty action object', () => {
+		it( 'should default to an empty action object', () => {
 			expect( rawOffsets( undefined, {} ) ).to.eql( {} );
 		} );
 
-		test( 'should index `labels` state', () => {
+		it( 'should index `labels` state', () => {
 			const initialState = undefined;
 
 			const action = timezonesReceive( {
@@ -138,7 +149,7 @@ describe( 'reducer', () => {
 					'Asia/Aqtobe': 'Aqtobe',
 					'America/Boa_Vista': 'Boa Vista',
 					'Indian/Comoro': 'Comoro',
-				},
+				}
 			} );
 
 			const expectedState = {
@@ -151,7 +162,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should override `labels` state', () => {
+		it( 'should override `labels` state', () => {
 			const initialState = {
 				'Australia/Currie': 'Currie',
 				'Indian/Mauritius': 'Mauritius',
@@ -163,7 +174,7 @@ describe( 'reducer', () => {
 					'Asia/Aqtobe': 'Aqtobe',
 					'America/Boa_Vista': 'Boa Vista',
 					'Indian/Comoro': 'Comoro',
-				},
+				}
 			} );
 
 			const expectedState = {
@@ -176,13 +187,13 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should persist state', () => {
+		it( 'should persist state', () => {
 			const initialState = {
 				labels: {
 					'Asia/Aqtobe': 'Aqtobe',
 					'America/Boa_Vista': 'Boa Vista',
 					'Indian/Comoro': 'Comoro',
-				},
+				}
 			};
 			deepFreeze( initialState );
 
@@ -193,7 +204,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should load persisted state', () => {
+		it( 'should load persisted state', () => {
 			const initialState = {
 				'Asia/Aqtobe': 'Aqtobe',
 				'America/Boa_Vista': 'Boa Vista',
@@ -207,7 +218,7 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should not load invalid persisted state', () => {
+		it( 'should not load invalid persisted state', () => {
 			const initialStateONE = { labels: { foo: 'bar' } };
 			deepFreeze( initialStateONE );
 			const newStateONE = labels( initialStateONE, { type: 'DESERIALIZE' } );
@@ -216,62 +227,102 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#byContinents()', () => {
-		test( 'should default to an empty action object', () => {
+		it( 'should default to an empty action object', () => {
 			expect( rawOffsets( undefined, {} ) ).to.eql( {} );
 		} );
 
-		test( 'should index `rawOffsets` state', () => {
+		it( 'should index `rawOffsets` state', () => {
 			const initialState = undefined;
 
 			const action = timezonesReceive( {
 				byContinents: {
-					Asia: [ 'Asia/Aqtobe' ],
-					America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-					Indian: [ 'Indian/Comoro' ],
+					Asia: [
+						'Asia/Aqtobe',
+					],
+					America: [
+						'America/Blanc-Sablon',
+						'America/Boa_Vista',
+					],
+					Indian: [
+						'Indian/Comoro',
+					],
 				},
+
 			} );
 
 			const expectedState = {
-				Asia: [ 'Asia/Aqtobe' ],
-				America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-				Indian: [ 'Indian/Comoro' ],
+				Asia: [
+					'Asia/Aqtobe',
+				],
+				America: [
+					'America/Blanc-Sablon',
+					'America/Boa_Vista',
+				],
+				Indian: [
+					'Indian/Comoro',
+				],
 			};
 
 			const newState = byContinents( initialState, action );
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should override timezones.byContinents state', () => {
+		it( 'should override timezones.byContinents state', () => {
 			const initialState = {
-				Pacific: [ 'Pacific/Funafuti' ],
+				Pacific: [
+					'Pacific/Funafuti',
+				]
 			};
 			deepFreeze( initialState );
 
 			const action = timezonesReceive( {
 				byContinents: {
-					Asia: [ 'Asia/Aqtobe' ],
-					America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-					Indian: [ 'Indian/Comoro' ],
+					Asia: [
+						'Asia/Aqtobe',
+					],
+					America: [
+						'America/Blanc-Sablon',
+						'America/Boa_Vista',
+					],
+					Indian: [
+						'Indian/Comoro',
+					],
 				},
+
 			} );
 
 			const expectedState = {
-				Asia: [ 'Asia/Aqtobe' ],
-				America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-				Indian: [ 'Indian/Comoro' ],
+				Asia: [
+					'Asia/Aqtobe',
+				],
+				America: [
+					'America/Blanc-Sablon',
+					'America/Boa_Vista',
+				],
+				Indian: [
+					'Indian/Comoro',
+				],
 			};
 
 			const newState = byContinents( initialState, action );
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should persist state', () => {
+		it( 'should persist state', () => {
 			const initialState = {
 				byContinents: {
-					Asia: [ 'Asia/Aqtobe' ],
-					America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-					Indian: [ 'Indian/Comoro' ],
+					Asia: [
+						'Asia/Aqtobe',
+					],
+					America: [
+						'America/Blanc-Sablon',
+						'America/Boa_Vista',
+					],
+					Indian: [
+						'Indian/Comoro',
+					],
 				},
+
 			};
 			deepFreeze( initialState );
 
@@ -282,11 +333,18 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should load persisted state', () => {
+		it( 'should load persisted state', () => {
 			const initialState = {
-				Asia: [ 'Asia/Aqtobe' ],
-				America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-				Indian: [ 'Indian/Comoro' ],
+				Asia: [
+					'Asia/Aqtobe',
+				],
+				America: [
+					'America/Blanc-Sablon',
+					'America/Boa_Vista',
+				],
+				Indian: [
+					'Indian/Comoro',
+				],
 			};
 			deepFreeze( initialState );
 
@@ -296,11 +354,59 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should not load invalid persisted state', () => {
+		it( 'should not load invalid persisted state', () => {
 			const initialStateONE = { byContinents: { foo: 'bar' } };
 			deepFreeze( initialStateONE );
 			const newStateONE = byContinents( initialStateONE, { type: 'DESERIALIZE' } );
 			expect( newStateONE ).to.eql( {} );
+		} );
+	} );
+
+	describe( '#isRequesting()', () => {
+		it( 'should default `isRequesting` to an empty action object', () => {
+			expect( isRequesting( undefined, {} ) ).to.eql( false );
+		} );
+
+		describe( 'requestTimezones() action', () => {
+			it( 'should index `isRequesting` state', () => {
+				const action = requestTimezones();
+				const newState = isRequesting( undefined, action );
+				expect( newState ).to.eql( true );
+			} );
+
+			it( 'should override `isRequesting` state', () => {
+				const action = requestTimezones();
+				const newState = isRequesting( false, action );
+				expect( newState ).to.eql( true );
+			} );
+		} );
+
+		describe( 'timezonesRequestSuccess() action', () => {
+			it( 'should index `isRequesting` state', () => {
+				const action = timezonesRequestSuccess();
+				const newState = isRequesting( undefined, action );
+				expect( newState ).to.eql( false );
+			} );
+
+			it( 'should override `isRequesting` state', () => {
+				const action = timezonesRequestSuccess();
+				const newState = isRequesting( true, action );
+				expect( newState ).to.eql( false );
+			} );
+		} );
+
+		describe( 'timezonesRequestFailure() action', () => {
+			it( 'should index `isRequesting` state', () => {
+				const action = timezonesRequestFailure();
+				const newState = isRequesting( undefined, action );
+				expect( newState ).to.eql( false );
+			} );
+
+			it( 'should override `isRequesting` state', () => {
+				const action = timezonesRequestFailure();
+				const newState = isRequesting( true, action );
+				expect( newState ).to.eql( false );
+			} );
 		} );
 	} );
 } );

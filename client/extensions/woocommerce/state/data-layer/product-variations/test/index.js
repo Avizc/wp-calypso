@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -10,22 +8,24 @@ import { spy, match } from 'sinon';
  * Internal dependencies
  */
 import {
-	handleProductVariationCreate,
-	handleProductVariationDelete,
-	handleProductVariationUpdate,
-	handleProductVariationsRequest,
-} from '../';
-import { WOOCOMMERCE_API_REQUEST } from 'woocommerce/state/action-types';
-import {
 	createProductVariation,
 	deleteProductVariation,
 	fetchProductVariations,
 	updateProductVariation,
 } from 'woocommerce/state/sites/product-variations/actions';
+import {
+	handleProductVariationCreate,
+	handleProductVariationDelete,
+	handleProductVariationUpdate,
+	handleProductVariationsRequest,
+} from '../';
+import {
+	WOOCOMMERCE_API_REQUEST,
+} from 'woocommerce/state/action-types';
 
 describe( 'handlers', () => {
 	describe( '#handleProductVariationsRequest', () => {
-		test( 'should dispatch a get action', () => {
+		it( 'should dispatch a get action', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -47,7 +47,7 @@ describe( 'handlers', () => {
 		} );
 	} );
 
-	test( 'should dispatch a success action with extra properties', () => {
+	it( 'should dispatch a success action with extra properties', () => {
 		const store = {
 			dispatch: spy(),
 		};
@@ -79,7 +79,7 @@ describe( 'handlers', () => {
 		);
 	} );
 
-	test( 'should dispatch a success function with extra properties', () => {
+	it( 'should dispatch a success function with extra properties', () => {
 		const store = {
 			dispatch: spy(),
 		};
@@ -114,14 +114,16 @@ describe( 'handlers', () => {
 	} );
 
 	describe( '#handleProductVariationCreate', () => {
-		test( 'should dispatch a post action', () => {
+		it( 'should dispatch a post action', () => {
 			const store = {
 				dispatch: spy(),
 			};
 
 			const variation1 = {
 				id: { index: 10 },
-				attributes: [ { id: 9, option: 'Black' } ],
+				attributes: [
+					{ id: 9, option: 'Black' }
+				],
 			};
 			const successAction = { type: '%%success%%' };
 			const failureAction = { type: '%%failure%%' };
@@ -140,14 +142,16 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
 
 			const variation1 = {
 				id: { index: 10 },
-				attributes: [ { id: 9, option: 'Black' } ],
+				attributes: [
+					{ id: 9, option: 'Black' }
+				],
 			};
 
 			const successAction = { type: '%%success%%' };
@@ -174,14 +178,16 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra properties', () => {
+		it( 'should dispatch a success function with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
 
 			const variation1 = {
 				id: { index: 10 },
-				attributes: [ { id: 9, option: 'Black' } ],
+				attributes: [
+					{ id: 9, option: 'Black' }
+				],
 			};
 
 			const successAction = ( dispatch, getState, { productId, sentData, receivedData } ) => {
@@ -212,14 +218,16 @@ describe( 'handlers', () => {
 	} );
 
 	describe( '#handleProductVariationUpdate', () => {
-		test( 'should dispatch a put action', () => {
+		it( 'should dispatch a put action', () => {
 			const store = {
 				dispatch: spy(),
 			};
 
 			const variation1 = {
 				id: 202,
-				attributes: [ { id: 9, option: 'Black' } ],
+				attributes: [
+					{ id: 9, option: 'Black' }
+				],
 			};
 			const successAction = { type: '%%success%%' };
 			const failureAction = { type: '%%failure%%' };
@@ -238,14 +246,16 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
 
 			const variation1 = {
 				id: 202,
-				attributes: [ { id: 9, option: 'Black' } ],
+				attributes: [
+					{ id: 9, option: 'Black' }
+				],
 			};
 
 			const successAction = { type: '%%success%%' };
@@ -272,14 +282,16 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra properties', () => {
+		it( 'should dispatch a success function with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
 
 			const variation1 = {
 				id: 202,
-				attributes: [ { id: 9, option: 'Black' } ],
+				attributes: [
+					{ id: 9, option: 'Black' }
+				],
 			};
 
 			const successAction = ( dispatch, getState, { productId, sentData, receivedData } ) => {
@@ -310,7 +322,7 @@ describe( 'handlers', () => {
 	} );
 
 	describe( '#handleProductVariationDelete', () => {
-		test( 'should dispatch a delete action', () => {
+		it( 'should dispatch a delete action', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -332,7 +344,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -361,7 +373,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra properties', () => {
+		it( 'should dispatch a success function with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};

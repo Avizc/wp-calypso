@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { take, map, values } from 'lodash';
 
@@ -19,11 +17,15 @@ const ReaderFullPostHeaderTags = ( { tags } ) => {
 		);
 	} );
 
-	return <ul className="reader-full-post__header-tag-list">{ listItems }</ul>;
+	return (
+		<ul className="reader-full-post__header-tag-list">
+			{ listItems }
+		</ul>
+	);
 };
 
 ReaderFullPostHeaderTags.propTypes = {
-	tags: PropTypes.object.isRequired,
+	tags: React.PropTypes.object.isRequired,
 };
 
 export default ReaderFullPostHeaderTags;

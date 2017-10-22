@@ -1,13 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
-import { identity, includes, noop, pull } from 'lodash';
-import PropTypes from 'prop-types';
+import {
+	identity,
+	includes,
+	noop,
+	pull,
+} from 'lodash';
 
 /**
  * Internal dependencies
@@ -18,42 +19,35 @@ import Search from 'components/search';
 import TrackComponentView from 'lib/analytics/track-component-view';
 import PlanStorage from 'blocks/plan-storage';
 import FilterItem from './filter-item';
-import DataSource from './data-source';
+import TitleItem from './title-item';
 
 export class MediaLibraryFilterBar extends Component {
 	static propTypes = {
-		basePath: PropTypes.string,
-		enabledFilters: PropTypes.arrayOf( PropTypes.string ),
-		filter: PropTypes.string,
-		filterRequiresUpgrade: PropTypes.bool,
-		search: PropTypes.string,
-		source: PropTypes.string,
-		site: PropTypes.object,
-		onFilterChange: PropTypes.func,
-		onSearch: PropTypes.func,
-		translate: PropTypes.func,
-		post: PropTypes.bool,
-		isConnected: PropTypes.bool,
+		basePath: React.PropTypes.string,
+		enabledFilters: React.PropTypes.arrayOf( React.PropTypes.string ),
+		filter: React.PropTypes.string,
+		filterRequiresUpgrade: React.PropTypes.bool,
+		search: React.PropTypes.string,
+		source: React.PropTypes.string,
+		site: React.PropTypes.object,
+		onFilterChange: React.PropTypes.func,
+		onSearch: React.PropTypes.func,
+		translate: React.PropTypes.func,
+		post: React.PropTypes.bool
 	};
 
-	static defaultProps = {
+	static defaultProps ={
 		filter: '',
 		basePath: '/media',
 		onFilterChange: noop,
-		onSourceChange: noop,
 		onSearch: noop,
 		translate: identity,
 		source: '',
-		post: false,
-		isConnected: true,
+		post: false
 	};
 
 	getSearchPlaceholderText() {
-		const { filter, source, translate } = this.props;
-		if ( 'google_photos' === source ) {
-			return translate( 'Search your Google library…' );
-		}
-
+		const { filter, translate } = this.props;
 		switch ( filter ) {
 			case 'this-post':
 				return translate( 'Search media uploaded to this post…' );
@@ -98,6 +92,16 @@ export class MediaLibraryFilterBar extends Component {
 		this.props.onFilterChange( filter );
 	};
 
+	renderSectionTitle() {
+		const { translate } = this.props;
+
+		if ( this.props.source === 'google_photos' ) {
+			return <TitleItem>{ translate( 'Recent photos from Google' ) }</TitleItem>;
+		}
+
+		return null;
+	}
+
 	renderTabItems() {
 		if ( this.props.source !== '' ) {
 			return null;
@@ -111,49 +115,41 @@ export class MediaLibraryFilterBar extends Component {
 
 		return (
 			<SectionNavTabs>
-				{ tabs.map( filter => (
-					<FilterItem
-						key={ 'filter-tab-' + filter }
-						value={ filter }
-						selected={ this.props.filter === filter }
-						onChange={ this.changeFilter }
-						disabled={ this.isFilterDisabled( filter ) }
-					>
-						{ this.getFilterLabel( filter ) }
-					</FilterItem>
-				) ) }
+				{
+					tabs.map( filter =>
+						<FilterItem
+							key={ 'filter-tab-' + filter }
+							value={ filter }
+							selected={ this.props.filter === filter }
+							onChange={ this.changeFilter }
+							disabled={ this.isFilterDisabled( filter ) }
+						>
+							{ this.getFilterLabel( filter ) }
+						</FilterItem>
+					)
+				}
 			</SectionNavTabs>
 		);
 	}
 
 	renderSearchSection() {
-		if ( this.props.filterRequiresUpgrade || ! this.props.isConnected ) {
+		if ( this.props.filterRequiresUpgrade ) {
 			return null;
 		}
 
-		const isPinned = this.props.source === '';
-
-		// Set the 'key' value so if the source is changed the component is refreshed, forcing it to clear the existing state
 		return (
 			<Search
-				key={ this.props.source }
 				analyticsGroup="Media"
-				pinned={ isPinned }
+				pinned
 				fitsContainer
 				onSearch={ this.props.onSearch }
 				initialValue={ this.props.search }
 				placeholder={ this.getSearchPlaceholderText() }
-				delaySearch={ true }
-			/>
+				delaySearch={ true } />
 		);
 	}
 
 	renderPlanStorage() {
-		//hide the plan storage when viewing external sources
-		if ( this.props.source ) {
-			return null;
-		}
-
 		const eventName = 'calypso_upgrade_nudge_impression';
 		const eventProperties = { cta_name: 'plan-media-storage' };
 		return (
@@ -164,16 +160,10 @@ export class MediaLibraryFilterBar extends Component {
 	}
 
 	render() {
-		// Dropdown is disabled when viewing any external data source
 		return (
 			<div className="media-library__filter-bar">
-				<DataSource source={ this.props.source } onSourceChange={ this.props.onSourceChange } />
-
-				<SectionNav
-					selectedText={ this.getFilterLabel( this.props.filter ) }
-					hasSearch={ true }
-					allowDropdown={ ! this.props.source }
-				>
+				<SectionNav selectedText={ this.getFilterLabel( this.props.filter ) } hasSearch={ true }>
+					{ this.renderSectionTitle() }
 					{ this.renderTabItems() }
 					{ this.renderSearchSection() }
 				</SectionNav>

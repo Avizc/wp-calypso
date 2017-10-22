@@ -1,67 +1,61 @@
-/** @format */
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import PureRenderMixin from 'react-pure-render/mixin';
-import { omit, noop } from 'lodash';
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' );
 
-const TokenInput = React.createClass( {
+var TokenInput = React.createClass( {
 	propTypes: {
-		disabled: PropTypes.bool,
-		hasFocus: PropTypes.bool,
-		onChange: PropTypes.func,
-		onBlur: PropTypes.func,
-		placeholder: PropTypes.string,
-		value: PropTypes.string,
+		onChange: React.PropTypes.func,
+		onBlur: React.PropTypes.func,
+		value: React.PropTypes.string,
+		placeholder: React.PropTypes.string,
+		disabled: React.PropTypes.bool
 	},
 
 	getDefaultProps: function() {
 		return {
-			disabled: false,
-			hasFocus: false,
-			onChange: noop,
-			onBlur: noop,
-			placeholder: '',
+			onChange: function() {},
+			onBlur: function() {},
 			value: '',
+			disabled: false,
+			placeholder: '',
 		};
 	},
 
 	mixins: [ PureRenderMixin ],
 
-	componentDidUpdate: function() {
-		if ( this.props.hasFocus ) {
-			this.textInput.focus();
-		}
-	},
-
 	render: function() {
-		const { placeholder, value } = this.props;
-		const size =
-			( ( value.length === 0 && placeholder && placeholder.length ) || value.length ) + 1;
+		const props = { ...this.props, onChange: this._onChange };
+		const { value, placeholder } = props;
+		const size = ( ( value.length === 0 && placeholder && placeholder.length ) || value.length ) + 1;
 
 		return (
 			<input
-				className="token-field__input"
-				onChange={ this.onChange }
-				ref={ this.setTextInput }
-				size={ size }
+				ref="input"
 				type="text"
-				{ ...omit( this.props, [ 'hasFocus', 'onChange' ] ) }
+				{ ...props }
+				size={ size }
+				className="token-field__input"
 			/>
 		);
 	},
 
-	setTextInput: function( input ) {
-		this.textInput = input;
+	focus: function() {
+		if ( this.isMounted() ) {
+			this.refs.input.focus();
+		}
 	},
 
-	onChange: function( event ) {
-		this.props.onChange( {
-			value: event.target.value,
-		} );
+	hasFocus: function() {
+		return this.isMounted() && this.refs.input === document.activeElement;
 	},
+
+	_onChange: function( event ) {
+		this.props.onChange( {
+			value: event.target.value
+		} );
+	}
 } );
 
-export default TokenInput;
+module.exports = TokenInput;

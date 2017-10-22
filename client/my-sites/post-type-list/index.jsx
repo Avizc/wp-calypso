@@ -1,25 +1,27 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
-import { isEqual, range, throttle } from 'lodash';
+import isEqual from 'lodash/isEqual';
+import includes from 'lodash/includes';
+import difference from 'lodash/difference';
+import range from 'lodash/range';
+import size from 'lodash/size';
+import AutoSizer from 'react-virtualized/AutoSizer';
+import WindowScroller from 'react-virtualized/WindowScroller';
+import List from 'react-virtualized/List';
 
 /**
  * Internal dependencies
  */
 import QueryPosts from 'components/data/query-posts';
-import { DEFAULT_POST_QUERY } from 'lib/query-manager/post/constants';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import {
-	isRequestingSitePostsForQueryIgnoringPage,
+	isRequestingSitePostsForQuery,
 	getSitePostsForQueryIgnoringPage,
-	getSitePostsLastPageForQuery,
+	getSitePostsLastPageForQuery
 } from 'state/posts/selectors';
 import PostItem from 'blocks/post-item';
 import PostTypeListEmptyContent from './empty-content';
@@ -27,166 +29,143 @@ import PostTypeListEmptyContent from './empty-content';
 /**
  * Constants
  */
-// When this many pixels or less are below the viewport, begin loading the next
-// page of items.
-const LOAD_NEXT_PAGE_THRESHOLD_PIXELS = 400;
+const POST_ROW_HEIGHT = 86;
+const DEFAULT_POSTS_PER_PAGE = 20;
+const LOAD_OFFSET = 10;
 
 class PostTypeList extends Component {
 	static propTypes = {
-		// Props
 		query: PropTypes.object,
-		largeTitles: PropTypes.bool,
-		wrapTitles: PropTypes.bool,
-		scrollContainer: PropTypes.object,
-
-		// Connected props
 		siteId: PropTypes.number,
-		posts: PropTypes.array,
-		isRequestingPosts: PropTypes.bool,
 		lastPage: PropTypes.number,
+		posts: PropTypes.array,
+		requestingLastPage: PropTypes.bool
 	};
 
 	constructor() {
 		super( ...arguments );
 
-		this.renderPost = this.renderPost.bind( this );
+		this.renderPostRow = this.renderPostRow.bind( this );
+		this.cellRendererWrapper = this.cellRendererWrapper.bind( this );
 		this.renderPlaceholder = this.renderPlaceholder.bind( this );
+		this.setRequestedPages = this.setRequestedPages.bind( this );
 
-		this.maybeLoadNextPage = this.maybeLoadNextPage.bind( this );
-		this.scrollListener = throttle( this.maybeLoadNextPage, 100 );
-		window.addEventListener( 'scroll', this.scrollListener );
-
-		const maxRequestedPage = this.estimatePageCountFromPosts( this.props.posts );
 		this.state = {
-			maxRequestedPage,
+			requestedPages: this.getInitialRequestedPages( this.props )
 		};
 	}
 
 	componentWillReceiveProps( nextProps ) {
-		if (
-			! isEqual( this.props.query, nextProps.query ) ||
-			! isEqual( this.props.siteId, nextProps.siteId )
-		) {
-			const maxRequestedPage = this.estimatePageCountFromPosts( nextProps.posts );
+		if ( ! isEqual( this.props.query, nextProps.query ) ) {
 			this.setState( {
-				maxRequestedPage,
+				requestedPages: this.getInitialRequestedPages( nextProps )
 			} );
 		}
 	}
 
-	componentDidUpdate( prevProps ) {
-		if ( prevProps.isRequestingPosts && ! this.props.isRequestingPosts ) {
-			// We just finished loading a page.  If the bottom of the list is
-			// still visible on screen (or almost visible), then we should go
-			// ahead and load the next page.
-			this.maybeLoadNextPage();
-		}
-	}
-
-	componentDidMount() {
-		this.maybeLoadNextPage();
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener( 'scroll', this.scrollListener );
-		this.scrollListener.cancel(); // Cancel any pending scroll events
-	}
-
-	estimatePageCountFromPosts( posts ) {
-		// When loading posts from persistent storage, we want to avoid making
-		// a bunch of sequential requests when the user scrolls down to the end
-		// of the list.  However, we want to still request the posts, in case
-		// some data has changed since the last page reload.  This will spawn a
-		// number of concurrent requests for different pages of the posts list.
-
-		if ( ! posts || ! posts.length ) {
-			return 1;
+	getInitialRequestedPages( props ) {
+		// If we have no posts or we're otherwise not expecting any posts to be
+		// rendered, request the first page, since setRequestedPages won't be
+		// called if row count is 0.
+		if ( 0 === size( props.posts ) ) {
+			return [ 1 ];
 		}
 
-		const query = this.props.query || {};
-		const postsPerPage = query.number || DEFAULT_POST_QUERY.number;
-		const pageCount = Math.ceil( posts.length / postsPerPage );
-
-		// Avoid making more than 5 concurrent requests on page load.
-		return Math.min( pageCount, 5 );
+		return [];
 	}
 
-	getScrollTop() {
-		const { scrollContainer } = this.props;
-		if ( ! scrollContainer ) {
-			return null;
-		}
-		if ( scrollContainer === document.body ) {
-			return 'scrollY' in window ? window.scrollY : document.documentElement.scrollTop;
-		}
-		return scrollContainer.scrollTop;
+	getPageForIndex( index ) {
+		const { query, lastPage } = this.props;
+		const perPage = query.number || DEFAULT_POSTS_PER_PAGE;
+		const page = Math.ceil( index / perPage );
+
+		return Math.max( Math.min( page, lastPage || Infinity ), 1 );
 	}
 
-	maybeLoadNextPage() {
-		const { scrollContainer, lastPage, isRequestingPosts } = this.props;
-		if ( ! scrollContainer ) {
+	setRequestedPages( { startIndex, stopIndex } ) {
+		if ( ! this.props.query ) {
 			return;
 		}
-		const scrollTop = this.getScrollTop();
-		const { scrollHeight, clientHeight } = scrollContainer;
-		if (
-			typeof scrollTop !== 'number' ||
-			typeof scrollHeight !== 'number' ||
-			typeof clientHeight !== 'number'
-		) {
+
+		const { requestedPages } = this.state;
+		const pagesToRequest = difference( range(
+			this.getPageForIndex( startIndex - LOAD_OFFSET ),
+			this.getPageForIndex( stopIndex + LOAD_OFFSET ) + 1
+		), requestedPages );
+
+		if ( ! pagesToRequest.length ) {
 			return;
 		}
-		const pixelsBelowViewport = scrollHeight - scrollTop - clientHeight;
-		const { maxRequestedPage } = this.state;
-		if (
-			pixelsBelowViewport <= LOAD_NEXT_PAGE_THRESHOLD_PIXELS &&
-			maxRequestedPage < lastPage &&
-			! isRequestingPosts
-		) {
-			this.setState( {
-				maxRequestedPage: maxRequestedPage + 1,
-			} );
-		}
+
+		this.setState( {
+			requestedPages: requestedPages.concat( pagesToRequest )
+		} );
+	}
+
+	isLastPage() {
+		const { lastPage, requestingLastPage } = this.props;
+		const { requestedPages } = this.state;
+
+		return includes( requestedPages, lastPage ) && ! requestingLastPage;
 	}
 
 	renderPlaceholder() {
-		return <PostItem key="placeholder" largeTitle={ this.props.largeTitles } />;
+		return <PostItem key="placeholder" />;
 	}
 
-	renderPost( post ) {
-		const globalId = post.global_ID;
-		const { query } = this.props;
+	renderPostRow( { index } ) {
+		const { global_ID: globalId } = this.props.posts[ index ];
+		return <PostItem key={ globalId } globalId={ globalId } />;
+	}
 
+	cellRendererWrapper( { key, style, ...rest } ) {
 		return (
-			<PostItem
-				key={ globalId }
-				globalId={ globalId }
-				largeTitle={ this.props.largeTitles }
-				wrapTitle={ this.props.wrapTitles }
-				singleUserQuery={ query && !! query.author }
-			/>
+			<div key={ key } style={ style }>
+				{ this.renderPostRow( rest ) }
+			</div>
 		);
 	}
 
 	render() {
-		const { query, siteId, posts, isRequestingPosts, lastPage } = this.props;
-		const { maxRequestedPage } = this.state;
-		const isLoadedAndEmpty = query && posts && ! posts.length && ! isRequestingPosts;
+		const { query, siteId, posts } = this.props;
+		const isEmpty = query && posts && ! posts.length && this.isLastPage();
 		const classes = classnames( 'post-type-list', {
-			'is-empty': isLoadedAndEmpty,
+			'is-empty': isEmpty
 		} );
 
 		return (
 			<div className={ classes }>
-				{ query &&
-					range( 1, maxRequestedPage + 1 ).map( page => (
-						<QueryPosts key={ `query-${ page }` } siteId={ siteId } query={ { ...query, page } } />
-					) ) }
-				{ posts && posts.map( this.renderPost ) }
-				{ isLoadedAndEmpty && (
-					<PostTypeListEmptyContent type={ query.type } status={ query.status } />
+				{ query && this.state.requestedPages.map( ( page ) => (
+					<QueryPosts
+						key={ `query-${ page }` }
+						siteId={ siteId }
+						query={ { ...query, page } } />
+				) ) }
+				{ isEmpty && (
+					<PostTypeListEmptyContent
+						type={ query.type }
+						status={ query.status } />
 				) }
-				{ ( maxRequestedPage < lastPage || isRequestingPosts ) && this.renderPlaceholder() }
+				{ ! isEmpty && (
+					<WindowScroller key={ JSON.stringify( query ) }>
+						{ ( { height, scrollTop } ) => (
+							<AutoSizer disableHeight>
+								{ ( { width } ) => (
+									<List
+										autoHeight
+										scrollTop={ scrollTop }
+										height={ height }
+										width={ width }
+										onRowsRendered={ this.setRequestedPages }
+										rowRenderer={ this.cellRendererWrapper }
+										rowHeight={ POST_ROW_HEIGHT }
+										rowCount={ size( this.props.posts ) } />
+								) }
+							</AutoSizer>
+						) }
+					</WindowScroller>
+				) }
+				{ ! this.isLastPage() && this.renderPlaceholder() }
 			</div>
 		);
 	}
@@ -198,8 +177,8 @@ export default connect( ( state, ownProps ) => {
 
 	return {
 		siteId,
-		posts: getSitePostsForQueryIgnoringPage( state, siteId, ownProps.query ),
-		isRequestingPosts: isRequestingSitePostsForQueryIgnoringPage( state, siteId, ownProps.query ),
 		lastPage,
+		posts: getSitePostsForQueryIgnoringPage( state, siteId, ownProps.query ),
+		requestingLastPage: isRequestingSitePostsForQuery( state, siteId, { ...ownProps.query, page: lastPage } )
 	};
 } )( PostTypeList );

@@ -1,14 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
 import React from 'react';
-import { noop, startsWith } from 'lodash';
+import noop from 'lodash/noop';
 import page from 'page';
+import startsWith from 'lodash/startsWith';
 
 /**
  * Internal dependencies
@@ -17,12 +13,13 @@ import Dialog from 'components/dialog';
 import FormButton from 'components/forms/form-button';
 import { getSiteFragment } from 'lib/route/path';
 
-const EditorTrashedDialog = React.createClass( {
+export default React.createClass( {
+
 	displayName: 'EditorTrashedDialog',
 
 	getInitialState() {
 		return {
-			isPage: this.isPage(),
+			isPage: this.isPage()
 		};
 	},
 
@@ -33,26 +30,30 @@ const EditorTrashedDialog = React.createClass( {
 	getDefaultProps() {
 		return {
 			onClose: noop,
-			onSave: noop,
+			onSave: noop
 		};
 	},
 
 	propTypes: {
-		onClose: PropTypes.func,
-		onSave: PropTypes.func,
+		onClose: React.PropTypes.func,
+		onSave: React.PropTypes.func
 	},
 
 	getDialogButtons() {
-		const newText = this.state.isPage
-			? this.props.translate( 'New Page' )
-			: this.props.translate( 'New Post' );
+		const newText = this.state.isPage ? this.translate( 'New Page' ) : this.translate( 'New Post' );
 		return [
-			<FormButton key="startNewPage" isPrimary={ true } onClick={ this.startNewPage }>
-				{ newText }
+			<FormButton
+				key="startNewPage"
+				isPrimary={ true }
+				onClick={ this.startNewPage }>
+					{ newText }
 			</FormButton>,
-			<FormButton key="back" isPrimary={ false } onClick={ this.props.onClose }>
-				{ this.props.translate( 'Close' ) }
-			</FormButton>,
+			<FormButton
+				key="back"
+				isPrimary={ false }
+				onClick={ this.props.onClose }>
+					{ this.translate( 'Close' ) }
+			</FormButton>
 		];
 	},
 
@@ -65,29 +66,26 @@ const EditorTrashedDialog = React.createClass( {
 	getStrings( isPage ) {
 		if ( isPage ) {
 			return {
-				dialogTitle: this.props.translate( 'Invalid Page Address' ),
-				dialogContent: this.props.translate(
-					'This page cannot be found. Check the web address or start a new page.'
-				),
+				dialogTitle: this.translate( 'Invalid Page Address' ),
+				dialogContent: this.translate( 'This page cannot be found. Check the web address or start a new page.' ),
 			};
 		}
 		return {
-			dialogTitle: this.props.translate( 'Invalid Post Address' ),
-			dialogContent: this.props.translate(
-				'This post cannot be found. Check the web address or start a new post.'
-			),
+			dialogTitle: this.translate( 'Invalid Post Address' ),
+			dialogContent: this.translate( 'This post cannot be found. Check the web address or start a new post.' ),
 		};
 	},
 
 	render() {
 		const strings = this.getStrings( this.state.isPage );
 		return (
-			<Dialog isVisible={ true } buttons={ this.getDialogButtons() }>
+			<Dialog
+				isVisible={ true }
+				buttons={ this.getDialogButtons() }
+			>
 				<h1>{ strings.dialogTitle }</h1>
 				<p>{ strings.dialogContent }</p>
 			</Dialog>
 		);
-	},
+	}
 } );
-
-export default localize( EditorTrashedDialog );

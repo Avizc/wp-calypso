@@ -1,4 +1,3 @@
-/** @format */
 export const connectionsSchema = {
 	type: 'object',
 	patternProperties: {
@@ -24,9 +23,9 @@ export const connectionsSchema = {
 				external_follower_count: { type: [ 'integer', 'null' ] },
 				status: { type: 'string' },
 				refresh_URL: { type: 'string' },
-				meta: { type: 'object' },
-			},
-		},
+				meta: { type: 'object' }
+			}
+		}
 	},
-	additionalProperties: false,
+	additionalProperties: false
 };

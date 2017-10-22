@@ -1,9 +1,7 @@
-/** @format */
 /**
  * External dependencies
  */
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 /**
@@ -13,17 +11,21 @@ import Main from 'components/main';
 
 const JetpackConnectMainWrapper = ( { isWide, className, children } ) => {
 	const wrapperClassName = classNames( 'jetpack-connect__main', {
-		'is-wide': isWide,
+		'is-wide': isWide
 	} );
-	return <Main className={ classNames( className, wrapperClassName ) }>{ children }</Main>;
+	return (
+		<Main className={ classNames( className, wrapperClassName ) }>
+			{ children }
+		</Main>
+	);
 };
 
 JetpackConnectMainWrapper.propTypes = {
-	isWide: PropTypes.bool,
+	isWide: React.PropTypes.bool
 };
 
 JetpackConnectMainWrapper.defaultProps = {
-	isWide: false,
+	isWide: false
 };
 
 export default JetpackConnectMainWrapper;

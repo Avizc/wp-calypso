@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -14,13 +12,13 @@ import { isPluginActive } from '../';
 const helloDolly = {
 	id: 'hello-dolly/hello',
 	slug: 'hello-dolly',
-	active: false,
+	active: false
 };
 
 export const jetpack = {
 	id: 'jetpack/jetpack',
 	slug: 'jetpack',
-	active: true,
+	active: true
 };
 
 const state = deepFreeze( {
@@ -29,25 +27,25 @@ const state = deepFreeze( {
 			plugins: {
 				'site.one': [ helloDolly ],
 				'site.two': [ jetpack, helloDolly ],
-			},
-		},
-	},
+			}
+		}
+	}
 } );
 
 describe( 'isPluginActive', () => {
-	test( 'should return false if the site cannot be found', () => {
+	it( 'should return false if the site cannot be found', () => {
 		expect( isPluginActive( state, 'some-unknown-id', 'my-slug' ) ).to.be.false;
 	} );
 
-	test( 'should return false if the plugin cannot be found', () => {
+	it( 'should return false if the plugin cannot be found', () => {
 		expect( isPluginActive( state, 'site.two', 'some-non-existant-slug' ) ).to.be.false;
 	} );
 
-	test( 'should return false if the plugin is found, but not active', () => {
+	it( 'should return false if the plugin is found, but not active', () => {
 		expect( isPluginActive( state, 'site.two', 'hello-dolly' ) ).to.be.false;
 	} );
 
-	test( 'should return true if the plugin is found and is active', () => {
+	it( 'should return true if the plugin is found and is active', () => {
 		expect( isPluginActive( state, 'site.two', 'jetpack' ) ).to.be.true;
 	} );
 } );

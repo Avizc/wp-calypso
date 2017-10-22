@@ -1,17 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
+var emitter = require( 'lib/mixins/emitter' );
 
-import emitter from 'lib/mixins/emitter';
-
-const countriesList = {
+var countriesList = {
 	get: function() {
 		return {};
-	},
+	}
 };
 
 emitter( countriesList );
 
-export default countriesList;
+module.exports = countriesList;

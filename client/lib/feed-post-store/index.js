@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import config from 'config';
 import { get, assign, forEach, isEqual, defer } from 'lodash';
 import debugModule from 'debug';
@@ -11,13 +8,13 @@ import debugModule from 'debug';
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import emitter from 'lib/mixins/emitter';
-import { runFastRules, runSlowRules } from 'state/reader/posts/normalization-rules';
-import { action as FeedPostActionType } from './constants';
-import { action as FeedStreamActionType } from 'lib/feed-stream-store/constants';
-import { mc } from 'lib/analytics';
-import { pageViewForPost } from 'reader/stats';
+const Dispatcher = require( 'dispatcher' ),
+	emitter = require( 'lib/mixins/emitter' ),
+	{ runFastRules, runSlowRules } = require( 'state/reader/posts/normalization-rules' ),
+	FeedPostActionType = require( './constants' ).action,
+	FeedStreamActionType = require( 'lib/feed-stream-store/constants' ).action,
+	mc = require( 'lib/analytics' ).mc,
+	stats = require( 'reader/stats' );
 
 /**
  * Module variables
@@ -42,7 +39,7 @@ const FeedPostStore = {
 		} else if ( postKey.feedId && postKey.postId ) {
 			return _posts[ postKey.postId ];
 		}
-	},
+	}
 };
 
 if ( config( 'env' ) === 'development' ) {
@@ -55,7 +52,7 @@ if ( config( 'env' ) === 'development' ) {
 		_reset: function() {
 			_posts = {};
 			_postsForBlogs = {};
-		},
+		}
 	} );
 }
 
@@ -86,7 +83,7 @@ FeedPostStore.dispatchToken = Dispatcher.register( function( payload ) {
 				const error = {
 					status_code: action.error.statusCode ? action.error.statusCode : -1,
 					errorCode: '-',
-					message: action.error.toString(),
+					message: action.error.toString()
 				};
 				if ( action.blogId ) {
 					receiveBlogError( action.blogId, action.postId, error );
@@ -136,7 +133,7 @@ function _setBlogPost( post ) {
 
 	const key = blogKey( {
 		blogId: post.site_ID,
-		postId: post.ID,
+		postId: post.ID
 	} );
 
 	const cachedPost = _postsForBlogs[ key ];
@@ -162,21 +159,18 @@ function receivePending( action ) {
 	if ( action.blogId ) {
 		let post = {
 			site_ID: action.blogId,
-			ID: action.postId,
+			ID: action.postId
 		};
-		const currentPost =
-			_postsForBlogs[
-				blogKey( {
-					blogId: action.blogId,
-					postId: action.postId,
-				} )
-			];
+		const currentPost = _postsForBlogs[ blogKey( {
+			blogId: action.blogId,
+			postId: action.postId
+		} ) ];
 		post = assign( post, currentPost, { _state: 'pending' } );
 		setPost( null, post );
 	} else {
 		let post = {
 			feed_ID: action.feedId,
-			feed_item_ID: action.postId,
+			feed_item_ID: action.postId
 		};
 		const currentPost = _posts[ action.postId ];
 		post = assign( post, currentPost, { _state: 'pending' } );
@@ -192,15 +186,10 @@ function receivePostFromPage( newPost ) {
 	if ( newPost.feed_ID && ! newPost.site_ID && newPost.ID && ! _posts[ newPost.ID ] ) {
 		// 1.3 style
 		setPost( newPost.ID, assign( {}, newPost, { _state: 'minimal' } ) );
-	} else if (
-		newPost.site_ID &&
-		! _postsForBlogs[
-			blogKey( {
-				blogId: newPost.site_ID,
-				postId: newPost.ID,
-			} )
-		]
-	) {
+	} else if ( newPost.site_ID && ! _postsForBlogs[ blogKey( {
+		blogId: newPost.site_ID,
+		postId: newPost.ID
+	} ) ] ) {
 		setPost( null, assign( {}, newPost, { _state: 'minimal' } ) );
 	}
 }
@@ -259,7 +248,7 @@ function receiveError( feedId, postId, error ) {
 		_state: 'error',
 		message: message,
 		errorCode: errorCode,
-		statusCode: statusCode,
+		statusCode: statusCode
 	} );
 }
 
@@ -300,7 +289,7 @@ function markPostSeen( post, site ) {
 		const isAdmin = !! get( site, 'capabilities.manage_options', false );
 		if ( site && site.ID ) {
 			if ( site.is_private || ! isAdmin ) {
-				pageViewForPost( site.ID, site.URL, post.ID, site.is_private );
+				stats.pageViewForPost( site.ID, site.URL, post.ID, site.is_private );
 				mc.bumpStat( 'reader_pageviews', site.is_private ? 'private_view' : 'public_view' );
 			}
 		}
@@ -311,4 +300,4 @@ function markPostSeen( post, site ) {
 	}
 }
 
-export default FeedPostStore;
+module.exports = FeedPostStore;

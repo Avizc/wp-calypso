@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugFactory from 'debug';
 
 const debug = debugFactory( 'calypso:wpcom-undocumented:me' );

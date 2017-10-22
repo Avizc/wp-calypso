@@ -1,9 +1,6 @@
 /**
- * External dependencies
- *
- * @format
- */
-
+* External dependencies
+*/
 import React from 'react';
 
 /**
@@ -12,7 +9,7 @@ import React from 'react';
 import Card from 'components/card';
 import BulkSelect from 'components/bulk-select';
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'BulkSelects',
 
 	handleToggleAll( checkedState ) {
@@ -29,9 +26,7 @@ export default React.createClass( {
 	},
 
 	getInitialState() {
-		return {
-			elements: [ { title: 'Apples', selected: true }, { title: 'Oranges', selected: false } ],
-		};
+		return { elements: [ { title: 'Apples', selected: true }, { title: 'Oranges', selected: false } ] };
 	},
 
 	getSelectedElementsNumber: function() {
@@ -59,14 +54,10 @@ export default React.createClass( {
 		return (
 			<Card>
 				<div>
-					<BulkSelect
-						totalElements={ this.state.elements.length }
-						selectedElements={ this.getSelectedElementsNumber() }
-						onToggle={ this.handleToggleAll }
-					/>
+					<BulkSelect totalElements={ this.state.elements.length } selectedElements={ this.getSelectedElementsNumber() } onToggle={ this.handleToggleAll } />
 				</div>
 				{ this.renderElements() }
 			</Card>
 		);
-	},
+	}
 } );

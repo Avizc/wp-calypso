@@ -1,9 +1,7 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { noop, truncate, get, isEmpty } from 'lodash';
 import classnames from 'classnames';
@@ -21,7 +19,7 @@ import PostByline from './byline';
 import GalleryPost from './gallery';
 import PhotoPost from './photo';
 import StandardPost from './standard';
-import ConversationPost from './conversation-post';
+import CompactPost from './compact';
 import FollowButton from 'reader/follow-button';
 import DailyPostButton from 'blocks/daily-post-button';
 import { isDailyPostChallengeOrPrompt } from 'blocks/daily-post-button/helper';
@@ -128,9 +126,9 @@ class ReaderPostCard extends React.Component {
 			compact,
 		} = this.props;
 
-		const isPhotoPost = !! ( post.display_type & DisplayTypes.PHOTO_ONLY ) && ! compact;
-		const isGalleryPost = !! ( post.display_type & DisplayTypes.GALLERY ) && ! compact;
-		const isVideo = !! ( post.display_type & DisplayTypes.FEATURED_VIDEO ) && ! compact;
+		const isPhotoPost = !! ( post.display_type & DisplayTypes.PHOTO_ONLY );
+		const isGalleryPost = !! ( post.display_type & DisplayTypes.GALLERY );
+		const isVideo = !! ( post.display_type & DisplayTypes.FEATURED_VIDEO );
 		const isDiscover = post.is_discover;
 		const title = truncate( post.title, { length: 140, separator: /,? +/ } );
 		const classes = classnames( 'reader-post-card', {
@@ -147,12 +145,12 @@ class ReaderPostCard extends React.Component {
 
 		if ( isDiscover && ! compact ) {
 			const discoverBlogName = getDiscoverBlogName( post ) || null;
-			discoverFollowButton = discoverBlogName && (
+			discoverFollowButton =
+				discoverBlogName &&
 				<DiscoverFollowButton
 					siteName={ discoverBlogName }
 					followUrl={ getDiscoverFollowUrl( post ) }
-				/>
-			);
+				/>;
 		}
 
 		const readerPostActions = (
@@ -200,13 +198,11 @@ class ReaderPostCard extends React.Component {
 		let readerPostCard;
 		if ( compact ) {
 			readerPostCard = (
-				<ConversationPost
+				<CompactPost
 					post={ post }
 					title={ title }
 					isDiscover={ isDiscover }
 					postByline={ postByline }
-					commentIds={ postKey.comments }
-					onClick={ this.handleCardClick }
 				/>
 			);
 		} else if ( isPhotoPost ) {
@@ -242,7 +238,8 @@ class ReaderPostCard extends React.Component {
 					postKey={ postKey }
 				>
 					{ isDailyPostChallengeOrPrompt( post ) &&
-					site && <DailyPostButton post={ post } site={ site } /> }
+						site &&
+						<DailyPostButton post={ post } site={ site } tagName="span" /> }
 					{ discoverFollowButton }
 					{ readerPostActions }
 				</StandardPost>
@@ -252,16 +249,15 @@ class ReaderPostCard extends React.Component {
 		const followUrl = feed ? feed.feed_URL : post.site_URL;
 
 		return (
-			<Card className={ classes } onClick={ ! isPhotoPost && ! compact && this.handleCardClick }>
+			<Card className={ classes } onClick={ ! isPhotoPost && this.handleCardClick }>
 				{ ! compact && postByline }
 				{ showPrimaryFollowButton &&
-				followUrl && (
+					followUrl &&
 					<FollowButton
 						siteUrl={ followUrl }
 						followSource={ followSource }
 						railcar={ post.railcar }
-					/>
-				) }
+					/> }
 				{ readerPostCard }
 				{ this.props.children }
 			</Card>
@@ -273,5 +269,5 @@ export default connect(
 	( state, ownProps ) => ( {
 		isExpanded: isReaderCardExpanded( state, ownProps.postKey ),
 	} ),
-	{ expandCard: expandCardAction }
+	{ expandCard: expandCardAction },
 )( ReaderPostCard );

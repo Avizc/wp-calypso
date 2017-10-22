@@ -1,10 +1,10 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import { every, isEmpty, values } from 'lodash';
+import values from 'lodash/values';
+import every from 'lodash/every';
+import isEmpty from 'lodash/isEmpty';
 
 /**
  * Internal dependencies
@@ -13,11 +13,11 @@ import { validateAllFields } from '../';
 
 describe( 'index', () => {
 	describe( '#validateAllFields', () => {
-		test( 'should return no errors for a valid A record', () => {
+		it( 'should return no errors for a valid A record', () => {
 			const initialData = {
 				type: 'A',
 				name: 'example.foo.com',
-				data: '123.45.78.9',
+				data: '123.45.78.9'
 			};
 
 			const errors = validateAllFields( initialData );

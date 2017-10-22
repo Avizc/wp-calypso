@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugModule from 'debug';
 import i18n from 'i18n-calypso';
 
@@ -66,7 +63,7 @@ WordadsSettingsStore = {
 
 	emitChange: function() {
 		this.emit( 'change' );
-	},
+	}
 };
 
 function updateSettings( siteId, data ) {
@@ -110,4 +107,4 @@ WordadsSettingsStore.dispatchToken = Dispatcher.register( function( payload ) {
 
 emitter( WordadsSettingsStore );
 
-export default WordadsSettingsStore;
+module.exports = WordadsSettingsStore;

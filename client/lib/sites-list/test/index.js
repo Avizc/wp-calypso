@@ -1,46 +1,54 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { assert } from 'chai';
-import { cloneDeep, forEach } from 'lodash';
 import sinon from 'sinon';
+import { cloneDeep, forEach, noop } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import SitesList from '../list';
-import { original, updated } from './fixtures/data';
-import Site from 'lib/site';
-
-jest.mock( 'lib/user', () => () => {} );
+import useMockery from 'test/helpers/use-mockery';
+import useFakeDom from 'test/helpers/use-fake-dom';
 
 describe( 'SitesList', () => {
+	let SitesList, Site, data;
 	let sitesList, originalData, initializedSites;
 
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/wp', {
+			me: () => ( {
+				get: noop
+			} )
+		} );
+	} );
+	useFakeDom();
+
+	before( () => {
+		Site = require( 'lib/site' );
+		SitesList = require( '../list' );
+		data = require( './fixtures/data' );
+	} );
+
 	beforeEach( () => {
-		originalData = cloneDeep( original );
+		originalData = cloneDeep( data.original );
 		sitesList = SitesList();
 		sitesList.initialize( originalData );
 		initializedSites = sitesList.get();
 	} );
 
 	describe( 'initialization', () => {
-		test( 'should create the correct number of sites', () => {
+		it( 'should create the correct number of sites', () => {
 			assert.equal( initializedSites.length, originalData.length );
 		} );
 
-		test( 'should create Site objects', () => {
+		it( 'should create Site objects', () => {
 			forEach( initializedSites, site => {
 				assert.instanceOf( site, Site );
 			} );
 		} );
 
-		test( 'should set attributes properly', () => {
+		it( 'should set attributes properly', () => {
 			const site = initializedSites[ 0 ];
 			const origSite = originalData[ 0 ];
 
@@ -49,8 +57,8 @@ describe( 'SitesList', () => {
 			} );
 		} );
 
-		test( 'should add change handlers', () => {
-			forEach( initializedSites, site => {
+		it( 'should add change handlers', () => {
+			forEach( initializedSites, ( site ) => {
 				assert.isDefined( site.listeners( 'change' ) );
 			} );
 		} );
@@ -59,12 +67,12 @@ describe( 'SitesList', () => {
 	describe( 'updating', () => {
 		let updatedData, originalList;
 
-		beforeAll( () => {
-			updatedData = cloneDeep( updated );
+		before( () => {
+			updatedData = cloneDeep( data.updated );
 			originalList = sitesList.initialize( originalData );
 		} );
 
-		test( 'updating should not create new Site instances', () => {
+		it( 'updating should not create new Site instances', () => {
 			sitesList.update( updatedData );
 			const updatedList = sitesList.get();
 
@@ -73,20 +81,20 @@ describe( 'SitesList', () => {
 			} );
 		} );
 
-		test( 'updating should reflect removed properties on site', () => {
-			const updatedWithIconOmitted = cloneDeep( updatedData ).map( site => {
+		it( 'updating should reflect removed properties on site', () => {
+			const updatedWithIconOmitted = cloneDeep( updatedData ).map( ( site ) => {
 				delete site.icon;
 				return site;
 			} );
 			sitesList.update( updatedWithIconOmitted );
 			const updatedList = sitesList.get();
 
-			forEach( updatedList, site => {
+			forEach( updatedList, ( site ) => {
 				assert.notProperty( site, 'icon' );
 			} );
 		} );
 
-		test( 'should update attributes properly', () => {
+		it( 'should update attributes properly', () => {
 			sitesList.update( updatedData );
 			const site = sitesList.get()[ 0 ];
 			const updatedSite = updatedData[ 0 ];
@@ -98,11 +106,11 @@ describe( 'SitesList', () => {
 	} );
 
 	describe( 'change propagation', () => {
-		test( 'should trigger change when site is updated', () => {
+		it( 'should trigger change when site is updated', () => {
 			const siteId = originalData[ 0 ].ID;
 			const changeCallback = sinon.spy();
 
-			sitesList.initialize( cloneDeep( original ) );
+			sitesList.initialize( cloneDeep( data.original ) );
 			sitesList.once( 'change', changeCallback );
 
 			const site = sitesList.getSite( siteId );

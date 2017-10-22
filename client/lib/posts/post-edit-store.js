@@ -1,19 +1,20 @@
 /**
  * External dependencies
- *
- * @format
  */
-import { assign, filter, isEqual, pickBy, without, omit } from 'lodash';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:posts:post-edit-store' );
-import emitter from 'lib/mixins/emitter';
+var assign = require( 'lodash/assign' ),
+	debug = require( 'debug' )( 'calypso:posts:post-edit-store' ),
+	emitter = require( 'lib/mixins/emitter' ),
+	isEqual = require( 'lodash/isEqual' ),
+	filter = require( 'lodash/filter' ),
+	without = require( 'lodash/without' ),
+	pickBy = require( 'lodash/pickBy' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import { decodeEntities } from 'lib/formatting';
-import utils from './utils';
+var Dispatcher = require( 'dispatcher' ),
+	decodeEntities = require( 'lib/formatting' ).decodeEntities,
+	utils = require( './utils' );
 
 /**
  * Module variables
@@ -108,7 +109,7 @@ function initializeNewPost( siteId, options ) {
 		status: 'draft',
 		type: options.postType || 'post',
 		content: options.content || '',
-		title: options.title || '',
+		title: options.title || ''
 	};
 
 	startEditing( args );
@@ -134,14 +135,6 @@ function set( attributes ) {
 	}
 
 	updatedPost = assign( {}, _post, attributes );
-
-	// This prevents an unsaved changes dialogue from appearing
-	// on a new post when only the featured image is added then removed.
-	// See #17701 for context.
-	if ( updatedPost.featured_image === '' && ! _savedPost.featured_image && _post.featured_image ) {
-		updatedPost = omit( updatedPost, 'featured_image' );
-	}
-
 	updatedPost = normalize( updatedPost );
 
 	if ( ! isEqual( updatedPost, _post ) ) {
@@ -188,10 +181,7 @@ function setRawContent( content ) {
 }
 
 function isContentEmpty( content ) {
-	return (
-		! content ||
-		( content.length < CONTENT_LENGTH_ASSUME_SET && REGEXP_EMPTY_CONTENT.test( content ) )
-	);
+	return ! content || ( content.length < CONTENT_LENGTH_ASSUME_SET && REGEXP_EMPTY_CONTENT.test( content ) );
 }
 
 function dispatcherCallback( payload ) {
@@ -199,6 +189,7 @@ function dispatcherCallback( payload ) {
 		changed;
 
 	switch ( action.type ) {
+
 		case 'EDIT_POST':
 			changed = set( action.post );
 			if ( changed ) {
@@ -293,9 +284,7 @@ function dispatcherCallback( payload ) {
 		case 'RECEIVE_POST_AUTOSAVE':
 			_isAutosaving = false;
 			if ( ! action.error ) {
-				_previewUrl = utils.getPreviewURL(
-					assign( { preview_URL: action.autosave.preview_URL }, _savedPost )
-				);
+				_previewUrl = utils.getPreviewURL( assign( { preview_URL: action.autosave.preview_URL }, _savedPost ) );
 			}
 			PostEditStore.emit( 'change' );
 			break;
@@ -311,6 +300,7 @@ function dispatcherCallback( payload ) {
 }
 
 PostEditStore = {
+
 	get: function() {
 		return _post;
 	},
@@ -324,7 +314,8 @@ PostEditStore = {
 	},
 
 	getChangedAttributes: function() {
-		var changedAttributes, metadata;
+		var changedAttributes,
+			metadata;
 
 		if ( this.isNew() ) {
 			return _post;
@@ -405,11 +396,12 @@ PostEditStore = {
 		}
 
 		return ! isContentEmpty( _post.content );
-	},
+	}
+
 };
 
 emitter( PostEditStore );
 
 PostEditStore.dispatchToken = Dispatcher.register( dispatcherCallback );
 
-export default PostEditStore;
+module.exports = PostEditStore;

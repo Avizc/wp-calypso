@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -18,7 +14,7 @@ class QueryPostFormats extends Component {
 	static propTypes = {
 		siteId: PropTypes.number.isRequired,
 		requestingPostFormats: PropTypes.bool,
-		requestPostFormats: PropTypes.func,
+		requestPostFormats: PropTypes.func
 	};
 
 	componentWillMount() {
@@ -47,7 +43,7 @@ class QueryPostFormats extends Component {
 export default connect(
 	( state, ownProps ) => {
 		return {
-			requestingPostFormats: isRequestingPostFormats( state, ownProps.siteId ),
+			requestingPostFormats: isRequestingPostFormats( state, ownProps.siteId )
 		};
 	},
 	{ requestPostFormats }

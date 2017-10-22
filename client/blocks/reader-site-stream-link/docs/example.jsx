@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -12,18 +9,16 @@ import React from 'react';
 import ReaderSiteStreamLink from 'blocks/reader-site-stream-link';
 import Card from 'components/card';
 
-export default class ReaderSiteStreamLinkExample extends React.Component {
-	static displayName = 'ReaderSiteStreamLinkExample';
+export default React.createClass( {
+	displayName: 'ReaderSiteStreamLink',
 
 	render() {
 		const feedId = 40474296;
 		const siteId = null;
 		return (
 			<Card>
-				<ReaderSiteStreamLink feedId={ feedId } siteId={ siteId }>
-					futonbleu
-				</ReaderSiteStreamLink>
+				<ReaderSiteStreamLink feedId={ feedId } siteId={ siteId }>futonbleu</ReaderSiteStreamLink>
 			</Card>
 		);
-	}
-}
+	},
+} );

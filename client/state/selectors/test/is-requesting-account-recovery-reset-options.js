@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,7 +9,7 @@ import { assert } from 'chai';
 import { isRequestingAccountRecoveryResetOptions } from '../';
 
 describe( 'isRequestingAccountRecoveryResetOptions()', () => {
-	test( 'should return the isRequesting flag under the accountRecovery.reset.options substate tree.', () => {
+	it( 'should return the isRequesting flag under the accountRecovery.reset.options substate tree.', () => {
 		const state = {
 			accountRecovery: {
 				reset: {

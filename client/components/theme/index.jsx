@@ -1,15 +1,11 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import classNames from 'classnames';
-import { get, isEmpty, isEqual, noop, some } from 'lodash';
+import { isEmpty, isEqual, noop } from 'lodash';
 import Gridicon from 'gridicons';
-import { localize } from 'i18n-calypso';
+import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -17,133 +13,130 @@ import { localize } from 'i18n-calypso';
 import Card from 'components/card';
 import ThemeMoreButton from './more-button';
 import PulsingDot from 'components/pulsing-dot';
-import Ribbon from 'components/ribbon';
 
 /**
  * Component
  */
-export class Theme extends Component {
-	static propTypes = {
-		theme: PropTypes.shape( {
+export const Theme = React.createClass( {
+
+	propTypes: {
+		theme: React.PropTypes.shape( {
 			// Theme ID (theme-slug)
-			id: PropTypes.string.isRequired,
+			id: React.PropTypes.string.isRequired,
 			// Theme name
-			name: PropTypes.string.isRequired,
+			name: React.PropTypes.string.isRequired,
 			// Theme screenshot URL
-			screenshot: PropTypes.string,
-			author: PropTypes.string,
-			author_uri: PropTypes.string,
-			demo_uri: PropTypes.string,
-			stylesheet: PropTypes.string,
-			taxonomies: PropTypes.object,
+			screenshot: React.PropTypes.string,
+			author: React.PropTypes.string,
+			author_uri: React.PropTypes.string,
+			demo_uri: React.PropTypes.string,
+			stylesheet: React.PropTypes.string
 		} ),
 		// If true, highlight this theme as active
-		active: PropTypes.bool,
+		active: React.PropTypes.bool,
 		// Theme price (pre-formatted string) -- empty string indicates free theme
-		price: PropTypes.string,
+		price: React.PropTypes.string,
 		// If true, the theme is being installed
-		installing: PropTypes.bool,
+		installing: React.PropTypes.bool,
 		// If true, render a placeholder
-		isPlaceholder: PropTypes.bool,
+		isPlaceholder: React.PropTypes.bool,
 		// URL the screenshot link points to
-		screenshotClickUrl: PropTypes.string,
+		screenshotClickUrl: React.PropTypes.string,
 		// Called when theme screenshot is clicked
-		onScreenshotClick: PropTypes.func,
+		onScreenshotClick: React.PropTypes.func,
 		// Called when the more button is clicked
-		onMoreButtonClick: PropTypes.func,
+		onMoreButtonClick: React.PropTypes.func,
 		// Options to populate the 'More' button popover menu with
-		buttonContents: PropTypes.objectOf(
-			PropTypes.shape( {
-				label: PropTypes.string,
-				header: PropTypes.string,
-				action: PropTypes.func,
-				getUrl: PropTypes.func,
+		buttonContents: React.PropTypes.objectOf(
+			React.PropTypes.shape( {
+				label: React.PropTypes.string,
+				header: React.PropTypes.string,
+				action: React.PropTypes.func,
+				getUrl: React.PropTypes.func
 			} )
 		),
 		// Index of theme in results list
-		index: PropTypes.number,
+		index: React.PropTypes.number,
 		// Label to show on screenshot hover.
-		actionLabel: PropTypes.string,
+		actionLabel: React.PropTypes.string,
 		// Translate function,
-		translate: PropTypes.func,
-	};
-
-	static defaultProps = {
-		isPlaceholder: false,
-		buttonContents: {},
-		onMoreButtonClick: noop,
-		actionLabel: '',
-		active: false,
-	};
+		translate: React.PropTypes.func,
+	},
 
 	shouldComponentUpdate( nextProps ) {
-		return (
-			nextProps.theme.id !== this.props.theme.id ||
-			nextProps.active !== this.props.active ||
-			nextProps.price !== this.props.price ||
-			nextProps.installing !== this.props.installing ||
-			! isEqual(
-				Object.keys( nextProps.buttonContents ),
-				Object.keys( this.props.buttonContents )
-			) ||
-			nextProps.screenshotClickUrl !== this.props.screenshotClickUrl ||
-			nextProps.onScreenshotClick !== this.props.onScreenshotClick ||
-			nextProps.onMoreButtonClick !== this.props.onMoreButtonClick
-		);
-	}
+		return nextProps.theme.id !== this.props.theme.id ||
+			( nextProps.active !== this.props.active ) ||
+			( nextProps.price !== this.props.price ) ||
+			( nextProps.installing !== this.props.installing ) ||
+			! isEqual( Object.keys( nextProps.buttonContents ), Object.keys( this.props.buttonContents ) ) ||
+			( nextProps.screenshotClickUrl !== this.props.screenshotClickUrl ) ||
+			( nextProps.onScreenshotClick !== this.props.onScreenshotClick ) ||
+			( nextProps.onMoreButtonClick !== this.props.onMoreButtonClick );
+	},
 
-	onScreenshotClick = () => {
+	getDefaultProps() {
+		return ( {
+			isPlaceholder: false,
+			buttonContents: {},
+			onMoreButtonClick: noop,
+			actionLabel: '',
+			active: false
+		} );
+	},
+
+	onScreenshotClick() {
 		this.props.onScreenshotClick( this.props.theme.id, this.props.index );
-	};
+	},
 
-	isBeginnerTheme = () => {
-		const { theme } = this.props;
-		const skillLevels = get( theme, [ 'taxonomies', 'theme_skill-level' ] );
-		return some( skillLevels, { slug: 'beginner' } );
-	};
-
-	renderPlaceholder = () => {
+	renderPlaceholder() {
 		return (
 			<Card className="theme is-placeholder">
 				<div className="theme__content" />
 			</Card>
 		);
-	};
+	},
 
-	renderHover = () => {
+	renderHover() {
 		if ( this.props.screenshotClickUrl || this.props.onScreenshotClick ) {
 			return (
-				<a
-					className="theme__active-focus"
+				<a className="theme__active-focus"
 					href={ this.props.screenshotClickUrl }
-					onClick={ this.onScreenshotClick }
-				>
-					<span>{ this.props.actionLabel }</span>
+					onClick={ this.onScreenshotClick }>
+					<span>
+						{ this.props.actionLabel }
+					</span>
 				</a>
 			);
 		}
-	};
+	},
 
-	renderInstalling = () => {
+	renderInstalling() {
 		if ( this.props.installing ) {
 			return (
-				<div className="theme__installing">
+				<div className="theme__installing" >
 					<PulsingDot active={ true } />
 				</div>
 			);
 		}
-	};
+	},
 
 	render() {
-		const { name, screenshot } = this.props.theme;
-		const { active, price, translate } = this.props;
+		const {
+			name,
+			screenshot
+		} = this.props.theme;
+		const {
+			active,
+			price,
+			translate
+		} = this.props;
 		const themeClass = classNames( 'theme', {
 			'is-active': active,
-			'is-actionable': !! ( this.props.screenshotClickUrl || this.props.onScreenshotClick ),
+			'is-actionable': !! ( this.props.screenshotClickUrl || this.props.onScreenshotClick )
 		} );
 
 		const priceClass = classNames( 'theme-badge__price', {
-			'theme-badge__price-upgrade': ! /\d/g.test( price ),
+			'theme-badge__price-upgrade': ! /\d/g.test( price )
 		} );
 
 		// for performance testing
@@ -155,55 +148,50 @@ export class Theme extends Component {
 
 		return (
 			<Card className={ themeClass }>
-				{ this.isBeginnerTheme() && (
-					<Ribbon className="theme__ribbon" color="green">
-						{ translate( 'Beginner' ) }
-					</Ribbon>
-				) }
 				<div className="theme__content">
+
 					{ this.renderHover() }
 
 					<a href={ this.props.screenshotClickUrl }>
 						{ this.renderInstalling() }
-						{ screenshot ? (
-							<img
-								className="theme__img"
+						{ screenshot
+							? <img className="theme__img"
 								src={ screenshot + '?w=340' }
-								srcSet={ screenshot + '?w=340 1x, ' + screenshot + '?w=680 2x' }
+								srcSet={
+									screenshot + '?w=340 1x, ' +
+									screenshot + '?w=680 2x'
+								}
 								onClick={ this.onScreenshotClick }
-								id={ screenshotID }
-							/>
-						) : (
-							<div className="theme__no-screenshot">
+								id={ screenshotID } />
+							: <div className="theme__no-screenshot" >
 								<Gridicon icon="themes" size={ 48 } />
 							</div>
-						) }
+						}
 					</a>
 
-					<div className="theme__info">
+					<div className="theme__info" >
 						<h2 className="theme__info-title">{ name }</h2>
-						{ active && (
-							<span className="theme-badge__active">
-								{ translate( 'Active', {
-									context: 'singular noun, the currently active theme',
-								} ) }
-							</span>
-						) }
+						{ active &&
+							<span className="theme-badge__active">{ translate( 'Active', {
+								context: 'singular noun, the currently active theme'
+							} ) }</span>
+						}
 						<span className={ priceClass }>{ price }</span>
-						{ ! isEmpty( this.props.buttonContents ) ? (
-							<ThemeMoreButton
+						{ ! isEmpty( this.props.buttonContents )
+							? <ThemeMoreButton
 								index={ this.props.index }
 								theme={ this.props.theme }
 								active={ this.props.active }
 								onMoreButtonClick={ this.props.onMoreButtonClick }
-								options={ this.props.buttonContents }
-							/>
-						) : null }
+								options={ this.props.buttonContents } />
+							: null
+						}
 					</div>
+
 				</div>
 			</Card>
 		);
 	}
-}
+} );
 
 export default localize( Theme );

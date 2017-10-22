@@ -1,12 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugModule from 'debug';
 import store from 'store';
-import { assign, find, isEmpty, some } from 'lodash';
+import assign from 'lodash/assign';
+import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
+import some from 'lodash/some';
 
 /**
  * Internal dependencies
@@ -78,32 +78,27 @@ SitesList.prototype.fetch = function() {
 
 	debug( 'getting SitesList from api' );
 
-	wpcom.me().sites(
-		{
-			site_visibility: 'all',
-			include_domain_only: true,
-			fields:
-				'ID,URL,name,capabilities,jetpack,visible,is_private,is_vip,icon,plan,jetpack_modules,single_user_site,is_multisite,options', //eslint-disable-line max-len
-			options:
-				'is_mapped_domain,unmapped_url,admin_url,is_redirect,is_automated_transfer,allowed_file_types,show_on_front,main_network_site,jetpack_version,software_version,default_post_format,created_at,frame_nonce,publicize_permanently_disabled,page_on_front,page_for_posts,advanced_seo_front_page_description,advanced_seo_title_formats,verification_services_codes,podcasting_archive,is_domain_only,default_sharing_status,default_likes_enabled,wordads,upgraded_filetypes_enabled,videopress_enabled,permalink_structure,gmt_offset,signup_is_store', //eslint-disable-line max-len
-		},
-		function( error, data ) {
-			if ( error ) {
-				debug( 'error fetching SitesList from api', error );
-				this.fetching = false;
-
-				return;
-			}
-
-			if ( this.ignoreUpdates ) {
-				this.fetching = false;
-				return;
-			}
-
-			this.sync( data );
+	wpcom.me().sites( {
+		site_visibility: 'all',
+		include_domain_only: true,
+		fields: 'ID,URL,name,capabilities,jetpack,visible,is_private,is_vip,icon,plan,jetpack_modules,single_user_site,is_multisite,options', //eslint-disable-line max-len
+		options: 'is_mapped_domain,unmapped_url,admin_url,is_redirect,is_automated_transfer,allowed_file_types,show_on_front,main_network_site,jetpack_version,software_version,default_post_format,created_at,frame_nonce,publicize_permanently_disabled,page_on_front,page_for_posts,advanced_seo_front_page_description,advanced_seo_title_formats,verification_services_codes,podcasting_archive,is_domain_only,default_sharing_status,default_likes_enabled,wordads,upgraded_filetypes_enabled,videopress_enabled,permalink_structure' //eslint-disable-line max-len
+	}, function( error, data ) {
+		if ( error ) {
+			debug( 'error fetching SitesList from api', error );
 			this.fetching = false;
-		}.bind( this )
-	);
+
+			return;
+		}
+
+		if ( this.ignoreUpdates ) {
+			this.fetching = false;
+			return;
+		}
+
+		this.sync( data );
+		this.fetching = false;
+	}.bind( this ) );
 };
 
 // FOR NUCLEAR AUTOMATED TRANSFER OPTION
@@ -180,11 +175,7 @@ SitesList.prototype.markCollisions = function( sites ) {
 
 		if ( ! site.jetpack ) {
 			hasCollision = some( collisions, function( someSite ) {
-				return (
-					someSite.jetpack &&
-					site.ID !== someSite.ID &&
-					withoutHttp( site.URL ) === withoutHttp( someSite.URL )
-				);
+				return ( someSite.jetpack && site.ID !== someSite.ID && withoutHttp( site.URL ) === withoutHttp( someSite.URL ) );
 			} );
 			if ( hasCollision ) {
 				site.hasConflict = true;
@@ -346,12 +337,10 @@ SitesList.prototype.propagateChange = function() {
  */
 SitesList.prototype.getNetworkSites = function( multisite ) {
 	return this.get().filter( function( site ) {
-		return (
-			site.jetpack &&
+		return site.jetpack &&
 			site.visible &&
 			( this.isConnectedSecondaryNetworkSite( site ) || site.isMainNetworkSite() ) &&
-			multisite.options.unmapped_url === site.options.main_network_site
-		);
+			multisite.options.unmapped_url === site.options.main_network_site;
 	}, this );
 };
 
@@ -431,12 +420,7 @@ SitesList.prototype.getSite = function( siteID ) {
 		// clashes between a domain redirect and a Jetpack site, as well as domains
 		// on subfolders, but we also need to look for the `domain` as a last resort
 		// to cover mapped domains for regular WP.com sites.
-		return (
-			site.ID === siteID ||
-			site.slug === siteID ||
-			site.domain === siteID ||
-			site.wpcom_url === siteID
-		);
+		return site.ID === siteID || site.slug === siteID || site.domain === siteID || site.wpcom_url === siteID;
 	} );
 };
 
@@ -468,7 +452,7 @@ SitesList.prototype.select = function( siteID ) {
 	if ( site ) {
 		this.setSelectedSite( site.slug );
 		return true;
-		/**
+	/**
 	 * If there's no valid site object return false
 	 */
 	} else {
@@ -515,20 +499,19 @@ SitesList.prototype.getUpgradeable = function() {
 
 SitesList.prototype.getSelectedOrAllJetpackCanManage = function() {
 	return this.getSelectedOrAll().filter( function( site ) {
-		return (
-			site.jetpack && site.capabilities && site.capabilities.manage_options && site.canManage()
-		);
+		return site.jetpack &&
+			site.capabilities &&
+			site.capabilities.manage_options &&
+			site.canManage();
 	} );
 };
 
 SitesList.prototype.getSelectedOrAllWithPlugins = function() {
 	return this.getSelectedOrAll().filter( site => {
-		return (
-			site.capabilities &&
+		return site.capabilities &&
 			site.capabilities.manage_options &&
 			site.jetpack &&
-			( site.visible || this.selected )
-		);
+			( site.visible || this.selected );
 	} );
 };
 
@@ -613,4 +596,4 @@ SitesList.prototype.onUpdatedPlugin = function( site ) {
 	}
 };
 
-export default SitesList;
+module.exports = SitesList;

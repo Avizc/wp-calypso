@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { find } from 'lodash';
+import find from 'lodash/find';
 import { parse } from 'url';
 
 /**

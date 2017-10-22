@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -12,8 +9,8 @@ import React from 'react';
 import CommentButton from 'blocks/comment-button';
 import Card from 'components/card';
 
-export default class CommentButtonExample extends React.Component {
-	static displayName = 'CommentButtonExample';
+export default React.createClass( {
+	displayName: 'CommentButtonExample',
 
 	render() {
 		return (
@@ -27,4 +24,4 @@ export default class CommentButtonExample extends React.Component {
 			</div>
 		);
 	}
-}
+} );

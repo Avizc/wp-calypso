@@ -1,36 +1,33 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
-import classNames from 'classnames';
+var React = require( 'react' ),
+	classNames = require( 'classnames' );
 
 /**
  * SegmentedControlItem
  */
-const SegmentedControlItem = React.createClass( {
+var SegmentedControlItem = React.createClass( {
+
 	propTypes: {
-		children: PropTypes.node.isRequired,
-		path: PropTypes.string,
-		selected: PropTypes.bool,
-		title: PropTypes.string,
-		value: PropTypes.string,
-		onClick: PropTypes.func,
+		children: React.PropTypes.node.isRequired,
+		path: React.PropTypes.string,
+		selected: React.PropTypes.bool,
+		title: React.PropTypes.string,
+		value: React.PropTypes.string,
+		onClick: React.PropTypes.func
 	},
 
 	getDefaultProps: function() {
 		return {
-			selected: false,
+			selected: false
 		};
 	},
 
 	render: function() {
 		const itemClassName = classNames( {
 			'segmented-control__item': true,
-			'is-selected': this.props.selected,
+			'is-selected': this.props.selected
 		} );
 
 		const linkClassName = classNames( 'segmented-control__link', {
@@ -48,13 +45,14 @@ const SegmentedControlItem = React.createClass( {
 					data-e2e-value={ this.props.value }
 					role="radio"
 					tabIndex={ 0 }
-					aria-selected={ this.props.selected }
-				>
-					<span className="segmented-control__text">{ this.props.children }</span>
+					aria-selected={ this.props.selected }>
+					<span className="segmented-control__text">
+						{ this.props.children }
+					</span>
 				</a>
 			</li>
 		);
-	},
+	}
 } );
 
-export default SegmentedControlItem;
+module.exports = SegmentedControlItem;

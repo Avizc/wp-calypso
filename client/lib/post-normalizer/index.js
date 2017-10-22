@@ -1,10 +1,8 @@
-/** @format */
 /**
  * External Dependencies
  */
-import async from 'async';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:post-normalizer' );
+var async = require( 'async' ),
+	debug = require( 'debug' )( 'calypso:post-normalizer' );
 /**
  * Internal dependencies
  */
@@ -39,12 +37,10 @@ function normalizePost( post, transforms, callback ) {
 	postDebug( 'running transforms' );
 
 	async.eachSeries(
-		transforms,
-		function( transform, transformCallback ) {
+		transforms, function( transform, transformCallback ) {
 			postDebug( 'running transform ' + ( transform.name || 'anonymous' ) );
 			transform( normalizedPost, transformCallback );
-		},
-		function( err ) {
+		}, function( err ) {
 			postDebug( 'transforms complete' );
 			if ( err ) {
 				callback( err );
@@ -85,19 +81,13 @@ normalizePost.safeImageProperties = function( maxWidth ) {
 	return wrapSync( safeImageProperties( maxWidth ) );
 };
 
-import makeLinksSafe from './rule-make-links-safe';
-normalizePost.makeLinksSafe = wrapSync( makeLinksSafe );
-
 import waitForImagesToLoad from './rule-wait-for-images-to-load';
 normalizePost.waitForImagesToLoad = function waitForImagesToLoadAdapter( post, callback ) {
-	waitForImagesToLoad( post ).then(
-		() => {
-			callback();
-		},
-		err => {
-			callback( err );
-		}
-	);
+	waitForImagesToLoad( post ).then( () => {
+		callback();
+	}, err => {
+		callback( err );
+	} );
 };
 
 import keepValidImages from './rule-keep-valid-images';
@@ -123,18 +113,16 @@ import makeEmbedsSafe from './rule-content-make-embeds-safe';
 import detectMedia from './rule-content-detect-media';
 import { disableAutoPlayOnMedia, disableAutoPlayOnEmbeds } from './rule-content-disable-autoplay';
 import detectPolls from './rule-content-detect-polls';
-import makeContentLinksSafe from './rule-content-make-links-safe';
 
 normalizePost.content = {
 	removeStyles,
 	removeElementsBySelector,
 	makeImagesSafe,
 	makeEmbedsSafe,
-	makeContentLinksSafe,
 	detectMedia,
 	disableAutoPlayOnMedia,
 	disableAutoPlayOnEmbeds,
-	detectPolls,
+	detectPolls
 };
 
-export default normalizePost;
+module.exports = normalizePost;

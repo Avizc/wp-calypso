@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { omit, noop } from 'lodash';
 
@@ -18,11 +14,11 @@ import LikeStore from 'lib/like-store/like-store';
 
 class LikeButtonContainer extends PureComponent {
 	static propTypes = {
-		siteId: PropTypes.number.isRequired,
-		postId: PropTypes.number.isRequired,
-		showZeroCount: PropTypes.bool,
-		tagName: PropTypes.string,
-		onLikeToggle: PropTypes.func,
+		siteId: React.PropTypes.number.isRequired,
+		postId: React.PropTypes.number.isRequired,
+		showZeroCount: React.PropTypes.bool,
+		tagName: React.PropTypes.string,
+		onLikeToggle: React.PropTypes.func,
 	};
 
 	static defaultProps = {

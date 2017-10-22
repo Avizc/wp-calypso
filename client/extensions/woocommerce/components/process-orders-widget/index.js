@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 import { localize } from 'i18n-calypso';
 
@@ -18,21 +14,22 @@ import { getLink } from 'woocommerce/lib/nav-utils';
 
 const ProcessOrdersWidget = ( { className, site, orders, currency, ordersRevenue, translate } ) => {
 	const classes = classNames( 'card', 'process-orders-widget__container', className );
-	const currencyValue = ( currency && currency.value ) || '';
-	const orderCountPhrase = translate( 'New order', 'New orders', {
-		count: orders.length,
-	} );
+	const currencyValue = currency && currency.value || '';
 	return (
-		<div className={ classes }>
+		<div className={ classes } >
 			<div>
 				<span>{ orders.length }</span>
-				<span className="process-orders-widget__order-label">✨ { orderCountPhrase }</span>
+				<span className="process-orders-widget__order-label">
+					{ translate( '✨ New orders' ) }
+				</span>
 			</div>
 			<div>
 				<span className="process-orders-widget__revenue-amount">
 					{ formatCurrency( ordersRevenue, currencyValue ) || ordersRevenue }
 				</span>
-				<span className="process-orders-widget__revenue-label">{ translate( '💰 Revenue' ) }</span>
+				<span className="process-orders-widget__revenue-label">
+					{ translate( '💰 Revenue' ) }
+				</span>
 			</div>
 			<div>
 				<Button href={ getLink( '/store/orders/:site', site ) }>

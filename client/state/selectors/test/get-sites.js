@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,67 +10,66 @@ import { getSites } from '../';
 
 const currentUserState = {
 	currentUser: {
-		id: 12345678,
-		capabilities: {},
+		id: 12345678
 	},
 	users: {
 		items: {
 			12345678: {
-				primary_blog: 2916288,
-			},
-		},
-	},
+				primary_blog: 2916288
+			}
+		}
+	}
 };
 
 describe( 'getSites()', () => {
-	test( 'should return an empty array if no sites in state', () => {
+	it( 'should return an empty array if no sites in state', () => {
 		const state = {
 			...currentUserState,
 			sites: {
-				items: {},
-			},
+				items: {}
+			}
 		};
 		const sites = getSites( state );
 		expect( sites ).to.eql( [] );
 	} );
 
-	test( 'should return the primary site if the user has only one site', () => {
+	it( 'should return the primary site if the user has only one site', () => {
 		const state = {
 			...currentUserState,
 			sites: {
 				items: {
-					2916288: { ID: 2916288, name: 'WordPress.com Example Blog' },
-				},
-			},
+					2916288: { ID: 2916288, name: 'WordPress.com Example Blog' }
+				}
+			}
 		};
 
 		const sites = getSites( state );
 		expect( sites ).to.have.length( 1 );
 	} );
 
-	test( 'should return the sites lists if the user has no primary site', () => {
+	it( 'should return the sites lists if the user has no primary site', () => {
 		const state = {
 			...currentUserState,
 			sites: {
 				items: {
 					2916287: { ID: 2916287, name: 'WordPress.com Example Blog' },
-					2916286: { ID: 2916286, name: 'WordPress.com Example Blog' },
-				},
-			},
+					2916286: { ID: 2916286, name: 'WordPress.com Example Blog' }
+				}
+			}
 		};
 
 		const sites = getSites( state );
 		expect( sites ).to.have.length( 2 );
 	} );
 
-	test( 'should return all the sites in state', () => {
+	it( 'should return all the sites in state', () => {
 		const state = {
 			...currentUserState,
 			sites: {
 				items: {
 					2916284: { ID: 2916284, name: 'WordPress.com Example Blog' },
-					2916285: { ID: 2916285, name: 'WordPress.com Way Better Example Blog' },
-				},
+					2916285: { ID: 2916285, name: 'WordPress.com Way Better Example Blog' }
+				}
 			},
 			siteSettings: {
 				items: {},
@@ -84,15 +81,15 @@ describe( 'getSites()', () => {
 		expect( sites[ 1 ] ).to.have.property( 'name', 'WordPress.com Way Better Example Blog' );
 	} );
 
-	test( 'should return the primary site as the first element of the list', () => {
+	it( 'should return the primary site as the first element of the list', () => {
 		const state = {
 			...currentUserState,
 			sites: {
 				items: {
 					2916287: { ID: 2916287, name: 'WordPress.com Example Blog' },
 					2916288: { ID: 2916288, name: 'WordPress.com Way Better Example Blog' },
-					2916289: { ID: 2916289, name: 'WordPress.com Another Example Blog' },
-				},
+					2916289: { ID: 2916289, name: 'WordPress.com Another Example Blog' }
+				}
 			},
 			siteSettings: {
 				items: {},
@@ -104,7 +101,7 @@ describe( 'getSites()', () => {
 		expect( sites[ 0 ] ).to.have.property( 'ID', 2916288 );
 	} );
 
-	test( 'should return sites in alphabetical order by name and url', () => {
+	it( 'should return sites in alphabetical order by name and url', () => {
 		const state = {
 			...currentUserState,
 			sites: {
@@ -116,17 +113,9 @@ describe( 'getSites()', () => {
 					2916291: { ID: 2916291, name: 'WordPress.com 0 Site', URL: '' },
 					2916292: { ID: 2916292, name: '', URL: 'https://z-site-with-no-name.wordpress.com' },
 					2916293: { ID: 2916293, name: '', URL: 'https://0-site-with-no-name.wordpress.com' },
-					2916294: {
-						ID: 2916294,
-						name: 'WordPress.com B Site',
-						URL: 'https://site-with-same-name-2.wordpress.com',
-					},
-					2916295: {
-						ID: 2916295,
-						name: 'WordPress.com B Site',
-						URL: 'https://site-with-same-name-1.wordpress.com',
-					},
-				},
+					2916294: { ID: 2916294, name: 'WordPress.com B Site', URL: 'https://site-with-same-name-2.wordpress.com' },
+					2916295: { ID: 2916295, name: 'WordPress.com B Site', URL: 'https://site-with-same-name-1.wordpress.com' }
+				}
 			},
 			siteSettings: {
 				items: {},

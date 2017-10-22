@@ -1,17 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import page from 'page';
+var page = require( 'page' );
 
 /**
  * Internal dependencies
  */
-import config from 'config';
-import route from 'lib/route';
-import KeyboardShortcuts from 'lib/keyboard-shortcuts';
+var config = require( 'config' ),
+	route = require( 'lib/route' ),
+	KeyboardShortcuts = require( 'lib/keyboard-shortcuts' );
 
 let singleton;
 

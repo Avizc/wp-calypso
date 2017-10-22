@@ -1,36 +1,34 @@
-/**
- * @format
- * @jest-environment jsdom
- */
+var assert = require( 'chai' ).assert,
+	sinon = require( 'sinon' ),
+	useFilesystemMocks = require( 'test/helpers/use-filesystem-mocks' ),
+	useFakeDom = require( 'test/helpers/use-fake-dom' );
 
-jest.mock( 'lib/wp', () => require( './mocks/lib/wp' ) );
-
-import { assert } from 'chai';
-import sinon from 'sinon';
-
-describe( 'index', () => {
+describe( 'index', function() {
 	var FollowList, FollowListSite, followList, site;
 
-	beforeAll( () => {
+	useFilesystemMocks( __dirname );
+	useFakeDom();
+
+	before( () => {
 		FollowList = require( 'lib/follow-list' );
 		FollowListSite = require( 'lib/follow-list/site' );
 		followList = new FollowList();
 		site = new FollowListSite( { site_id: 95327318, is_following: false } );
 	} );
 
-	describe( 'FollowList', () => {
-		describe( 'add', () => {
-			test( 'should add a site', () => {
+	describe( 'FollowList', function() {
+		describe( 'add', function() {
+			it( 'should add a site', function() {
 				followList.add( { site_id: 95327318, is_following: false } );
 				assert.equal( followList.data.length, 1 );
 			} );
 
-			test( 'should create an instance of FollowListSite', () => {
+			it( 'should create an instance of FollowListSite', function() {
 				followList.add( { site_id: 95327318, is_following: false } );
 				assert.isTrue( followList.data[ 0 ] instanceof FollowListSite );
 			} );
 
-			test( 'should not add a duplicate site_id', () => {
+			it( 'should not add a duplicate site_id', function() {
 				followList.add( { site_id: 95327318, is_following: false } );
 				assert.equal( followList.data.length, 1 );
 				followList.add( { site_id: 95327318, is_following: false } );
@@ -40,16 +38,16 @@ describe( 'index', () => {
 		} );
 	} );
 
-	describe( 'FollowListSite', () => {
-		describe( 'instantiation', () => {
-			test( 'should set the attributes', () => {
+	describe( 'FollowListSite', function() {
+		describe( 'instantiation', function() {
+			it( 'should set the attributes', function() {
 				assert.equal( site.site_id, 95327318 );
 				assert.equal( site.is_following, false );
 			} );
 		} );
 
-		describe( 'follow', () => {
-			test( 'should call the follow endpoint and execute the callback', () => {
+		describe( 'follow', function() {
+			it( 'should call the follow endpoint and execute the callback', function() {
 				var changeCallback = sinon.spy();
 				site.on( 'change', changeCallback );
 				site.follow();
@@ -57,7 +55,7 @@ describe( 'index', () => {
 				assert.isTrue( site.is_following );
 			} );
 
-			test( 'should not call the follow endpoint or execute the callback if already following', () => {
+			it( 'should not call the follow endpoint or execute the callback if already following', function() {
 				var changeCallback = sinon.spy();
 				site.is_following = true;
 				site.on( 'change', changeCallback );
@@ -67,8 +65,8 @@ describe( 'index', () => {
 			} );
 		} );
 
-		describe( 'unfollow', () => {
-			test( 'should call the unfollow endpoint and execute the callback', () => {
+		describe( 'unfollow', function() {
+			it( 'should call the unfollow endpoint and execute the callback', function() {
 				var changeCallback = sinon.spy();
 				site.is_following = true;
 				site.on( 'change', changeCallback );
@@ -77,7 +75,7 @@ describe( 'index', () => {
 				assert.isFalse( site.is_following );
 			} );
 
-			test( 'should not call the unfollow endpoint or execute the callback if already following', () => {
+			it( 'should not call the unfollow endpoint or execute the callback if already following', function() {
 				var changeCallback = sinon.spy();
 				site.is_following = false;
 				site.on( 'change', changeCallback );

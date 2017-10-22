@@ -1,36 +1,30 @@
-/**
- * Internal dependencies
- *
- * @format
- */
+var plugins = require( './plugins' ),
+	updatePluginsList = require( './plugins-updated' ),
+	site = require( './site' ),
+	multiSite = require( './multi-site' ),
+	updatePluginData = require( './updated-plugin' );
 
-import plugins from './plugins';
-import updatePluginsList from './plugins-updated';
-import site from './site';
-import multiSite from './multi-site';
-import updatePluginData from './updated-plugin';
-
-export default {
+module.exports = {
 	// Fetch Data
 	fetched: {
 		type: 'RECEIVE_PLUGINS',
 		site: site,
 		data: { plugins: plugins },
-		error: null,
+		error: null
 	},
 
 	fetchedMultiSite: {
 		type: 'RECEIVE_PLUGINS',
 		site: multiSite,
 		data: { plugins: plugins },
-		error: null,
+		error: null
 	},
 
 	fetchedAgain: {
 		type: 'RECEIVE_PLUGINS',
 		site: site,
 		data: { plugins: updatePluginsList },
-		error: null,
+		error: null
 	},
 
 	fetchedError: {
@@ -40,15 +34,15 @@ export default {
 		error: {
 			error: 'unauthorized_full_access',
 			message: 'Full management mode is off for this site.',
-			name: 'UnauthorizedFullAccessError',
-		},
+			name: 'UnauthorizedFullAccessError'
+		}
 	},
 
 	fetchedNotAllowed: {
 		type: 'NOT_ALLOWED_TO_RECEIVE_PLUGINS',
 		site: { ID: 123 },
 		data: undefined,
-		error: undefined,
+		error: undefined
 	},
 
 	// Update
@@ -56,7 +50,7 @@ export default {
 		type: 'UPDATE_PLUGIN',
 		action: 'UPDATE_PLUGIN',
 		site: site,
-		plugin: plugins[ 2 ], // hello dolly
+		plugin: plugins[ 2 ] // hello dolly
 	},
 
 	updatedPlugin: {
@@ -65,14 +59,14 @@ export default {
 		site: site,
 		plugin: plugins[ 2 ],
 		data: updatePluginData,
-		error: null,
+		error: null
 	},
 
 	clearPluginUpdate: {
 		type: 'REMOVE_PLUGINS_UPDATE_INFO',
 		action: 'REMOVE_PLUGINS_UPDATE_INFO',
 		site: site,
-		plugin: plugins[ 2 ],
+		plugin: plugins[ 2 ]
 	},
 
 	updatedPluginError: {
@@ -84,8 +78,8 @@ export default {
 		error: {
 			error: 'unauthorized_full_access',
 			message: 'Full management mode is off for this site.',
-			name: 'UnauthorizedFullAccessError',
-		},
+			name: 'UnauthorizedFullAccessError'
+		}
 	},
 
 	// Remove Plugin
@@ -93,7 +87,7 @@ export default {
 		type: 'REMOVE_PLUGIN',
 		action: 'REMOVE_PLUGIN',
 		site: site,
-		plugin: plugins[ 2 ],
+		plugin: plugins[ 2 ]
 	},
 
 	removedPluginError: {
@@ -102,7 +96,7 @@ export default {
 		site: site,
 		plugin: plugins[ 2 ],
 		data: null,
-		error: { error: 'not allowed' },
+		error: { error: 'not allowed' }
 	},
 
 	// Remove Plugin
@@ -110,7 +104,7 @@ export default {
 		type: 'RECEIVE_REMOVE_PLUGIN',
 		action: 'REMOVE_PLUGIN',
 		site: site,
-		plugin: plugins[ 2 ],
+		plugin: plugins[ 2 ]
 	},
 
 	// Activate
@@ -118,7 +112,7 @@ export default {
 		type: 'ACTIVATE_PLUGIN',
 		action: 'ACTIVATE_PLUGIN',
 		site: site,
-		plugin: plugins[ 1 ], // developer
+		plugin: plugins[ 1 ] // developer
 	},
 
 	activatedPlugin: {
@@ -137,9 +131,9 @@ export default {
 			network: false,
 			plugin_url: 'http://wordpress.org/extend/plugins/developer/',
 			slug: 'developer',
-			version: '1.2.5',
+			version: '1.2.5'
 		},
-		error: null,
+		error: null
 	},
 
 	activatedPluginError: {
@@ -151,8 +145,8 @@ export default {
 		error: {
 			error: 'unauthorized_full_access',
 			message: 'Full management mode is off for this site.',
-			name: 'UnauthorizedFullAccessError',
-		},
+			name: 'UnauthorizedFullAccessError'
+		}
 	},
 
 	activatedBrokenPluginError: {
@@ -161,7 +155,7 @@ export default {
 		site: site,
 		plugin: plugins[ 1 ], // developer
 		data: [],
-		error: null,
+		error: null
 	},
 
 	activatedPluginErrorAlreadyActive: {
@@ -172,15 +166,15 @@ export default {
 		data: null,
 		error: {
 			error: 'activation_error',
-			message: 'The Plugin is already active.',
-		},
+			message: 'The Plugin is already active.'
+		}
 	},
 	// Deactivate
 	deactivatePlugin: {
 		type: 'DEACTIVATE_PLUGIN',
 		action: 'DEACTIVATE_PLUGIN',
 		site: site,
-		plugin: plugins[ 1 ], // developer
+		plugin: plugins[ 1 ] // developer
 	},
 
 	deactivatedPlugin: {
@@ -199,9 +193,9 @@ export default {
 			network: false,
 			plugin_url: 'http://wordpress.org/extend/plugins/developer/',
 			slug: 'developer',
-			version: '1.2.5',
+			version: '1.2.5'
 		},
-		error: null,
+		error: null
 	},
 
 	deactivatedPluginError: {
@@ -213,8 +207,8 @@ export default {
 		error: {
 			error: 'unauthorized_full_access',
 			message: 'Full management mode is off for this site.',
-			name: 'UnauthorizedFullAccessError',
-		},
+			name: 'UnauthorizedFullAccessError'
+		}
 	},
 
 	deactivatedPluginErrorAlreadyNotActive: {
@@ -224,15 +218,15 @@ export default {
 		data: null,
 		error: {
 			error: 'deactivation_error',
-			message: 'The Plugin is already not active.',
-		},
+			message: 'The Plugin is already not active.'
+		}
 	},
 	// Enable Autoupdate
 	enableAutoupdatePlugin: {
 		type: 'ENABLE_AUTOUPDATE_PLUGIN',
 		action: 'ENABLE_AUTOUPDATE_PLUGIN',
 		site: site,
-		plugin: plugins[ 1 ], // developer
+		plugin: plugins[ 1 ] // developer
 	},
 
 	enabledAutoupdatePlugin: {
@@ -251,9 +245,9 @@ export default {
 			network: false,
 			plugin_url: 'http://wordpress.org/extend/plugins/developer/',
 			slug: 'developer',
-			version: '1.2.5',
+			version: '1.2.5'
 		},
-		error: null,
+		error: null
 	},
 
 	enabledAutoupdatePluginError: {
@@ -265,15 +259,15 @@ export default {
 		error: {
 			error: 'unauthorized_full_access',
 			message: 'Full management mode is off for this site.',
-			name: 'UnauthorizedFullAccessError',
-		},
+			name: 'UnauthorizedFullAccessError'
+		}
 	},
 	// Disable Autoupdate
 	disableAutoupdatePlugin: {
 		type: 'DISABLE_AUTOUPDATE_PLUGIN',
 		action: 'DISABLE_AUTOUPDATE_PLUGIN',
 		site: site,
-		plugin: plugins[ 1 ], // developer
+		plugin: plugins[ 1 ] // developer
 	},
 
 	disabledAutoupdatePlugin: {
@@ -292,9 +286,9 @@ export default {
 			network: false,
 			plugin_url: 'http://wordpress.org/extend/plugins/developer/',
 			slug: 'developer',
-			version: '1.2.5',
+			version: '1.2.5'
 		},
-		error: null,
+		error: null
 	},
 
 	disabledAutoupdatePluginError: {
@@ -306,12 +300,13 @@ export default {
 		error: {
 			error: 'unauthorized_full_access',
 			message: 'Full management mode is off for this site.',
-			name: 'UnauthorizedFullAccessError',
-		},
+			name: 'UnauthorizedFullAccessError'
+		}
 	},
 
 	removeErrorNotice: {
 		type: 'REMOVE_PLUGINS_NOTICES',
-		logs: [ { status: 'error', action: 'UPDATE_PLUGIN', site: site, plugin: plugins[ 2 ] } ],
-	},
+		logs: [ { status: 'error', action: 'UPDATE_PLUGIN', site: site, plugin: plugins[ 2 ] } ]
+	}
+
 };

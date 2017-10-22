@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,28 +10,28 @@ import { getJetpackSettings } from '../';
 import { settings as SETTINGS_FIXTURE } from './fixtures/jetpack-settings';
 
 describe( 'getJetpackSettings()', () => {
-	test( 'should return settings for all modules for a known site', () => {
+	it( 'should return settings for all modules for a known site', () => {
 		const stateIn = {
 				jetpack: {
 					settings: {
-						items: SETTINGS_FIXTURE,
-					},
-				},
+						items: SETTINGS_FIXTURE
+					}
+				}
 			},
 			siteId = 12345678;
 		const output = getJetpackSettings( stateIn, siteId );
 		expect( output ).to.eql( SETTINGS_FIXTURE[ siteId ] );
 	} );
 
-	test( 'should return null for an unknown site', () => {
+	it( 'should return null for an unknown site', () => {
 		const stateIn = {
 				jetpack: {
 					settings: {
 						items: {
-							654321: SETTINGS_FIXTURE,
-						},
-					},
-				},
+							654321: SETTINGS_FIXTURE
+						}
+					}
+				}
 			},
 			siteId = 12345678;
 		const output = getJetpackSettings( stateIn, siteId );

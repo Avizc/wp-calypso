@@ -1,18 +1,14 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import config from 'config';
 import { recordTracksEvent } from 'state/analytics/actions';
 
 const MERCHANT_IDENTIFIER = 'merchant.com.wordpress';
 
-const recordApplePayStatusEvent = canMakePaymentsWithActiveCard =>
-	recordTracksEvent( 'calypso_apple_pay_status', {
-		can_make_payments_with_active_card: canMakePaymentsWithActiveCard,
-	} );
+const recordApplePayStatusEvent = canMakePaymentsWithActiveCard => recordTracksEvent( 'calypso_apple_pay_status', {
+	can_make_payments_with_active_card: canMakePaymentsWithActiveCard
+} );
 
 export const recordApplePayStatus = () => dispatch => {
 	if ( ! config.isEnabled( 'apple-pay' ) ) {
@@ -24,10 +20,7 @@ export const recordApplePayStatus = () => dispatch => {
 		return;
 	}
 
-	window.ApplePaySession
-		.canMakePaymentsWithActiveCard( MERCHANT_IDENTIFIER )
-		.then( canMakePaymentsWithActiveCard =>
-			dispatch( recordApplePayStatusEvent( canMakePaymentsWithActiveCard ) )
-		)
+	window.ApplePaySession.canMakePaymentsWithActiveCard( MERCHANT_IDENTIFIER )
+		.then( canMakePaymentsWithActiveCard => dispatch( recordApplePayStatusEvent( canMakePaymentsWithActiveCard ) ) )
 		.catch( () => dispatch( recordApplePayStatusEvent( false ) ) );
 };

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { Me } from 'wpcom';
 import inherits from 'inherits';
 import debugFactory from 'debug';
@@ -14,11 +11,6 @@ import debugFactory from 'debug';
 import MePreferences from './me-preferences.js';
 
 const debug = debugFactory( 'calypso:wpcom-undocumented:me' );
-
-/**
- * Internal dependencies.
- */
-import config from 'config';
 
 /**
  * Create an UndocumentedMe instance
@@ -41,19 +33,16 @@ inherits( UndocumentedMe, Me );
 
 UndocumentedMe.prototype.billingHistoryEmailReceipt = function( receiptId, callback ) {
 	var args = {
-		path: '/me/billing-history/receipt/' + receiptId + '/email',
+		path: '/me/billing-history/receipt/' + receiptId + '/email'
 	};
 
 	return this.wpcom.req.get( args, callback );
 };
 
 UndocumentedMe.prototype.getReceipt = function( receiptId, fn ) {
-	return this.wpcom.req.get(
-		{
-			path: `/me/billing-history/receipt/${ receiptId }`,
-		},
-		fn
-	);
+	return this.wpcom.req.get( {
+		path: `/me/billing-history/receipt/${ receiptId }`
+	}, fn );
 };
 
 UndocumentedMe.prototype.purchases = function( callback ) {
@@ -72,7 +61,7 @@ UndocumentedMe.prototype.getConnectedApplications = function( callback ) {
 UndocumentedMe.prototype.revokeApplicationConnection = function( connectionID, callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/connected-applications/' + connectionID + '/delete',
+		path: '/me/connected-applications/' + connectionID + '/delete'
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -81,7 +70,7 @@ UndocumentedMe.prototype.revokeApplicationConnection = function( connectionID, c
 UndocumentedMe.prototype.getApplicationPasswords = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/two-step/application-passwords',
+		path: '/me/two-step/application-passwords'
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -90,7 +79,7 @@ UndocumentedMe.prototype.getApplicationPasswords = function( callback ) {
 UndocumentedMe.prototype.revokeApplicationPassword = function( passwordID, callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/two-step/application-passwords/' + passwordID + '/delete',
+		path: '/me/two-step/application-passwords/' + passwordID + '/delete'
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -101,8 +90,8 @@ UndocumentedMe.prototype.createApplicationPassword = function( applicationName, 
 		apiVersion: '1.1',
 		path: '/me/two-step/application-passwords/new',
 		body: {
-			application_name: applicationName,
-		},
+			application_name: applicationName
+		}
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -113,8 +102,8 @@ UndocumentedMe.prototype.validatePassword = function( password, callback ) {
 		apiVersion: '1.1',
 		path: '/me/settings/password/validate',
 		body: {
-			password: password,
-		},
+			password: password
+		}
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -123,7 +112,7 @@ UndocumentedMe.prototype.validatePassword = function( password, callback ) {
 UndocumentedMe.prototype.sendSMSValidationCode = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/two-step/sms/new',
+		path: '/me/two-step/sms/new'
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -133,7 +122,7 @@ UndocumentedMe.prototype.validateTwoStepCode = function( body, callback ) {
 	var args = {
 		apiVersion: '1.1',
 		path: '/me/two-step/validate',
-		body: body,
+		body: body
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -142,7 +131,7 @@ UndocumentedMe.prototype.validateTwoStepCode = function( body, callback ) {
 UndocumentedMe.prototype.getTwoStep = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/two-step/',
+		path: '/me/two-step/'
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -151,7 +140,7 @@ UndocumentedMe.prototype.getTwoStep = function( callback ) {
 UndocumentedMe.prototype.getAppAuthCodes = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/two-step/app-auth-setup/',
+		path: '/me/two-step/app-auth-setup/'
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -159,7 +148,7 @@ UndocumentedMe.prototype.getAppAuthCodes = function( callback ) {
 
 UndocumentedMe.prototype.getTrophies = function( callback ) {
 	var args = {
-		path: '/me/trophies',
+		path: '/me/trophies'
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -168,7 +157,7 @@ UndocumentedMe.prototype.getTrophies = function( callback ) {
 UndocumentedMe.prototype.validateUsername = function( username, callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/username/validate/' + username,
+		path: '/me/username/validate/' + username
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -180,8 +169,8 @@ UndocumentedMe.prototype.changeUsername = function( username, action, callback )
 		path: '/me/username',
 		body: {
 			username: username,
-			action: action,
-		},
+			action: action
+		}
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -197,16 +186,12 @@ UndocumentedMe.prototype.changeUsername = function( username, action, callback )
 UndocumentedMe.prototype.storedCardAdd = function( paygateToken, callback ) {
 	debug( '/me/stored-cards' );
 
-	return this.wpcom.req.post(
-		{
-			path: '/me/stored-cards',
-		},
-		{
-			payment_key: paygateToken,
-			use_for_existing: true,
-		},
-		callback
-	);
+	return this.wpcom.req.post( {
+		path: '/me/stored-cards'
+	}, {
+		payment_key: paygateToken,
+		use_for_existing: true
+	}, callback );
 };
 
 UndocumentedMe.prototype.storedCardDelete = function( card, callback ) {
@@ -219,7 +204,7 @@ UndocumentedMe.prototype.storedCardDelete = function( card, callback ) {
 UndocumentedMe.prototype.backupCodes = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/two-step/backup-codes/new',
+		path: '/me/two-step/backup-codes/new'
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -256,7 +241,7 @@ UndocumentedMe.prototype.undismissSite = function( site, callback ) {
 UndocumentedMe.prototype.devices = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/notifications/devices/',
+		path: '/notifications/devices/'
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -282,21 +267,16 @@ UndocumentedMe.prototype.updateNotificationSettings = function( settings, applyT
 		query = { applyToAll: true };
 	}
 
-	return this.wpcom.req.post(
-		{
-			apiVersion: '1.1',
-			path: '/me/notifications/settings/',
-		},
-		query,
-		settings,
-		callback
-	);
+	return this.wpcom.req.post( {
+		apiVersion: '1.1',
+		path: '/me/notifications/settings/',
+	}, query, settings, callback );
 };
 
 UndocumentedMe.prototype.getAccountRecovery = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/account-recovery',
+		path: '/me/account-recovery'
 	};
 
 	return this.wpcom.req.get( args, callback );
@@ -308,8 +288,8 @@ UndocumentedMe.prototype.updateAccountRecoveryPhone = function( country, phoneNu
 		path: '/me/account-recovery/phone',
 		body: {
 			country: country,
-			phone_number: phoneNumber,
-		},
+			phone_number: phoneNumber
+		}
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -318,7 +298,7 @@ UndocumentedMe.prototype.updateAccountRecoveryPhone = function( country, phoneNu
 UndocumentedMe.prototype.deleteAccountRecoveryPhone = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/account-recovery/phone/delete',
+		path: '/me/account-recovery/phone/delete'
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -348,8 +328,8 @@ UndocumentedMe.prototype.updateAccountRecoveryEmail = function( email, callback 
 		apiVersion: '1.1',
 		path: '/me/account-recovery/email',
 		body: {
-			email: email,
-		},
+			email: email
+		}
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -358,7 +338,7 @@ UndocumentedMe.prototype.updateAccountRecoveryEmail = function( email, callback 
 UndocumentedMe.prototype.deleteAccountRecoveryEmail = function( callback ) {
 	var args = {
 		apiVersion: '1.1',
-		path: '/me/account-recovery/email/delete',
+		path: '/me/account-recovery/email/delete'
 	};
 
 	return this.wpcom.req.post( args, callback );
@@ -376,82 +356,11 @@ UndocumentedMe.prototype.newValidationAccountRecoveryEmail = function( callback 
 UndocumentedMe.prototype.deletePurchase = function( purchaseId, fn ) {
 	debug( '/me/purchases/{purchaseId}/delete' );
 
-	return this.wpcom.req.post(
-		{
-			path: `/me/purchases/${ purchaseId }/delete`,
-		},
-		fn
-	);
-};
-
-/**
- * Connect the current account with a social service (e.g. Google/Facebook).
- *
- * @param {string} service - Social service associated with token, e.g. google.
- * @param {string} access_token - OAuth2 Token returned from service.
- * @param {string} id_token - (Optional) OpenID Connect Token returned from service.
- * @param {string} redirect_to - The URL to redirect to after connecting.
- * @param {Function} fn - callback
- *
- * @return {Promise} A promise for the request
- */
-UndocumentedMe.prototype.socialConnect = function(
-	{ service, access_token, id_token, redirect_to },
-	fn
-) {
-	const body = {
-		service,
-		access_token,
-		id_token,
-		redirect_to,
-
-		// This API call is restricted to these OAuth keys
-		client_id: config( 'wpcom_signup_id' ),
-		client_secret: config( 'wpcom_signup_key' ),
-	};
-
-	const args = {
-		path: '/me/social-login/connect',
-		body: body,
-	};
-
-	/*
-	 * Before attempting the social connect, we reload the proxy.
-	 * This ensures that the proxy iframe has set the correct API cookie,
-	 * particularly after the user has logged in, but Calypso hasn't
-	 * been reloaded yet.
-	 */
-	require( 'wpcom-proxy-request' ).reloadProxy();
-
-	this.wpcom.req.post( { metaAPI: { accessAllUsersBlogs: true } } );
-
-	return this.wpcom.req.post( args, fn );
-};
-
-/**
- * Disconnect the current account with a social service (e.g. Google/Facebook).
- *
- * @param {string} service - Social service associated with token, e.g. google.
- * @param {Function} fn - callback
- *
- * @return {Promise} A promise for the request
- */
-UndocumentedMe.prototype.socialDisconnect = function( service, fn ) {
-	const body = {
-		service,
-		// This API call is restricted to these OAuth keys
-		client_id: config( 'wpcom_signup_id' ),
-		client_secret: config( 'wpcom_signup_key' ),
-	};
-
-	const args = {
-		path: '/me/social-login/disconnect',
-		body: body,
-	};
-
-	return this.wpcom.req.post( args, fn );
+	return this.wpcom.req.post( {
+		path: `/me/purchases/${purchaseId}/delete`
+	}, fn );
 };
 
 UndocumentedMe.prototype.preferences = MePreferences;
 
-export default UndocumentedMe;
+module.exports = UndocumentedMe;

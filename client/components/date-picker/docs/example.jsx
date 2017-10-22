@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -18,7 +15,7 @@ const events = [
 	{
 		title: 'Today',
 		date: new Date(),
-		type: 'scheduled',
+		type: 'scheduled'
 	},
 
 	{
@@ -99,7 +96,7 @@ const events = [
 		date: new Date( '1977-07-18' ),
 		type: 'birthday',
 		icon: 'offline',
-	},
+	}
 ];
 
 /*
@@ -139,10 +136,13 @@ class DatePickerExample extends Component {
 
 	render() {
 		// custom tooltip title
-		const tooltipTitle = this.props.translate( '%d Event', '%d Events', {
-			count: this.state.eventsByDay.length,
-			args: this.state.eventsByDay.length,
-		} );
+		const tooltipTitle = this.props.translate(
+			'%d Event',
+			'%d Events', {
+				count: this.state.eventsByDay.length,
+				args: this.state.eventsByDay.length,
+			}
+		);
 
 		return (
 			<Card style={ { width: '300px', margin: 0 } }>
@@ -152,8 +152,7 @@ class DatePickerExample extends Component {
 					onSelectDay={ this.selectDay }
 					onDayMouseEnter={ this.handleDayMouseEnter }
 					onDayMouseLeave={ this.handleDayMouseLeave }
-					selectedDay={ this.state.selectedDay }
-				/>
+					selectedDay={ this.state.selectedDay } />
 
 				<EventsTooltip
 					events={ this.state.eventsByDay }
@@ -172,3 +171,4 @@ const localizedDatePickerExample = localize( DatePickerExample );
 localizedDatePickerExample.displayName = 'DatePicker';
 
 export default localizedDatePickerExample;
+

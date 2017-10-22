@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -17,7 +16,7 @@ import { subscriptionFromApi } from 'state/data-layer/wpcom/read/following/mine/
 import { getFeedByFeedUrl } from 'state/reader/feeds/selectors';
 import { getSiteByFeedUrl } from 'state/reader/sites/selectors';
 import { getSiteName } from 'reader/get-helpers';
-import { bypassDataLayer } from 'state/data-layer/utils';
+import { local } from 'state/data-layer/utils';
 
 export function requestFollow( { dispatch, getState }, action ) {
 	const { payload: { feedUrl } } = action;
@@ -33,7 +32,7 @@ export function requestFollow( { dispatch, getState }, action ) {
 			},
 			onSuccess: action,
 			onFailure: action,
-		} )
+		} ),
 	);
 
 	// build up a notice to show
@@ -43,34 +42,34 @@ export function requestFollow( { dispatch, getState }, action ) {
 	dispatch(
 		successNotice( translate( "You're now following %(siteTitle)s", { args: { siteTitle } } ), {
 			duration: 5000,
-		} )
+		} ),
 	);
 }
 
-export function receiveFollow( store, action, response ) {
+export function receiveFollow( store, action, next, response ) {
 	if ( response && response.subscribed ) {
 		const subscription = subscriptionFromApi( response.subscription );
-		store.dispatch( bypassDataLayer( follow( action.payload.feedUrl, subscription ) ) );
+		store.dispatch( local( follow( action.payload.feedUrl, subscription ) ) );
 	} else {
-		followError( store, action, response );
+		followError( store, action, next, response );
 	}
 }
 
-export function followError( { dispatch }, action, response ) {
+export function followError( { dispatch }, action, next, response ) {
 	dispatch(
 		errorNotice(
 			translate( 'Sorry, there was a problem following %(url)s. Please try again.', {
 				args: { url: action.payload.feedUrl },
 			} ),
-			{ duration: 5000 }
-		)
+			{ duration: 5000 },
+		),
 	);
 
 	if ( response && response.info ) {
 		dispatch( recordFollowError( action.payload.feedUrl, response.info ) );
 	}
 
-	dispatch( bypassDataLayer( unfollow( action.payload.feedUrl ) ) );
+	dispatch( local( unfollow( action.payload.feedUrl ) ) );
 }
 
 export default {

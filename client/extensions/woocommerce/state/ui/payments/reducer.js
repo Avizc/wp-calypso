@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { combineReducers, keyedReducer } from 'state/utils';
 import currency from './currency/reducer';
 import methods from './methods/reducer';

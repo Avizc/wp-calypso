@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get } from 'lodash';
 
 export default function enrichedSurveyData( surveyData, moment, site, purchase ) {
@@ -23,6 +20,6 @@ export default function enrichedSurveyData( surveyData, moment, site, purchase )
 		siteStartDate && {
 			daysSinceSiteCreation: moment.diff( siteStartDate, 'days', true ),
 		},
-		surveyData
+		surveyData,
 	);
 }

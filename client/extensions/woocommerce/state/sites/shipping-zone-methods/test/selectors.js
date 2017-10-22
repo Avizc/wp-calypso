@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -17,7 +15,7 @@ import { LOADING } from 'woocommerce/state/constants';
 
 describe( 'selectors', () => {
 	describe( 'get shipping zone method', () => {
-		test( 'should return null when the shipping zone method does not exist', () => {
+		it( 'should return null when the shipping zone method does not exist', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
@@ -33,7 +31,7 @@ describe( 'selectors', () => {
 			expect( getShippingZoneMethod( state, 17, 123 ) ).to.be.falsey;
 		} );
 
-		test( 'should return the shipping zone method if it exists', () => {
+		it( 'should return the shipping zone method if it exists', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
@@ -48,21 +46,21 @@ describe( 'selectors', () => {
 				},
 			};
 
-			expect( getShippingZoneMethod( state, 17, 123 ) ).to.deep.equal( {
-				id: 17,
-				methodType: 'free_shipping',
-			} );
+			expect( getShippingZoneMethod( state, 17, 123 ) ).to.deep.equal( { id: 17, methodType: 'free_shipping' } );
 		} );
 	} );
 
 	describe( 'shipping zone methods loading state', () => {
-		test( 'when some zone methods are still loading.', () => {
+		it( 'when some zone methods are still loading.', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
 						sites: {
 							123: {
-								shippingZones: [ { id: 1, methodIds: LOADING }, { id: 2, methodIds: [ 7, 42 ] } ],
+								shippingZones: [
+									{ id: 1, methodIds: LOADING },
+									{ id: 2, methodIds: [ 7, 42 ] },
+								]
 							},
 						},
 					},

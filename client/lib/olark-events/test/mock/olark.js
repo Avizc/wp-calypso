@@ -1,15 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { noop } from 'lodash';
+import noop from 'lodash/noop';
 
 /**
  * An empty function that at a high level should look like the olark api provided by https://www.olark.com/api
  */
-function olark() {}
+function olark() {
+
+}
 
 olark.configure = noop;
 olark.identify = noop;

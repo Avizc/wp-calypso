@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -22,7 +18,7 @@ const RelatedPosts = ( {
 	handleAutosavingToggle,
 	isRequestingSettings,
 	isSavingSettings,
-	translate,
+	translate
 } ) => {
 	return (
 		<div>
@@ -41,9 +37,7 @@ const RelatedPosts = ( {
 					<div className="related-posts__module-settings site-settings__child-settings">
 						<CompactFormToggle
 							checked={ !! fields.jetpack_relatedposts_show_headline }
-							disabled={
-								isRequestingSettings || isSavingSettings || ! fields.jetpack_relatedposts_enabled
-							}
+							disabled={ isRequestingSettings || isSavingSettings || ! fields.jetpack_relatedposts_enabled }
 							onChange={ handleAutosavingToggle( 'jetpack_relatedposts_show_headline' ) }
 						>
 							{ translate(
@@ -53,12 +47,12 @@ const RelatedPosts = ( {
 
 						<CompactFormToggle
 							checked={ !! fields.jetpack_relatedposts_show_thumbnails }
-							disabled={
-								isRequestingSettings || isSavingSettings || ! fields.jetpack_relatedposts_enabled
-							}
+							disabled={ isRequestingSettings || isSavingSettings || ! fields.jetpack_relatedposts_enabled }
 							onChange={ handleAutosavingToggle( 'jetpack_relatedposts_show_thumbnails' ) }
 						>
-							{ translate( 'Use a large and visually striking layout' ) }
+							{ translate(
+								'Use a large and visually striking layout'
+							) }
 						</CompactFormToggle>
 					</div>
 
@@ -75,7 +69,7 @@ const RelatedPosts = ( {
 RelatedPosts.defaultProps = {
 	isSavingSettings: false,
 	isRequestingSettings: true,
-	fields: {},
+	fields: {}
 };
 
 RelatedPosts.propTypes = {

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,15 +6,20 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { isRequestingGeo, getGeo, getGeoCountry, getGeoCountryShort } from '../selectors';
+import {
+	isRequestingGeo,
+	getGeo,
+	getGeoCountry,
+	getGeoCountryShort
+} from '../selectors';
 
 describe( 'selectors', () => {
 	describe( 'isRequestingGeo()', () => {
-		test( 'should return requesting state', () => {
+		it( 'should return requesting state', () => {
 			const isRequesting = isRequestingGeo( {
 				geo: {
-					requesting: true,
-				},
+					requesting: true
+				}
 			} );
 
 			expect( isRequesting ).to.be.true;
@@ -24,7 +27,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( 'getGeo()', () => {
-		test( 'should return geo data state', () => {
+		it( 'should return geo data state', () => {
 			const geo = getGeo( {
 				geo: {
 					geo: {
@@ -33,9 +36,9 @@ describe( 'selectors', () => {
 						country_short: 'US',
 						country_long: 'United States',
 						region: 'Ohio',
-						city: 'Mason',
-					},
-				},
+						city: 'Mason'
+					}
+				}
 			} );
 
 			expect( geo ).to.eql( {
@@ -44,23 +47,23 @@ describe( 'selectors', () => {
 				country_short: 'US',
 				country_long: 'United States',
 				region: 'Ohio',
-				city: 'Mason',
+				city: 'Mason'
 			} );
 		} );
 	} );
 
 	describe( 'getGeoCountry()', () => {
-		test( 'should return null if no geo data state', () => {
+		it( 'should return null if no geo data state', () => {
 			const country = getGeoCountry( {
 				geo: {
-					geo: null,
-				},
+					geo: null
+				}
 			} );
 
 			expect( country ).to.be.null;
 		} );
 
-		test( 'should return full country name of geo data state', () => {
+		it( 'should return full country name of geo data state', () => {
 			const country = getGeoCountry( {
 				geo: {
 					geo: {
@@ -69,9 +72,9 @@ describe( 'selectors', () => {
 						country_short: 'US',
 						country_long: 'United States',
 						region: 'Ohio',
-						city: 'Mason',
-					},
-				},
+						city: 'Mason'
+					}
+				}
 			} );
 
 			expect( country ).to.equal( 'United States' );
@@ -79,17 +82,17 @@ describe( 'selectors', () => {
 	} );
 
 	describe( 'getGeoCountryShort()', () => {
-		test( 'should return null if no geo data state', () => {
+		it( 'should return null if no geo data state', () => {
 			const country = getGeoCountryShort( {
 				geo: {
-					geo: null,
-				},
+					geo: null
+				}
 			} );
 
 			expect( country ).to.be.null;
 		} );
 
-		test( 'should return abbreviated country name of geo data state', () => {
+		it( 'should return abbreviated country name of geo data state', () => {
 			const country = getGeoCountryShort( {
 				geo: {
 					geo: {
@@ -98,9 +101,9 @@ describe( 'selectors', () => {
 						country_short: 'US',
 						country_long: 'United States',
 						region: 'Ohio',
-						city: 'Mason',
-					},
-				},
+						city: 'Mason'
+					}
+				}
 			} );
 
 			expect( country ).to.equal( 'US' );

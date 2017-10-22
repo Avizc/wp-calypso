@@ -1,10 +1,7 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import { forEach } from 'lodash';
+import forEach from 'lodash/forEach';
 import url from 'url';
 
 /**
@@ -30,7 +27,10 @@ export function disableAutoPlayOnMedia( post, dom ) {
 	if ( ! dom ) {
 		throw new Error( 'this transform must be used as part of withContentDOM' );
 	}
-	forEach( dom.querySelectorAll( 'audio, video' ), el => ( el.autoplay = false ) );
+	forEach(
+		dom.querySelectorAll( 'audio, video' ),
+		el => el.autoplay = false
+	);
 	return post;
 }
 

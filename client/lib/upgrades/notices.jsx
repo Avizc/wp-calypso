@@ -1,11 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react'; // eslint-disable-line no-unused-vars
-import { flatten, values } from 'lodash';
+import flatten from 'lodash/flatten';
+import values from 'lodash/values';
 import i18n from 'i18n-calypso';
 
 /**
@@ -18,8 +16,7 @@ function getErrorFromApi( errorMessage ) {
 	if ( errorMessage ) {
 		const errorArray = errorMessage.split( /<a href="(.+)">(.+)<\/a>/ );
 
-		if ( errorArray.length === 4 ) {
-			// This assumes we have only one link
+		if ( errorArray.length === 4 ) { // This assumes we have only one link
 			const errorText1 = errorArray[ 0 ],
 				errorUrl = errorArray[ 1 ],
 				errorLinkText = errorArray[ 2 ],

@@ -1,14 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import { localize } from 'i18n-calypso';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:connected-application-item' );
-import classNames from 'classnames';
+var React = require( 'react' ),
+	debug = require( 'debug' )( 'calypso:connected-application-item' ),
+	classNames = require( 'classnames' );
 
 /**
  * Internal dependencies
@@ -20,7 +15,8 @@ import analytics from 'lib/analytics';
 import Button from 'components/button';
 import FoldableCard from 'components/foldable-card';
 
-const ConnectedApplicationItem = React.createClass( {
+export default React.createClass( {
+
 	displayName: 'ConnectedApplicationItem',
 
 	mixins: [ eventRecorder ],
@@ -35,13 +31,13 @@ const ConnectedApplicationItem = React.createClass( {
 
 	getInitialState: function() {
 		return {
-			showDetail: false,
+			showDetail: false
 		};
 	},
 
 	getDefaultProps: function() {
 		return {
-			isPlaceholder: false,
+			isPlaceholder: false
 		};
 	},
 
@@ -64,15 +60,19 @@ const ConnectedApplicationItem = React.createClass( {
 		}
 
 		if ( 'auth' === scope ) {
-			meta = this.props.translate( 'Authentication' );
+			meta = this.translate( 'Authentication' );
 		} else if ( 'global' === scope ) {
-			meta = this.props.translate( 'Global' );
+			meta = this.translate( 'Global' );
 		} else if ( site ) {
 			meta = site.site_name;
 		}
 
 		if ( meta.length ) {
-			return <span className="connected-application-item__meta">{ meta }</span>;
+			return (
+				<span className="connected-application-item__meta">
+					{ meta }
+				</span>
+			);
 		}
 	},
 
@@ -84,31 +84,28 @@ const ConnectedApplicationItem = React.createClass( {
 		}
 
 		if ( 'global' === scope ) {
-			message = this.props.translate(
+			message = this.translate(
 				'This connection is allowed to manage all of your blogs on WordPress.com, ' +
-					'including any Jetpack blogs that are connected to your WordPress.com account.'
+				'including any Jetpack blogs that are connected to your WordPress.com account.'
 			);
 		} else if ( 'auth' === scope ) {
-			message = this.props.translate(
+			message = this.translate(
 				'This connection is not allowed to manage any of your blogs.'
 			);
 		} else if ( false !== site ) {
-			message = this.props.translate(
-				'This connection is only allowed to access {{siteLink}}%(siteName)s{{/siteLink}}',
-				{
+			message = this.translate(
+				'This connection is only allowed to access {{siteLink}}%(siteName)s{{/siteLink}}', {
 					components: {
-						siteLink: (
-							<a
-								target="_blank"
-								rel="noopener noreferrer"
-								href={ safeProtocolUrl( this.props.connection.site.site_URL ) }
-								onClick={ this.recordClickEvent( 'Connected Application Scope Blog Link' ) }
-							/>
-						),
+						siteLink: <a
+							target="_blank"
+							rel="noopener noreferrer"
+							href={ safeProtocolUrl( this.props.connection.site.site_URL ) }
+							onClick={ this.recordClickEvent( 'Connected Application Scope Blog Link' ) }
+						/>
 					},
 					args: {
-						siteName: site.site_name,
-					},
+						siteName: site.site_name
+					}
 				}
 			);
 		}
@@ -120,11 +117,13 @@ const ConnectedApplicationItem = React.createClass( {
 		return (
 			<div>
 				<h2>
-					{ this.props.translate( 'Access Scope' ) }
+					{ this.translate( 'Access Scope' ) }
 					{ this.renderAccessScopeBadge() }
 				</h2>
 
-				<p className="connected-application-item__connection-detail-description">{ message }</p>
+				<p className="connected-application-item__connection-detail-description" >
+					{ message }
+				</p>
 			</div>
 		);
 	},
@@ -137,7 +136,7 @@ const ConnectedApplicationItem = React.createClass( {
 
 		return (
 			<div>
-				<h2>{ this.props.translate( 'Application Website' ) }</h2>
+				<h2>{ this.translate( 'Application Website' ) }</h2>
 				<p>
 					<a
 						href={ safeProtocolUrl( URL ) }
@@ -149,26 +148,27 @@ const ConnectedApplicationItem = React.createClass( {
 					</a>
 				</p>
 
-				{ this.props.translate(
-					'{{detailTitle}}Authorized On{{/detailTitle}}{{detailDescription}}%(date)s{{/detailDescription}}',
-					{
-						components: {
-							detailTitle: <h2 />,
-							detailDescription: (
-								<p className="connected-application-item__connection-detail-description" />
-							),
-						},
-						args: {
-							date: this.props.moment( authorized ).format( 'MMM D, YYYY @ h:mm a' ),
-						},
+				{ this.translate( '{{detailTitle}}Authorized On{{/detailTitle}}{{detailDescription}}%(date)s{{/detailDescription}}', {
+					components: {
+						detailTitle: <h2 />,
+						detailDescription: <p className="connected-application-item__connection-detail-description" />
+					},
+					args: {
+						date: this.moment( authorized ).format( 'MMM D, YYYY @ h:mm a' )
 					}
-				) }
-				<div>{ this.renderScopeMessage() }</div>
+				} ) }
+				<div>
+					{ this.renderScopeMessage() }
+				</div>
 
-				<h2>{ this.props.translate( 'Access Permissions' ) }</h2>
+				<h2>
+					{ this.translate( 'Access Permissions' ) }
+				</h2>
 				<ul className="connected-application-item__connection-detail-descriptions">
 					{ permissions.map( ( { name, description } ) => (
-						<li key={ `permission-${ name }` }>{ description }</li>
+						<li key={ `permission-${ name }` }>
+							{ description }
+						</li>
 					) ) }
 				</ul>
 			</div>
@@ -185,25 +185,19 @@ const ConnectedApplicationItem = React.createClass( {
 	},
 
 	summary: function() {
-		return (
+		return(
 			<div>
-				{ this.props.isPlaceholder ? (
-					<Button compact disabled>
-						{ this.props.translate( 'Loading…' ) }
-					</Button>
-				) : (
-					<Button compact onClick={ this.disconnect }>
-						{ this.props.translate( 'Disconnect' ) }
-					</Button>
-				) }
-			</div>
-		);
+				{ this.props.isPlaceholder
+					? ( <Button compact disabled>{ this.translate( 'Loading…' ) }</Button> )
+					: ( <Button compact onClick={ this.disconnect }>{ this.translate( 'Disconnect' ) }</Button> )
+				}
+			</div> );
 	},
 
 	render: function() {
 		let classes = classNames( {
 			'connected-application-item': true,
-			'is-placeholder': this.props.isPlaceholder,
+			'is-placeholder': this.props.isPlaceholder
 		} );
 
 		return (
@@ -213,12 +207,9 @@ const ConnectedApplicationItem = React.createClass( {
 				expandedSummary={ this.summary() }
 				clickableHeader
 				compact
-				className={ classes }
-			>
+				className={ classes }>
 				{ this.renderDetail() }
 			</FoldableCard>
 		);
 	},
 } );
-
-export default localize( ConnectedApplicationItem );

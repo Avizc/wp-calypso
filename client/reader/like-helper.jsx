@@ -1,4 +1,3 @@
-/** @format */
 // Internal dependencies
 import { isDiscoverPost, isInternalDiscoverPost, isDiscoverSitePick } from 'reader/discover/helper';
 

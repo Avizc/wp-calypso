@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -28,16 +27,9 @@ function renderPostNotFound() {
 			message={ i18n.translate( 'Post Not Found' ) }
 		/>,
 		document.getElementById( 'primary' ),
-		context.store
+		context.store,
 	);
 }
-
-const scrollTopIfNoHash = () =>
-	defer( () => {
-		if ( typeof window !== 'undefined' && ! window.location.hash ) {
-			window.scrollTo( 0, 0 );
-		}
-	} );
 
 export function blogPost( context ) {
 	const blogId = context.params.blog,
@@ -57,16 +49,19 @@ export function blogPost( context ) {
 			blogId={ blogId }
 			postId={ postId }
 			referral={ referral }
-			referralStream={ context.lastRoute }
 			onClose={ function() {
 				page.back( context.lastRoute || '/' );
 			} }
 			onPostNotFound={ renderPostNotFound }
 		/>,
 		document.getElementById( 'primary' ),
-		context.store
+		context.store,
 	);
-	scrollTopIfNoHash();
+	defer( function() {
+		if ( typeof window !== 'undefined' ) {
+			window.scrollTo( 0, 0 );
+		}
+	} );
 }
 
 export function feedPost( context ) {
@@ -87,11 +82,14 @@ export function feedPost( context ) {
 			feedId={ feedId }
 			postId={ postId }
 			onClose={ closer }
-			referralStream={ context.lastRoute }
 			onPostNotFound={ renderPostNotFound }
 		/>,
 		document.getElementById( 'primary' ),
-		context.store
+		context.store,
 	);
-	scrollTopIfNoHash();
+	defer( function() {
+		if ( typeof window !== 'undefined' ) {
+			window.scrollTo( 0, 0 );
+		}
+	} );
 }

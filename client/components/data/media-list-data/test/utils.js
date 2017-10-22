@@ -1,43 +1,40 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { expect } from 'chai';
+var expect = require( 'chai' ).expect;
 
 /**
  * Internal dependencies
  */
-import utils from '../utils';
+var utils = require( '../utils' );
 
-describe( 'utils', () => {
-	describe( '#getMimeBaseTypeFromFilter()', () => {
-		test( 'should return an empty string for an unknown filter', () => {
+describe( 'utils', function() {
+	describe( '#getMimeBaseTypeFromFilter()', function() {
+		it( 'should return an empty string for an unknown filter', function() {
 			var baseType = utils.getMimeBaseTypeFromFilter( 'unknown' );
 
 			expect( baseType ).to.equal( '' );
 		} );
 
-		test( 'should return "image/" for "images"', () => {
+		it( 'should return "image/" for "images"', function() {
 			var baseType = utils.getMimeBaseTypeFromFilter( 'images' );
 
 			expect( baseType ).to.equal( 'image/' );
 		} );
 
-		test( 'should return "audio/" for "audio"', () => {
+		it( 'should return "audio/" for "audio"', function() {
 			var baseType = utils.getMimeBaseTypeFromFilter( 'audio' );
 
 			expect( baseType ).to.equal( 'audio/' );
 		} );
 
-		test( 'should return "video/" for "videos"', () => {
+		it( 'should return "video/" for "videos"', function() {
 			var baseType = utils.getMimeBaseTypeFromFilter( 'videos' );
 
 			expect( baseType ).to.equal( 'video/' );
 		} );
 
-		test( 'should return "application/" for "documents"', () => {
+		it( 'should return "application/" for "documents"', function() {
 			var baseType = utils.getMimeBaseTypeFromFilter( 'documents' );
 
 			expect( baseType ).to.equal( 'application/' );

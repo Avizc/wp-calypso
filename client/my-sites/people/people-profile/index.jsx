@@ -1,21 +1,17 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
-import { localize } from 'i18n-calypso';
 import PureRenderMixin from 'react-pure-render/mixin';
 import classNames from 'classnames';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies
  */
 import Gravatar from 'components/gravatar';
 
-const PeopleProfile = React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'PeopleProfile',
 
 	mixins: [ PureRenderMixin ],
@@ -39,34 +35,22 @@ const PeopleProfile = React.createClass( {
 
 		switch ( role ) {
 			case 'super admin':
-				text = this.props.translate( 'Super Admin', {
-					context: 'Noun: A user role displayed in a badge',
-				} );
+				text = this.translate( 'Super Admin', { context: 'Noun: A user role displayed in a badge' } );
 				break;
 			case 'administrator':
-				text = this.props.translate( 'Admin', {
-					context: 'Noun: A user role displayed in a badge',
-				} );
+				text = this.translate( 'Admin', { context: 'Noun: A user role displayed in a badge' } );
 				break;
 			case 'editor':
-				text = this.props.translate( 'Editor', {
-					context: 'Noun: A user role displayed in a badge',
-				} );
+				text = this.translate( 'Editor', { context: 'Noun: A user role displayed in a badge' } );
 				break;
 			case 'author':
-				text = this.props.translate( 'Author', {
-					context: 'Noun: A user role displayed in a badge',
-				} );
+				text = this.translate( 'Author', { context: 'Noun: A user role displayed in a badge' } );
 				break;
 			case 'contributor':
-				text = this.props.translate( 'Contributor', {
-					context: 'Noun: A user role displayed in a badge',
-				} );
+				text = this.translate( 'Contributor', { context: 'Noun: A user role displayed in a badge' } );
 				break;
 			case 'subscriber':
-				text = this.props.translate( 'Subscriber', {
-					context: 'Noun: A user role displayed in a badge',
-				} );
+				text = this.translate( 'Subscriber', { context: 'Noun: A user role displayed in a badge' } );
 				break;
 			default:
 				text = role;
@@ -84,9 +68,7 @@ const PeopleProfile = React.createClass( {
 		const user = this.props.user;
 		let name;
 		if ( ! user ) {
-			name = this.props.translate( 'Loading Users', {
-				context: 'Placeholder text while fetching users.',
-			} );
+			name = this.translate( 'Loading Users', { context: 'Placeholder text while fetching users.' } );
 		} else if ( user.name ) {
 			name = user.name;
 		} else if ( user.label ) {
@@ -94,7 +76,11 @@ const PeopleProfile = React.createClass( {
 		}
 
 		if ( name ) {
-			name = <div className="people-profile__username">{ name }</div>;
+			name = (
+				<div className="people-profile__username">
+					{ name }
+				</div>
+			);
 		}
 
 		return name;
@@ -103,9 +89,7 @@ const PeopleProfile = React.createClass( {
 	renderLogin() {
 		let login;
 		if ( ! this.props.user ) {
-			login = this.props.translate( 'Loading Users', {
-				context: 'Placeholder text while fetching users.',
-			} );
+			login = this.translate( 'Loading Users', { context: 'Placeholder text while fetching users.' } );
 		} else if ( this.props.user.login ) {
 			login = this.props.user.login;
 		}
@@ -122,7 +106,8 @@ const PeopleProfile = React.createClass( {
 	},
 
 	renderRole() {
-		let superAdminBadge, roleBadge;
+		let superAdminBadge,
+			roleBadge;
 
 		if ( this.props.user && this.props.user.is_super_admin ) {
 			superAdminBadge = (
@@ -159,12 +144,14 @@ const PeopleProfile = React.createClass( {
 
 		return (
 			<div className="people-profile__subscribed">
-				{ this.props.translate( 'Since %(formattedDate)s', {
-					context: 'How long a user has been subscribed to a blog. Example: "Since Sep 16, 2015"',
-					args: {
-						formattedDate: this.props.moment( this.props.user.date_subscribed ).format( 'll' ),
-					},
-				} ) }
+				{
+					this.translate( 'Since %(formattedDate)s', {
+						context: 'How long a user has been subscribed to a blog. Example: "Since Sep 16, 2015"',
+						args: {
+							formattedDate: this.moment( this.props.user.date_subscribed ).format( 'll' )
+						}
+					} )
+				}
 			</div>
 		);
 	},
@@ -176,7 +163,7 @@ const PeopleProfile = React.createClass( {
 	render: function() {
 		const user = this.props.user,
 			classes = classNames( 'people-profile', {
-				'is-placeholder': ! user,
+				'is-placeholder': ! user
 			} );
 
 		return (
@@ -191,7 +178,5 @@ const PeopleProfile = React.createClass( {
 				</div>
 			</div>
 		);
-	},
+	}
 } );
-
-export default localize( PeopleProfile );

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { every, get, isArray, some } from 'lodash';
 
 /**
@@ -37,11 +34,9 @@ export const getAPIShippingZones = ( state, siteId = getSelectedSiteId( state ) 
  */
 export const areShippingZonesLoaded = ( state, siteId = getSelectedSiteId( state ) ) => {
 	const zones = getAPIShippingZones( state, siteId );
-	return (
-		isArray( zones ) &&
+	return isArray( zones ) &&
 		every( zones, zone => areShippingZoneMethodsLoaded( state, zone.id, siteId ) ) &&
-		every( zones, zone => areShippingZoneLocationsLoaded( state, zone.id, siteId ) )
-	);
+		every( zones, zone => areShippingZoneLocationsLoaded( state, zone.id, siteId ) );
 };
 
 /**
@@ -57,8 +52,6 @@ export const areShippingZonesLoading = ( state, siteId = getSelectedSiteId( stat
 	if ( ! isArray( zones ) ) {
 		return false;
 	}
-	return (
-		some( zones, zone => areShippingZoneMethodsLoading( state, zone.id, siteId ) ) ||
-		some( zones, zone => areShippingZoneLocationsLoading( state, zone.id, siteId ) )
-	);
+	return some( zones, zone => areShippingZoneMethodsLoading( state, zone.id, siteId ) ) ||
+		some( zones, zone => areShippingZoneLocationsLoading( state, zone.id, siteId ) );
 };

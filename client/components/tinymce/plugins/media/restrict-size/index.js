@@ -1,19 +1,15 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { deserialize } from 'lib/media-serialization';
 import resize from 'lib/resize-image-url';
 
 /**
  * Module variables
  */
-const REGEXP_ORIGINAL_IMG = /(<img[^>]*?\ssrc=")([^"]*?)("[^>]*?\/?>)/gi;
-const REGEXP_REPLACED_IMG = /(<img[^>]*?\ssrc=")([^"]*?)("[^>]*?)(\sdata-wpmedia-src="([^"]*?)")([^>]*?\/?>)/gi;
-const MEDIA_RETINA =
-	'( -webkit-min-device-pixel-ratio: 1.5 ), ( min--moz-device-pixel-ratio: 1.5 ), ( min-resolution: 1.5dppx )';
+const REGEXP_ORIGINAL_IMG = /(<img[^>]*?\ssrc=")([^"]*?)("[^>]*?\/?>)/ig;
+const REGEXP_REPLACED_IMG = /(<img[^>]*?\ssrc=")([^"]*?)("[^>]*?)(\sdata-wpmedia-src="([^"]*?)")([^>]*?\/?>)/ig;
+const MEDIA_RETINA = '( -webkit-min-device-pixel-ratio: 1.5 ), ( min--moz-device-pixel-ratio: 1.5 ), ( min-resolution: 1.5dppx )';
 const BASE_MAX_WIDTH = 680;
 const MAX_WIDTH = getMaxWidth();
 
@@ -41,7 +37,7 @@ function getResizedImgUrlFromImgString( img ) {
 
 	return {
 		originalUrl: parsed.media.URL,
-		resizedUrl: resize( parsed.media.URL, Math.min( parsed.media.width || Infinity, MAX_WIDTH ) ),
+		resizedUrl: resize( parsed.media.URL, Math.min( parsed.media.width || Infinity, MAX_WIDTH ) )
 	};
 }
 
@@ -68,7 +64,7 @@ export function setImages( content ) {
 }
 
 export default function( editor ) {
-	editor.on( 'BeforeSetContent BeforeSetWpcomMedia', event => {
+	editor.on( 'BeforeSetContent BeforeSetWpcomMedia', ( event ) => {
 		if ( ! event.content || 'html' === event.mode ) {
 			return;
 		}
@@ -76,7 +72,7 @@ export default function( editor ) {
 		event.content = setImages( event.content );
 	} );
 
-	editor.on( 'BeforeSetWpcomMedia', event => {
+	editor.on( 'BeforeSetWpcomMedia', ( event ) => {
 		/**
 		 * Add the resized image URL so we can properly preload it in the editor
 		 */
@@ -87,7 +83,7 @@ export default function( editor ) {
 		}
 	} );
 
-	editor.on( 'GetContent', event => {
+	editor.on( 'GetContent', ( event ) => {
 		if ( event.format !== 'raw' || ! event.content || event.selection ) {
 			return;
 		}
@@ -95,7 +91,7 @@ export default function( editor ) {
 		event.content = resetImages( event.content );
 	} );
 
-	editor.on( 'PostProcess', event => {
+	editor.on( 'PostProcess', ( event ) => {
 		if ( ! event.content ) {
 			return;
 		}
@@ -103,7 +99,7 @@ export default function( editor ) {
 		event.content = resetImages( event.content );
 	} );
 
-	editor.on( 'BeforeAddUndo', event => {
+	editor.on( 'BeforeAddUndo', ( event ) => {
 		if ( ! event.level.content ) {
 			return;
 		}

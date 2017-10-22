@@ -1,12 +1,8 @@
-/**
- * /*
+/*
  * External dependencies
- *
- * @format
  */
-
 import debugModule from 'debug';
-import { noop } from 'lodash';
+import noop from 'lodash/noop';
 
 /*
  * Internal dependencies
@@ -73,7 +69,7 @@ export function recordSaveEvent( context ) {
 	} else if ( 'publish' === nextStatus || 'private' === nextStatus ) {
 		tracksEventName += 'publish';
 		usageAction = 'new';
-		if ( context && context.isConfirmationSidebarEnabled ) {
+		if ( context && context.isConfirmationFeatureEnabled ) {
 			eventContext = 'confirmation_sidebar';
 		}
 	} else if ( 'pending' === nextStatus ) {
@@ -82,7 +78,7 @@ export function recordSaveEvent( context ) {
 		tracksEventName += 'schedule';
 		statName = 'status-schedule';
 		statEvent = 'Scheduled Post';
-		if ( context && context.isConfirmationSidebarEnabled ) {
+		if ( context && context.isConfirmationFeatureEnabled ) {
 			eventContext = 'confirmation_sidebar';
 		}
 	}
@@ -103,9 +99,7 @@ export function recordSaveEvent( context ) {
 
 	debug(
 		'recordSaveEvent %s currentStatus=%s nextStatus=%s',
-		tracksEventName,
-		currentStatus,
-		nextStatus
+		tracksEventName, currentStatus, nextStatus
 	);
 
 	analytics.tracks.recordEvent( tracksEventName, {

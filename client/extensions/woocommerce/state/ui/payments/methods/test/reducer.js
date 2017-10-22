@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,6 +6,7 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
+import reducer from '../reducer';
 import {
 	openPaymentMethodForEdit,
 	closeEditingPaymentMethod,
@@ -15,7 +14,6 @@ import {
 	changePaymentMethodEnabled,
 	changePaymentMethodField,
 } from '../actions';
-import reducer from '../reducer';
 
 const siteId = 123;
 const initialState = {
@@ -27,7 +25,7 @@ const initialState = {
 
 describe( 'reducer', () => {
 	describe( 'openPaymentMethodForEdit', () => {
-		test( 'should set currentlyEditingId when the method has a server-side ID', () => {
+		it( 'should set currentlyEditingId when the method has a server-side ID', () => {
 			const newState = reducer( initialState, openPaymentMethodForEdit( siteId, 1 ) );
 			expect( newState.creates ).to.be.empty;
 			expect( newState.updates ).to.be.empty;
@@ -35,7 +33,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingChanges ).to.be.empty;
 		} );
 
-		test( 'should set currentlyEditingId when the method has a provisional ID', () => {
+		it( 'should set currentlyEditingId when the method has a provisional ID', () => {
 			const newState = reducer( initialState, openPaymentMethodForEdit( siteId, { index: 0 } ) );
 			expect( newState.creates ).to.be.empty;
 			expect( newState.updates ).to.be.empty;
@@ -45,7 +43,7 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'closeEditingPaymentMethod', () => {
-		test( 'should do nothing if there are no changes to save', () => {
+		it( 'should do nothing if there are no changes to save', () => {
 			const state = {
 				creates: [],
 				updates: [],
@@ -60,7 +58,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should commit changes to the "updates" bucket if the method has a server-side ID', () => {
+		it( 'should commit changes to the "updates" bucket if the method has a server-side ID', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 42 } ],
@@ -71,11 +69,14 @@ describe( 'reducer', () => {
 
 			const newState = reducer( state, closeEditingPaymentMethod( siteId ) );
 			expect( newState.creates ).to.be.empty;
-			expect( newState.updates ).to.deep.equal( [ { id: 42 }, { id: 1, name: 'Hi There' } ] );
+			expect( newState.updates ).to.deep.equal( [
+				{ id: 42 },
+				{ id: 1, name: 'Hi There' },
+			] );
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should overwrite data on the "updates" bucket if the method has a server-side ID', () => {
+		it( 'should overwrite data on the "updates" bucket if the method has a server-side ID', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, name: 'OldName' } ],
@@ -86,11 +87,13 @@ describe( 'reducer', () => {
 
 			const newState = reducer( state, closeEditingPaymentMethod( siteId ) );
 			expect( newState.creates ).to.be.empty;
-			expect( newState.updates ).to.deep.equal( [ { id: 1, name: 'Hi There' } ] );
+			expect( newState.updates ).to.deep.equal( [
+				{ id: 1, name: 'Hi There' },
+			] );
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should commit changes to the "creates" bucket if the method has a provisional ID', () => {
+		it( 'should commit changes to the "creates" bucket if the method has a provisional ID', () => {
 			const state = {
 				creates: [ { id: { index: 0 } } ],
 				updates: [],
@@ -108,7 +111,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should overwrite data on the "creates" bucket if the method has a provisional ID', () => {
+		it( 'should overwrite data on the "creates" bucket if the method has a provisional ID', () => {
 			const state = {
 				creates: [ { id: { index: 0 }, name: 'OldName' } ],
 				updates: [],
@@ -119,13 +122,15 @@ describe( 'reducer', () => {
 
 			const newState = reducer( state, closeEditingPaymentMethod( siteId ) );
 			expect( newState.updates ).to.be.empty;
-			expect( newState.creates ).to.deep.equal( [ { id: { index: 0 }, name: 'Hi There' } ] );
+			expect( newState.creates ).to.deep.equal( [
+				{ id: { index: 0 }, name: 'Hi There' },
+			] );
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 	} );
 
 	describe( 'cancelEditingPaymentMethod', () => {
-		test( 'should not commit changes for an "update" payment method', () => {
+		it( 'should not commit changes for an "update" payment method', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, name: 'Good Name' } ],
@@ -140,7 +145,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should not commit changes for a "create" payment method', () => {
+		it( 'should not commit changes for a "create" payment method', () => {
 			const state = {
 				creates: [ { id: { index: 0 }, name: 'Good Name' } ],
 				updates: [],
@@ -157,15 +162,12 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'changePaymentMethodField', () => {
-		test( 'should not do anything if there is no method being edited', () => {
-			const newState = reducer(
-				initialState,
-				changePaymentMethodField( siteId, 'foo', 'something' )
-			);
+		it( 'should not do anything if there is no method being edited', () => {
+			const newState = reducer( initialState, changePaymentMethodField( siteId, 'foo', 'something' ) );
 			expect( newState ).to.deep.equal( initialState );
 		} );
 
-		test( 'should change the payment method name without committing it', () => {
+		it( 'should change the payment method name without committing it', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, name: 'Previous Value' } ],
@@ -183,7 +185,7 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'changePaymentMethodEnabled', () => {
-		test( 'should place enabled state in updates when no updates', () => {
+		it( 'should place enabled state in updates when no updates', () => {
 			const state = {
 				updates: [],
 			};
@@ -191,14 +193,12 @@ describe( 'reducer', () => {
 			expect( newState.updates ).to.deep.equal( [ { id: 1, enabled: true } ] );
 		} );
 
-		test( 'should place enabled state in updates when there is an existing update', () => {
+		it( 'should place enabled state in updates when there is an existing update', () => {
 			const state = {
 				updates: [ { id: 1, name: 'Previous Value' } ],
 			};
 			const newState = reducer( state, changePaymentMethodEnabled( siteId, 1, true ) );
-			expect( newState.updates ).to.deep.equal( [
-				{ enabled: true, id: 1, name: 'Previous Value' },
-			] );
+			expect( newState.updates ).to.deep.equal( [ { enabled: true, id: 1, name: 'Previous Value', } ] );
 		} );
 	} );
 } );

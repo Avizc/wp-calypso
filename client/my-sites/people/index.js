@@ -1,19 +1,16 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import page from 'page';
+var page = require( 'page' );
 
 /**
  * Internal dependencies
  */
-import controller from 'my-sites/controller';
-import config from 'config';
-import peopleController from './controller';
+var controller = require( 'my-sites/controller' ),
+	config = require( 'config' ),
+	peopleController = require( './controller' );
 
-export default function() {
+module.exports = function() {
 	if ( config.isEnabled( 'manage/people' ) ) {
 		[ 'team', 'followers', 'email-followers', 'viewers' ].forEach( function( filter ) {
 			page( '/people/' + filter, controller.siteSelection, controller.sites );
@@ -45,4 +42,4 @@ export default function() {
 		// Anything else is unexpected and should be redirected to the default people management URL: /people/team
 		page( '/people/(.*)?', controller.siteSelection, peopleController.redirectToTeam );
 	}
-}
+};

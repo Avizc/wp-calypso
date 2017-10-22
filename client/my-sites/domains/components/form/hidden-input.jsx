@@ -1,55 +1,55 @@
 /**
  * External dependencies
- *
- * @format
  */
-import React, { PureComponent } from 'react';
-import isEmpty from 'lodash/isEmpty';
+var React = require( 'react' ),
+	isEmpty = require( 'lodash/isEmpty' );
 
 /**
  * Internal dependencies
  */
-import Input from './input';
+var Input = require( './input' );
 
-export class HiddenInput extends PureComponent {
-	constructor( props, context ) {
-		super( props, context );
-		this.state = {
-			toggled: ! isEmpty( props.value ),
+module.exports = React.createClass( {
+	displayName: 'HiddenInput',
+
+	componentWillReceiveProps: function( nextProps ) {
+		if ( ! this.state.toggled && ! isEmpty( nextProps.value ) ) {
+			this.setState( { toggled: true } );
+		}
+	},
+
+	getInitialState: function() {
+		return {
+			toggled: false
 		};
-		this.inputField = null;
-	}
+	},
 
-	handleClick = event => {
+	componentDidUpdate: function( prevProps, prevState ) {
+		// Focus the input only when the user explicitly clicked the toggle link
+		if ( ! prevState.toggled && this.state.toggled && prevProps.value === this.props.value ) {
+			this.refs.input.focus();
+		}
+	},
+
+	handleClick: function( event ) {
 		event.preventDefault();
 
-		this.setState(
-			{
-				toggled: true,
-			},
-			() => {
-				this.inputField && this.inputField.focus();
-			}
-		);
-	};
+		this.setState( {
+			toggled: true
+		} );
+	},
 
-	assignInputFieldRef = input => {
-		this.inputField = input;
-	};
-
-	render() {
+	render: function() {
 		if ( this.state.toggled ) {
-			return <Input ref={ this.assignInputFieldRef } { ...this.props } />;
+			return (
+				<Input ref="input" { ...this.props } />
+			);
 		}
 
 		return (
-			<div className="form__hidden-input">
-				<a href="" onClick={ this.handleClick }>
-					{ this.props.text }
-				</a>
+			<div className="hidden-input">
+				<a href="" onClick={ this.handleClick }>{ this.props.text }</a>
 			</div>
 		);
 	}
-}
-
-export default HiddenInput;
+} );

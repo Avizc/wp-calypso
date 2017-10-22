@@ -1,18 +1,17 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
-import Dispatcher from 'dispatcher';
+var Dispatcher = require( 'dispatcher' );
 
 var PeopleActions = {
-	removePeopleNotices: logs => {
+
+	removePeopleNotices: ( logs ) => {
 		Dispatcher.handleViewAction( {
 			type: 'REMOVE_PEOPLE_NOTICES',
-			logs: logs,
+			logs: logs
 		} );
-	},
+	}
+
 };
 
-export default PeopleActions;
+module.exports = PeopleActions;

@@ -1,63 +1,50 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import PureRenderMixin from 'react-pure-render/mixin';
 import classnames from 'classnames';
 import { assign, omit } from 'lodash';
 import Gridicon from 'gridicons';
 
-class ExternalLink extends Component {
-	static defaultProps = {
-		iconSize: 18,
-		showIconFirst: false,
-	};
+export default React.createClass( {
 
-	static propTypes = {
-		className: PropTypes.string,
-		href: PropTypes.string,
-		onClick: PropTypes.func,
-		icon: PropTypes.bool,
-		iconSize: PropTypes.number,
-		target: PropTypes.string,
-		showIconFirst: PropTypes.bool,
-		iconClassName: PropTypes.string,
-	};
+	displayName: 'ExternalLink',
+
+	mixins: [ PureRenderMixin ],
+
+	propTypes: {
+		className: React.PropTypes.string,
+		href: React.PropTypes.string,
+		onClick: React.PropTypes.func,
+		icon: React.PropTypes.bool,
+		iconSize: React.PropTypes.number,
+		target: React.PropTypes.string,
+		showIconFirst: React.PropTypes.bool,
+		iconClassName: React.PropTypes.string,
+	},
+
+	getDefaultProps() {
+		return {
+			iconSize: 18,
+			showIconFirst: false
+		};
+	},
 
 	render() {
-		const classes = classnames(
-			'external-link',
-			this.props.className,
-			{
-				'icon-first': !! this.props.showIconFirst,
-			},
-			{
-				'has-icon': !! this.props.icon,
-			}
-		);
-		const props = assign(
-			{},
-			omit( this.props, 'icon', 'iconSize', 'showIconFirst', 'iconClassName' ),
-			{
-				className: classes,
-				rel: 'external',
-			}
-		);
+		const classes = classnames( 'external-link', this.props.className, {
+			'has-icon': !! this.props.icon,
+		} );
+		const props = assign( {}, omit( this.props, 'icon', 'iconSize', 'showIconFirst', 'iconClassName' ), {
+			className: classes,
+			rel: 'external'
+		} );
 
 		if ( props.target ) {
 			props.rel = props.rel.concat( ' noopener noreferrer' );
 		}
 
-		const iconComponent = (
-			<Gridicon
-				className={ this.props.iconClassName }
-				icon="external"
-				size={ this.props.iconSize }
-			/>
-		);
+		const iconComponent = <Gridicon className={ this.props.iconClassName } icon="external" size={ this.props.iconSize } />;
 
 		return (
 			<a { ...props }>
@@ -67,6 +54,4 @@ class ExternalLink extends Component {
 			</a>
 		);
 	}
-}
-
-export default ExternalLink;
+} );

@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -11,14 +10,12 @@ import {
 	COMMENTS_DELETE,
 	COMMENTS_RECEIVE,
 	COMMENTS_COUNT_INCREMENT,
-	COMMENTS_WRITE_ERROR,
 } from 'state/action-types';
-import { bypassDataLayer } from 'state/data-layer/utils';
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { getSitePost } from 'state/posts/selectors';
 import { errorNotice } from 'state/notices/actions';
 
-/**
+/***
  * Creates a placeholder comment for a given text and postId
  * We need placehodler id to be unique in the context of siteId, postId for that specific user,
  * date milliseconds will do for that purpose.
@@ -29,20 +26,20 @@ import { errorNotice } from 'state/notices/actions';
  * @returns {Object}                           comment placeholder
  */
 export const createPlaceholderComment = ( commentText, postId, parentCommentId ) => ( {
-	ID: 'placeholder-' + new Date().getTime(),
+	ID: 'placeholder-' + ( new Date().getTime() ),
 	parent: parentCommentId ? { ID: parentCommentId } : false,
-	date: new Date().toISOString(),
+	date: ( new Date() ).toISOString(),
 	content: commentText,
 	status: 'pending',
 	type: 'comment',
 	post: { ID: postId },
 	isPlaceholder: true,
-	placeholderState: 'PENDING',
+	placeholderState: 'PENDING'
 } );
 
-/**
+/***
  * Creates a placeholder comment for a given text and postId
- * We need placeholder id to be unique in the context of siteId and postId for that specific user,
+ * We need placehodler id to be unique in the context of siteId, postId for that specific user,
  * date milliseconds will do for that purpose.
  *
  * @param {Function} dispatch redux dispatcher
@@ -59,55 +56,42 @@ export const dispatchNewCommentRequest = ( dispatch, action, path ) => {
 		siteId,
 		postId,
 		comments: [ placeholder ],
-		skipSort: !! parentCommentId,
+		skipSort: !! parentCommentId
 	} );
 
-	dispatch(
-		http( {
-			method: 'POST',
-			apiVersion: '1.1',
-			path,
-			body: {
-				content: commentText,
-			},
-			onSuccess: {
-				...action,
-				placeholderId: placeholder.ID,
-			},
-			onFailure: { ...action, placeholderId: placeholder.ID },
-		} )
-	);
+	dispatch( http( {
+		method: 'POST',
+		apiVersion: '1.1',
+		path,
+		body: {
+			content: commentText
+		},
+		onSuccess: {
+			...action,
+			placeholderId: placeholder.ID
+		},
+		onFailure: action
+	} ) );
 };
 
-/**
+/***
  * updates the placeholder comments with server values
  *
  * @param {Function} dispatch redux dispatcher
  * @param {Object}   action   redux action
+ * @param {Function} next     dispatches to next middleware in chain
  * @param {Object}   comment  updated comment from the request response
  */
-export const updatePlaceholderComment = (
-	{ dispatch },
-	{ siteId, postId, parentCommentId, placeholderId },
-	comment
-) => {
+export const updatePlaceholderComment = ( { dispatch }, { siteId, postId, parentCommentId, placeholderId }, next, comment ) => {
 	// remove placeholder from state
-	dispatch(
-		bypassDataLayer( { type: COMMENTS_DELETE, siteId, postId, commentId: placeholderId } )
-	);
+	dispatch( { type: COMMENTS_DELETE, siteId, postId, commentId: placeholderId } );
 	// add new comment to state with updated values from server
-	dispatch( {
-		type: COMMENTS_RECEIVE,
-		siteId,
-		postId,
-		comments: [ comment ],
-		skipSort: !! parentCommentId,
-	} );
+	dispatch( { type: COMMENTS_RECEIVE, siteId, postId, comments: [ comment ], skipSort: !! parentCommentId } );
 	// increment comments count
 	dispatch( { type: COMMENTS_COUNT_INCREMENT, siteId, postId } );
 };
 
-/**
+/***
  * dispatches a error notice if creating a new comment request failed
  *
  * @param {Function} dispatch redux dispatcher
@@ -115,33 +99,12 @@ export const updatePlaceholderComment = (
  * @param {Number}   siteId   site identifier
  * @param {Number}   postId   post identifier
  */
-export const handleWriteCommentFailure = (
-	{ dispatch, getState },
-	{ siteId, postId, parentCommentId, placeholderId }
-) => {
-	// Dispatch error notice
+export const handleWriteCommentFailure = ( { dispatch, getState }, { siteId, postId } ) => {
 	const post = getSitePost( getState(), siteId, postId );
-	const postTitle =
-		post &&
-		post.title &&
-		post.title
-			.trim()
-			.slice( 0, 20 )
-			.trim()
-			.concat( '…' );
+	const postTitle = post && post.title && post.title.trim().slice( 0, 20 ).trim().concat( '…' );
 	const error = postTitle
 		? translate( 'Could not add a reply to “%(postTitle)s”', { args: { postTitle } } )
 		: translate( 'Could not add a reply to this post' );
 
-	// Dispatch an error so we can record the failed comment placeholder in state
-	dispatch( {
-		type: COMMENTS_WRITE_ERROR,
-		siteId,
-		postId,
-		commentId: placeholderId,
-		parentCommentId,
-		error,
-	} );
-
-	dispatch( errorNotice( error, { duration: 5000 } ) );
+	dispatch( errorNotice( error ) );
 };

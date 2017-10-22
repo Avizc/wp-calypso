@@ -1,17 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:paygate' );
+var debug = require( 'debug' )( 'calypso:paygate' );
 
 /**
  * Internal dependencies
  */
-import { loadjQueryDependentScript } from 'lib/load-script';
+var loadScript = require( 'lib/load-script' );
 
 /**
  * PaygateLoader component
@@ -39,21 +34,18 @@ PaygateLoader.prototype.ready = function( paygateUrl, callback ) {
 		return callback( null, window.Paygate );
 	}
 
-	loadjQueryDependentScript(
-		paygateUrl,
-		function( error ) {
-			if ( error ) {
-				callback( error );
-				return;
-			}
+	loadScript.loadjQueryDependentScript( paygateUrl, function( error ) {
+		if ( error ) {
+			callback( error );
+			return;
+		}
 
-			debug( 'Paygate loaded for the first time' );
-			callback( null, window.Paygate );
-		}.bind( this )
-	);
+		debug( 'Paygate loaded for the first time' );
+		callback( null, window.Paygate );
+	}.bind( this ) );
 };
 
 /**
  * Expose `PaygateLoader`
  */
-export default new PaygateLoader();
+module.exports = new PaygateLoader();

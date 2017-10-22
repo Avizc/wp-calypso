@@ -1,74 +1,61 @@
-/**
- * /* eslint-disable wpcalypso/jsx-classname-namespace
- *
- * @format
- */
+/* eslint-disable wpcalypso/jsx-classname-namespace */
 
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { noop, range } from 'lodash';
+import React, { Component, PropTypes } from 'react';
+import { localize } from 'i18n-calypso';
+import { noop } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import ProductListItem from './list-item';
-import ProductListItemPlaceholder from './list-item-placeholder';
+import formatCurrency from 'lib/format-currency';
+import CompactCard from 'components/card/compact';
+import FormRadio from 'components/forms/form-radio';
 
 class ProductList extends Component {
 	static propTypes = {
-		siteId: PropTypes.number.isRequired,
-		paymentButtons: PropTypes.array,
+		paymentButtons: PropTypes.array.isRequired,
 		selectedPaymentId: PropTypes.number,
 		onSelectedChange: PropTypes.func,
-		onEditClick: PropTypes.func,
-		onTrashClick: PropTypes.func,
 	};
 
 	static defaultProps = {
 		selectedPaymentId: null,
 		onSelectedChange: noop,
-		onEditClick: noop,
-		onTrashClick: noop,
 	};
 
-	renderListItems() {
-		const {
-			siteId,
-			paymentButtons,
-			selectedPaymentId,
-			onSelectedChange,
-			onEditClick,
-			onTrashClick,
-		} = this.props;
-
-		if ( ! paymentButtons ) {
-			// Render 2 placeholder items
-			return range( 2 ).map( i => <ProductListItemPlaceholder key={ i } /> );
-		}
-
-		return paymentButtons.map( ( { ID: paymentId, title, price, currency, featuredImageId } ) => (
-			<ProductListItem
-				key={ paymentId }
-				siteId={ siteId }
-				paymentId={ paymentId }
-				isSelected={ selectedPaymentId === paymentId }
-				title={ title }
-				price={ price }
-				currency={ currency }
-				featuredImageId={ featuredImageId }
-				onSelectedChange={ onSelectedChange }
-				onEditClick={ onEditClick }
-				onTrashClick={ onTrashClick }
-			/>
-		) );
-	}
+	handleRadioChange = event => {
+		this.props.onSelectedChange( parseInt( event.target.value ) );
+	};
 
 	render() {
-		return <div className="editor-simple-payments-modal__list">{ this.renderListItems() }</div>;
+		const { paymentButtons, selectedPaymentId } = this.props;
+
+		return (
+			<div className="editor-simple-payments-modal__list">
+				{ paymentButtons.map( ( { ID: paymentId, title, price, currency } ) => {
+					const radioId = `simple-payments-list-item-radio-${ paymentId }`;
+
+					return (
+						<CompactCard className="editor-simple-payments-modal__list-item" key={ paymentId }>
+							<FormRadio
+								name="selection"
+								id={ radioId }
+								value={ paymentId }
+								checked={ selectedPaymentId === paymentId }
+								onChange={ this.handleRadioChange }
+							/>
+							<label className="editor-simple-payments-modal__list-label" htmlFor={ radioId }>
+								<div>{ title }</div><div>{ formatCurrency( price, currency ) }</div>
+							</label>
+						</CompactCard>
+					);
+				} ) }
+			</div>
+		);
 	}
 }
 
-export default ProductList;
+export default localize( ProductList );

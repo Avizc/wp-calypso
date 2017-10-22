@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -17,7 +16,7 @@ import {
 } from 'state/reader/follows/actions';
 import { errorNotice } from 'state/notices/actions';
 import { buildBody } from '../utils';
-import { bypassDataLayer } from 'state/data-layer/utils';
+import { local } from 'state/data-layer/utils';
 
 export function requestPostEmailSubscription( { dispatch }, action ) {
 	dispatch(
@@ -28,11 +27,11 @@ export function requestPostEmailSubscription( { dispatch }, action ) {
 			apiVersion: '1.2',
 			onSuccess: action,
 			onFailure: action,
-		} )
+		} ),
 	);
 }
 
-export function receivePostEmailSubscription( store, action, response ) {
+export function receivePostEmailSubscription( store, action, next, response ) {
 	// validate that it worked
 	const subscribed = !! ( response && response.subscribed );
 	if ( ! subscribed ) {
@@ -42,18 +41,18 @@ export function receivePostEmailSubscription( store, action, response ) {
 	}
 	// pass this on, but tack in the delivery_frequency that we got back from the API
 	store.dispatch(
-		bypassDataLayer(
+		local(
 			updateNewPostEmailSubscription(
 				action.payload.blogId,
-				get( response, [ 'subscription', 'delivery_frequency' ] )
-			)
-		)
+				get( response, [ 'subscription', 'delivery_frequency' ] ),
+			),
+		),
 	);
 }
 
 export function receivePostEmailSubscriptionError( { dispatch }, action ) {
 	dispatch( errorNotice( translate( 'Sorry, we had a problem subscribing. Please try again.' ) ) );
-	dispatch( bypassDataLayer( unsubscribeToNewPostEmail( action.payload.blogId ) ) );
+	dispatch( local( unsubscribeToNewPostEmail( action.payload.blogId ) ) );
 }
 
 export default {
@@ -61,7 +60,7 @@ export default {
 		dispatchRequest(
 			requestPostEmailSubscription,
 			receivePostEmailSubscription,
-			receivePostEmailSubscriptionError
+			receivePostEmailSubscriptionError,
 		),
 	],
 };

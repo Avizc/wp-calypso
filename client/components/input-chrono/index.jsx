@@ -1,11 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
 import React from 'react';
 import chrono from 'chrono-node';
 
@@ -14,16 +9,16 @@ import chrono from 'chrono-node';
  */
 const supportedLanguages = [ 'en', 'jp' ];
 
-const InputChrono = React.createClass( {
+export default React.createClass( {
 	displayName: 'InputChrono',
 
 	focused: false,
 
 	propTypes: {
-		value: PropTypes.string,
-		lang: PropTypes.string,
-		onSet: PropTypes.func,
-		placeholder: PropTypes.string,
+		value: React.PropTypes.string,
+		lang: React.PropTypes.string,
+		onSet: React.PropTypes.func,
+		placeholder: React.PropTypes.string
 	},
 
 	getDefaultProps() {
@@ -31,13 +26,13 @@ const InputChrono = React.createClass( {
 			value: '',
 			lang: '',
 			placeholder: '',
-			onSet: () => {},
+			onSet: () => {}
 		};
 	},
 
 	getInitialState() {
 		return {
-			value: this.props.value,
+			value: this.props.value
 		};
 	},
 
@@ -72,8 +67,8 @@ const InputChrono = React.createClass( {
 		var date = chrono.parseDate( event.target.value );
 
 		if ( date ) {
-			this.setState( { value: this.props.moment( date ).calendar() } );
-			this.props.onSet( this.props.moment( date ) );
+			this.setState( { value: this.moment( date ).calendar() } );
+			this.props.onSet( this.moment( date ) );
 		}
 	},
 
@@ -83,8 +78,8 @@ const InputChrono = React.createClass( {
 
 	render() {
 		return (
-			<div className="input-chrono__container">
-				{ this.isLangSupported( this.props.lang ) ? (
+			<div className="input-chrono__container" >
+				{ this.isLangSupported( this.props.lang ) ?
 					<input
 						className="input-chrono"
 						value={ this.state.value }
@@ -92,14 +87,13 @@ const InputChrono = React.createClass( {
 						onKeyDown={ this.onKeyDown }
 						onChange={ this.handleChange }
 						onFocus={ this.handleFocus }
-						onBlur={ this.handleBlur }
-					/>
-				) : (
-					<div className="text-chrono">{ this.state.value }</div>
-				) }
+						onBlur={ this.handleBlur } /> :
+					<div className="text-chrono">
+						{ this.state.value }
+					</div>
+				}
 			</div>
 		);
-	},
+	}
 } );
 
-export default localize( InputChrono );

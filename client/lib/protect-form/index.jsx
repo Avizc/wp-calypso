@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import debugModule from 'debug';
 import page from 'page';
 import i18n from 'i18n-calypso';
@@ -15,9 +11,7 @@ import { includes, without } from 'lodash';
  * Module variables
  */
 const debug = debugModule( 'calypso:protect-form' );
-const confirmText = i18n.translate(
-	'You have unsaved changes. Are you sure you want to leave this page?'
-);
+const confirmText = i18n.translate( 'You have unsaved changes. Are you sure you want to leave this page?' );
 const beforeUnloadText = i18n.translate( 'You have unsaved changes.' );
 let formsChanged = [];
 let listenerCount = 0;
@@ -89,8 +83,8 @@ export const protectForm = WrappedComponent => {
  */
 export class ProtectFormGuard extends Component {
 	static propTypes = {
-		isChanged: PropTypes.bool.isRequired,
-	};
+		isChanged: PropTypes.bool.isRequired
+	}
 
 	componentDidMount() {
 		addBeforeUnloadListener();

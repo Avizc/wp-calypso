@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { dispatchWithProps } from 'woocommerce/state/helpers';
 import { get, post, put } from 'woocommerce/state/data-layer/request/actions';
 import { setError } from 'woocommerce/state/sites/status/wc-api/actions';
@@ -45,12 +42,10 @@ export function handleProductCreate( { dispatch }, action ) {
 	const { id, ...productData } = product;
 
 	if ( typeof id === 'number' ) {
-		dispatch(
-			setError( siteId, action, {
-				message: 'Attempting to create a product which already has a valid id.',
-				product,
-			} )
-		);
+		dispatch( setError( siteId, action, {
+			message: 'Attempting to create a product which already has a valid id.',
+			product,
+		} ) );
 		return;
 	}
 
@@ -63,12 +58,10 @@ export function handleProductUpdate( { dispatch }, action ) {
 
 	// Verify the id
 	if ( typeof product.id !== 'number' ) {
-		dispatch(
-			setError( siteId, action, {
-				message: 'Attempting to update a product without a valid id.',
-				product,
-			} )
-		);
+		dispatch( setError( siteId, action, {
+			message: 'Attempting to update a product without a valid id.',
+			product,
+		} ) );
 		return;
 	}
 

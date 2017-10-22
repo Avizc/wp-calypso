@@ -1,19 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:siftscience' );
+var debug = require( 'debug' )( 'calypso:siftscience' );
 
 /**
  * Internal dependencies
  */
-import { loadScript } from 'lib/load-script';
-import user from 'lib/user';
-import config from 'config';
+var loadScript = require( 'lib/load-script' ),
+	user = require( 'lib/user' ),
+	config = require( 'config' );
 
 var SIFTSCIENCE_URL = 'https://cdn.siftscience.com/s.js',
 	hasLoaded = false;
@@ -21,11 +16,10 @@ var SIFTSCIENCE_URL = 'https://cdn.siftscience.com/s.js',
 if ( ! window._sift ) {
 	window._sift = [];
 }
-
 /**
  * Expose `SiftScience`
  */
-export default {
+module.exports = {
 	recordUser: function() {
 		if ( ! hasLoaded ) {
 			window._sift.push( [ '_setAccount', config( 'siftscience_key' ) ] );
@@ -33,7 +27,7 @@ export default {
 			window._sift.push( [ '_trackPageview' ] );
 
 			hasLoaded = true;
-			loadScript( SIFTSCIENCE_URL, function( error ) {
+			loadScript.loadScript( SIFTSCIENCE_URL, function( error ) {
 				if ( error ) {
 					debug( 'Error loading siftscience' );
 				} else {
@@ -41,5 +35,5 @@ export default {
 				}
 			} );
 		}
-	},
+	}
 };

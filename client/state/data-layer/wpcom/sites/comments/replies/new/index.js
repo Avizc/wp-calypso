@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { COMMENTS_REPLY_WRITE } from 'state/action-types';
 import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 import {
@@ -16,7 +13,7 @@ export const writeReplyComment = ( { dispatch }, action ) =>
 	dispatchNewCommentRequest(
 		dispatch,
 		action,
-		`/sites/${ action.siteId }/comments/${ action.parentCommentId }/replies/new`
+		`/sites/${ action.siteId }/comments/${ action.parentCommentId }/replies/new`,
 	);
 
 export default {

@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import * as DiscoverHelper from 'reader/discover/helper';
 
 export function shouldShowComments( post ) {
@@ -11,7 +8,11 @@ export function shouldShowComments( post ) {
 		return true;
 	}
 
-	if ( post.discussion && ( post.discussion.comments_open || post.discussion.comment_count > 0 ) ) {
+	if (
+		! post.is_jetpack &&
+		post.discussion &&
+		( post.discussion.comments_open || post.discussion.comment_count > 0 )
+	) {
 		return true;
 	}
 

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -19,12 +17,12 @@ describe( 'Plugins Log Store', () => {
 		initialErrors = LogStore.getErrors().length;
 	} );
 
-	test( 'logs an update error', () => {
+	it( 'logs an update error', function() {
 		Dispatcher.handleServerAction( actions.updatedPluginError );
 		assert.lengthOf( LogStore.getErrors(), initialErrors + 1 );
 	} );
 
-	test( 'removing an error notice deletes an error', () => {
+	it( 'removing an error notice deletes an error', function() {
 		Dispatcher.handleServerAction( actions.removeErrorNotice );
 		assert.lengthOf( LogStore.getErrors(), initialErrors - 1 );
 	} );

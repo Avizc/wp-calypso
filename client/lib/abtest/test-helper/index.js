@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import ReactDom from 'react-dom';
 import React from 'react';
 import Debug from 'debug';
@@ -25,7 +22,7 @@ export default function injectTestHelper( element ) {
 				debug( 'Switching test variant', test.experimentId, variation );
 				localStorage.setItem( 'ABTests', JSON.stringify( testSettings ) );
 				window.location.reload();
-			},
+			}
 		} ),
 		element
 	);

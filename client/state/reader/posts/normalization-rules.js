@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -36,8 +35,6 @@ import pickCanonicalMedia from 'lib/post-normalizer/rule-pick-canonical-media';
 import removeElementsBySelector from 'lib/post-normalizer/rule-content-remove-elements-by-selector';
 import addDiscoverProperties from 'lib/post-normalizer/rule-add-discover-properties';
 import linkJetpackCarousels from 'lib/post-normalizer/rule-content-link-jetpack-carousels';
-import makeLinksSafe from 'lib/post-normalizer/rule-make-links-safe';
-import makeContentLinksSafe from 'lib/post-normalizer/rule-content-make-links-safe';
 
 /**
  * Module vars
@@ -122,13 +119,11 @@ const fastPostNormalizationRules = flow( [
 	makeSiteIdSafeForApi,
 	pickPrimaryTag,
 	safeImageProperties( READER_CONTENT_WIDTH ),
-	makeLinksSafe,
 	withContentDom( [
 		removeStyles,
 		removeElementsBySelector,
 		makeImagesSafe(),
 		makeEmbedsSafe,
-		makeContentLinksSafe,
 		disableAutoPlayOnEmbeds,
 		disableAutoPlayOnMedia,
 		detectMedia,

@@ -1,20 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:trophies-data' );
+var debug = require( 'debug' )( 'calypso:trophies-data' ),
+	Emitter = require( 'lib/mixins/emitter' ),
+	store = require( 'store' );
 
 /**
  * Internal dependencies
  */
-import Emitter from 'lib/mixins/emitter';
-import store from 'store';
-import wp from 'lib/wp';
-
-const wpcom = wp.undocumented();
+var wpcom = require( 'lib/wp' ).undocumented();
 
 function TrophiesData() {
 	if ( ! ( this instanceof TrophiesData ) ) {
@@ -44,22 +38,20 @@ TrophiesData.prototype.get = function() {
 };
 
 TrophiesData.prototype.fetch = function() {
-	wpcom.me().getTrophies(
-		function( error, data ) {
-			if ( error ) {
-				debug( error.error, error.message );
-			}
+	wpcom.me().getTrophies( function( error, data ) {
+		if ( error ) {
+			debug( error.error, error.message );
+		}
 
-			this.data = data;
+		this.data = data;
 
-			if ( ! this.initialized ) {
-				this.initialized = true;
-				this.emit( 'change' );
-			}
+		if ( ! this.initialized ) {
+			this.initialized = true;
+			this.emit( 'change' );
+		}
 
-			store.set( 'TrophiesData', data );
-		}.bind( this )
-	);
+		store.set( 'TrophiesData', data );
+	}.bind( this ) );
 };
 
 TrophiesData.prototype.initialize = function( TrophiesData ) {
@@ -71,4 +63,4 @@ TrophiesData.prototype.hasLoadedFromServer = function() {
 	return this.initialized;
 };
 
-export default new TrophiesData();
+module.exports = new TrophiesData();

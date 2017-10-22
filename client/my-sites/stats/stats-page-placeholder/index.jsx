@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classnames from 'classnames';
 
 /**
@@ -29,7 +25,7 @@ const StatsPagePlaceholder = props => (
 );
 
 StatsPagePlaceholder.propTypes = {
-	className: PropTypes.string,
+	className: PropTypes.string
 };
 
 export default StatsPagePlaceholder;

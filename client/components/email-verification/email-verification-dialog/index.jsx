@@ -1,14 +1,11 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { get, includes, noop } from 'lodash';
+import noop from 'lodash/noop';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
+import { get, includes } from 'lodash';
 
 /**
  * Internal dependencies
@@ -17,14 +14,15 @@ import Dialog from 'components/dialog';
 import Button from 'components/button';
 import Spinner from 'components/spinner';
 import { getCurrentUserEmail } from 'state/current-user/selectors';
-import { verifyEmail, resetVerifyEmailState } from 'state/current-user/email-verification/actions';
+import {
+	verifyEmail,
+	resetVerifyEmailState,
+} from 'state/current-user/email-verification/actions';
 
 class VerifyEmailDialog extends Component {
 	getResendButtonLabel() {
-		if (
-			'sent' === this.props.emailVerificationStatus ||
-			'error' === this.props.emailVerificationStatus
-		) {
+		if ( 'sent' === this.props.emailVerificationStatus ||
+			'error' === this.props.emailVerificationStatus ) {
 			return this.props.translate( 'Email Sent' );
 		}
 		if ( 'requesting' === this.props.emailVerificationStatus ) {
@@ -43,17 +41,16 @@ class VerifyEmailDialog extends Component {
 			<Button
 				key="resend"
 				primary={ false }
-				disabled={ includes(
-					[ 'requesting', 'sent', 'error' ],
-					this.props.emailVerificationStatus
-				) }
-				onClick={ this.props.verifyEmail }
-			>
+				disabled={ includes( [ 'requesting', 'sent', 'error' ], this.props.emailVerificationStatus ) }
+				onClick={ this.props.verifyEmail }>
 				{ this.getResendButtonLabel() }
 			</Button>,
-			<Button key="close" primary={ true } onClick={ this.handleClose }>
-				{ this.props.translate( 'OK' ) }
-			</Button>,
+			<Button
+				key="close"
+				primary={ true }
+				onClick={ this.handleClose }>
+					{ this.props.translate( 'OK' ) }
+			</Button>
 		];
 	}
 
@@ -63,28 +60,26 @@ class VerifyEmailDialog extends Component {
 
 			confirmExplanation: this.props.translate(
 				'When you first signed up for a WordPress.com account we sent you an email. ' +
-					'Please open it and click on the blue button to verify your email address.'
+				'Please open it and click on the blue button to verify your email address.'
 			),
 
 			confirmReasoning: this.props.translate(
 				'Verifying your email allows us to assist you if you ' +
-					'ever lose access to your account in the future.'
+				'ever lose access to your account in the future.'
 			),
 
 			confirmEmail: this.props.translate(
 				'{{wrapper}}%(email)s{{/wrapper}} {{emailPreferences}}change{{/emailPreferences}}',
 				{
 					components: {
-						wrapper: (
-							<span className="email-verification-dialog__confirmation-dialog-email-wrapper" />
-						),
-						emailPreferences: <a href="/me/account" />,
+						wrapper: <span className="email-verification-dialog__confirmation-dialog-email-wrapper" />,
+						emailPreferences: <a href="/me/account" />
 					},
 					args: {
-						email: this.props.email,
-					},
+						email: this.props.email
+					}
 				}
-			),
+			)
 		};
 
 		return (
@@ -93,33 +88,25 @@ class VerifyEmailDialog extends Component {
 				buttons={ this.getDialogButtons() }
 				additionalClassNames="email-verification-dialog__confirmation-dialog is-narrow"
 			>
-				<h1 className="email-verification-dialog__confirmation-dialog-heading is-variable-height">
-					{ strings.confirmHeading }
-				</h1>
-				<p className="email-verification-dialog__confirmation-dialog-email">
-					{ strings.confirmEmail }
-				</p>
-				<p className="email-verification-dialog__confirmation-dialog-explanation">
-					{ strings.confirmExplanation }
-				</p>
-				<p className="email-verification-dialog__confirmation-dialog-reasoning">
-					{ strings.confirmReasoning }
-				</p>
+				<h1 className="email-verification-dialog__confirmation-dialog-heading is-variable-height">{ strings.confirmHeading }</h1>
+				<p className="email-verification-dialog__confirmation-dialog-email">{ strings.confirmEmail }</p>
+				<p className="email-verification-dialog__confirmation-dialog-explanation">{ strings.confirmExplanation }</p>
+				<p className="email-verification-dialog__confirmation-dialog-reasoning">{ strings.confirmReasoning }</p>
 			</Dialog>
 		);
 	}
 }
 
 VerifyEmailDialog.propTypes = {
-	onClose: PropTypes.func,
-	translate: PropTypes.func,
+	onClose: React.PropTypes.func,
+	translate: React.PropTypes.func,
 	// connected props:
-	email: PropTypes.string,
-	emailVerificationStatus: PropTypes.string,
+	email: React.PropTypes.string,
+	emailVerificationStatus: React.PropTypes.string,
 };
 
 VerifyEmailDialog.defaultProps = {
-	onClose: noop,
+	onClose: noop
 };
 
 export default connect(

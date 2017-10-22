@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { noop } from 'lodash';
 
@@ -13,9 +11,9 @@ import ExternalLink from 'components/external-link';
 
 class ReaderVisitLink extends React.Component {
 	static propTypes = {
-		href: PropTypes.string,
-		iconSize: PropTypes.number,
-		onClick: PropTypes.func,
+		href: React.PropTypes.string,
+		iconSize: React.PropTypes.number,
+		onClick: React.PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -35,7 +33,9 @@ class ReaderVisitLink extends React.Component {
 				iconClassName="reader-visit-link__icon"
 				onClick={ this.props.onClick }
 			>
-				<span className="reader-visit-link__label">{ this.props.children }</span>
+				<span className="reader-visit-link__label">
+					{ this.props.children }
+				</span>
 			</ExternalLink>
 		);
 	}

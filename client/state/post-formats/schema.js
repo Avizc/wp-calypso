@@ -1,4 +1,3 @@
-/** @format */
 export const postFormatsItemsSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -10,11 +9,11 @@ export const postFormatsItemsSchema = {
 			additionalProperties: false,
 			patternProperties: {
 				// ID of the post format
-				'^[0-9a-z-_]+$': {
+				'^[0-9a-z\-_]+$': {
 					type: 'string',
 					description: 'Label of the post format',
-				},
-			},
-		},
-	},
+				}
+			}
+		}
+	}
 };

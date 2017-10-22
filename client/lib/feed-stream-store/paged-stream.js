@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import { assign, filter, findIndex, findLastIndex, forEach, last, map, defer } from 'lodash';
 import debugFactory from 'debug';
 
@@ -52,7 +49,7 @@ export default class PagedStream {
 			orderBy: 'date',
 			_isLastPage: false,
 			_isFetchingNextPage: false,
-			keyMaker: spec.keyMaker,
+			keyMaker: spec.keyMaker
 		} );
 	}
 
@@ -68,6 +65,7 @@ export default class PagedStream {
 		}
 
 		switch ( action.type ) {
+
 			case ActionTypes.RECEIVE_PAGE:
 				this.receivePage( action.id, action.error, action.data );
 				break;
@@ -139,9 +137,8 @@ export default class PagedStream {
 
 	isValidPostOrGap( postKey ) {
 		const post = FeedPostStore.get( postKey );
-		return (
-			post && post._state !== 'error' && post._state !== 'pending' && post._state !== 'minimal'
-		);
+		return post && post._state !== 'error' && post._state !== 'pending' &&
+			post._state !== 'minimal';
 	}
 
 	selectNextItem() {
@@ -164,8 +161,7 @@ export default class PagedStream {
 	}
 
 	selectPrevItem() {
-		if ( this.selectedIndex < 1 ) {
-			// this also captures a selectedIndex of 0, and that's intentional
+		if ( this.selectedIndex < 1 ) { // this also captures a selectedIndex of 0, and that's intentional
 			return;
 		}
 		const prevIndex = findLastIndex( this.postKeys, this.isValidPostOrGap, this.selectedIndex - 1 );
@@ -184,10 +180,7 @@ export default class PagedStream {
 
 	selectItem( postKey, id ) {
 		const selectedIndex = findIndex( this.postKeys, postKey );
-		if (
-			this.isValidPostOrGap( this.postKeys[ selectedIndex ] ) &&
-			selectedIndex !== this.selectedIndex
-		) {
+		if ( this.isValidPostOrGap( this.postKeys[ selectedIndex ] ) && selectedIndex !== this.selectedIndex ) {
 			this.selectedIndex = selectedIndex;
 			setLastStoreId( id );
 			this.emitChange();
@@ -210,13 +203,9 @@ export default class PagedStream {
 	}
 
 	hasRecentError( errorType ) {
-		const aMinuteAgo = Date.now() - 60 * 1000;
+		const aMinuteAgo = Date.now() - ( 60 * 1000 );
 		return this.errors.some( function( error ) {
-			return (
-				error.timestamp &&
-				error.timestamp > aMinuteAgo &&
-				( ! errorType || errorType === error.error )
-			);
+			return ( error.timestamp && error.timestamp > aMinuteAgo ) && ( ! errorType || errorType === error.error );
 		} );
 	}
 
@@ -228,7 +217,7 @@ export default class PagedStream {
 	filterNewPosts( posts ) {
 		const postById = this.postById;
 		posts = filter( posts, function( post ) {
-			return ! postById.has( post.ID );
+			return ! ( postById.has( post.ID ) );
 		} );
 		return map( posts, this.keyMaker );
 	}

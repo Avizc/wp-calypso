@@ -1,26 +1,20 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import page from 'page';
+var page = require( 'page' );
 
 /**
  * Internal dependencies
  */
-import controller from 'my-sites/controller';
-import mediaController from './controller';
-import config from 'config';
+var controller = require( 'my-sites/controller' ),
+	mediaController = require( './controller' ),
+	config = require( 'config' );
 
-export default function() {
+module.exports = function() {
+
 	if ( config.isEnabled( 'manage/media' ) ) {
 		page( '/media', controller.siteSelection, controller.sites );
-		page(
-			'/media/:filter?/:domain',
-			controller.siteSelection,
-			controller.navigation,
-			mediaController.media
-		);
+		page( '/media/:filter?/:domain', controller.siteSelection, controller.navigation, mediaController.media );
 	}
-}
+
+};

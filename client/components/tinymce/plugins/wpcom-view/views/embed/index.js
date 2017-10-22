@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import EventEmitter from 'events/';
 import { defer, uniqueId } from 'lodash';
 /**
@@ -14,7 +11,10 @@ import EmbedsStore from 'lib/embeds/store';
 import actions from 'lib/embeds/actions';
 import EmbedView from './view';
 import { getSelectedSiteId } from 'state/ui/selectors';
-import { SELECTED_SITE_SUBSCRIBE, SELECTED_SITE_UNSUBSCRIBE } from 'state/action-types';
+import {
+	SELECTED_SITE_SUBSCRIBE,
+	SELECTED_SITE_UNSUBSCRIBE
+} from 'state/action-types';
 
 export default class EmbedViewManager extends EventEmitter {
 	constructor() {
@@ -108,7 +108,7 @@ export default class EmbedViewManager extends EventEmitter {
 			const url = currentMatch[ 2 ];
 
 			// Disregard URL if it's not a supported embed pattern for the site
-			const isMatchingPattern = list.embeds.some( pattern => pattern.test( url ) );
+			const isMatchingPattern = list.embeds.some( ( pattern ) => pattern.test( url ) );
 			if ( ! isMatchingPattern ) {
 				continue;
 			}
@@ -123,7 +123,7 @@ export default class EmbedViewManager extends EventEmitter {
 
 			return {
 				index: currentMatch.index + currentMatch[ 1 ].length,
-				content: url,
+				content: url
 			};
 		}
 	}
@@ -134,9 +134,5 @@ export default class EmbedViewManager extends EventEmitter {
 
 	getComponent() {
 		return EmbedView;
-	}
-
-	edit( editor, content ) {
-		editor.execCommand( 'embedDialog', content );
 	}
 }

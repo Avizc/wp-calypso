@@ -1,121 +1,106 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import DocService from './service';
-import DocumentHead from 'components/data/document-head';
-import CompactCard from 'components/card/compact';
-import highlight from 'lib/highlight';
+var DocService = require( './service' ),
+	CompactCard = require( 'components/card/compact' ),
+	highlight = require( 'lib/highlight' );
 
-export default class extends React.Component {
-	static displayName = 'SingleDocument';
+module.exports = React.createClass( {
+	displayName: 'SingleDocument',
+	propTypes: {
+		path: React.PropTypes.string.isRequired,
+		term: React.PropTypes.string,
+		sectionId: React.PropTypes.string
+	},
+	timeoutID: null,
 
-	static propTypes = {
-		path: PropTypes.string.isRequired,
-		term: PropTypes.string,
-		sectionId: PropTypes.string,
-	};
+	getInitialState: function() {
+		return {
+			body: ''
+		};
+	},
 
-	state = {
-		body: '',
-	};
-
-	timeoutID = null;
-
-	componentDidMount() {
+	componentDidMount: function() {
 		this.fetch();
-	}
+	},
 
-	componentDidUpdate( prevProps ) {
+	componentDidUpdate: function( prevProps ) {
 		if ( this.props.path !== prevProps.path ) {
 			this.fetch();
 		}
 		if ( this.state.body ) {
 			this.setBodyScrollPosition();
 		}
-	}
+	},
 
-	componentWillUnmount() {
+	componentWillUnmount: function() {
 		this.clearLoadingMessage();
-	}
+	},
 
-	fetch = () => {
+	fetch: function() {
 		this.setState( {
-			body: '',
+			body: ''
 		} );
 		this.delayLoadingMessage();
-		DocService.fetch(
-			this.props.path,
-			function( err, body ) {
+		DocService.fetch( this.props.path, function( err, body ) {
+			if ( this.isMounted() ) {
 				this.setState( {
-					body: err || body,
+					body: ( err || body )
 				} );
-			}.bind( this )
-		);
-	};
+			}
+		}.bind( this ) );
+	},
 
-	setBodyScrollPosition = () => {
+	setBodyScrollPosition: function() {
 		if ( this.props.sectionId ) {
-			const sectionNode = document.getElementById( this.props.sectionId );
+			var sectionNode = document.getElementById( this.props.sectionId );
 
 			if ( sectionNode ) {
 				sectionNode.scrollIntoView();
 			}
 		}
-	};
+	},
 
-	delayLoadingMessage = () => {
+	delayLoadingMessage: function() {
 		this.clearLoadingMessage();
-		this.timeoutID = setTimeout(
-			function() {
-				if ( ! this.state.body ) {
-					this.setState( {
-						body: 'Loading…',
-					} );
-				}
-			}.bind( this ),
-			1000
-		);
-	};
+		this.timeoutID = setTimeout( function() {
+			if ( ! this.state.body ) {
+				this.setState( {
+					body: 'Loading…'
+				} );
+			}
+		}.bind( this ), 1000 );
+	},
 
-	clearLoadingMessage = () => {
+	clearLoadingMessage: function() {
 		if ( 'number' === typeof this.timeoutID ) {
 			window.clearTimeout( this.timeoutID );
 			this.timeoutID = null;
 		}
-	};
+	},
 
-	render() {
-		const editURL =
-			encodeURI( 'https://github.com/Automattic/wp-calypso/edit/master/' + this.props.path ) +
+	render: function() {
+
+		var editURL = encodeURI( 'https://github.com/Automattic/wp-calypso/edit/master/' + this.props.path ) +
 			'?message=Documentation: <title>&description=What did you change and why&target_branch=update/docs-your-title';
-		const titleMatches = this.state.body.length && this.state.body.match( /<h1[^>]+>(.+)<\/h1>/ );
-		const title = titleMatches && titleMatches[ 1 ];
 
 		return (
 			<div className="devdocs devdocs__doc">
-				{ title ? <DocumentHead title={ title } /> : null }
 				<CompactCard className="devdocs__doc-header">
 					Path: <code>{ this.props.path }</code>
-					<a href={ editURL } target="_blank" rel="noopener noreferrer">
-						Improve this document on GitHub &rarr;
-					</a>
+					<a href={ editURL } target="_blank" rel="noopener noreferrer">Improve this document on GitHub &rarr;</a>
 				</CompactCard>
 				<div
 					className="devdocs__doc-content"
 					ref="body"
-					dangerouslySetInnerHTML={ //eslint-disable-line react/no-danger
-					{ __html: highlight( this.props.term, this.state.body ) } }
+					dangerouslySetInnerHTML={{ __html: highlight( this.props.term, this.state.body ) }} //eslint-disable-line react/no-danger
 				/>
 			</div>
 		);
 	}
-}
+} );

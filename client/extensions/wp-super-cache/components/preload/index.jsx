@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { flowRight, get, pick } from 'lodash';
@@ -33,7 +30,11 @@ import { getStatus } from '../../state/status/selectors';
  * Render cache preload interval number input
  * @returns { object } React element containing the preload interval number input
  */
-const CachePreloadInterval = ( { handleChange, isDisabled, preload_interval = 0 } ) => (
+const CachePreloadInterval = ( {
+	handleChange,
+	isDisabled,
+	preload_interval = 0,
+} ) => (
 	<FormTextInput
 		className="wp-super-cache__preload-interval"
 		disabled={ isDisabled }
@@ -42,8 +43,7 @@ const CachePreloadInterval = ( { handleChange, isDisabled, preload_interval = 0 
 		onChange={ handleChange( 'preload_interval' ) }
 		step="1"
 		type="number"
-		value={ preload_interval }
-	/>
+		value={ preload_interval } />
 );
 
 class PreloadTab extends Component {
@@ -65,10 +65,10 @@ class PreloadTab extends Component {
 				setFieldValue( 'preload_interval', 0, true );
 			}
 		} );
-	};
+	}
 
 	getPreloadPostsOptions( post_count ) {
-		if ( ! post_count || post_count <= 100 ) {
+		if ( ! post_count || ( post_count <= 100 ) ) {
 			return [];
 		}
 
@@ -122,20 +122,14 @@ class PreloadTab extends Component {
 			{ value: 'none', description: translate( 'No emails' ) },
 			{ value: 'many', description: translate( 'High (two emails per 100 posts)' ) },
 			{ value: 'medium', description: translate( 'Medium (one email per 100 posts)' ) },
-			{
-				value: 'less',
-				description: translate(
-					'Low (one email at the start and one at the end of preloading all posts)'
-				),
-			},
+			{ value: 'less', description: translate( 'Low (one email at the start and one at the end of preloading all posts)' ) },
 		];
 
 		if ( preload_disabled_by_admin ) {
 			return (
 				<Notice
 					showDismiss={ false }
-					text={ translate( 'Preloading is disabled by the administrator of your site.' ) }
-				/>
+					text={ translate( 'Preloading is disabled by the administrator of your site.' ) } />
 			);
 		}
 
@@ -143,8 +137,7 @@ class PreloadTab extends Component {
 			return (
 				<Notice
 					showDismiss={ false }
-					text={ translate( 'Preloading is disabled as caching is disabled.' ) }
-				/>
+					text={ translate( 'Preloading is disabled as caching is disabled.' ) } />
 			);
 		}
 
@@ -152,8 +145,7 @@ class PreloadTab extends Component {
 			return (
 				<Notice
 					showDismiss={ false }
-					text={ translate( 'Preloading is disabled as supercaching is disabled.' ) }
-				/>
+					text={ translate( 'Preloading is disabled as supercaching is disabled.' ) } />
 			);
 		}
 
@@ -161,14 +153,16 @@ class PreloadTab extends Component {
 			<div>
 				<QueryStatus siteId={ siteId } />
 
-				<SectionHeader label={ 'Preload' }>
+				<SectionHeader label={ ( 'Preload' ) }>
 					<Button
 						compact
 						primary
 						disabled={ isRequesting || isSaving }
-						onClick={ handleSubmitForm }
-					>
-						{ isSaving ? translate( 'Saving…' ) : translate( 'Save Settings' ) }
+						onClick={ handleSubmitForm }>
+						{ isSaving
+							? translate( 'Saving…' )
+							: translate( 'Save Settings' )
+						}
 					</Button>
 				</SectionHeader>
 
@@ -178,20 +172,16 @@ class PreloadTab extends Component {
 							<FormToggle
 								checked={ !! preload_on }
 								disabled={ isRequesting || isSaving }
-								onChange={ handleAutosavingToggle( 'preload_on' ) }
-							>
+								onChange={ handleAutosavingToggle( 'preload_on' ) }>
 								<span>
-									{ translate(
-										'Preload mode. (Garbage collection only on legacy cache files. Recommended.)'
-									) }
+									{ translate( 'Preload mode. (Garbage collection only on legacy cache files. Recommended.)' ) }
 								</span>
 							</FormToggle>
 
 							<FormToggle
 								checked={ this.state.preloadRefresh }
 								disabled={ isRequesting || isSaving }
-								onChange={ this.handlePreloadRefreshChange }
-							>
+								onChange={ this.handlePreloadRefreshChange }>
 								<span>
 									{ translate(
 										'Refresh preloaded cache files every {{number /}} minute ',
@@ -203,66 +193,69 @@ class PreloadTab extends Component {
 													handleChange,
 													isDisabled: isRequesting || isSaving || ! this.state.preloadRefresh,
 													preload_interval,
-												} ),
-											},
+												} )
+											}
 										}
 									) }
 
-									{ translate( '(minimum %(minutes)d minute).', '(minimum %(minutes)d minutes).', {
-										args: { minutes: minimum_preload_interval || 0 },
-										count: minimum_preload_interval || 0,
-									} ) }
+									{ translate(
+										'(minimum %(minutes)d minute).',
+										'(minimum %(minutes)d minutes).',
+										{
+											args: { minutes: minimum_preload_interval || 0 },
+											count: minimum_preload_interval || 0,
+										}
+									) }
 								</span>
 							</FormToggle>
 
 							<FormToggle
 								checked={ !! preload_taxonomies }
 								disabled={ isRequesting || isSaving }
-								onChange={ handleAutosavingToggle( 'preload_taxonomies' ) }
-							>
-								<span>{ translate( 'Preload tags, categories and other taxonomies.' ) }</span>
+								onChange={ handleAutosavingToggle( 'preload_taxonomies' ) }>
+								<span>
+									{ translate( 'Preload tags, categories and other taxonomies.' ) }
+								</span>
 							</FormToggle>
 						</FormFieldset>
 
-						{ post_count &&
-						post_count > 100 && (
-							<FormFieldset>
-								<FormLabel htmlFor="preload_posts">{ translate( 'Preload Posts' ) }</FormLabel>
-								<FormSelect
-									className="wp-super-cache__preload-posts"
-									disabled={ isRequesting || isSaving }
-									id="preload_posts"
-									name="preload_posts"
-									onChange={ handleSelect }
-									value={ preload_posts || 'all' }
-								>
-									{ this.getPreloadPostsOptions( post_count ).map( option => (
-										<option key={ option } value={ option }>
-											{ option }
-										</option>
-									) ) }
-								</FormSelect>
-							</FormFieldset>
-						) }
+						{ post_count && post_count > 100 &&
+						<FormFieldset>
+							<FormLabel htmlFor="preload_posts">
+								{ translate( 'Preload Posts' ) }
+							</FormLabel>
+							<FormSelect
+								className="wp-super-cache__preload-posts"
+								disabled={ isRequesting || isSaving }
+								id="preload_posts"
+								name="preload_posts"
+								onChange={ handleSelect }
+								value={ preload_posts || 'all' }>
+								{
+									this.getPreloadPostsOptions( post_count )
+										.map( option => <option key={ option } value={ option }>{ option }</option> )
+								}
+							</FormSelect>
+						</FormFieldset>
+						}
 
 						<hr />
 
 						<FormFieldset>
-							<FormLegend>{ translate( 'Status Emails' ) }</FormLegend>
+							<FormLegend>
+								{ translate( 'Status Emails' ) }
+							</FormLegend>
 							<FormSelect
 								disabled={ isRequesting || isSaving }
 								id="preload_email_volume"
 								name="preload_email_volume"
 								onChange={ handleSelect }
-								value={ preload_email_volume || 'none' }
-							>
-								{ statusEmailAmountSelectValues.map( ( { value, description } ) => {
-									return (
-										<option key={ value } value={ value }>
-											{ description }
-										</option>
-									);
-								} ) }
+								value={ preload_email_volume || 'none' }>
+								{
+									statusEmailAmountSelectValues.map( ( { value, description } ) => {
+										return <option key={ value } value={ value }>{ description }</option>;
+									} )
+								}
 							</FormSelect>
 							<FormSettingExplanation>
 								{ translate( 'Send me status emails when files are refreshed during preload.' ) }
@@ -273,25 +266,22 @@ class PreloadTab extends Component {
 
 				<SectionHeader label={ translate( 'Preload Cache' ) } />
 				<Card>
-					{ is_preloading ? (
-						<Button
+				{ is_preloading
+					? <Button
 							compact
 							busy={ isPreloading }
 							disabled={ isPreloading }
-							onClick={ this.cancelPreload }
-						>
+							onClick={ this.cancelPreload }>
 							{ translate( 'Cancel Cache Preload' ) }
-						</Button>
-					) : (
-						<Button
+							</Button>
+					: <Button
 							compact
 							busy={ isPreloading }
 							disabled={ isPreloading }
-							onClick={ this.preload }
-						>
+							onClick={ this.preload }>
 							{ translate( 'Preload Cache Now' ) }
 						</Button>
-					) }
+				}
 				</Card>
 			</div>
 		);
@@ -299,7 +289,7 @@ class PreloadTab extends Component {
 }
 
 const connectComponent = connect(
-	state => {
+	( state ) => {
 		const siteId = getSelectedSiteId( state );
 
 		return {
@@ -310,7 +300,7 @@ const connectComponent = connect(
 	{
 		cancelPreloadCache,
 		preloadCache,
-	}
+	},
 );
 
 const getFormSettings = settings => {
@@ -326,4 +316,7 @@ const getFormSettings = settings => {
 	] );
 };
 
-export default flowRight( connectComponent, WrapSettingsForm( getFormSettings ) )( PreloadTab );
+export default flowRight(
+	connectComponent,
+	WrapSettingsForm( getFormSettings )
+)( PreloadTab );

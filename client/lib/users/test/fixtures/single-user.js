@@ -1,5 +1,4 @@
-/** @format */
-export default {
+module.exports = {
 	ID: 8,
 	avatar_URL: 'https://1.gravatar.com/avatar',
 	email: 'test8@example.com',
@@ -8,5 +7,5 @@ export default {
 	nice_name: 'test8',
 	profile_URL: 'http://en.gravatar.com',
 	roles: [ 'editor' ],
-	site_ID: 1234,
+	site_ID: 1234
 };

@@ -1,12 +1,11 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import { isEmpty, omit } from 'lodash';
+import { Component, PropTypes } from 'react';
+import {
+	isEmpty,
+	omit,
+} from 'lodash';
 import debugFactory from 'debug';
 
 /**
@@ -48,17 +47,20 @@ const makeTour = tree => {
 		}
 
 		setTourMeta( props ) {
-			const { isValid, lastAction, next, quit, start, sectionName, shouldPause, stepName } = props;
-			const step = stepName;
-			const branching = tourBranching( tree );
-			this.tourMeta = {
+			const {
+				isValid,
+				lastAction,
 				next,
 				quit,
 				start,
-				isValid,
-				lastAction,
 				sectionName,
 				shouldPause,
+				stepName,
+			} = props;
+			const step = stepName;
+			const branching = tourBranching( tree );
+			this.tourMeta = {
+				next, quit, start, isValid, lastAction, sectionName, shouldPause,
 				step,
 				branching,
 				isLastStep: this.isLastStep( { step, branching } ),

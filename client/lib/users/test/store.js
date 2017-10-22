@@ -1,23 +1,22 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { assert } from 'chai';
-import { findIndex, isUndefined, some } from 'lodash';
-
+import findIndex from 'lodash/findIndex';
+import some from 'lodash/some';
+import isUndefined from 'lodash/isUndefined';
 /**
  * Internal dependencies
  */
+import useFakeDom from 'test/helpers/use-fake-dom';
 import actions from './fixtures/actions';
 import site from './fixtures/site';
 import usersData from './fixtures/users';
 
 describe( 'Users Store', () => {
 	var Dispatcher, UsersStore, siteId, options;
+
+	useFakeDom();
 
 	beforeEach( () => {
 		Dispatcher = require( 'dispatcher' );
@@ -26,24 +25,24 @@ describe( 'Users Store', () => {
 		options = { siteId };
 	} );
 
-	test( 'Store should be an object', () => {
+	it( 'Store should be an object', () => {
 		assert.isObject( UsersStore );
 	} );
 
-	test( 'Store should have method emitChange', () => {
+	it( 'Store should have method emitChange', () => {
 		assert.isFunction( UsersStore.emitChange );
 	} );
 
 	describe( 'Getting user by login', () => {
-		test( 'Store should have method getUserByLogin', () => {
+		it( 'Store should have method getUserByLogin', () => {
 			assert.isFunction( UsersStore.getUserByLogin );
 		} );
 
-		test( 'Should return undefined when user not in store', () => {
+		it( 'Should return undefined when user not in store', () => {
 			assert.isUndefined( UsersStore.getUserByLogin( siteId, usersData.users[ 0 ].login ) );
 		} );
 
-		test( 'Should return a user object when the user exists', () => {
+		it( 'Should return a user object when the user exists', () => {
 			let user;
 			Dispatcher.handleServerAction( actions.fetched );
 			user = UsersStore.getUserByLogin( siteId, usersData.users[ 0 ].login );
@@ -61,27 +60,27 @@ describe( 'Users Store', () => {
 			users = UsersStore.getUsers( options );
 		} );
 
-		test( 'Should update the store on RECEIVE_USERS', () => {
+		it( 'Should update the store on RECEIVE_USERS', () => {
 			assert.isNotNull( users );
 		} );
 
-		test( 'The users store should return an array of objects when fetching users', () => {
+		it( 'The users store should return an array of objects when fetching users', () => {
 			assert.isArray( users );
 			assert.isObject( users[ 0 ] );
 		} );
 
-		test( 'A user object from the store should contain an array of roles', () => {
+		it( 'A user object from the store should contain an array of roles', () => {
 			assert.isArray( users[ 0 ].roles );
 		} );
 
-		test( 'Re-fetching a list of users when a users was deleted from the site should result in a smaller array', () => {
+		it( 'Re-fetching a list of users when a users was deleted from the site should result in a smaller array', () => {
 			let lessUsers;
 			Dispatcher.handleServerAction( actions.fetchAgainUserDeleted );
 			lessUsers = UsersStore.getUsers( options );
 			assert.isBelow( lessUsers.length, users.length );
 		} );
 
-		test( 'Fetching more users should add to the array of objects', () => {
+		it( 'Fetching more users should add to the array of objects', () => {
 			let moreUsers;
 			Dispatcher.handleServerAction( actions.fetchMoreUsers );
 			moreUsers = UsersStore.getUsers( options );
@@ -96,29 +95,29 @@ describe( 'Users Store', () => {
 			pagination = UsersStore.getPaginationData( options );
 		} );
 
-		test( 'has the correct total users', () => {
+		it( 'has the correct total users', () => {
 			assert.equal( pagination.totalUsers, 7 );
 		} );
 
-		test( 'has the correct offset', () => {
+		it( 'has the correct offset', () => {
 			assert.equal( pagination.usersCurrentOffset, 0 );
 		} );
 
-		test( 'fetches the correct number of users', () => {
+		it( 'fetches the correct number of users', () => {
 			assert.equal( pagination.numUsersFetched, 5 );
 		} );
 
-		describe( 'after fetching more users', () => {
+		context( 'after fetching more users', () => {
 			beforeEach( () => {
 				Dispatcher.handleServerAction( actions.fetchMoreUsers );
 				pagination = UsersStore.getPaginationData( options );
 			} );
 
-			test( 'has the correct offset', () => {
+			it( 'has the correct offset', () => {
 				assert.equal( pagination.usersCurrentOffset, 5 );
 			} );
 
-			test( 'fetches the correct number of users', () => {
+			it( 'fetches the correct number of users', () => {
 				assert.equal( pagination.numUsersFetched, 7 );
 			} );
 		} );
@@ -131,13 +130,13 @@ describe( 'Users Store', () => {
 			Dispatcher.handleServerAction( actions.receiveUpdatedUsers );
 		} );
 
-		test( 'getUpdatedParams returns correct params', () => {
+		it( 'getUpdatedParams returns correct params', () => {
 			const updatedParams = UsersStore.getUpdatedParams( options );
 			assert.equal( updatedParams.offset, 0 );
-			assert.equal( updatedParams.number, usersData.found );
+			assert.equal( updatedParams.number, usersData.found )
 		} );
 
-		test( 'Polling updates expected users', () => {
+		it( 'Polling updates expected users', () => {
 			const updatedUsers = UsersStore.getUsers( options );
 			assert.equal( updatedUsers.length, usersData.found );
 
@@ -153,7 +152,7 @@ describe( 'Users Store', () => {
 			Dispatcher.handleServerAction( actions.fetched );
 		} );
 
-		test( 'Should update a specific user with new attributes', () => {
+		it( 'Should update a specific user with new attributes', () => {
 			const users = UsersStore.getUsers( options ),
 				testUserIndex = findIndex( users, user => user.name === 'Test One' );
 			let usersAgain;
@@ -163,7 +162,7 @@ describe( 'Users Store', () => {
 			assert.equal( usersAgain[ testUserIndex ].name, 'Test Won' );
 		} );
 
-		test( 'Error should restore the updated user', () => {
+		it( 'Error should restore the updated user', () => {
 			const userId = usersData.users[ 0 ].ID,
 				user = UsersStore.getUser( siteId, userId );
 			let userAgain, userRestored;
@@ -180,21 +179,21 @@ describe( 'Users Store', () => {
 		} );
 	} );
 
-	describe( 'Delete a user', () => {
+	describe( 'Delete a user', function() {
 		let userId, userAgain;
 
-		beforeEach( () => {
+		beforeEach( function() {
 			Dispatcher.handleServerAction( actions.fetched );
 			userId = usersData.users[ 0 ].ID;
 		} );
 
-		test( 'Should delete a specific user', () => {
+		it( 'Should delete a specific user', () => {
 			Dispatcher.handleServerAction( actions.deleteUser );
 			userAgain = UsersStore.getUser( siteId, userId );
 			assert.equal( userAgain, null );
 		} );
 
-		test( 'Error should restore the deleted user', () => {
+		it( 'Error should restore the deleted user', () => {
 			let userRestored;
 
 			Dispatcher.handleServerAction( actions.deleteUser );
@@ -206,7 +205,7 @@ describe( 'Users Store', () => {
 			assert.equal( userRestored.name, 'Test One' );
 		} );
 
-		test( 'There should be no undefined objects in user array after deleting a user', () => {
+		it( 'There should be no undefined objects in user array after deleting a user', () => {
 			let users, someUndefined;
 			Dispatcher.handleServerAction( actions.deleteUser );
 			users = UsersStore.getUsers( options );
@@ -219,7 +218,7 @@ describe( 'Users Store', () => {
 		beforeEach( () => {
 			Dispatcher.handleServerAction( actions.fetched );
 		} );
-		test( 'Fetching a single user should add to the store', () => {
+		it( 'Fetching a single user should add to the store', () => {
 			const users = UsersStore.getUsers( options );
 			let usersAgain;
 			assert.lengthOf( users, 5 );

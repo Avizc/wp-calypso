@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { translate } from 'i18n-calypso';
 
 /**

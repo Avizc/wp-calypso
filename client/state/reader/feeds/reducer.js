@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -18,7 +17,6 @@ import {
 import { combineReducers, createReducer, isValidStateWithSchema } from 'state/utils';
 import { decodeEntities } from 'lib/formatting';
 import { itemsSchema } from './schema';
-import { safeLink } from 'lib/post-normalizer/utils';
 
 const actionMap = {
 	[ SERIALIZE ]: handleSerialize,
@@ -53,7 +51,7 @@ function handleRequestFailure( state, action ) {
 				is_error: true,
 			},
 		},
-		state
+		state,
 	);
 }
 
@@ -62,8 +60,8 @@ function adaptFeed( feed ) {
 		feed_ID: +feed.feed_ID,
 		blog_ID: +feed.blog_ID,
 		name: feed.name && decodeEntities( feed.name ),
-		URL: safeLink( feed.URL ),
-		feed_URL: safeLink( feed.feed_URL ),
+		URL: feed.URL,
+		feed_URL: feed.feed_URL,
 		is_following: feed.is_following,
 		subscribers_count: feed.subscribers_count,
 		description: feed.description && decodeEntities( feed.description ),
@@ -117,11 +115,11 @@ export const lastFetched = createReducer(
 					memo[ feed.feed_ID ] = Date.now();
 					return memo;
 				},
-				{}
+				{},
 			);
 			return assign( {}, state, updates );
 		},
-	}
+	},
 );
 
 export default combineReducers( {

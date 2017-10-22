@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -15,6 +11,7 @@ import { isRequestingOlark } from 'state/ui/olark/selectors';
 import { requestOlark } from 'state/ui/olark/actions';
 
 class QueryOlark extends Component {
+
 	componentWillMount() {
 		if ( ! this.props.requestingOlark ) {
 			this.props.requestOlark();
@@ -28,17 +25,17 @@ class QueryOlark extends Component {
 
 QueryOlark.propTypes = {
 	requestingOlark: PropTypes.bool,
-	requestOlark: PropTypes.func,
+	requestOlark: PropTypes.func
 };
 
 QueryOlark.defaultProps = {
-	requestOlark: () => {},
+	requestOlark: () => {}
 };
 
 export default connect(
-	state => {
+	( state ) => {
 		return {
-			requestingOlark: isRequestingOlark( state ),
+			requestingOlark: isRequestingOlark( state )
 		};
 	},
 	{ requestOlark }

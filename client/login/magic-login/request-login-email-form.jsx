@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 
@@ -22,7 +18,9 @@ import {
 	getMagicLoginRequestEmailError,
 	getMagicLoginRequestedEmailSuccessfully,
 } from 'state/selectors';
-import { CHECK_YOUR_EMAIL_PAGE } from 'state/login/magic-login/constants';
+import {
+	CHECK_YOUR_EMAIL_PAGE,
+} from 'state/login/magic-login/constants';
 
 import EmailedLoginLinkSuccessfully from './emailed-login-link-successfully';
 import FormButton from 'components/forms/form-button';
@@ -90,52 +88,49 @@ class RequestLoginEmailForm extends React.Component {
 			return <EmailedLoginLinkSuccessfully emailAddress={ emailAddress } />;
 		}
 
-		const submitEnabled = emailAddress.length && ! isFetching && ! emailRequested && ! requestError;
+		const submitEnabled = (
+			! isFetching &&
+			! emailRequested &&
+			! requestError
+		);
 
-		const errorText =
-			typeof requestError === 'string' && requestError.length
-				? requestError
-				: translate( 'Unable to complete request' );
+		const errorText = typeof requestError === 'string' && requestError.length
+			? requestError : translate( 'Unable to complete request' );
 
 		return (
 			<div>
-				<h1 className="magic-login__form-header">{ translate( 'Email me a login link.' ) }</h1>
-				{ requestError && (
+				{ requestError &&
 					<Notice
 						duration={ 10000 }
 						text={ errorText }
 						className="magic-login__request-login-email-form-notice"
 						showDismiss={ true }
 						onDismissClick={ this.onNoticeDismiss }
-						status="is-error"
-					/>
-				) }
-				{ currentUser &&
-				currentUser.username && (
-					<p>
-						{ translate( 'NOTE: You are already logged in as user: %(user)s', {
+						status="is-error" />
+				}
+				<h1 className="magic-login__form-header">
+					{ translate( 'Email me a login link.' ) }
+				</h1>
+				<p className="magic-login__description">
+					{ translate( 'Get a link sent to the email address associated ' +
+						'with your account to log in instantly without your password.' ) }
+				</p>
+				{ currentUser && currentUser.username &&
+					<p>{
+						translate( 'NOTE: You are already logged in as user: %(user)s', {
 							args: {
-								user: currentUser.username,
-							},
-						} ) }
-					</p>
-				) }
+								user: currentUser.username
+							}
+						} ) }</p>
+				}
 				<LoggedOutForm onSubmit={ this.onSubmit }>
-					<p>
-						{ translate(
-							'Get a link sent to the email address associated ' +
-								'with your account to log in instantly without your password.'
-						) }
-					</p>
-					<label htmlFor="emailAddress" className="magic-login__form-label">
-						{ this.props.translate( 'Email Address' ) }
-					</label>
 					<FormFieldset className="magic-login__email-fields">
 						<FormTextInput
 							autoCapitalize="off"
 							autoFocus="true"
 							disabled={ isFetching || emailRequested }
 							name="emailAddress"
+							placeholder={ translate( 'Email address' ) }
 							type="email"
 							onChange={ this.onEmailAddressFieldChange }
 						/>

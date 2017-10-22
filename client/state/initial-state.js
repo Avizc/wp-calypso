@@ -1,17 +1,18 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugModule from 'debug';
-import { pick, throttle } from 'lodash';
+import pick from 'lodash/pick';
+import throttle from 'lodash/throttle';
 
 /**
  * Internal dependencies
  */
 import { createReduxStore, reducer } from 'state';
-import { SERIALIZE, DESERIALIZE } from 'state/action-types';
+import {
+	SERIALIZE,
+	DESERIALIZE,
+} from 'state/action-types';
 import localforage from 'lib/localforage';
 import { isSupportUserSession } from 'lib/user/support-user-interop';
 import config from 'config';
@@ -48,51 +49,31 @@ function deserialize( state ) {
 }
 
 /**
- * Determines whether to add "sympathy" by randomly clearing out persistent
+ * Adds "sympathy" by randomly clearing out persistent
  * browser state and loading without it
  *
- * Can be overridden on the command-line with two flags:
+ * Can be overridden on the command-line with two flags
  *   - ENABLE_FEATURES=force-sympathy npm start (always sympathize)
  *   - ENABLE_FEATURES=no-force-sympathy npm start (always prevent sympathy)
  *
- * If both of these flags are set, then `force-sympathy` takes precedence.
- *
- * @returns {bool} Whether to clear persistent state on page load
- */
-function shouldAddSympathy() {
-	// If `force-sympathy` flag is enabled, always clear persistent state.
-	if ( config.isEnabled( 'force-sympathy' ) ) {
-		return true;
-	}
-
-	// If `no-force-sympathy` flag is enabled, never clear persistent state.
-	if ( config.isEnabled( 'no-force-sympathy' ) ) {
-		return false;
-	}
-
-	// Otherwise, in development mode, clear persistent state 25% of the time.
-	if ( 'development' === process.env.NODE_ENV && Math.random() < 0.25 ) {
-		return true;
-	}
-
-	// Otherwise, do not clear persistent state.
-	return false;
-}
-
-/**
- * Augments the initial state loader to clear persistent state if
- * `shouldAddSympathy()` returns true.
- *
  * @param {Function} initialStateLoader normal unsympathetic state loader
- * @returns {Function} maybe-augmented initial state loader
+ * @returns {Function} augmented initial state loader
  */
-function maybeAddSympathy( initialStateLoader ) {
-	if ( ! shouldAddSympathy() ) {
+function addSympathy( initialStateLoader ) {
+	const shouldAdd = (
+		'development' === process.env.NODE_ENV && // only work in local dev mode
+		(
+			Math.random() < 0.25 || // clear 25% of the time
+			config.isEnabled( 'force-sympathy' ) // or whenever the flag is set
+		) &&
+		! config.isEnabled( 'no-force-sympathy' ) // unless purposefully disabled
+	);
+
+	if ( ! shouldAdd ) {
 		return initialStateLoader;
 	}
 
-	console.log(
-		// eslint-disable-line no-console
+	console.log( // eslint-disable-line no-console
 		'%cSkipping initial state rehydration to recreate first-load experience.',
 		'font-size: 14px; color: red;'
 	);
@@ -101,7 +82,7 @@ function maybeAddSympathy( initialStateLoader ) {
 	return () => createReduxStore( getInitialServerState() );
 }
 
-const loadInitialState = maybeAddSympathy( initialState => {
+const loadInitialState = addSympathy( initialState => {
 	debug( 'loading initial state', initialState );
 	if ( initialState === null ) {
 		debug( 'no initial state found in localforage' );
@@ -130,28 +111,23 @@ function isLoggedIn() {
 export function persistOnChange( reduxStore, serializeState = serialize ) {
 	let state;
 
-	const throttledSaveState = throttle(
-		function() {
-			if ( ! isLoggedIn() ) {
-				return;
-			}
+	const throttledSaveState = throttle( function() {
+		if ( ! isLoggedIn() ) {
+			return;
+		}
 
-			const nextState = reduxStore.getState();
-			if ( state && nextState === state ) {
-				return;
-			}
+		const nextState = reduxStore.getState();
+		if ( state && nextState === state ) {
+			return;
+		}
 
-			state = nextState;
+		state = nextState;
 
-			localforage
-				.setItem( 'redux-state-' + user.get().ID, serializeState( state ) )
-				.catch( setError => {
-					debug( 'failed to set redux-store state', setError );
-				} );
-		},
-		SERIALIZE_THROTTLE,
-		{ leading: false, trailing: true }
-	);
+		localforage.setItem( 'redux-state-' + user.get().ID, serializeState( state ) )
+			.catch( ( setError ) => {
+				debug( 'failed to set redux-store state', setError );
+			} );
+	}, SERIALIZE_THROTTLE, { leading: false, trailing: true } );
 
 	if ( global.window ) {
 		global.window.addEventListener( 'beforeunload', throttledSaveState.flush );
@@ -164,8 +140,7 @@ export function persistOnChange( reduxStore, serializeState = serialize ) {
 
 export default function createReduxStoreFromPersistedInitialState( reduxStoreReady ) {
 	if ( config.isEnabled( 'persist-redux' ) && isLoggedIn() && ! isSupportUserSession() ) {
-		localforage
-			.getItem( 'redux-state-' + user.get().ID )
+		localforage.getItem( 'redux-state-' + user.get().ID )
 			.then( loadInitialState )
 			.catch( loadInitialStateFailed )
 			.then( persistOnChange )

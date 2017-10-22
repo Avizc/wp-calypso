@@ -1,13 +1,10 @@
 /**
  * External dependencies
- *
- * @format
- */
-
+ **/
 import React from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
-import { flowRight } from 'lodash';
+import { flowRight } from 'lodash';
 import { localize } from 'i18n-calypso';
 import Gridicon from 'gridicons';
 
@@ -24,7 +21,7 @@ import { isRequestingPostLikes, countPostLikes } from 'state/selectors';
 import PostLikes from 'blocks/post-likes';
 
 export const StatsPostLikes = props => {
-	const { countLikes, isRequesting, opened, postId, postType, siteId, toggle, translate } = props;
+	const { countLikes, isRequesting, opened, postId, siteId, toggle, translate } = props;
 	const infoIcon = opened ? 'info' : 'info-outline';
 	const isLoading = isRequesting && ! countLikes;
 	const classes = {
@@ -32,22 +29,12 @@ export const StatsPostLikes = props => {
 		'is-loading': isLoading,
 	};
 
-	let likesListLabel, likesTitleLabel;
-
-	if ( postType === 'page' ) {
-		likesTitleLabel = translate( 'Page Likes' );
-		likesListLabel = translate( 'This panel shows the list of people who like your page.' );
-	} else {
-		likesTitleLabel = translate( 'Post Likes' );
-		likesListLabel = translate( 'This panel shows the list of people who like your post.' );
-	}
-
 	return (
 		<Card className={ classNames( 'stats-module', 'stats-post-likes', 'is-expanded', classes ) }>
 			<QueryPostLikes siteId={ siteId } postId={ postId } />
 			<div className="module-header">
 				<h4 className="module-header-title">
-					{ likesTitleLabel }
+					{ translate( 'Post Likes' ) }
 					{ countLikes !== null && <Count count={ countLikes } /> }
 				</h4>
 				<ul className="module-header-actions">
@@ -55,14 +42,8 @@ export const StatsPostLikes = props => {
 						<a
 							href="#"
 							className="module-header-action-link"
-							aria-label={ translate( 'Show or hide panel information', {
-								textOnly: true,
-								context: 'Stats panel action',
-							} ) }
-							title={ translate( 'Show or hide panel information', {
-								textOnly: true,
-								context: 'Stats panel action',
-							} ) }
+							aria-label={ translate( 'Show or hide panel information', { textOnly: true, context: 'Stats panel action' } ) }
+							title={ translate( 'Show or hide panel information', { textOnly: true, context: 'Stats panel action' } ) }
 							onClick={ toggle }
 						>
 							<Gridicon icon={ infoIcon } />
@@ -71,27 +52,29 @@ export const StatsPostLikes = props => {
 				</ul>
 			</div>
 			<StatsModuleContent className="module-content-text-info">
-				{ likesListLabel }
+				{ translate( 'This panel shows the list of people who like your post.' ) }
 			</StatsModuleContent>
 			<StatsModulePlaceholder isLoading={ isLoading } />
 			<div className="stats-post-likes__content">
-				<PostLikes siteId={ siteId } postId={ postId } postType={ postType } />
+				<PostLikes siteId={ siteId } postId={ postId } />
 			</div>
 		</Card>
 	);
 };
 
-StatsPostLikes.defaultProps = {
-	postType: 'post',
-};
+const connectComponent = connect(
+	( state, { siteId, postId } ) => {
+		const isRequesting = isRequestingPostLikes( state, siteId, postId );
+		const countLikes = countPostLikes( state, siteId, postId );
+		return {
+			countLikes,
+			isRequesting,
+		};
+	}
+);
 
-const connectComponent = connect( ( state, { siteId, postId } ) => {
-	const isRequesting = isRequestingPostLikes( state, siteId, postId );
-	const countLikes = countPostLikes( state, siteId, postId );
-	return {
-		countLikes,
-		isRequesting,
-	};
-} );
-
-export default flowRight( connectComponent, toggleInfo, localize )( StatsPostLikes );
+export default flowRight(
+	connectComponent,
+	toggleInfo,
+	localize
+)( StatsPostLikes );

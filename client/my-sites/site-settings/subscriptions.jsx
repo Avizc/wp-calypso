@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 
@@ -20,7 +16,7 @@ import { getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
 import {
 	isJetpackModuleActive,
 	isJetpackModuleUnavailableInDevelopmentMode,
-	isJetpackSiteInDevelopmentMode,
+	isJetpackSiteInDevelopmentMode
 } from 'state/selectors';
 import QueryJetpackConnection from 'components/data/query-jetpack-connection';
 import InfoPopover from 'components/info-popover';
@@ -35,7 +31,7 @@ const Subscriptions = ( {
 	selectedSiteId,
 	selectedSiteSlug,
 	subscriptionsModuleActive,
-	translate,
+	translate
 } ) => {
 	return (
 		<div>
@@ -54,21 +50,14 @@ const Subscriptions = ( {
 					<JetpackModuleToggle
 						siteId={ selectedSiteId }
 						moduleSlug="subscriptions"
-						label={ translate(
-							'Allow users to subscribe to your posts and comments and receive notifications via email'
-						) }
+						label={ translate( 'Allow users to subscribe to your posts and comments and receive notifications via email' ) }
 						disabled={ isRequestingSettings || isSavingSettings || moduleUnavailable }
-					/>
+						/>
 
 					<div className="subscriptions__module-settings site-settings__child-settings">
 						<CompactFormToggle
 							checked={ !! fields.stb_enabled }
-							disabled={
-								isRequestingSettings ||
-								isSavingSettings ||
-								! subscriptionsModuleActive ||
-								moduleUnavailable
-							}
+							disabled={ isRequestingSettings || isSavingSettings || ! subscriptionsModuleActive || moduleUnavailable }
 							onChange={ handleAutosavingToggle( 'stb_enabled' ) }
 						>
 							{ translate( 'Show a "follow blog" option in the comment form' ) }
@@ -76,12 +65,7 @@ const Subscriptions = ( {
 
 						<CompactFormToggle
 							checked={ !! fields.stc_enabled }
-							disabled={
-								isRequestingSettings ||
-								isSavingSettings ||
-								! subscriptionsModuleActive ||
-								moduleUnavailable
-							}
+							disabled={ isRequestingSettings || isSavingSettings || ! subscriptionsModuleActive || moduleUnavailable }
 							onChange={ handleAutosavingToggle( 'stc_enabled' ) }
 						>
 							{ translate( 'Show a "follow comments" option in the comment form' ) }
@@ -104,7 +88,7 @@ const Subscriptions = ( {
 Subscriptions.defaultProps = {
 	isSavingSettings: false,
 	isRequestingSettings: true,
-	fields: {},
+	fields: {}
 };
 
 Subscriptions.propTypes = {
@@ -115,20 +99,18 @@ Subscriptions.propTypes = {
 	fields: PropTypes.object,
 };
 
-export default connect( state => {
-	const selectedSiteId = getSelectedSiteId( state );
-	const selectedSiteSlug = getSelectedSiteSlug( state );
-	const siteInDevMode = isJetpackSiteInDevelopmentMode( state, selectedSiteId );
-	const moduleUnavailableInDevMode = isJetpackModuleUnavailableInDevelopmentMode(
-		state,
-		selectedSiteId,
-		'subscriptions'
-	);
+export default connect(
+	( state ) => {
+		const selectedSiteId = getSelectedSiteId( state );
+		const selectedSiteSlug = getSelectedSiteSlug( state );
+		const siteInDevMode = isJetpackSiteInDevelopmentMode( state, selectedSiteId );
+		const moduleUnavailableInDevMode = isJetpackModuleUnavailableInDevelopmentMode( state, selectedSiteId, 'subscriptions' );
 
-	return {
-		selectedSiteId,
-		selectedSiteSlug,
-		subscriptionsModuleActive: !! isJetpackModuleActive( state, selectedSiteId, 'subscriptions' ),
-		moduleUnavailable: siteInDevMode && moduleUnavailableInDevMode,
-	};
-} )( localize( Subscriptions ) );
+		return {
+			selectedSiteId,
+			selectedSiteSlug,
+			subscriptionsModuleActive: !! isJetpackModuleActive( state, selectedSiteId, 'subscriptions' ),
+			moduleUnavailable: siteInDevMode && moduleUnavailableInDevMode,
+		};
+	}
+)( localize( Subscriptions ) );

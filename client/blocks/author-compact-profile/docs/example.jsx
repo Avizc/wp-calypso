@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -12,8 +9,8 @@ import React from 'react';
 import AuthorCompactProfile from 'blocks/author-compact-profile';
 import Card from 'components/card';
 
-export default class AuthorCompactProfileExample extends React.Component {
-	static displayName = 'AuthorCompactProfileExample';
+export default React.createClass( {
+	displayName: 'AuthorCompactProfile',
 
 	render() {
 		const author = {
@@ -34,5 +31,5 @@ export default class AuthorCompactProfileExample extends React.Component {
 				/>
 			</Card>
 		);
-	}
-}
+	},
+} );

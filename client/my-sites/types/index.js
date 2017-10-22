@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { makeLayout } from 'controller';
 import { siteSelection, makeNavigation, sites } from 'my-sites/controller';
 import { list, redirect } from './controller';

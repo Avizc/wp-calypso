@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -17,7 +13,10 @@ import DomainsStore from 'lib/domains/store';
 import upgradesActions from 'lib/upgrades/actions';
 import { getSelectedSite } from 'state/ui/selectors';
 
-const stores = [ DomainsStore, DnsStore ];
+const stores = [
+	DomainsStore,
+	DnsStore
+];
 
 function getStateFromStores( props ) {
 	let domains;
@@ -30,7 +29,7 @@ function getStateFromStores( props ) {
 		domains,
 		dns: DnsStore.getByDomainName( props.selectedDomainName ),
 		selectedDomainName: props.selectedDomainName,
-		selectedSite: props.selectedSite,
+		selectedSite: props.selectedSite
 	};
 }
 
@@ -52,7 +51,6 @@ export class DnsData extends Component {
 	}
 
 	loadDns = () => {
-		upgradesActions.fetchDomains( this.props.selectedSite.ID );
 		upgradesActions.fetchDns( this.props.selectedDomainName );
 	};
 

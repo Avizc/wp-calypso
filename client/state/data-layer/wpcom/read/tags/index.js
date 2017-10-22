@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -29,11 +28,11 @@ export function requestTags( store, action ) {
 			apiVersion: '1.2',
 			onSuccess: action,
 			onFailure: action,
-		} )
+		} ),
 	);
 }
 
-export function receiveTagsSuccess( store, action, apiResponse ) {
+export function receiveTagsSuccess( store, action, next, apiResponse ) {
 	let tags = fromApi( apiResponse );
 	if ( ! apiResponse || ( ! apiResponse.tag && ! apiResponse.tags ) ) {
 		receiveTagsError( store, action );
@@ -49,11 +48,11 @@ export function receiveTagsSuccess( store, action, apiResponse ) {
 		receiveTags( {
 			payload: tags,
 			resetFollowingData: !! apiResponse.tags,
-		} )
+		} ),
 	);
 }
 
-export function receiveTagsError( store, action, error ) {
+export function receiveTagsError( store, action, next, error ) {
 	const errorText =
 		action.payload && action.payload.slug
 			? translate( 'Could not load tag, try refreshing the page' )

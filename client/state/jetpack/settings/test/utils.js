@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,53 +10,51 @@ import { normalizeSettings, sanitizeSettings, filterSettingsByActiveModules } fr
 
 describe( 'utils', () => {
 	describe( 'normalizeSettings()', () => {
-		test( 'should not modify random settings', () => {
+		it( 'should not modify random settings', () => {
 			const settings = {
-				some_random_setting: 'example',
+				some_random_setting: 'example'
 			};
 
 			expect( normalizeSettings( settings ) ).to.eql( {
-				some_random_setting: 'example',
+				some_random_setting: 'example'
 			} );
 		} );
 
-		test( 'should convert carousel_background_color to "black" if it is an empty string', () => {
+		it( 'should convert carousel_background_color to "black" if it is an empty string', () => {
 			const settings = {
-				carousel_background_color: '',
+				carousel_background_color: ''
 			};
 
 			expect( normalizeSettings( settings ) ).to.eql( {
-				carousel_background_color: 'black',
+				carousel_background_color: 'black'
 			} );
 		} );
 
-		test( 'should default jetpack_protect_global_whitelist whitelist to an empty string when null', () => {
-			expect(
-				normalizeSettings( {
-					jetpack_protect_global_whitelist: null,
-				} )
-			).to.eql( {
+		it( 'should default jetpack_protect_global_whitelist whitelist to an empty string when null', () => {
+			expect( normalizeSettings( {
+				jetpack_protect_global_whitelist: null
+			} ) ).to.eql( {
 				jetpack_protect_global_whitelist: '',
 			} );
 		} );
 
-		test( 'should default jetpack_protect_global_whitelist whitelist to an empty string when empty', () => {
-			expect(
-				normalizeSettings( {
-					jetpack_protect_global_whitelist: {
-						local: [],
-					},
-				} )
-			).to.eql( {
+		it( 'should default jetpack_protect_global_whitelist whitelist to an empty string when empty', () => {
+			expect( normalizeSettings( {
+				jetpack_protect_global_whitelist: {
+					local: []
+				}
+			} ) ).to.eql( {
 				jetpack_protect_global_whitelist: '',
 			} );
 		} );
 
-		test( 'should not add extra newlines when extracting jetpack_protect_global_whitelist', () => {
+		it( 'should not add extra newlines when extracting jetpack_protect_global_whitelist', () => {
 			const settings = {
 				jetpack_protect_global_whitelist: {
-					local: [ '123.123.123.123' ],
-				},
+					local: [
+						'123.123.123.123',
+					]
+				}
 			};
 
 			expect( normalizeSettings( settings ) ).to.eql( {
@@ -66,11 +62,14 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should add newlines between IPs when extracting jetpack_protect_global_whitelist', () => {
+		it( 'should add newlines between IPs when extracting jetpack_protect_global_whitelist', () => {
 			const settings = {
 				jetpack_protect_global_whitelist: {
-					local: [ '123.123.123.123', '213.123.213.123' ],
-				},
+					local: [
+						'123.123.123.123',
+						'213.123.213.123',
+					]
+				}
 			};
 
 			expect( normalizeSettings( settings ) ).to.eql( {
@@ -78,7 +77,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should skip infinite scroll settings when module activation state is missing', () => {
+		it( 'should skip infinite scroll settings when module activation state is missing', () => {
 			const settings = {
 				some_setting: 'example',
 				infinite_scroll: true,
@@ -89,7 +88,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should set infinite_scroll to default and infinite-scroll to false if the module is inactive', () => {
+		it( 'should set infinite_scroll to default and infinite-scroll to false if the module is inactive', () => {
 			const settings = {
 				infinite_scroll: true,
 				'infinite-scroll': false,
@@ -101,7 +100,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should set infinite_scroll to scroll and infinite-scroll to true if the module is active and scroll is enabled', () => {
+		it( 'should set infinite_scroll to scroll and infinite-scroll to true if the module is active and scroll is enabled', () => {
 			const settings = {
 				infinite_scroll: true,
 				'infinite-scroll': true,
@@ -113,7 +112,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should set infinite_scroll to button and infinite-scroll to true if the module is active and scroll is disabled', () => {
+		it( 'should set infinite_scroll to button and infinite-scroll to true if the module is active and scroll is disabled', () => {
 			const settings = {
 				infinite_scroll: false,
 				'infinite-scroll': true,
@@ -125,7 +124,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should skip all Custom Content Types settings', () => {
+		it( 'should skip all Custom Content Types settings', () => {
 			const settings = {
 				some_other_setting: 123,
 				jetpack_testimonial: true,
@@ -142,31 +141,20 @@ describe( 'utils', () => {
 	} );
 
 	describe( 'sanitizeSettings()', () => {
-		test( 'should not modify random settings', () => {
+		it( 'should not modify random settings', () => {
 			const settings = {
-				some_random_setting: 'example',
+				some_random_setting: 'example'
 			};
 
 			expect( sanitizeSettings( settings ) ).to.eql( {
-				some_random_setting: 'example',
+				some_random_setting: 'example'
 			} );
 		} );
 
-		test( 'should omit post_by_email_address from sanitized settings', () => {
+		it( 'should omit post_by_email_address from sanitized settings', () => {
 			const settings = {
 				some_other_setting: 123,
-				post_by_email_address: 'some-email@example.com',
-			};
-
-			expect( sanitizeSettings( settings ) ).to.eql( {
-				some_other_setting: 123,
-			} );
-		} );
-
-		test( 'should omit akismet from sanitized settings', () => {
-			const settings = {
-				some_other_setting: 123,
-				akismet: true,
+				post_by_email_address: 'some-email@example.com'
 			};
 
 			expect( sanitizeSettings( settings ) ).to.eql( {
@@ -174,7 +162,18 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should skip infinite scroll settings if infinite_scroll is not defined', () => {
+		it( 'should omit akismet from sanitized settings', () => {
+			const settings = {
+				some_other_setting: 123,
+				akismet: true
+			};
+
+			expect( sanitizeSettings( settings ) ).to.eql( {
+				some_other_setting: 123,
+			} );
+		} );
+
+		it( 'should skip infinite scroll settings if infinite_scroll is not defined', () => {
 			const settings = {
 				some_other_setting: 123,
 				'infinite-scroll': true,
@@ -185,7 +184,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should disable infinite scroll module when set to the default setting', () => {
+		it( 'should disable infinite scroll module when set to the default setting', () => {
 			const settings = {
 				infinite_scroll: 'default',
 				'infinite-scroll': true,
@@ -196,7 +195,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should enable infinite scroll module and set scroll to true when setting is scroll', () => {
+		it( 'should enable infinite scroll module and set scroll to true when setting is scroll', () => {
 			const settings = {
 				infinite_scroll: 'scroll',
 				'infinite-scroll': false,
@@ -208,7 +207,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should enable infinite scroll module and set scroll to false when setting is button', () => {
+		it( 'should enable infinite scroll module and set scroll to false when setting is button', () => {
 			const settings = {
 				infinite_scroll: 'button',
 				'infinite-scroll': false,
@@ -220,7 +219,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should skip all Custom Content Types settings', () => {
+		it( 'should skip all Custom Content Types settings', () => {
 			const settings = {
 				some_other_setting: 123,
 				jetpack_testimonial: true,
@@ -237,7 +236,7 @@ describe( 'utils', () => {
 	} );
 
 	describe( 'filterSettingsByActiveModules()', () => {
-		test( 'should remove module activation state and retain all module settings for enabled modules', () => {
+		it( 'should remove module activation state and retain all module settings for enabled modules', () => {
 			const settings = {
 				example_setting: true,
 				minileven: true,
@@ -325,7 +324,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should omit all module settings for disabled modules', () => {
+		it( 'should omit all module settings for disabled modules', () => {
 			const settings = {
 				example_setting: true,
 				minileven: false,
@@ -379,7 +378,7 @@ describe( 'utils', () => {
 			} );
 		} );
 
-		test( 'should omit all module settings for modules with unknown activation state', () => {
+		it( 'should omit all module settings for modules with unknown activation state', () => {
 			const settings = {
 				example_setting: true,
 				wp_mobile_excerpt: true,

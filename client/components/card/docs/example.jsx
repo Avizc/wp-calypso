@@ -1,23 +1,20 @@
 /**
- * External dependencies
- *
- * @format
- */
-
-import React from 'react';
+* External dependencies
+*/
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import Card from 'components/card';
-import CompactCard from 'components/card/compact';
+var Card = require( 'components/card' ),
+	CompactCard = require( 'components/card/compact' );
 
-const Cards = React.createClass( {
+var Cards = React.createClass( {
 	displayName: 'Cards',
 
 	getInitialState: function() {
 		return {
-			compactCards: false,
+			compactCards: false
 		};
 	},
 
@@ -26,9 +23,7 @@ const Cards = React.createClass( {
 
 		return (
 			<div>
-				<a className="docs__design-toggle button" onClick={ this.toggleCards }>
-					{ toggleCardsText }
-				</a>
+				<a className="docs__design-toggle button" onClick={ this.toggleCards }>{ toggleCardsText }</a>
 				{ this.renderCards() }
 			</div>
 		);
@@ -42,9 +37,7 @@ const Cards = React.createClass( {
 					<Card>I am another Card.</Card>
 					<Card className="awesome sauce">I am a third Card with custom classes!</Card>
 					<Card href="#cards">I am a linkable Card</Card>
-					<Card href="#cards" target="_blank" rel="noopener noreferrer">
-						I am a externally linked Card
-					</Card>
+					<Card href="#cards" target="_blank" rel="noopener noreferrer">I am a externally linked Card</Card>
 					<Card highlight="info">I am a Card, highlighted as info</Card>
 					<Card highlight="success">I am a Card, highlighted as success</Card>
 					<Card highlight="error">I am a Card, highlighted as error</Card>
@@ -56,13 +49,9 @@ const Cards = React.createClass( {
 				<div>
 					<CompactCard>I am a CompactCard.</CompactCard>
 					<CompactCard>I am another CompactCard.</CompactCard>
-					<CompactCard className="awesome sauce">
-						I am a third CompactCard with custom classes!
-					</CompactCard>
+					<CompactCard className="awesome sauce">I am a third CompactCard with custom classes!</CompactCard>
 					<CompactCard href="#cards">I am a linkable CompactCard</CompactCard>
-					<CompactCard href="#cards" target="_blank" rel="noopener noreferrer">
-						I am a externally linked CompactCard
-					</CompactCard>
+					<CompactCard href="#cards" target="_blank" rel="noopener noreferrer">I am a externally linked CompactCard</CompactCard>
 					<CompactCard highlight="info">I am a CompactCard, highlighted as info</CompactCard>
 					<CompactCard highlight="success">I am a CompactCard, highlighted as success</CompactCard>
 					<CompactCard highlight="error">I am a CompactCard, highlighted as error</CompactCard>
@@ -74,7 +63,7 @@ const Cards = React.createClass( {
 
 	toggleCards: function() {
 		this.setState( { compactCards: ! this.state.compactCards } );
-	},
+	}
 } );
 
-export default Cards;
+module.exports = Cards;

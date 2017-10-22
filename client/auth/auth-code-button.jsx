@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
-import { localize } from 'i18n-calypso';
 
 /**
  * Internal Dependencies
@@ -14,44 +10,45 @@ import { requestCode, resetCode } from 'lib/auth-code-request-store/actions';
 import { default as Store, requestState } from 'lib/auth-code-request-store';
 import Notice from 'components/notice';
 
-class AuthCodeButton extends React.Component {
-	state = Store.get();
+export default React.createClass( {
 
-	componentDidMount() {
+	componentDidMount: function() {
 		Store.on( 'change', this.refreshData );
-	}
+	},
 
-	componentWillUnmount() {
+	componentWillUnmount: function() {
 		Store.off( 'change', this.refreshData );
-	}
+	},
 
-	refreshData = () => {
+	refreshData: function() {
 		this.setState( Store.get() );
-	};
+	},
 
-	requestSMSCode = e => {
+	getInitialState: function() {
+		return Store.get();
+	},
+
+	requestSMSCode: function( e ) {
 		e.preventDefault();
 		requestCode( this.props.username, this.props.password );
-	};
+	},
 
-	render() {
+	render: function() {
 		const { status, errorLevel, errorMessage } = this.state;
 
-		let noticeStatus = 'is-info';
-		let showDismiss = false;
-		let message = (
-			<a href="#" onClick={ this.requestSMSCode }>
-				{ this.props.translate( 'Send code via text message.' ) }
-			</a>
+		var noticeStatus = 'is-info';
+		var showDismiss = false;
+		var message = (
+			<a href="#" onClick={ this.requestSMSCode }>{ this.translate( 'Send code via text message.' ) }</a>
 		);
 
 		if ( status === requestState.REQUESTING ) {
-			message = this.props.translate( 'Requesting code.' );
+			message = this.translate( 'Requesting code.' );
 		}
 
 		if ( status === requestState.COMPLETE ) {
 			noticeStatus = 'is-success';
-			message = this.props.translate( 'Code sent.' );
+			message = this.translate( 'Code sent.' );
 		}
 
 		if ( errorLevel !== false ) {
@@ -61,11 +58,10 @@ class AuthCodeButton extends React.Component {
 		}
 
 		return (
-			<Notice showDismiss={ showDismiss } status={ noticeStatus } onDismissClick={ resetCode }>
+			<Notice showDismiss={ showDismiss } status={ noticeStatus } onDismissClick={ resetCode } >
 				{ message }
 			</Notice>
 		);
 	}
-}
 
-export default localize( AuthCodeButton );
+} )

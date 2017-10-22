@@ -1,11 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
-import { localize } from 'i18n-calypso';
+import LinkedStateMixin from 'react-addons-linked-state-mixin';
 
 /**
  * Internal dependencies
@@ -16,15 +13,17 @@ import FormButton from 'components/forms/form-button';
 import eventRecorder from 'me/event-recorder';
 import Notice from 'components/notice';
 
-const ProfileLinksAddOther = React.createClass( {
+export default React.createClass( {
+
 	displayName: 'ProfileLinksAddOther',
-	mixins: [ eventRecorder ],
+
+	mixins: [ LinkedStateMixin, eventRecorder ],
 
 	getInitialState() {
 		return {
 			title: '',
 			value: '',
-			lastError: false,
+			lastError: false
 		};
 	},
 
@@ -69,12 +68,10 @@ const ProfileLinksAddOther = React.createClass( {
 		}
 
 		this.props.userProfileLinks.addProfileLinks(
-			[
-				{
-					title: this.state.title.trim(),
-					value: this.state.value.trim(),
-				},
-			],
+			[ {
+				title: this.state.title.trim(),
+				value: this.state.value.trim()
+			} ],
 			this.onSubmitResponse
 		);
 	},
@@ -86,19 +83,23 @@ const ProfileLinksAddOther = React.createClass( {
 
 	onSubmitResponse( error, data ) {
 		if ( error ) {
-			this.setState( {
-				lastError: this.props.translate( 'Unable to add link right now. Please try again later.' ),
-			} );
+			this.setState(
+				{
+					lastError: this.translate( 'Unable to add link right now. Please try again later.' )
+				}
+			);
 		} else if ( data.duplicate ) {
-			this.setState( {
-				lastError: this.props.translate(
-					'That link is already in your profile links. No changes were made.'
-				),
-			} );
+			this.setState(
+				{
+					lastError: this.translate( 'That link is already in your profile links. No changes were made.' )
+				}
+			);
 		} else if ( data.malformed ) {
-			this.setState( {
-				lastError: this.props.translate( 'An unexpected error occurred. Please try again later.' ),
-			} );
+			this.setState(
+				{
+					lastError: this.translate( 'An unexpected error occurred. Please try again later.' )
+				}
+			);
 		} else {
 			this.props.onSuccess();
 		}
@@ -106,7 +107,7 @@ const ProfileLinksAddOther = React.createClass( {
 
 	clearLastError() {
 		this.setState( {
-			lastError: false,
+			lastError: false
 		} );
 	},
 
@@ -129,51 +130,38 @@ const ProfileLinksAddOther = React.createClass( {
 		return (
 			<form className="profile-links-add-other" onSubmit={ this.onSubmit }>
 				<p>
-					{ this.props.translate(
-						'Please enter the URL and description of the site you want to add to your profile.'
-					) }
+					{ this.translate( 'Please enter the URL and description of the site you want to add to your profile.' ) }
 				</p>
 				{ this.possiblyRenderError() }
 				<FormFieldset>
 					<FormTextInput
 						className="profile-links-add-other__value"
-						placeholder={ this.props.translate( 'Enter a URL' ) }
+						valueLink={ this.linkState( 'value' ) }
+						placeholder={ this.translate( 'Enter a URL' ) }
 						onFocus={ this.recordFocusEvent( 'Add Other Site URL Field' ) }
-						name="value"
-						value={ this.state.value }
-						onChange={ this.handleChange }
 					/>
 					<FormTextInput
 						className="profile-links-add-other__title"
-						placeholder={ this.props.translate( 'Enter a description' ) }
+						valueLink={ this.linkState( 'title' ) }
+						placeholder={ this.translate( 'Enter a description' ) }
 						onFocus={ this.recordFocusEvent( 'Add Other Site Description Field' ) }
-						name="title"
-						value={ this.state.title }
-						onChange={ this.handleChange }
 					/>
 					<FormButton
 						className="profile-links-add-other__add"
 						disabled={ this.getFormDisabled() }
 						onClick={ this.recordClickEvent( 'Save Other Site Button' ) }
 					>
-						{ this.props.translate( 'Add Site' ) }
+						{ this.translate( 'Add Site' ) }
 					</FormButton>
 					<FormButton
 						className="profile-links-add-other__cancel"
 						isPrimary={ false }
 						onClick={ this.recordClickEvent( 'Cancel Other Site Button', this.onCancel ) }
 					>
-						{ this.props.translate( 'Cancel' ) }
+						{ this.translate( 'Cancel' ) }
 					</FormButton>
 				</FormFieldset>
 			</form>
 		);
-	},
-
-	handleChange( e ) {
-		const { name, value } = e.currentTarget;
-		this.setState( { [ name ]: value } );
-	},
+	}
 } );
-
-export default localize( ProfileLinksAddOther );

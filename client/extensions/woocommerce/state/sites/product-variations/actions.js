@@ -1,9 +1,7 @@
+
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import {
 	WOOCOMMERCE_PRODUCT_VARIATION_CREATE,
 	WOOCOMMERCE_PRODUCT_VARIATION_DELETE,
@@ -42,13 +40,7 @@ export function fetchProductVariations( siteId, productId, successAction, failur
  * @param {Object|Function} [failureAction] Action with extra props { error }
  * @return {Object} Action object
  */
-export function createProductVariation(
-	siteId,
-	productId,
-	variation,
-	successAction,
-	failureAction
-) {
+export function createProductVariation( siteId, productId, variation, successAction, failureAction ) {
 	return {
 		type: WOOCOMMERCE_PRODUCT_VARIATION_CREATE,
 		siteId,
@@ -69,13 +61,7 @@ export function createProductVariation(
  * @param {Object|Function} [failureAction] Action with extra props { error }
  * @return {Object} Action object
  */
-export function updateProductVariation(
-	siteId,
-	productId,
-	variation,
-	successAction,
-	failureAction
-) {
+export function updateProductVariation( siteId, productId, variation, successAction, failureAction ) {
 	return {
 		type: WOOCOMMERCE_PRODUCT_VARIATION_UPDATE,
 		siteId,
@@ -96,13 +82,7 @@ export function updateProductVariation(
  * @param {Object|Function} [failureAction] Action with extra props { error }
  * @return {Object} Action object
  */
-export function deleteProductVariation(
-	siteId,
-	productId,
-	variationId,
-	successAction,
-	failureAction
-) {
+export function deleteProductVariation( siteId, productId, variationId, successAction, failureAction ) {
 	return {
 		type: WOOCOMMERCE_PRODUCT_VARIATION_DELETE,
 		siteId,
@@ -133,3 +113,4 @@ export function productVariationUpdated( siteId, productId, data, originatingAct
 		originatingAction,
 	};
 }
+

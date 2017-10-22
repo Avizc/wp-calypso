@@ -33,10 +33,12 @@
 }
 
 .plugin-action__label {
-	font-size: 12px;
+	color: $gray;
+	font-size: 11px;
 	line-height: 16px;
 	margin-right: 8px;
 	vertical-align: top;
+	text-transform: uppercase;
 	cursor: pointer;
 
 	.is-disabled & {
@@ -45,8 +47,7 @@
 	}
 
 	.has-disabled-info & {
-		cursor: default;
-		margin-left: 12px;
+		cursor: pointer;
 	}
 }
 
@@ -61,15 +62,9 @@
 .plugin-action__children .noticon {
 	margin-left: 8px;
 }
-
 .plugin-action__disabled-info.info-popover {
 	float: right;
-	height: 16px;
-	width: 24px;
-}
-
-.plugin-action__disabled-info.info-popover .gridicons-info-outline {
-	transform: translate(-4px, -2px);
+	margin: -2px 4px 0 2px;
 }
 
 .plugin-action__disabled-info-list {

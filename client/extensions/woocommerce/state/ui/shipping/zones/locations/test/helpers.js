@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,7 +10,7 @@ import { mergeLocationEdits } from '../helpers';
 import { JOURNAL_ACTIONS } from '../reducer';
 
 describe( 'mergeLocationEdits', () => {
-	test( 'should return the current edits when there are no saved edits', () => {
+	it( 'should return the current edits when there are no saved edits', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: null,
@@ -20,7 +18,9 @@ describe( 'mergeLocationEdits', () => {
 			pristine: true,
 		};
 		const currentLocationEdits = {
-			journal: [ { action: JOURNAL_ACTIONS.ADD_COUNTRY, code: 'US' } ],
+			journal: [
+				{ action: JOURNAL_ACTIONS.ADD_COUNTRY, code: 'US' },
+			],
 			states: {
 				add: [ 'NY' ],
 				remove: [],
@@ -30,12 +30,10 @@ describe( 'mergeLocationEdits', () => {
 			pristine: false,
 		};
 
-		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ) ).to.deep.equal(
-			currentLocationEdits
-		);
+		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ) ).to.deep.equal( currentLocationEdits );
 	} );
 
-	test( 'should return the saved edits when there are no current edits', () => {
+	it( 'should return the saved edits when there are no current edits', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: null,
@@ -44,12 +42,10 @@ describe( 'mergeLocationEdits', () => {
 		};
 		const currentLocationEdits = null;
 
-		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ) ).to.deep.equal(
-			zoneLocationEdits
-		);
+		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ) ).to.deep.equal( zoneLocationEdits );
 	} );
 
-	test( 'should return the saved edits when there current edits are empty (pristine)', () => {
+	it( 'should return the saved edits when there current edits are empty (pristine)', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: null,
@@ -63,14 +59,14 @@ describe( 'mergeLocationEdits', () => {
 			pristine: true,
 		};
 
-		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ) ).to.deep.equal(
-			zoneLocationEdits
-		);
+		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ) ).to.deep.equal( zoneLocationEdits );
 	} );
 
-	test( 'should append the current journal entries to the saved journal entries', () => {
+	it( 'should append the current journal entries to the saved journal entries', () => {
 		const zoneLocationEdits = {
-			journal: [ { action: JOURNAL_ACTIONS.ADD_COUNTRY, code: 'US' } ],
+			journal: [
+				{ action: JOURNAL_ACTIONS.ADD_COUNTRY, code: 'US' },
+			],
 			states: null,
 			postcode: '12345',
 			pristine: false,
@@ -97,7 +93,7 @@ describe( 'mergeLocationEdits', () => {
 		} );
 	} );
 
-	test( 'should remove the postcode if it was removed in the current edits', () => {
+	it( 'should remove the postcode if it was removed in the current edits', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: null,
@@ -114,7 +110,7 @@ describe( 'mergeLocationEdits', () => {
 		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ).postcode ).to.be.null;
 	} );
 
-	test( 'should always overwrite the postcode', () => {
+	it( 'should always overwrite the postcode', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: null,
@@ -128,12 +124,10 @@ describe( 'mergeLocationEdits', () => {
 			pristine: false,
 		};
 
-		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ).postcode ).to.equal(
-			'54321'
-		);
+		expect( mergeLocationEdits( zoneLocationEdits, currentLocationEdits ).postcode ).to.equal( '54321' );
 	} );
 
-	test( 'should merge the states add and remove operations', () => {
+	it( 'should merge the states add and remove operations', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: {
@@ -162,7 +156,7 @@ describe( 'mergeLocationEdits', () => {
 		} );
 	} );
 
-	test( 'should clean the old states if the current changes have the "removeAll" flag set', () => {
+	it( 'should clean the old states if the current changes have the "removeAll" flag set', () => {
 		const zoneLocationEdits = {
 			journal: [],
 			states: {

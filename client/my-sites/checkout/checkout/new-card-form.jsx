@@ -1,71 +1,60 @@
-/** @format */
-import { isEmpty } from 'lodash';
-
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { localize } from 'i18n-calypso';
-import classNames from 'classnames';
+var React = require( 'react' ),
+	isEmpty = require( 'lodash/isEmpty' ),
+	classNames = require( 'classnames' );
 
 /**
  * Internal dependencies
  */
-import CreditCardFormFields from 'components/credit-card-form-fields';
-import upgradesActions from 'lib/upgrades/actions';
+var CreditCardFormFields = require( 'components/credit-card-form-fields' ),
+	upgradesActions = require( 'lib/upgrades/actions' );
 
-class NewCardForm extends Component {
-	static displayName = 'NewCardForm';
+module.exports = React.createClass( {
+	displayName: 'NewCardForm',
 
-	static propTypes = {
-		countriesList: PropTypes.object.isRequired,
-		hasStoredCards: PropTypes.bool.isRequired,
-		transaction: PropTypes.object.isRequired,
-	};
+	propTypes: {
+		countriesList: React.PropTypes.object.isRequired,
+		hasStoredCards: React.PropTypes.bool.isRequired,
+		transaction: React.PropTypes.object.isRequired
+	},
 
-	isFieldInvalid = fieldName => {
+	isFieldInvalid: function( fieldName ) {
 		return ! isEmpty( this.props.transaction.errors[ fieldName ] );
-	};
+	},
 
-	render() {
-		const classes = classNames( 'all-fields-required', {
-			'has-saved-cards': this.props.hasStoredCards,
-		} );
+	render: function() {
+		let classes = classNames( 'all-fields-required', { 'has-saved-cards': this.props.hasStoredCards } );
 
 		return (
 			<div className="new-card">
 				<button type="button" className="new-card-toggle">
-					{ this.props.translate( '+ Use a New Credit/Debit Card' ) }
+					{ this.translate( '+ Use a New Credit/Debit Card' ) }
 				</button>
 
 				<div className="new-card-fields">
-					{ this.props.hasStoredCards ? (
-						<h6 className="checkout__new-card-header">
-							{ this.props.translate( 'Use New Credit/Debit Card' ) }:
-						</h6>
-					) : null }
+					{ this.props.hasStoredCards ?
+						<h6 className="new-card-header">{ this.translate( 'Use New Credit/Debit Card' ) }:</h6> : null
+					}
 
-					<span className={ classes }>{ this.props.translate( 'All fields required' ) }</span>
+					<span className={ classes }>{ this.translate( 'All fields required' ) }</span>
 
 					<CreditCardFormFields
 						card={ this.props.transaction.newCardFormFields }
 						countriesList={ this.props.countriesList }
 						eventFormName="Checkout Form"
 						isFieldInvalid={ this.isFieldInvalid }
-						onFieldChange={ this.handleFieldChange }
-					/>
+						onFieldChange={ this.handleFieldChange } />
 				</div>
 			</div>
 		);
-	}
+	},
 
-	handleFieldChange = ( rawDetails, maskedDetails ) => {
+	handleFieldChange: function( rawDetails, maskedDetails ) {
 		upgradesActions.setNewCreditCardDetails( {
 			rawDetails: rawDetails,
-			maskedDetails: maskedDetails,
+			maskedDetails: maskedDetails
 		} );
-	};
-}
-
-export default localize( NewCardForm );
+	}
+} );

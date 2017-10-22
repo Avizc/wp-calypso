@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { omit } from 'lodash';
 
 /**
@@ -11,10 +8,7 @@ import { omit } from 'lodash';
  */
 import { dispatchWithProps } from 'woocommerce/state/helpers';
 import { post, put, del } from 'woocommerce/state/data-layer/request/actions';
-import {
-	shippingZoneUpdated,
-	shippingZoneDeleted,
-} from 'woocommerce/state/sites/shipping-zones/actions';
+import { shippingZoneUpdated, shippingZoneDeleted } from 'woocommerce/state/sites/shipping-zones/actions';
 import {
 	WOOCOMMERCE_SHIPPING_ZONE_CREATE,
 	WOOCOMMERCE_SHIPPING_ZONE_DELETE,
@@ -49,9 +43,7 @@ export default {
 				dispatchWithProps( dispatch, getState, successAction, props );
 			};
 
-			store.dispatch(
-				put( siteId, 'shipping/zones/' + zone.id, omit( zone, 'id' ), updatedAction, failureAction )
-			);
+			store.dispatch( put( siteId, 'shipping/zones/' + zone.id, omit( zone, 'id' ), updatedAction, failureAction ) );
 		},
 	],
 
@@ -66,9 +58,7 @@ export default {
 				dispatchWithProps( dispatch, getState, successAction, props );
 			};
 
-			store.dispatch(
-				del( siteId, 'shipping/zones/' + zone.id + '?force=true', deletedAction, failureAction )
-			);
+			store.dispatch( del( siteId, 'shipping/zones/' + zone.id + '?force=true', deletedAction, failureAction ) );
 		},
 	],
 };

@@ -1,80 +1,60 @@
-/**
- * @format
- * @jest-environment jsdom
- */
-
-/**
- * External dependencies
- */
 import { expect } from 'chai';
-import React from 'react';
-import TestUtils from 'react-dom/test-utils';
 import ReactDom from 'react-dom';
+import React from 'react';
+import TestUtils from 'react-addons-test-utils';
 import sinon from 'sinon';
-
-/**
- * Internal dependencies
- */
 import { DropZone } from '../';
 
 const Wrapper = React.createClass( {
 	render: function() {
 		return <div>{ this.props.children }</div>;
-	},
+	}
 } );
 
-describe( 'index', () => {
-	let container, sandbox;
-	const requiredProps = {
-		hideDropZone: () => {},
-		showDropZone: () => {},
-	};
+describe( 'index', function() {
+	var container, sandbox;
+	require( 'test/helpers/use-fake-dom' )( '<html><body><div id="container"></div></body></html>' );
 
-	beforeAll( function() {
-		container = document.createElement( 'div' );
-		container.id = 'container';
+	before( function() {
+		container = document.getElementById( 'container' );
 		window.MutationObserver = sinon.stub().returns( {
 			observe: sinon.stub(),
-			disconnect: sinon.stub(),
+			disconnect: sinon.stub()
 		} );
 	} );
 
-	afterAll( function() {
+	after( function() {
 		if ( global.window && global.window.MutationObserver ) {
 			delete global.window.MutationObserver;
 		}
 	} );
 
-	beforeEach( () => {
+	beforeEach( function() {
 		sandbox = sinon.sandbox.create();
 	} );
 
-	afterEach( () => {
+	afterEach( function() {
 		sandbox.restore();
 		ReactDom.unmountComponentAtNode( container );
 	} );
 
-	test( 'should render as a child of its container by default', () => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container );
+	it( 'should render as a child of its container by default', function() {
+		var tree = ReactDom.render( React.createElement( DropZone ), container );
 
 		expect( tree.refs.zone.parentNode.id ).to.equal( 'container' );
 	} );
 
-	test( 'should accept a fullScreen prop to be rendered at the root', () => {
-		const tree = ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				fullScreen: true,
-			} ),
-			container
-		);
+	it( 'should accept a fullScreen prop to be rendered at the root', function() {
+		var tree = ReactDom.render( React.createElement( DropZone, {
+			fullScreen: true
+		} ), container );
 
 		expect( tree.refs.zone.parentNode.id ).to.not.equal( 'container' );
 		expect( tree.refs.zone.parentNode.parentNode ).to.eql( document.body );
 	} );
 
-	test( 'should render default content if none is provided', () => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container ),
+	it( 'should render default content if none is provided', function() {
+		var tree = ReactDom.render( React.createElement( DropZone ), container ),
 			content = TestUtils.findRenderedDOMComponentWithClass( tree, 'drop-zone__content' );
 
 		TestUtils.findRenderedDOMComponentWithClass( tree, 'drop-zone__content-icon' );
@@ -82,32 +62,25 @@ describe( 'index', () => {
 		expect( content.textContent ).to.equal( 'Drop files to upload' );
 	} );
 
-	test( 'should accept children to override the default content', () => {
-		const tree = ReactDom.render(
-				React.createElement( DropZone, requiredProps, 'Hello World' ),
-				container
-			),
+	it( 'should accept children to override the default content', function() {
+		var tree = ReactDom.render( React.createElement( DropZone, null, 'Hello World' ), container ),
 			content = TestUtils.findRenderedDOMComponentWithClass( tree, 'drop-zone__content' );
 
 		expect( content.textContent ).to.equal( 'Hello World' );
 	} );
 
-	test( 'should accept an icon to override the default icon', () => {
-		const tree = ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				icon: <div className="customIconClassName" />,
-			} ),
-			container
-		);
+	it( 'should accept an icon to override the default icon', function() {
+		const tree = ReactDom.render( React.createElement( DropZone, {
+			icon: <div className="customIconClassName" />
+		} ), container );
 
 		const icon = TestUtils.findRenderedDOMComponentWithClass( tree, 'customIconClassName' );
 
 		expect( TestUtils.isDOMComponent( icon ) ).to.equal( true );
 	} );
 
-	test( 'should highlight the drop zone when dragging over the body', () => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container ),
+	it( 'should highlight the drop zone when dragging over the body', function() {
+		var tree = ReactDom.render( React.createElement( DropZone ), container ),
 			dragEnterEvent = new window.MouseEvent( 'dragenter' );
 
 		window.dispatchEvent( dragEnterEvent );
@@ -116,8 +89,8 @@ describe( 'index', () => {
 		expect( tree.state.isDraggingOverElement ).to.not.be.ok;
 	} );
 
-	test( 'should start observing the body for mutations when dragging over', done => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container ),
+	it( 'should start observing the body for mutations when dragging over', function( done ) {
+		var tree = ReactDom.render( React.createElement( DropZone ), container ),
 			dragEnterEvent = new window.MouseEvent( 'dragenter' );
 
 		window.dispatchEvent( dragEnterEvent );
@@ -128,8 +101,8 @@ describe( 'index', () => {
 		} );
 	} );
 
-	test( 'should stop observing the body for mutations upon drag ending', done => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container ),
+	it( 'should stop observing the body for mutations upon drag ending', function( done ) {
+		var tree = ReactDom.render( React.createElement( DropZone ), container ),
 			dragEnterEvent = new window.MouseEvent( 'dragenter' ),
 			dragLeaveEvent = new window.MouseEvent( 'dragleave' );
 
@@ -142,18 +115,15 @@ describe( 'index', () => {
 		} );
 	} );
 
-	test( 'should not highlight if onVerifyValidTransfer returns false', () => {
-		const dragEnterEvent = new window.MouseEvent( 'dragenter' );
+	it( 'should not highlight if onVerifyValidTransfer returns false', function() {
+		var dragEnterEvent = new window.MouseEvent( 'dragenter' ),
+			tree;
 
-		const tree = ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				onVerifyValidTransfer: function() {
-					return false;
-				},
-			} ),
-			container
-		);
+		tree = ReactDom.render( React.createElement( DropZone, {
+			onVerifyValidTransfer: function() {
+				return false;
+			}
+		} ), container );
 
 		window.dispatchEvent( dragEnterEvent );
 
@@ -161,8 +131,8 @@ describe( 'index', () => {
 		expect( tree.state.isDraggingOverElement ).to.not.be.ok;
 	} );
 
-	test( 'should further highlight the drop zone when dragging over the element', () => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container );
+	it( 'should further highlight the drop zone when dragging over the element', function() {
+		const tree = ReactDom.render( React.createElement( DropZone ), container );
 		sandbox.stub( tree, 'isWithinZoneBounds' ).returns( true );
 
 		const dragEnterEvent = new window.MouseEvent( 'dragenter' );
@@ -172,55 +142,45 @@ describe( 'index', () => {
 		expect( tree.state.isDraggingOverElement ).to.be.ok;
 	} );
 
-	test( 'should further highlight the drop zone when dragging over the body if fullScreen', () => {
-		const tree = ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				fullScreen: true,
-			} ),
-			container
-		);
+	it( 'should further highlight the drop zone when dragging over the body if fullScreen', function() {
+		var tree = ReactDom.render( React.createElement( DropZone, {
+				fullScreen: true
+			} ), container ), dragEnterEvent;
 
-		const dragEnterEvent = new window.MouseEvent( 'dragenter' );
+		dragEnterEvent = new window.MouseEvent( 'dragenter' );
 		window.dispatchEvent( dragEnterEvent );
 
 		expect( tree.state.isDraggingOverDocument ).to.be.ok;
 		expect( tree.state.isDraggingOverElement ).to.be.ok;
 	} );
 
-	test( 'should call onDrop with the raw event data when a drop occurs', () => {
-		const spyDrop = sandbox.spy();
+	it( 'should call onDrop with the raw event data when a drop occurs', function() {
+		var dropEvent,
+			spyDrop = sandbox.spy();
 
 		sandbox.stub( window.HTMLElement.prototype, 'contains' ).returns( true );
 
-		ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				onDrop: spyDrop,
-			} ),
-			container
-		);
+		ReactDom.render( React.createElement( DropZone, {
+			onDrop: spyDrop
+		} ), container );
 
-		const dropEvent = new window.MouseEvent( 'drop' );
+		dropEvent = new window.MouseEvent( 'drop' );
 		window.dispatchEvent( dropEvent );
 
 		expect( spyDrop.calledOnce ).to.be.ok;
 		expect( spyDrop.getCall( 0 ).args[ 0 ] ).to.eql( dropEvent );
 	} );
 
-	test( 'should call onFilesDrop with the files array when a drop occurs', () => {
-		const spyDrop = sandbox.spy();
+	it( 'should call onFilesDrop with the files array when a drop occurs', function() {
+		var dropEvent,
+			spyDrop = sandbox.spy();
 
 		sandbox.stub( window.HTMLElement.prototype, 'contains' ).returns( true );
-		ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				onFilesDrop: spyDrop,
-			} ),
-			container
-		);
+		ReactDom.render( React.createElement( DropZone, {
+			onFilesDrop: spyDrop
+		} ), container );
 
-		const dropEvent = new window.MouseEvent( 'drop' );
+		dropEvent = new window.MouseEvent( 'drop' );
 		dropEvent.dataTransfer = { files: [ 1, 2, 3 ] };
 		window.dispatchEvent( dropEvent );
 
@@ -228,20 +188,16 @@ describe( 'index', () => {
 		expect( spyDrop.getCall( 0 ).args[ 0 ] ).to.eql( [ 1, 2, 3 ] );
 	} );
 
-	test( 'should not call onFilesDrop if onVerifyValidTransfer returns false', () => {
-		const spyDrop = sandbox.spy(),
+	it( 'should not call onFilesDrop if onVerifyValidTransfer returns false', function() {
+		var spyDrop = sandbox.spy(),
 			dropEvent = new window.MouseEvent( 'drop' );
 
-		ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				onFilesDrop: spyDrop,
-				onVerifyValidTransfer: function() {
-					return false;
-				},
-			} ),
-			container
-		);
+		ReactDom.render( React.createElement( DropZone, {
+			onFilesDrop: spyDrop,
+			onVerifyValidTransfer: function() {
+				return false;
+			}
+		} ), container );
 
 		dropEvent.dataTransfer = { files: [ 1, 2, 3 ] };
 		window.dispatchEvent( dropEvent );
@@ -249,20 +205,20 @@ describe( 'index', () => {
 		expect( spyDrop.called ).to.not.be.ok;
 	} );
 
-	test( 'should allow more than one rendered DropZone on a page', () => {
-		const tree = ReactDom.render(
+	it( 'should allow more than one rendered DropZone on a page', function() {
+		var tree = ReactDom.render(
 			React.createElement(
 				Wrapper,
 				null,
-				React.createElement( DropZone, requiredProps ),
-				React.createElement( DropZone, requiredProps )
+				React.createElement( DropZone ),
+				React.createElement( DropZone )
 			),
 			container
-		);
+		), dragEnterEvent, rendered;
 
-		const rendered = TestUtils.scryRenderedComponentsWithType( tree, DropZone );
+		rendered = TestUtils.scryRenderedComponentsWithType( tree, DropZone );
 
-		const dragEnterEvent = new window.MouseEvent( 'dragenter' );
+		dragEnterEvent = new window.MouseEvent( 'dragenter' );
 		window.dispatchEvent( dragEnterEvent );
 
 		expect( rendered ).to.have.length.of( 2 );
@@ -272,30 +228,20 @@ describe( 'index', () => {
 		} );
 	} );
 
-	test( 'should accept a custom textLabel to override the default text', () => {
-		const tree = ReactDom.render(
-			React.createElement( DropZone, {
-				...requiredProps,
-				textLabel: 'Custom Drop Zone Label',
-			} ),
-			container
-		);
+	it( 'should accept a custom textLabel to override the default text', function() {
+		const tree = ReactDom.render( React.createElement( DropZone, {
+			textLabel: 'Custom Drop Zone Label'
+		} ), container );
 
-		const textContent = TestUtils.findRenderedDOMComponentWithClass(
-			tree,
-			'drop-zone__content-text'
-		);
+		const textContent = TestUtils.findRenderedDOMComponentWithClass( tree, 'drop-zone__content-text' );
 
 		expect( textContent.textContent ).to.equal( 'Custom Drop Zone Label' );
 	} );
 
-	test( 'should show the default text label if none specified', () => {
-		const tree = ReactDom.render( React.createElement( DropZone, requiredProps ), container );
+	it( 'should show the default text label if none specified', function() {
+		const tree = ReactDom.render( React.createElement( DropZone, {} ), container );
 
-		const textContent = TestUtils.findRenderedDOMComponentWithClass(
-			tree,
-			'drop-zone__content-text'
-		);
+		const textContent = TestUtils.findRenderedDOMComponentWithClass( tree, 'drop-zone__content-text' );
 
 		expect( textContent.textContent ).to.equal( 'Drop files to upload' );
 	} );

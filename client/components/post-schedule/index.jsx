@@ -1,13 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import { moment } from 'i18n-calypso';
-import classNames from 'classnames';
 
 /**
  * Internal dependencies
@@ -56,20 +51,15 @@ class PostSchedule extends Component {
 		calendarViewDate: moment( this.props.selectedDay ? this.props.selectedDay : new Date() ),
 		tooltipContext: null,
 		showTooltip: false,
-	};
+	}
 
 	componentWillMount() {
 		if ( ! this.props.selectedDay ) {
-			return this.setState( {
-				localizedDate: null,
-				isFutureDate: false,
-			} );
+			return this.setState( { localizedDate: null } );
 		}
 
-		const localizedDate = this.getDateToUserLocation( this.props.selectedDay );
 		this.setState( {
-			localizedDate,
-			isFutureDate: localizedDate.isAfter(),
+			localizedDate: this.getDateToUserLocation( this.props.selectedDay )
 		} );
 	}
 
@@ -83,7 +73,7 @@ class PostSchedule extends Component {
 		}
 
 		this.setState( {
-			localizedDate: this.getDateToUserLocation( nextProps.selectedDay ),
+			localizedDate: this.getDateToUserLocation( nextProps.selectedDay )
 		} );
 	}
 
@@ -91,12 +81,14 @@ class PostSchedule extends Component {
 		return {
 			formatMonthTitle: function() {
 				return;
-			},
+			}
 		};
 	}
 
 	events() {
-		return this.props.events.concat( this.getEventsFromPosts( this.props.posts ) );
+		return this.props.events.concat(
+			this.getEventsFromPosts( this.props.posts )
+		);
 	}
 
 	getEventsFromPosts( postsList = [] ) {
@@ -106,7 +98,7 @@ class PostSchedule extends Component {
 			return {
 				id: post.ID,
 				title: post.title,
-				date: localDate.toDate(),
+				date: localDate.toDate()
 			};
 		} );
 	}
@@ -119,33 +111,28 @@ class PostSchedule extends Component {
 		);
 	}
 
-	setCurrentMonth = date => {
+	setCurrentMonth = ( date ) => {
 		date = moment( date );
 		this.props.onMonthChange( date );
 		this.setState( { calendarViewDate: date } );
-	};
+	}
 
-	setViewDate = date => {
+	setViewDate = ( date ) => {
 		this.setState( { calendarViewDate: moment( date ) } );
-	};
+	}
 
 	getCurrentDate() {
 		return moment( this.state.localizedDate || this.getDateToUserLocation() );
 	}
 
-	updateDate = date => {
-		const convertedDate = utils.convertDateToGivenOffset(
+	updateDate = ( date ) => {
+		this.setState( { calendarViewDate: date } );
+
+		this.props.onDateChange( utils.convertDateToGivenOffset(
 			date,
 			this.props.timezone,
 			this.props.gmtOffset
-		);
-
-		this.setState( {
-			calendarViewDate: date,
-			isFutureDate: convertedDate.isAfter(),
-		} );
-
-		this.props.onDateChange( convertedDate );
+		) );
 	};
 
 	handleOnDayMouseEnter = ( date, modifiers, event, eventsByDay ) => {
@@ -229,14 +216,12 @@ class PostSchedule extends Component {
 	render() {
 		const handleEventsTooltip = ! this.props.events || ! this.props.events.length;
 
-		const className = classNames( 'post-schedule', {
-			'is-future-date': this.state.isFutureDate,
-		} );
-
 		return (
-			<div className={ className }>
-				{ // Used by Clock for now, likely others in the future.
-				this.props.site && <QuerySiteSettings siteId={ this.props.site.ID } /> }
+			<div className="post-schedule">
+				{
+					// Used by Clock for now, likely others in the future.
+					this.props.site && <QuerySiteSettings siteId={ this.props.site.ID } />
+				}
 				<Header
 					date={ this.state.calendarViewDate }
 					onDateChange={ this.setViewDate }
@@ -251,9 +236,15 @@ class PostSchedule extends Component {
 					disabledDays={ this.props.disabledDays }
 					enableOutsideDays={ this.props.enableOutsideDays }
 					modifiers={ this.props.modifiers }
-					selectedDay={ this.state.localizedDate ? this.state.localizedDate.toDate() : null }
+					selectedDay={
+						this.state.localizedDate
+							? this.state.localizedDate.toDate()
+							: null
+					}
+
 					timeReference={ this.getCurrentDate() }
 					calendarViewDate={ this.state.calendarViewDate.toDate() }
+
 					onMonthChange={ this.setCurrentMonth }
 					onSelectDay={ this.updateDate }
 					onDayMouseEnter={ this.handleOnDayMouseEnter }
@@ -262,13 +253,14 @@ class PostSchedule extends Component {
 
 				{ this.renderClock() }
 
-				{ handleEventsTooltip && (
+				{
+					handleEventsTooltip &&
 					<EventsTooltip
 						events={ this.state.eventsByDay }
 						context={ this.state.tooltipContext }
 						isVisible={ this.state.showTooltip }
 					/>
-				) }
+				}
 			</div>
 		);
 	}

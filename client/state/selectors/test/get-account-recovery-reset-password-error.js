@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,7 +10,7 @@ import deepFreeze from 'deep-freeze';
 import { getAccountRecoveryResetPasswordError } from '../';
 
 describe( 'getAccountRecoveryResetPasswordError()', () => {
-	test( 'should return the error field under resetPassword state tree.', () => {
+	it( 'should return the error field under resetPassword state tree.', () => {
 		const error = {
 			status: 400,
 			message: 'Something wrong!',
@@ -30,7 +28,7 @@ describe( 'getAccountRecoveryResetPasswordError()', () => {
 		assert.deepEqual( getAccountRecoveryResetPasswordError( state ), error );
 	} );
 
-	test( 'should return null as default value.', () => {
+	it( 'should return null as default value.', () => {
 		assert.isNull( getAccountRecoveryResetPasswordError( undefined ) );
 	} );
 } );

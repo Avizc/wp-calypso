@@ -1,21 +1,20 @@
 /**
  * External dependecies
  */
-const webpackMiddleware = require( 'webpack-dev-middleware' );
-const webpack = require( 'webpack' );
-const chalk = require( 'chalk' );
+var webpackMiddleware = require( 'webpack-dev-middleware' ),
+	webpack = require( 'webpack' ),
+	chalk = require( 'chalk' );
 const hotMiddleware = require( 'webpack-hot-middleware' );
-const webpackConfig = require( 'webpack.config' );
 
-const config = require( 'config' );
-
-const port = process.env.PORT || config( 'port' );
+var utils = require( './utils' ),
+	webpackConfig = require( 'webpack.config' );
 
 function middleware( app ) {
-	const compiler = webpack( webpackConfig );
-	const callbacks = [];
-	let built = false;
-	let beforeFirstCompile = true;
+	var compiler = webpack( webpackConfig ),
+		callbacks = [],
+		built = false,
+		beforeFirstCompile = true,
+		assets;
 
 	app.use( hotMiddleware( compiler ) );
 
@@ -25,11 +24,13 @@ function middleware( app ) {
 		profile: true,
 	} ) );
 
-	compiler.plugin( 'done', function() {
+	compiler.plugin( 'done', function( stats ) {
 		built = true;
+		assets = utils.getAssets( stats.toJson() );
+		app.set( 'assets', assets );
 
 		// Dequeue and call request handlers
-		while ( callbacks.length > 0 ) {
+		while( callbacks.length > 0 ) {
 			callbacks.shift()();
 		}
 
@@ -41,7 +42,7 @@ function middleware( app ) {
 			process.nextTick( function() {
 				if ( beforeFirstCompile ) {
 					beforeFirstCompile = false;
-					console.info( chalk.cyan( `\nReady! You can load http://calypso.localhost:${ port }/ now. Have fun!` ) );
+					console.info( chalk.cyan( '\nReady! You can load http://calypso.localhost:3000/ now. Have fun!' ) );
 				} else {
 					console.info( chalk.cyan( '\nReady! All assets are re-compiled. Have fun!' ) );
 				}
@@ -75,6 +76,7 @@ function middleware( app ) {
 	}
 
 	app.use( waitForCompiler );
+
 	app.use( webpackMiddleware( compiler, {
 		publicPath: '/calypso/',
 		stats: {

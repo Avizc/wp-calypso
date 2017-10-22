@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,8 +7,8 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
+import { useSandbox } from 'test/helpers/use-sinon';
 import {
-	WP_SUPER_CACHE_DELETE_CACHE_SUCCESS,
 	WP_SUPER_CACHE_DELETE_FILE,
 	WP_SUPER_CACHE_DELETE_FILE_FAILURE,
 	WP_SUPER_CACHE_DELETE_FILE_SUCCESS,
@@ -18,16 +16,18 @@ import {
 	WP_SUPER_CACHE_GENERATE_STATS_FAILURE,
 	WP_SUPER_CACHE_GENERATE_STATS_SUCCESS,
 } from '../../action-types';
+import {
+	DESERIALIZE,
+	SERIALIZE,
+} from 'state/action-types';
 import reducer from '../reducer';
 import { generating } from '../reducer';
-import { DESERIALIZE, SERIALIZE } from 'state/action-types';
-import { useSandbox } from 'test/helpers/use-sinon';
 
 describe( 'reducer', () => {
 	const primarySiteId = 123456;
 	const secondarySiteId = 456789;
 
-	useSandbox( sandbox => {
+	useSandbox( ( sandbox ) => {
 		sandbox.stub( console, 'warn' );
 	} );
 
@@ -36,13 +36,13 @@ describe( 'reducer', () => {
 			[ primarySiteId ]: true,
 		} );
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = generating( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should set generating value to true if request in progress', () => {
+		it( 'should set generating value to true if request in progress', () => {
 			const state = generating( undefined, {
 				type: WP_SUPER_CACHE_GENERATE_STATS,
 				siteId: primarySiteId,
@@ -53,7 +53,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate generating values', () => {
+		it( 'should accumulate generating values', () => {
 			const state = generating( previousState, {
 				type: WP_SUPER_CACHE_GENERATE_STATS,
 				siteId: secondarySiteId,
@@ -65,7 +65,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set generating value to false if request finishes successfully', () => {
+		it( 'should set generating value to false if request finishes successfully', () => {
 			const state = generating( previousState, {
 				type: WP_SUPER_CACHE_GENERATE_STATS_SUCCESS,
 				siteId: primarySiteId,
@@ -76,7 +76,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set generating value to false if request finishes with failure', () => {
+		it( 'should set generating value to false if request finishes with failure', () => {
 			const state = generating( previousState, {
 				type: WP_SUPER_CACHE_GENERATE_STATS_FAILURE,
 				siteId: primarySiteId,
@@ -87,7 +87,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = generating( previousState, {
 				type: SERIALIZE,
 			} );
@@ -95,7 +95,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = generating( previousState, {
 				type: DESERIALIZE,
 			} );
@@ -108,16 +108,16 @@ describe( 'reducer', () => {
 		const previousState = deepFreeze( {
 			deleting: {
 				[ primarySiteId ]: true,
-			},
+			}
 		} );
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = reducer( undefined, {} );
 
 			expect( state.deleting ).to.eql( {} );
 		} );
 
-		test( 'should set deleting value to true if request in progress', () => {
+		it( 'should set deleting value to true if request in progress', () => {
 			const state = reducer( undefined, {
 				type: WP_SUPER_CACHE_DELETE_FILE,
 				siteId: primarySiteId,
@@ -128,7 +128,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate deleting values', () => {
+		it( 'should accumulate deleting values', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_DELETE_FILE,
 				siteId: secondarySiteId,
@@ -140,7 +140,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set deleting value to false if request finishes successfully', () => {
+		it( 'should set deleting value to false if request finishes successfully', () => {
 			const oldState = deepFreeze( {
 				items: {
 					[ primarySiteId ]: {
@@ -151,14 +151,14 @@ describe( 'reducer', () => {
 									files: 2,
 									lower_age: 5500,
 									upper_age: 10000,
-								},
+								}
 							},
 							expired: 0,
 							expired_list: {},
 							fsize: 0,
-						},
-					},
-				},
+						}
+					}
+				}
 			} );
 			const state = reducer( oldState, {
 				type: WP_SUPER_CACHE_DELETE_FILE_SUCCESS,
@@ -173,7 +173,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set deleting value to false if request finishes with failure', () => {
+		it( 'should set deleting value to false if request finishes with failure', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_DELETE_FILE_FAILURE,
 				siteId: primarySiteId,
@@ -184,7 +184,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = reducer( previousState, {
 				type: SERIALIZE,
 			} );
@@ -192,7 +192,7 @@ describe( 'reducer', () => {
 			expect( state.deleting ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = reducer( previousState, {
 				type: DESERIALIZE,
 			} );
@@ -208,16 +208,16 @@ describe( 'reducer', () => {
 			const previousState = deepFreeze( {
 				items: {
 					[ primarySiteId ]: primaryStats,
-				},
+				}
 			} );
 
-			test( 'should default to an empty object', () => {
+			it( 'should default to an empty object', () => {
 				const state = reducer( undefined, {} );
 
 				expect( state.items ).to.eql( {} );
 			} );
 
-			test( 'should index stats by site ID', () => {
+			it( 'should index stats by site ID', () => {
 				const state = reducer( undefined, {
 					type: WP_SUPER_CACHE_GENERATE_STATS_SUCCESS,
 					siteId: primarySiteId,
@@ -229,7 +229,7 @@ describe( 'reducer', () => {
 				} );
 			} );
 
-			test( 'should accumulate stats', () => {
+			it( 'should accumulate stats', () => {
 				const state = reducer( previousState, {
 					type: WP_SUPER_CACHE_GENERATE_STATS_SUCCESS,
 					siteId: secondarySiteId,
@@ -242,7 +242,7 @@ describe( 'reducer', () => {
 				} );
 			} );
 
-			test( 'should override previous stats of same site ID', () => {
+			it( 'should override previous stats of same site ID', () => {
 				const state = reducer( previousState, {
 					type: WP_SUPER_CACHE_GENERATE_STATS_SUCCESS,
 					siteId: primarySiteId,
@@ -254,7 +254,7 @@ describe( 'reducer', () => {
 				} );
 			} );
 
-			test( 'should accumulate new stats and overwrite existing ones for the same site ID', () => {
+			it( 'should accumulate new stats and overwrite existing ones for the same site ID', () => {
 				const newStats = {
 					generated: 1493997829,
 					supercache: {},
@@ -270,7 +270,7 @@ describe( 'reducer', () => {
 				} );
 			} );
 
-			test( 'should persist state', () => {
+			it( 'should persist state', () => {
 				const state = reducer( previousState, {
 					type: SERIALIZE,
 				} );
@@ -280,7 +280,7 @@ describe( 'reducer', () => {
 				} );
 			} );
 
-			test( 'should load valid persisted state', () => {
+			it( 'should load valid persisted state', () => {
 				const state = reducer( previousState, {
 					type: DESERIALIZE,
 				} );
@@ -290,11 +290,11 @@ describe( 'reducer', () => {
 				} );
 			} );
 
-			test( 'should not load invalid persisted state', () => {
+			it( 'should not load invalid persisted state', () => {
 				const previousInvalidState = deepFreeze( {
 					items: {
 						[ primarySiteId ]: 2,
-					},
+					}
 				} );
 				const state = reducer( previousInvalidState, {
 					type: DESERIALIZE,
@@ -304,121 +304,8 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		describe( 'WP_SUPER_CACHE_DELETE_CACHE_SUCCESS', () => {
-			const previousState = deepFreeze( {
-				items: {
-					[ primarySiteId ]: {
-						supercache: {
-							cached: 2,
-							cached_list: {
-								'wordpress.com/supercache/cached-file': {
-									files: 2,
-									lower_age: 5500,
-									upper_age: 10000,
-								},
-							},
-							expired: 4,
-							expired_list: {
-								'wordpress.com/supercache/expired-file': {
-									files: 4,
-									lower_age: 535937,
-									upper_age: 538273,
-								},
-							},
-							fsize: 58272,
-						},
-						wpcache: {
-							cached: 3,
-							cached_list: {
-								'wordpress.com/cached-file': {
-									files: 3,
-									lower_age: 5500,
-									upper_age: 10000,
-								},
-							},
-							expired: 1,
-							expired_list: {
-								'wordpress.com/expired-file': {
-									files: 1,
-									lower_age: 535937,
-									upper_age: 538273,
-								},
-							},
-							fsize: 58272,
-						},
-					},
-				},
-			} );
-
-			test( 'should clear cache and supercache expired count and files list on expired cache clear', () => {
-				const state = reducer( previousState, {
-					type: WP_SUPER_CACHE_DELETE_CACHE_SUCCESS,
-					siteId: primarySiteId,
-					deleteExpired: true,
-				} );
-
-				expect( state.items ).to.eql( {
-					[ primarySiteId ]: {
-						supercache: {
-							cached: 2,
-							cached_list: {
-								'wordpress.com/supercache/cached-file': {
-									files: 2,
-									lower_age: 5500,
-									upper_age: 10000,
-								},
-							},
-							expired: 0,
-							expired_list: {},
-							fsize: 58272,
-						},
-						wpcache: {
-							cached: 3,
-							cached_list: {
-								'wordpress.com/cached-file': {
-									files: 3,
-									lower_age: 5500,
-									upper_age: 10000,
-								},
-							},
-							expired: 0,
-							expired_list: {},
-							fsize: 58272,
-						},
-					},
-				} );
-			} );
-
-			test( 'should clear cache and supercache cached and expired count and files list on cache clear', () => {
-				const state = reducer( previousState, {
-					type: WP_SUPER_CACHE_DELETE_CACHE_SUCCESS,
-					siteId: primarySiteId,
-					deleteExpired: false,
-				} );
-
-				expect( state.items ).to.eql( {
-					[ primarySiteId ]: {
-						supercache: {
-							cached: 0,
-							cached_list: {},
-							expired: 0,
-							expired_list: {},
-							fsize: 58272,
-						},
-						wpcache: {
-							cached: 0,
-							cached_list: {},
-							expired: 0,
-							expired_list: {},
-							fsize: 58272,
-						},
-					},
-				} );
-			} );
-		} );
-
 		describe( 'WP_SUPER_CACHE_DELETE_FILE_SUCCESS', () => {
-			test( 'should update supercache expired count and expired files on file remove', () => {
+			it( 'should update supercache expired count and expired files on file remove', () => {
 				const previousState = deepFreeze( {
 					items: {
 						[ primarySiteId ]: {
@@ -429,7 +316,7 @@ describe( 'reducer', () => {
 										files: 2,
 										lower_age: 5500,
 										upper_age: 10000,
-									},
+									}
 								},
 								expired: 4,
 								expired_list: {
@@ -437,12 +324,12 @@ describe( 'reducer', () => {
 										files: 4,
 										lower_age: 535937,
 										upper_age: 538273,
-									},
+									}
 								},
 								fsize: 58272,
-							},
-						},
-					},
+							}
+						}
+					}
 				} );
 				const state = reducer( previousState, {
 					type: WP_SUPER_CACHE_DELETE_FILE_SUCCESS,
@@ -461,17 +348,17 @@ describe( 'reducer', () => {
 									files: 2,
 									lower_age: 5500,
 									upper_age: 10000,
-								},
+								}
 							},
 							expired: 0,
 							expired_list: {},
 							fsize: 58272,
-						},
-					},
+						}
+					}
 				} );
 			} );
 
-			test( 'should update supercache cached count and cached files on file remove', () => {
+			it( 'should update supercache cached count and cached files on file remove', () => {
 				const previousState = deepFreeze( {
 					items: {
 						[ primarySiteId ]: {
@@ -482,7 +369,7 @@ describe( 'reducer', () => {
 										files: 2,
 										lower_age: 5500,
 										upper_age: 10000,
-									},
+									}
 								},
 								expired: 4,
 								expired_list: {
@@ -490,12 +377,12 @@ describe( 'reducer', () => {
 										files: 4,
 										lower_age: 535937,
 										upper_age: 538273,
-									},
+									}
 								},
 								fsize: 58272,
-							},
-						},
-					},
+							}
+						}
+					}
 				} );
 				const state = reducer( previousState, {
 					type: WP_SUPER_CACHE_DELETE_FILE_SUCCESS,
@@ -516,15 +403,15 @@ describe( 'reducer', () => {
 									files: 4,
 									lower_age: 535937,
 									upper_age: 538273,
-								},
+								}
 							},
 							fsize: 58272,
-						},
-					},
+						}
+					}
 				} );
 			} );
 
-			test( 'should update wpcache expired count and expired files on file remove', () => {
+			it( 'should update wpcache expired count and expired files on file remove', () => {
 				const previousState = deepFreeze( {
 					items: {
 						[ primarySiteId ]: {
@@ -535,7 +422,7 @@ describe( 'reducer', () => {
 										files: 2,
 										lower_age: 5500,
 										upper_age: 10000,
-									},
+									}
 								},
 								expired: 4,
 								expired_list: {
@@ -543,12 +430,12 @@ describe( 'reducer', () => {
 										files: 4,
 										lower_age: 535937,
 										upper_age: 538273,
-									},
+									}
 								},
 								fsize: 58272,
-							},
-						},
-					},
+							}
+						}
+					}
 				} );
 				const state = reducer( previousState, {
 					type: WP_SUPER_CACHE_DELETE_FILE_SUCCESS,
@@ -567,17 +454,17 @@ describe( 'reducer', () => {
 									files: 2,
 									lower_age: 5500,
 									upper_age: 10000,
-								},
+								}
 							},
 							expired: 0,
 							expired_list: {},
 							fsize: 58272,
-						},
-					},
+						}
+					}
 				} );
 			} );
 
-			test( 'should update wpcache cached count and cached files on file remove', () => {
+			it( 'should update wpcache cached count and cached files on file remove', () => {
 				const previousState = deepFreeze( {
 					items: {
 						[ primarySiteId ]: {
@@ -588,7 +475,7 @@ describe( 'reducer', () => {
 										files: 2,
 										lower_age: 5500,
 										upper_age: 10000,
-									},
+									}
 								},
 								expired: 4,
 								expired_list: {
@@ -596,12 +483,12 @@ describe( 'reducer', () => {
 										files: 4,
 										lower_age: 535937,
 										upper_age: 538273,
-									},
+									}
 								},
 								fsize: 58272,
-							},
-						},
-					},
+							}
+						}
+					}
 				} );
 				const state = reducer( previousState, {
 					type: WP_SUPER_CACHE_DELETE_FILE_SUCCESS,
@@ -622,11 +509,11 @@ describe( 'reducer', () => {
 									files: 4,
 									lower_age: 535937,
 									upper_age: 538273,
-								},
+								}
 							},
 							fsize: 58272,
-						},
-					},
+						}
+					}
 				} );
 			} );
 		} );

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,19 +10,13 @@ import deepFreeze from 'deep-freeze';
 import vouchersReducer, {
 	items,
 	requesting as requestReducer,
-	errors as errorsReducer,
+	errors as errorsReducer
 } from '../reducer';
-import {
-	SITE_ID_0 as firstSiteId,
-	SITE_ID_1 as secondSiteId,
-	VOUCHER_0 as firstVoucher,
-	VOUCHER_1 as secondVoucher,
-	CREDITS as oneOfOurServiceTypesArray,
-	AD_CREDITS_0 as firstAdCredits,
-	AD_CREDITS_1 as secondAdCredits,
-	ERROR_OBJECT as errorObject,
-	SERVICE_TYPE as oneOfOurServiceTypes,
-} from './fixture';
+import { withSchemaValidation } from 'state/utils';
+
+/**
+ * Action types
+ */
 import {
 	SITE_VOUCHERS_ASSIGN_RECEIVE,
 	SITE_VOUCHERS_ASSIGN_REQUEST,
@@ -36,7 +28,21 @@ import {
 	SITE_VOUCHERS_REQUEST_FAILURE,
 } from 'state/action-types';
 
-import { withSchemaValidation } from 'state/utils';
+/**
+ * Fixture
+ */
+import {
+	SITE_ID_0 as firstSiteId,
+	SITE_ID_1 as secondSiteId,
+	VOUCHER_0 as firstVoucher,
+	VOUCHER_1 as secondVoucher,
+	CREDITS as oneOfOurServiceTypesArray,
+	AD_CREDITS_0 as firstAdCredits,
+	AD_CREDITS_1 as secondAdCredits,
+	ERROR_OBJECT as errorObject,
+	SERVICE_TYPE as oneOfOurServiceTypes
+} from './fixture';
+
 import { useSandbox } from 'test/helpers/use-sinon';
 
 const itemsReducer = withSchemaValidation( items.schema, items );
@@ -49,26 +55,30 @@ describe( 'reducer', () => {
 		sandbox.stub( console, 'warn' );
 	} );
 
-	test( 'should export expected reducer keys', () => {
-		expect( vouchersReducer( undefined, {} ) ).to.have.keys( [ 'items', 'requesting', 'errors' ] );
+	it( 'should export expected reducer keys', () => {
+		expect( vouchersReducer( undefined, {} ) ).to.have.keys( [
+			'items',
+			'requesting',
+			'errors'
+		] );
 	} );
 
 	describe( '#items()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			expect( itemsReducer( undefined, {} ) ).to.eql( {} );
 		} );
 
-		test( 'should index items state by siteId', () => {
+		it( 'should index items state by siteId', () => {
 			const initialState = undefined;
 			const action = {
 				type: SITE_VOUCHERS_RECEIVE,
 				siteId: firstSiteId,
-				vouchers: oneOfOurServiceTypesArray,
+				vouchers: oneOfOurServiceTypesArray
 			};
 			const newState = itemsReducer( initialState, action );
 
 			const expectedState = {
-				[ firstSiteId ]: oneOfOurServiceTypesArray,
+				[ firstSiteId ]: oneOfOurServiceTypesArray
 			};
 
 			deepFreeze( action );
@@ -76,17 +86,17 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should override vouchers for same site', () => {
+		it( 'should override vouchers for same site', () => {
 			const initialState = {
-				[ firstSiteId ]: oneOfOurServiceTypesArray,
+				[ firstSiteId ]: oneOfOurServiceTypesArray
 			};
 			const action = {
 				type: SITE_VOUCHERS_RECEIVE,
 				siteId: firstSiteId,
-				vouchers: firstAdCredits,
+				vouchers: firstAdCredits
 			};
 			const expectedState = {
-				[ firstSiteId ]: firstAdCredits,
+				[ firstSiteId ]: firstAdCredits
 			};
 			deepFreeze( initialState );
 			deepFreeze( action );
@@ -94,20 +104,20 @@ describe( 'reducer', () => {
 			expect( itemsReducer( initialState, action ) ).to.eql( expectedState );
 		} );
 
-		test( 'should accumulate vouchers for different sites', () => {
+		it( 'should accumulate vouchers for different sites', () => {
 			const initialState = {
-				[ firstSiteId ]: firstAdCredits,
+				[ firstSiteId ]: firstAdCredits
 			};
 			const action = {
 				type: SITE_VOUCHERS_RECEIVE,
 				siteId: secondSiteId,
-				vouchers: secondAdCredits,
+				vouchers: secondAdCredits
 			};
 			const newState = itemsReducer( initialState, action );
 
 			const expectedState = {
 				[ firstSiteId ]: firstAdCredits,
-				[ secondSiteId ]: secondAdCredits,
+				[ secondSiteId ]: secondAdCredits
 			};
 
 			deepFreeze( initialState );
@@ -116,19 +126,19 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should add SERVICE_TYPE voucher - initial state: undefined', () => {
+		it( 'should add SERVICE_TYPE voucher - initial state: undefined', () => {
 			const initialState = undefined;
 			const action = {
 				type: SITE_VOUCHERS_ASSIGN_RECEIVE,
 				siteId: firstSiteId,
 				serviceType: oneOfOurServiceTypes,
-				voucher: firstVoucher,
+				voucher: firstVoucher
 			};
 			const newState = itemsReducer( initialState, action );
 			const expectedState = {
 				[ firstSiteId ]: {
-					[ oneOfOurServiceTypes ]: [ firstVoucher ],
-				},
+					[ oneOfOurServiceTypes ]: [ firstVoucher ]
+				}
 			};
 
 			deepFreeze( action );
@@ -136,24 +146,27 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should accumulate SERVICE_TYPE voucher', () => {
+		it( 'should accumulate SERVICE_TYPE voucher', () => {
 			const initialState = {
 				[ firstSiteId ]: {
-					[ oneOfOurServiceTypes ]: [ firstVoucher ],
-				},
+					[ oneOfOurServiceTypes ]: [ firstVoucher ]
+				}
 			};
 			const action = {
 				type: SITE_VOUCHERS_ASSIGN_RECEIVE,
 				siteId: firstSiteId,
 				serviceType: oneOfOurServiceTypes,
-				voucher: secondVoucher,
+				voucher: secondVoucher
 			};
 			const newState = itemsReducer( initialState, action );
 
 			const expectedState = {
 				[ firstSiteId ]: {
-					[ oneOfOurServiceTypes ]: [ firstVoucher, secondVoucher ],
-				},
+					[ oneOfOurServiceTypes ]: [
+						firstVoucher,
+						secondVoucher
+					]
+				}
 			};
 
 			deepFreeze( initialState );
@@ -162,48 +175,48 @@ describe( 'reducer', () => {
 			expect( newState ).to.eql( expectedState );
 		} );
 
-		test( 'should persist state', () => {
+		it( 'should persist state', () => {
 			const state = deepFreeze( {
 				[ firstSiteId ]: firstAdCredits,
-				[ secondSiteId ]: secondAdCredits,
+				[ secondSiteId ]: secondAdCredits
 			} );
 			expect( itemsReducer( state, { type: 'SERIALIZE' } ) ).to.eql( state );
 		} );
 
-		test( 'should load persisted state', () => {
+		it( 'should load persisted state', () => {
 			const state = deepFreeze( {
 				[ firstSiteId ]: firstAdCredits,
-				[ secondSiteId ]: secondAdCredits,
+				[ secondSiteId ]: secondAdCredits
 			} );
 			expect( itemsReducer( state, { type: 'DESERIALIZE' } ) ).to.eql( state );
 		} );
 
-		test( 'should not load invalid persisted state', () => {
+		it( 'should not load invalid persisted state', () => {
 			const state = deepFreeze( {
-				[ firstSiteId ]: [ { voucher: 1234567890 } ],
+				[ firstSiteId ]: [ { voucher: 1234567890 } ]
 			} );
 			expect( itemsReducer( state, { type: 'DESERIALIZE' } ) ).to.eql( {} );
 		} );
 	} );
 
 	describe( '#requesting()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			expect( requestReducer( undefined, {} ) ).to.eql( {} );
 		} );
 
 		describe( 'getAll', () => {
-			test( 'should set state by siteId', () => {
+			it( 'should set state by siteId', () => {
 				const initialState = undefined;
 				const action = {
 					type: SITE_VOUCHERS_REQUEST,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: true,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( action );
@@ -211,27 +224,27 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should accumulate state by siteId', () => {
+			it( 'should accumulate state by siteId', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_REQUEST,
-					siteId: secondSiteId,
+					siteId: secondSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
+						assign: false
 					},
 					[ secondSiteId ]: {
 						getAll: true,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( action );
@@ -240,23 +253,23 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should update state by siteId on SUCCESS', () => {
+			it( 'should update state by siteId on SUCCESS', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: true,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_REQUEST_SUCCESS,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( initialState );
@@ -265,23 +278,23 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should update state by siteId on FAILURE', () => {
+			it( 'should update state by siteId on FAILURE', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: true,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_REQUEST_FAILURE,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( initialState );
@@ -290,27 +303,27 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should accumulate state by siteId on FAILURE', () => {
+			it( 'should accumulate state by siteId on FAILURE', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_REQUEST_FAILURE,
-					siteId: secondSiteId,
+					siteId: secondSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
+						assign: false
 					},
 					[ secondSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( initialState );
@@ -321,18 +334,18 @@ describe( 'reducer', () => {
 		} );
 
 		describe( 'assign', () => {
-			test( 'should set state by siteId', () => {
+			it( 'should set state by siteId', () => {
 				const initialState = undefined;
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: true,
-					},
+						assign: true
+					}
 				};
 
 				deepFreeze( action );
@@ -340,27 +353,27 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should accumulate state by siteId', () => {
+			it( 'should accumulate state by siteId', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST,
-					siteId: secondSiteId,
+					siteId: secondSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
+						assign: false
 					},
 					[ secondSiteId ]: {
 						getAll: false,
-						assign: true,
-					},
+						assign: true
+					}
 				};
 
 				deepFreeze( action );
@@ -369,23 +382,23 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should update state by siteId on SUCCESS', () => {
+			it( 'should update state by siteId on SUCCESS', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: true,
-					},
+						assign: true
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST_SUCCESS,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( initialState );
@@ -394,23 +407,23 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should update state by siteId on FAILURE', () => {
+			it( 'should update state by siteId on FAILURE', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: true,
-					},
+						assign: true
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST_FAILURE,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( initialState );
@@ -419,27 +432,27 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should accumulate state by siteId on FAILURE', () => {
+			it( 'should accumulate state by siteId on FAILURE', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST_FAILURE,
-					siteId: secondSiteId,
+					siteId: secondSiteId
 				};
 				const newState = requestReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: false,
-						assign: false,
+						assign: false
 					},
 					[ secondSiteId ]: {
 						getAll: false,
-						assign: false,
-					},
+						assign: false
+					}
 				};
 
 				deepFreeze( initialState );
@@ -451,28 +464,28 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#errors()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			expect( errorsReducer( undefined, {} ) ).to.eql( {} );
 		} );
 
 		describe( 'getAll', () => {
-			test( 'should clean state by siteId on REQUEST', () => {
+			it( 'should clean state by siteId on REQUEST', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: errorObject.message,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_REQUEST,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = errorsReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 
 				deepFreeze( initialState );
@@ -481,23 +494,23 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should clean state by siteId on SUCCESS', () => {
+			it( 'should clean state by siteId on SUCCESS', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: errorObject.message,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_REQUEST_SUCCESS,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = errorsReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 
 				deepFreeze( initialState );
@@ -506,19 +519,19 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should set state by siteId on FAILURE', () => {
+			it( 'should set state by siteId on FAILURE', () => {
 				const initialState = undefined;
 				const action = {
 					type: SITE_VOUCHERS_REQUEST_FAILURE,
 					siteId: firstSiteId,
-					error: errorObject.message,
+					error: errorObject.message
 				};
 				const newState = errorsReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: errorObject.message,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 
 				deepFreeze( action );
@@ -528,23 +541,23 @@ describe( 'reducer', () => {
 		} );
 
 		describe( 'assign', () => {
-			test( 'should clean state by siteId on REQUEST', () => {
+			it( 'should clean state by siteId on REQUEST', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: errorObject.message,
-					},
+						assign: errorObject.message
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = errorsReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 
 				deepFreeze( initialState );
@@ -553,23 +566,23 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should clean state by siteId on SUCCESS', () => {
+			it( 'should clean state by siteId on SUCCESS', () => {
 				const initialState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: errorObject.message,
-					},
+						assign: errorObject.message
+					}
 				};
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST_SUCCESS,
-					siteId: firstSiteId,
+					siteId: firstSiteId
 				};
 				const newState = errorsReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: null,
-					},
+						assign: null
+					}
 				};
 
 				deepFreeze( initialState );
@@ -578,19 +591,19 @@ describe( 'reducer', () => {
 				expect( newState ).to.eql( expectedState );
 			} );
 
-			test( 'should set state by siteId on FAILURE', () => {
+			it( 'should set state by siteId on FAILURE', () => {
 				const initialState = undefined;
 				const action = {
 					type: SITE_VOUCHERS_ASSIGN_REQUEST_FAILURE,
 					siteId: firstSiteId,
-					error: errorObject.message,
+					error: errorObject.message
 				};
 				const newState = errorsReducer( initialState, action );
 				const expectedState = {
 					[ firstSiteId ]: {
 						getAll: null,
-						assign: errorObject.message,
-					},
+						assign: errorObject.message
+					}
 				};
 
 				deepFreeze( action );

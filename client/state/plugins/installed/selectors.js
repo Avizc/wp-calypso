@@ -1,20 +1,13 @@
-/**
- * External dependencies
- *
- * @format
- */
-
-import { every, filter, find, get, pick, reduce, some, sortBy, values } from 'lodash';
-
-/**
- * Internal dependencies
- */
 import {
-	getSite,
-	getSiteTitle,
-	isJetpackSite,
-	isJetpackSiteSecondaryNetworkSite,
-} from 'state/sites/selectors';
+	every,
+	filter,
+	find,
+	pick,
+	reduce,
+	some,
+	sortBy,
+	values
+} from 'lodash';
 
 const _filters = {
 	none: function() {
@@ -40,7 +33,7 @@ const _filters = {
 	},
 	isEqual: function( pluginSlug, plugin ) {
 		return plugin.slug === pluginSlug;
-	},
+	}
 };
 
 export function isRequesting( state, siteId ) {
@@ -52,29 +45,25 @@ export function isRequesting( state, siteId ) {
 
 export function isRequestingForSites( state, sites ) {
 	// As long as any sites have isRequesting true, we consider this group requesting
-	return some( sites, siteId => isRequesting( state, siteId ) );
+	return some( sites, ( siteId ) => isRequesting( state, siteId ) );
 }
 
-export function getPlugins( state, siteIds, pluginFilter ) {
-	let pluginList = reduce(
-		siteIds,
-		( memo, siteId ) => {
-			const list = state.plugins.installed.plugins[ siteId ] || [];
-			list.forEach( item => {
-				const sitePluginInfo = pick( item, [ 'active', 'autoupdate', 'update' ] );
-				if ( memo[ item.slug ] ) {
-					memo[ item.slug ].sites = {
-						...memo[ item.slug ].sites,
-						[ siteId ]: sitePluginInfo,
-					};
-				} else {
-					memo[ item.slug ] = { ...item, sites: { [ siteId ]: sitePluginInfo } };
-				}
-			} );
-			return memo;
-		},
-		{}
-	);
+export function getPlugins( state, sites, pluginFilter ) {
+	let pluginList = reduce( sites, ( memo, site ) => {
+		const list = state.plugins.installed.plugins[ site.ID ] || [];
+		list.forEach( ( item ) => {
+			const sitePluginInfo = pick( item, [ 'active', 'autoupdate', 'update' ] );
+			if ( memo[ item.slug ] ) {
+				memo[ item.slug ].sites = {
+					...memo[ item.slug ].sites,
+					[ site.ID ]: sitePluginInfo
+				};
+			} else {
+				memo[ item.slug ] = { ...item, sites: { [ site.ID ]: sitePluginInfo } };
+			}
+		} );
+		return memo;
+	}, {} );
 
 	if ( pluginFilter && _filters[ pluginFilter ] ) {
 		pluginList = filter( pluginList, _filters[ pluginFilter ] );
@@ -82,43 +71,43 @@ export function getPlugins( state, siteIds, pluginFilter ) {
 	return values( sortBy( pluginList, item => item.slug.toLowerCase() ) );
 }
 
-export function getPluginsWithUpdates( state, siteIds ) {
-	return filter( getPlugins( state, siteIds ), _filters.updates );
+export function getPluginsWithUpdates( state, sites ) {
+	return filter( getPlugins( state, sites ), _filters.updates );
 }
 
-export function getPluginOnSite( state, siteId, pluginSlug ) {
-	const pluginList = getPlugins( state, [ siteId ] );
+export function getPluginOnSite( state, site, pluginSlug ) {
+	const pluginList = getPlugins( state, [ site ] );
 	return find( pluginList, { slug: pluginSlug } );
 }
 
-export function getSitesWithPlugin( state, siteIds, pluginSlug ) {
-	const pluginList = getPlugins( state, siteIds );
+export function getSitesWithPlugin( state, sites, pluginSlug ) {
+	const pluginList = getPlugins( state, sites );
 	const plugin = find( pluginList, { slug: pluginSlug } );
 	if ( ! plugin ) {
 		return [];
 	}
 
 	// Filter the requested sites list by the list of sites for this plugin
-	const pluginSites = filter( siteIds, siteId => {
-		return plugin.sites.hasOwnProperty( siteId );
+	const pluginSites = filter( sites, ( site ) => {
+		return plugin.sites.hasOwnProperty( site.ID );
 	} );
 
-	return sortBy( pluginSites, siteId => getSiteTitle( state, siteId ).toLowerCase() );
+	return sortBy( pluginSites, item => item.title.toLowerCase() );
 }
 
-export function getSitesWithoutPlugin( state, siteIds, pluginSlug ) {
-	const installedOnSiteIds = getSitesWithPlugin( state, siteIds, pluginSlug ) || [];
-	return filter( siteIds, function( siteId ) {
-		if ( ! get( getSite( state, siteId ), 'visible' ) || ! isJetpackSite( state, siteId ) ) {
+export function getSitesWithoutPlugin( state, sites, pluginSlug ) {
+	const installedOnSites = getSitesWithPlugin( state, sites, pluginSlug ) || [];
+	return filter( sites, function( site ) {
+		if ( ! site.visible || ! site.jetpack ) {
 			return false;
 		}
 
-		if ( isJetpackSiteSecondaryNetworkSite( state, siteId ) ) {
+		if ( site.jetpack && site.isSecondaryNetworkSite() ) {
 			return false;
 		}
 
-		return every( installedOnSiteIds, function( installedOnSiteId ) {
-			return installedOnSiteId !== siteId;
+		return every( installedOnSites, function( installedOnSite ) {
+			return installedOnSite.slug !== site.slug;
 		} );
 	} );
 }
@@ -136,5 +125,5 @@ export function getStatusForPlugin( state, siteId, pluginId ) {
 
 export function isPluginDoingAction( state, siteId, pluginId ) {
 	const status = getStatusForPlugin( state, siteId, pluginId );
-	return !! status && 'inProgress' === status.status;
+	return ( !! status ) && ( 'inProgress' === status.status );
 }

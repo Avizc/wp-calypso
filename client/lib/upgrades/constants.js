@@ -1,12 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import keyMirror from 'key-mirror';
 
-export const action = keyMirror( {
+module.exports.action = keyMirror( {
 	CART_COUPON_APPLY: null,
 	CART_DISABLE: null,
 	CART_ITEMS_ADD: null,
@@ -30,7 +27,7 @@ export const action = keyMirror( {
 	DOMAINS_FETCH_COMPLETED: null,
 	DOMAINS_FETCH_FAILED: null,
 	DOMAINS_INITIALIZE: null,
-	DOMAIN_TRANSFER_CANCEL_REQUEST_COMPLETED: null,
+	DOMAIN_LOCKING_ENABLE_COMPLETED: null,
 	DOMAIN_TRANSFER_ACCEPT_COMPLETED: null,
 	DOMAIN_TRANSFER_CODE_REQUEST_COMPLETED: null,
 	DOMAIN_TRANSFER_DECLINE_COMPLETED: null,
@@ -80,5 +77,5 @@ export const action = keyMirror( {
 	WHOIS_FETCH: null,
 	WHOIS_FETCH_COMPLETED: null,
 	WHOIS_FETCH_FAILED: null,
-	WHOIS_UPDATE_COMPLETED: null,
+	WHOIS_UPDATE_COMPLETED: null
 } );

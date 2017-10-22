@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { flowRight, partial } from 'lodash';
 import { localize } from 'i18n-calypso';
@@ -17,7 +13,7 @@ import ButtonsPreview from './preview';
 import ButtonsPreviewPlaceholder from './preview-placeholder';
 import ButtonsStyle from './style';
 import { getSelectedSiteId } from 'state/ui/selectors';
-import { isJetpackSite } from 'state/sites/selectors';
+import { isJetpackSite, isJetpackModuleActive } from 'state/sites/selectors';
 import { isPrivateSite } from 'state/selectors';
 import { recordGoogleEvent } from 'state/analytics/actions';
 
@@ -26,6 +22,7 @@ class SharingButtonsAppearance extends Component {
 		buttons: PropTypes.array,
 		initialized: PropTypes.bool,
 		isJetpack: PropTypes.bool,
+		isLikesModuleActive: PropTypes.bool,
 		isPrivate: PropTypes.bool,
 		onChange: PropTypes.func,
 		onButtonsChange: PropTypes.func,
@@ -33,7 +30,7 @@ class SharingButtonsAppearance extends Component {
 		recordGoogleEvent: PropTypes.func,
 		saving: PropTypes.bool,
 		values: PropTypes.object,
-	};
+	}
 
 	static defaultProps = {
 		buttons: Object.freeze( [] ),
@@ -41,7 +38,7 @@ class SharingButtonsAppearance extends Component {
 		onChange: () => {},
 		onButtonsChange: () => {},
 		initialized: false,
-		saving: false,
+		saving: false
 	};
 
 	isLikeButtonEnabled() {
@@ -49,27 +46,15 @@ class SharingButtonsAppearance extends Component {
 	}
 
 	isReblogButtonEnabled() {
-		return (
-			'' === this.props.values.disabled_reblogs || false === this.props.values.disabled_reblogs
-		);
+		return '' === this.props.values.disabled_reblogs || false === this.props.values.disabled_reblogs;
 	}
 
 	onReblogsLikesCheckboxClicked = event => {
 		this.props.onChange( event.target.name, ! event.target.checked );
 		if ( 'disabled_reblogs' === event.target.name ) {
-			this.props.recordGoogleEvent(
-				'Sharing',
-				'Clicked Show Reblog Button Checkbox',
-				'checked',
-				event.target.checked ? 1 : 0
-			);
+			this.props.recordGoogleEvent( 'Sharing', 'Clicked Show Reblog Button Checkbox', 'checked', event.target.checked ? 1 : 0 );
 		} else if ( 'disabled_likes' === event.target.name ) {
-			this.props.recordGoogleEvent(
-				'Sharing',
-				'Clicked Show Like Button Checkbox',
-				'checked',
-				event.target.checked ? 1 : 0
-			);
+			this.props.recordGoogleEvent( 'Sharing', 'Clicked Show Like Button Checkbox', 'checked', event.target.checked ? 1 : 0 );
 		}
 	};
 
@@ -83,11 +68,13 @@ class SharingButtonsAppearance extends Component {
 					style={ this.props.values.sharing_button_style }
 					label={ this.props.values.sharing_label }
 					buttons={ this.props.buttons }
-					showLike={ this.isLikeButtonEnabled() }
+					showLike={
+						( ! this.props.isJetpack || this.props.isLikesModuleActive ) &&
+						this.isLikeButtonEnabled()
+					}
 					showReblog={ ! this.props.isJetpack && this.isReblogButtonEnabled() }
 					onLabelChange={ changeLabel }
-					onButtonsChange={ this.props.onButtonsChange }
-				/>
+					onButtonsChange={ this.props.onButtonsChange } />
 			);
 		}
 
@@ -105,43 +92,33 @@ class SharingButtonsAppearance extends Component {
 						onChange={ this.onReblogsLikesCheckboxClicked }
 						disabled={ ! this.props.initialized }
 					/>
-					<span>
-						{ this.props.translate( 'Show reblog button', {
-							context: 'Sharing options: Checkbox label',
-						} ) }
-					</span>
+					<span>{ this.props.translate( 'Show reblog button', { context: 'Sharing options: Checkbox label' } ) }</span>
 				</label>
 			);
 		}
 	}
 
 	getReblogLikeOptionsElement() {
-		const { isJetpack, translate } = this.props;
-
-		return (
-			<fieldset className="buttons__fieldset sharing-buttons__fieldset">
-				<legend className="buttons__fieldset-heading sharing-buttons__fieldset-heading">
-					{ isJetpack ? (
-						translate( 'Like', { context: 'Sharing options: Header' } )
-					) : (
-						translate( 'Reblog & Like', { context: 'Sharing options: Header' } )
-					) }
-				</legend>
-				{ this.getReblogOptionElement() }
-				<label>
-					<input
-						name="disabled_likes"
-						type="checkbox"
-						checked={ this.isLikeButtonEnabled() }
-						onChange={ this.onReblogsLikesCheckboxClicked }
-						disabled={ ! this.props.initialized }
-					/>
-					<span>
-						{ translate( 'Show like button', { context: 'Sharing options: Checkbox label' } ) }
-					</span>
-				</label>
-			</fieldset>
-		);
+		if ( ( ! this.props.isJetpack || this.props.isLikesModuleActive ) ) {
+			return (
+				<fieldset className="sharing-buttons__fieldset">
+					<legend className="sharing-buttons__fieldset-heading">
+						{ this.props.translate( 'Reblog & Like', { context: 'Sharing options: Header' } ) }
+					</legend>
+					{ this.getReblogOptionElement() }
+					<label>
+						<input
+							name="disabled_likes"
+							type="checkbox"
+							checked={ this.isLikeButtonEnabled() }
+							onChange={ this.onReblogsLikesCheckboxClicked }
+							disabled={ ! this.props.initialized }
+						/>
+						<span>{ this.props.translate( 'Show like button', { context: 'Sharing options: Checkbox label' } ) }</span>
+					</label>
+				</fieldset>
+			);
+		}
 	}
 
 	render() {
@@ -170,11 +147,7 @@ class SharingButtonsAppearance extends Component {
 					className="button is-primary sharing-buttons__submit"
 					disabled={ this.props.saving || ! this.props.initialized }
 				>
-					{ this.props.saving ? (
-						this.props.translate( 'Saving…' )
-					) : (
-						this.props.translate( 'Save Changes' )
-					) }
+					{ this.props.saving ? this.props.translate( 'Saving…' ) : this.props.translate( 'Save Changes' ) }
 				</button>
 			</div>
 		);
@@ -185,14 +158,19 @@ const connectComponent = connect(
 	state => {
 		const siteId = getSelectedSiteId( state );
 		const isJetpack = isJetpackSite( state, siteId );
+		const isLikesModuleActive = isJetpackModuleActive( state, siteId, 'likes' );
 		const isPrivate = isPrivateSite( state, siteId );
 
 		return {
 			isJetpack,
+			isLikesModuleActive,
 			isPrivate,
 		};
 	},
 	{ recordGoogleEvent }
 );
 
-export default flowRight( connectComponent, localize )( SharingButtonsAppearance );
+export default flowRight(
+	connectComponent,
+	localize,
+)( SharingButtonsAppearance );

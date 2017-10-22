@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -14,6 +12,7 @@ import {
 	isRequestingTicketSupportConfiguration,
 	getTicketSupportRequestError,
 } from '../selectors';
+
 import { dummyError } from './test-data';
 
 describe( 'ticket-support/configuration/selectors', () => {
@@ -40,41 +39,39 @@ describe( 'ticket-support/configuration/selectors', () => {
 	};
 
 	describe( '#isTicketSupportEligible', () => {
-		test( 'should default to false', () => {
+		it( 'should default to false', () => {
 			assert.isFalse( isTicketSupportEligible( uninitState ) );
 		} );
 
-		test( 'should return true', () => {
+		it( 'should return true', () => {
 			assert.isTrue( isTicketSupportEligible( initedState ) );
 		} );
 	} );
 
 	describe( '#isTicketSupportConfigurationReady', () => {
-		test( 'should return false', () => {
+		it( 'should return false', () => {
 			assert.isFalse( isTicketSupportConfigurationReady( uninitState ) );
 		} );
 
-		test( 'should return true', () => {
+		it( 'should return true', () => {
 			assert.isTrue( isTicketSupportConfigurationReady( initedState ) );
 		} );
 	} );
 
 	describe( '#isRequestingTicketSupportConfiguration', () => {
-		test( 'should return true', () => {
-			assert.isTrue(
-				isRequestingTicketSupportConfiguration( {
-					help: {
-						ticket: {
-							isRequesting: true,
-						},
+		it( 'should return true', () => {
+			assert.isTrue( isRequestingTicketSupportConfiguration( {
+				help: {
+					ticket: {
+						isRequesting: true,
 					},
-				} )
-			);
+				},
+			} ) );
 		} );
 	} );
 
 	describe( '#getTicketSupportRequestError', () => {
-		test( 'should return the error object', () => {
+		it( 'should return the error object', () => {
 			const errorState = {
 				help: {
 					ticket: {

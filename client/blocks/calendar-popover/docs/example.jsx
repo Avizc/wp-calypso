@@ -1,9 +1,7 @@
+
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { PureComponent } from 'react';
 import { moment } from 'i18n-calypso';
 
@@ -25,7 +23,11 @@ class CalendarPopoverExample extends PureComponent {
 	render() {
 		return (
 			<div>
-				<Button primary ref="button" onClick={ this.toggle }>
+				<Button
+					primary
+					ref="button"
+					onClick={ this.toggle }
+				>
 					Show Popover
 				</Button>
 

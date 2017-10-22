@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import React from 'react';
 import i18n from 'i18n-calypso';
 
@@ -14,12 +11,14 @@ import analytics from 'lib/analytics';
 import titlecase from 'to-title-case';
 import { getSiteFragment, sectionify } from 'lib/route';
 import { setDocumentHeadTitle as setTitle } from 'state/document-head/actions';
+import { getSelectedSite } from 'state/ui/selectors';
 import { renderWithReduxStore } from 'lib/react-helpers';
 import WPSuperCache from './main';
 
 export function settings( context ) {
 	const siteId = getSiteFragment( context.path );
-	const { tab = '' } = context.params;
+	const site = getSelectedSite( context.store.getState() );
+	const { tab = '' } = context.params;
 
 	context.store.dispatch( setTitle( i18n.translate( 'WP Super Cache', { textOnly: true } ) ) );
 
@@ -43,7 +42,11 @@ export function settings( context ) {
 	analytics.pageView.record( baseAnalyticsPath, analyticsPageTitle );
 
 	renderWithReduxStore(
-		<WPSuperCache tab={ tab } />,
+		React.createElement( WPSuperCache, {
+			context,
+			site,
+			tab,
+		} ),
 		document.getElementById( 'primary' ),
 		context.store
 	);

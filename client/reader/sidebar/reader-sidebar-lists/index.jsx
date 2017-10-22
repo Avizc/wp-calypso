@@ -1,18 +1,16 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
-import { localize } from 'i18n-calypso';
+import React, { Component, PropTypes } from 'react';
 import { identity } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
+import { localize } from 'i18n-calypso';
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import ExpandableSidebarMenu from '../expandable';
 import ReaderSidebarListsList from './list';
 import ReaderListsActions from 'lib/reader-lists/actions';
+
 import { recordAction, recordGaEvent, recordTrack } from 'reader/stats';
 
 export class ReaderSidebarLists extends Component {

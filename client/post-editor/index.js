@@ -1,19 +1,16 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import page from 'page';
+var page = require( 'page' );
 
 /**
  * Internal dependencies
  */
-import sitesController from 'my-sites/controller';
-import controller from './controller';
+var sitesController = require( 'my-sites/controller' ),
+	controller = require( './controller' );
 import config from 'config';
 
-export default function() {
+module.exports = function() {
 	page( '/post', controller.pressThis, sitesController.siteSelection, sitesController.sites );
 	page( '/post/new', () => page.redirect( '/post' ) ); // redirect from beep-beep-boop
 	page( '/post/:site?/:post?', sitesController.siteSelection, controller.post );
@@ -26,8 +23,8 @@ export default function() {
 
 	if ( config.isEnabled( 'manage/custom-post-types' ) ) {
 		page( '/edit/:type', sitesController.siteSelection, sitesController.sites );
-		page( '/edit/:type/new', context => page.redirect( `/edit/${ context.params.type }` ) );
+		page( '/edit/:type/new', ( context ) => page.redirect( `/edit/${ context.params.type }` ) );
 		page( '/edit/:type/:site?/:post?', sitesController.siteSelection, controller.post );
 		page.exit( '/edit/:type/:site?/:post?', controller.exitPost );
 	}
-}
+};

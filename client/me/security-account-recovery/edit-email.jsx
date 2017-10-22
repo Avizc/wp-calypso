@@ -1,43 +1,41 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import ReactDom from 'react-dom';
-import React from 'react';
-import emailValidator from 'email-validator';
+var ReactDom = require( 'react-dom' ),
+	React = require( 'react' ),
+	LinkedStateMixin = require( 'react-addons-linked-state-mixin' ),
+	emailValidator = require( 'email-validator' );
 
 /**
  * Internal dependencies
  */
-import FormFieldset from 'components/forms/form-fieldset';
-import FormTextInput from 'components/forms/form-text-input';
-import FormInputValidation from 'components/forms/form-input-validation';
-import FormSettingExplanation from 'components/forms/form-setting-explanation';
-import Buttons from './buttons';
+var FormFieldset = require( 'components/forms/form-fieldset' ),
+	FormTextInput = require( 'components/forms/form-text-input' ),
+	FormInputValidation = require( 'components/forms/form-input-validation' ),
+	FormSettingExplanation = require( 'components/forms/form-setting-explanation' ),
+	Buttons = require( './buttons' );
 
-const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'SecurityAccountRecoveryRecoveryEmailEdit',
 
+	mixins: [ LinkedStateMixin ],
+
 	propTypes: {
-		storedEmail: PropTypes.string,
-		onSave: PropTypes.func,
-		onCancel: PropTypes.func,
-		onDelete: PropTypes.func,
+		storedEmail: React.PropTypes.string,
+		onSave: React.PropTypes.func,
+		onCancel: React.PropTypes.func,
+		onDelete: React.PropTypes.func
 	},
 
 	getDefaultProps: function() {
 		return {
-			storedEmail: null,
+			storedEmail: null
 		};
 	},
 
 	getInitialState: function() {
 		return {
-			email: this.props.storedEmail || null,
+			email: this.props.storedEmail || null
 		};
 	},
 
@@ -48,7 +46,12 @@ const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
 	renderValidation: function() {
 		var validation = null;
 		if ( this.state.validation ) {
-			validation = <FormInputValidation isError text={ this.state.validation } />;
+			validation = (
+				<FormInputValidation
+					isError
+					text={ this.state.validation }
+					/>
+			);
 		}
 		return validation;
 	},
@@ -58,13 +61,15 @@ const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
 			text;
 
 		if ( this.props.primaryEmail ) {
-			text = this.props.translate( 'Your primary email address is {{email/}}', {
+			text = this.translate( 'Your primary email address is {{email/}}', {
 				components: {
-					email: <strong>{ this.props.primaryEmail }</strong>,
-				},
+					email: <strong>{ this.props.primaryEmail }</strong>
+				}
 			} );
 
-			explanation = <FormSettingExplanation>{ text }</FormSettingExplanation>;
+			explanation = (
+				<FormSettingExplanation>{ text }</FormSettingExplanation>
+			);
 		}
 		return explanation;
 	},
@@ -74,13 +79,12 @@ const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
 			<div className={ this.props.className }>
 				<FormFieldset>
 					<FormTextInput
+						valueLink={ this.linkState( 'email' ) }
 						isError={ this.state.isInvalid }
 						onKeyUp={ this.onKeyUp }
-						name="email"
+						name="recovery-email"
 						ref="email"
-						value={ this.state.email }
-						onChange={ this.handleChange }
-					/>
+						/>
 
 					{ this.renderValidation() }
 					{ this.renderExplanation() }
@@ -89,11 +93,11 @@ const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
 				<Buttons
 					isSavable={ this.isSavable() }
 					isDeletable={ !! this.props.storedEmail }
-					saveText={ this.props.translate( 'Save Email' ) }
+					saveText={ this.translate( 'Save Email' ) }
 					onSave={ this.onSave }
 					onDelete={ this.onDelete }
 					onCancel={ this.onCancel }
-				/>
+					/>
 			</div>
 		);
 	},
@@ -127,19 +131,14 @@ const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
 			return;
 		}
 
-		if ( this.props.primaryEmail && email === this.props.primaryEmail ) {
-			this.setState( {
-				validation: this.props.translate(
-					'You have entered your primary email address. Please enter a different email address.'
-				),
-			} );
+		if ( this.props.primaryEmail &&
+				email === this.props.primaryEmail ) {
+			this.setState( { validation: this.translate( 'You have entered your primary email address. Please enter a different email address.' ) } );
 			return;
 		}
 
 		if ( ! emailValidator.validate( email ) ) {
-			this.setState( {
-				validation: this.props.translate( 'Please enter a valid email address.' ),
-			} );
+			this.setState( { validation: this.translate( 'Please enter a valid email address.' ) } );
 			return;
 		}
 
@@ -153,12 +152,5 @@ const SecurityAccountRecoveryRecoveryEmailEdit = React.createClass( {
 
 	onDelete: function() {
 		this.props.onDelete();
-	},
-
-	handleChange( e ) {
-		const { name, value } = e.currentTarget;
-		this.setState( { [ name ]: value } );
-	},
+	}
 } );
-
-export default localize( SecurityAccountRecoveryRecoveryEmailEdit );

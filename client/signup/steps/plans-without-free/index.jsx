@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -11,4 +8,4 @@ import React from 'react';
  */
 import Plans from 'signup/steps/plans';
 
-export default props => <Plans { ...props } hideFreePlan={ true } />;
+export default ( props ) => <Plans { ...props } hideFreePlan={ true } />;

@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import { some, forEach, startsWith, endsWith } from 'lodash';
 import { iframeIsWhitelisted } from './utils';
 import url from 'url';

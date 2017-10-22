@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { get, partial } from 'lodash';
 
@@ -31,7 +29,9 @@ const StandardPost = ( { post, children, isDiscover, expandCard, postKey, isExpa
 				<AutoDirection>
 					<h1 className="reader-post-card__title">
 						<a className="reader-post-card__title-link" href={ post.URL }>
-							<Emojify>{ post.title }</Emojify>
+							<Emojify>
+								{ post.title }
+							</Emojify>
 						</a>
 					</h1>
 				</AutoDirection>
@@ -43,8 +43,8 @@ const StandardPost = ( { post, children, isDiscover, expandCard, postKey, isExpa
 };
 
 StandardPost.propTypes = {
-	post: PropTypes.object.isRequired,
-	isDiscover: PropTypes.bool,
+	post: React.PropTypes.object.isRequired,
+	isDiscover: React.PropTypes.bool,
 };
 
 export default StandardPost;

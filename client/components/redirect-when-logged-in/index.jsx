@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -18,11 +14,11 @@ const debug = debugFactory( 'calypso:redirect-when-logged-in' );
 
 class RedirectWhenLoggedIn extends React.Component {
 	static propTypes = {
-		delayAtMount: PropTypes.number,
-		redirectTo: PropTypes.string.isRequired,
-		replaceCurrentLocation: PropTypes.bool,
-		waitForEmailAddress: PropTypes.string,
-		waitForUserId: PropTypes.number,
+		delayAtMount: React.PropTypes.number,
+		redirectTo: React.PropTypes.string.isRequired,
+		replaceCurrentLocation: React.PropTypes.bool,
+		waitForEmailAddress: React.PropTypes.string,
+		waitForUserId: React.PropTypes.number,
 	};
 
 	doTheRedirect() {

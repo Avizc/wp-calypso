@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -13,6 +11,7 @@ import {
 	productsSearchRequestSuccess,
 	productsSearchClear,
 } from '../search-reducer';
+
 import {
 	WOOCOMMERCE_PRODUCTS_SEARCH_REQUEST,
 	WOOCOMMERCE_PRODUCTS_SEARCH_REQUEST_SUCCESS,
@@ -23,7 +22,7 @@ import products from 'woocommerce/state/sites/products/test/fixtures/products';
 
 describe( 'reducer', () => {
 	describe( 'productsRequest', () => {
-		test( 'should store the requested page', () => {
+		it( 'should store the requested page', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_SEARCH_REQUEST,
 				siteId: 123,
@@ -35,7 +34,7 @@ describe( 'reducer', () => {
 		} );
 	} );
 	describe( 'productsRequestSuccess', () => {
-		test( 'should store the current page', () => {
+		it( 'should store the current page', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_SEARCH_REQUEST_SUCCESS,
 				siteId: 123,
@@ -47,7 +46,7 @@ describe( 'reducer', () => {
 			const newState = productsSearchRequestSuccess( undefined, action );
 			expect( newState.currentPage ).to.eql( 2 );
 		} );
-		test( 'should store product ids for the current page', () => {
+		it( 'should store product ids for the current page', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_SEARCH_REQUEST_SUCCESS,
 				siteId: 123,
@@ -61,7 +60,7 @@ describe( 'reducer', () => {
 		} );
 	} );
 	describe( 'productsSearchClear', () => {
-		test( 'should reset the search state', () => {
+		it( 'should reset the search state', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_SEARCH_CLEAR,
 				siteId: 123,

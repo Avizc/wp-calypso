@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
@@ -26,9 +24,9 @@ const getReaderSiteId = feed => ( feed && feed.blog_ID === 0 ? null : feed && fe
 
 class FeedStream extends React.Component {
 	static propTypes = {
-		feedId: PropTypes.number.isRequired,
-		className: PropTypes.string,
-		showBack: PropTypes.bool,
+		feedId: React.PropTypes.number.isRequired,
+		className: React.PropTypes.string,
+		showBack: React.PropTypes.bool,
 	};
 
 	static defaultProps = {

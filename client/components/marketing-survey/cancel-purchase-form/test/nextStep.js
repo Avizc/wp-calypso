@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -10,18 +8,18 @@ import { expect } from 'chai';
  */
 import nextStep from '../nextStep';
 
-describe( 'nextStep', () => {
+describe( 'nextStep', function() {
 	const steps = [ 'a', 'b', 'c' ];
 
-	test( 'should return final step if current step is unknown', () => {
+	it( 'should return final step if current step is unknown', function() {
 		expect( nextStep( 'unknown', steps ) ).to.equal( 'c' );
 	} );
 
-	test( 'should return final step if current step is final step', () => {
+	it( 'should return final step if current step is final step', function() {
 		expect( nextStep( 'c', steps ) ).to.equal( 'c' );
 	} );
 
-	test( 'should return next step current step is earlier step', () => {
+	it( 'should return next step current step is earlier step', function() {
 		expect( nextStep( 'a', steps ) ).to.equal( 'b' );
 	} );
 } );

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,7 +7,14 @@ import sinon from 'sinon';
 /**
  * Internal dependencies
  */
-import { fromApi, validate, requestResetOptionsSuccess, requestResetOptionsError } from '../';
+import useNock from 'test/helpers/use-nock';
+
+import {
+	fromApi,
+	validate,
+	handleRequestResetOptions,
+} from '../';
+
 import {
 	ACCOUNT_RECOVERY_RESET_OPTIONS_RECEIVE,
 	ACCOUNT_RECOVERY_RESET_OPTIONS_ERROR,
@@ -24,72 +29,70 @@ const validResponse = {
 };
 
 describe( 'validate()', () => {
-	test( 'should validate successfully and throw nothing.', () => {
+	it( 'should validate successfully and throw nothing.', () => {
 		assert.doesNotThrow( () => validate( validResponse ) );
 	} );
 
-	test( 'should invalidate missing keys and throw an error.', () => {
-		assert.throws(
-			() =>
-				validate( {
-					primary_email: 'foo@example.com',
-				} ),
-			Error
-		);
+	it( 'should invalidate missing keys and throw an error.', () => {
+		assert.throws( () => validate( {
+			primary_email: 'foo@example.com',
+		} ), Error );
 	} );
 
-	test( 'should invalidate unexpected value type and throw an error', () => {
-		assert.throws(
-			() =>
-				validate( {
-					primary_email: 'foo@example.com',
-					primary_sms: '123456',
-					secondary_email: 'bar@example.com',
-					secondary_sms: 123456,
-				} ),
-			Error
-		);
+	it( 'should invalidate unexpected value type and throw an error', () => {
+		assert.throws( () => validate( {
+			primary_email: 'foo@example.com',
+			primary_sms: '123456',
+			secondary_email: 'bar@example.com',
+			secondary_sms: 123456,
+		} ), Error );
 	} );
 } );
 
 describe( 'handleRequestResetOptions()', () => {
+	const apiBaseUrl = 'https://public-api.wordpress.com:443';
+	const endpoint = '/wpcom/v2/account-recovery/lookup';
+
 	const userData = {
 		user: 'foo',
 	};
 
 	describe( 'success', () => {
-		test( 'should dispatch RECEIVE action on success', done => {
-			const dispatch = sinon.spy( action => {
+		useNock( nock => (
+			nock( apiBaseUrl )
+				.persist()
+				.get( endpoint )
+				.reply( 200, validResponse )
+		) );
+
+		it( 'should dispatch RECEIVE action on success', ( done ) => {
+			const dispatch = sinon.spy( ( action ) => {
 				if ( action.type === ACCOUNT_RECOVERY_RESET_OPTIONS_RECEIVE ) {
-					assert.isTrue(
-						dispatch.calledWith( {
-							type: ACCOUNT_RECOVERY_RESET_OPTIONS_RECEIVE,
-							items: fromApi( validResponse ),
-						} )
-					);
+					assert.isTrue( dispatch.calledWith( {
+						type: ACCOUNT_RECOVERY_RESET_OPTIONS_RECEIVE,
+						items: fromApi( validResponse ),
+					} ) );
 
 					done();
 				}
 			} );
 
-			requestResetOptionsSuccess( { dispatch }, { userData }, validResponse );
+			handleRequestResetOptions( { dispatch }, { userData } );
 		} );
 
-		test( 'should dispatch UPDATE_USER_DATA action on success', done => {
-			const dispatch = sinon.spy( action => {
+		it( 'should dispatch UPDATE_USER_DATA action on success', ( done ) => {
+			const dispatch = sinon.spy( ( action ) => {
 				if ( action.type === ACCOUNT_RECOVERY_RESET_UPDATE_USER_DATA ) {
-					assert.isTrue(
-						dispatch.calledWith( {
-							type: ACCOUNT_RECOVERY_RESET_UPDATE_USER_DATA,
-							userData,
-						} )
-					);
+					assert.isTrue( dispatch.calledWith( {
+						type: ACCOUNT_RECOVERY_RESET_UPDATE_USER_DATA,
+						userData,
+					} ) );
 
 					done();
 				}
 			} );
 
-			requestResetOptionsSuccess( { dispatch }, { userData }, validResponse );
+			handleRequestResetOptions( { dispatch }, { userData } );
 		} );
 	} );
 
@@ -99,38 +102,23 @@ describe( 'handleRequestResetOptions()', () => {
 			message: 'Something wrong!',
 		};
 
-		test( 'should dispatch ERROR action on failure', done => {
+		useNock( nock => (
+			nock( apiBaseUrl )
+				.get( endpoint )
+				.reply( errorResponse.status, errorResponse )
+		) );
+
+		it( 'should dispatch ERROR action on failure', ( done ) => {
 			const dispatch = sinon.spy( () => {
-				assert.isTrue(
-					dispatch.calledWithMatch( {
-						type: ACCOUNT_RECOVERY_RESET_OPTIONS_ERROR,
-						error: errorResponse,
-					} )
-				);
+				assert.isTrue( dispatch.calledWithMatch( {
+					type: ACCOUNT_RECOVERY_RESET_OPTIONS_ERROR,
+					error: errorResponse,
+				} ) );
 
 				done();
 			} );
 
-			requestResetOptionsError( { dispatch }, { userData }, errorResponse );
-		} );
-
-		test( 'should dispatch ERROR action on validation failure', done => {
-			const invalidResponse = {
-				primary_email: 'foo@example.com',
-			};
-
-			const dispatch = sinon.spy( () => {
-				assert.isTrue(
-					dispatch.calledWithMatch( {
-						type: ACCOUNT_RECOVERY_RESET_OPTIONS_ERROR,
-						error: { message: 'Unexpected response format from /account-recovery/lookup' },
-					} )
-				);
-
-				done();
-			} );
-
-			requestResetOptionsSuccess( { dispatch }, { userData }, invalidResponse );
+			handleRequestResetOptions( { dispatch }, { userData } );
 		} );
 	} );
 } );

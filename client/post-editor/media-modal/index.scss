@@ -1,3 +1,7 @@
+.editor-media-modal {
+	padding: 0;
+}
+
 .editor-media-modal.dialog.card {
 	position: absolute;
 		top: 0;
@@ -25,7 +29,6 @@
 	position: static;
 	color: $gray-dark;
 	height: 100%;
-	padding: 0;
 }
 
 .editor-media-modal .section-nav {

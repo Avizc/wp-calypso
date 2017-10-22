@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -20,7 +17,7 @@ class CourseList extends Component {
 		return (
 			<div className="help-courses__course-list">
 				{ courses.map( ( course, key ) => {
-					return <Course { ...course } key={ key } isBusinessPlanUser={ isBusinessPlanUser } />;
+					return <Course { ...course } key={ key } isBusinessPlanUser={ isBusinessPlanUser }/>;
 				} ) }
 			</div>
 		);
@@ -28,7 +25,7 @@ class CourseList extends Component {
 }
 
 export const CourseListPlaceholder = () => {
-	return <Card className="help-courses__course-list is-placeholder" />;
+	return <Card className="help-courses__course-list is-placeholder"></Card>;
 };
 
 export default localize( CourseList );

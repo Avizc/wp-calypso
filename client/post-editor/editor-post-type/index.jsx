@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
@@ -51,14 +47,14 @@ function EditorPostType( { translate, siteId, typeSlug, type, globalId, isSettin
 	}
 
 	const classes = classnames( 'editor-post-type', {
-		'is-loading': ! label,
+		'is-loading': ! label
 	} );
 
 	return (
 		<span className={ classes }>
-			{ siteId &&
-			'page' !== typeSlug &&
-			'post' !== typeSlug && <QueryPostTypes siteId={ siteId } /> }
+			{ siteId && 'page' !== typeSlug && 'post' !== typeSlug && (
+				<QueryPostTypes siteId={ siteId } />
+			) }
 			{ label } <PostStatus globalId={ globalId } showAll showIcon={ false } />
 		</span>
 	);
@@ -73,7 +69,7 @@ EditorPostType.propTypes = {
 	isSettings: PropTypes.bool,
 };
 
-export default connect( state => {
+export default connect( ( state ) => {
 	const props = {};
 	const site = getSelectedSite( state );
 	if ( ! site ) {
@@ -89,6 +85,6 @@ export default connect( state => {
 	return Object.assign( props, {
 		typeSlug: post.type,
 		type: getPostType( state, site.ID, post.type ),
-		globalId: post.global_ID,
+		globalId: post.global_ID
 	} );
 } )( localize( EditorPostType ) );

@@ -1,25 +1,24 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 import { spy } from 'sinon';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import {
 	requestPostEmailUnsubscription,
 	receivePostEmailUnsubscription,
 	receivePostEmailUnsubscriptionError,
 } from '../';
-import { bypassDataLayer } from 'state/data-layer/utils';
-import { http } from 'state/data-layer/wpcom-http/actions';
 import { subscribeToNewPostEmail, unsubscribeToNewPostEmail } from 'state/reader/follows/actions';
+import { http } from 'state/data-layer/wpcom-http/actions';
+import { local } from 'state/data-layer/utils';
 
 describe( 'comment-email-subscriptions', () => {
 	describe( 'requestPostEmailUnsubscription', () => {
-		test( 'should dispatch an http request and call through next', () => {
+		it( 'should dispatch an http request and call through next', () => {
 			const dispatch = spy();
 			const action = unsubscribeToNewPostEmail( 1234 );
 			requestPostEmailUnsubscription( { dispatch }, action );
@@ -31,41 +30,35 @@ describe( 'comment-email-subscriptions', () => {
 					apiVersion: '1.2',
 					onSuccess: action,
 					onFailure: action,
-				} )
+				} ),
 			);
 		} );
 	} );
 
 	describe( 'receivePostEmailUnsubscription', () => {
-		test( 'should do nothing if successful', () => {
+		it( 'should do nothing if successful', () => {
 			const dispatch = spy();
-			receivePostEmailUnsubscription( { dispatch }, null, { subscribed: false } );
+			receivePostEmailUnsubscription( { dispatch }, null, null, { subscribed: false } );
 			expect( dispatch ).to.not.have.been.called;
 		} );
 
-		test( 'should dispatch a subscribe if it fails using next', () => {
+		it( 'should dispatch a subscribe if it fails using next', () => {
 			const dispatch = spy();
-			receivePostEmailUnsubscription(
-				{ dispatch },
-				{ payload: { blogId: 1234 } },
-				{
-					subscribed: true,
-				}
-			);
+			receivePostEmailUnsubscription( { dispatch }, { payload: { blogId: 1234 } }, null, {
+				subscribed: true,
+			} );
 
 			expect( dispatch ).to.have.been.calledWithMatch( {
 				notice: {
 					text: 'Sorry, we had a problem unsubscribing. Please try again.',
 				},
 			} );
-			expect( dispatch ).to.have.been.calledWith(
-				bypassDataLayer( subscribeToNewPostEmail( 1234 ) )
-			);
+			expect( dispatch ).to.have.been.calledWith( local( subscribeToNewPostEmail( 1234 ) ) );
 		} );
 	} );
 
 	describe( 'receivePostEmailUnsubscriptionError', () => {
-		test( 'should dispatch an error notice and subscribe action using next', () => {
+		it( 'should dispatch an error notice and subscribe action using next', () => {
 			const dispatch = spy();
 			receivePostEmailUnsubscriptionError( { dispatch }, { payload: { blogId: 1234 } }, null );
 			expect( dispatch ).to.have.been.calledWithMatch( {
@@ -73,9 +66,7 @@ describe( 'comment-email-subscriptions', () => {
 					text: 'Sorry, we had a problem unsubscribing. Please try again.',
 				},
 			} );
-			expect( dispatch ).to.have.been.calledWith(
-				bypassDataLayer( subscribeToNewPostEmail( 1234 ) )
-			);
+			expect( dispatch ).to.have.been.calledWith( local( subscribeToNewPostEmail( 1234 ) ) );
 		} );
 	} );
 } );

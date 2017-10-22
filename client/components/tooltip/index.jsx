@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 
 /**
@@ -29,13 +25,13 @@ class Tooltip extends Component {
 		rootClassName: PropTypes.string,
 		status: PropTypes.string,
 		showDelay: PropTypes.number,
-		showOnMobile: PropTypes.bool,
+		showOnMobile: PropTypes.bool
 	};
 
 	static defaultProps = {
 		showDelay: 100,
 		position: 'top',
-		showOnMobile: false,
+		showOnMobile: false
 	};
 
 	render() {
@@ -53,7 +49,7 @@ class Tooltip extends Component {
 
 		return (
 			<Popover
-				autoPosition={ this.props.autoPosition }
+				autoPosition= { this.props.autoPosition }
 				className={ classes }
 				rootClassName={ this.props.rootClassName }
 				context={ this.props.context }

@@ -1,13 +1,11 @@
-/** @format */
-
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 import deepfreeze from 'deep-freeze';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import isFollowing from '../is-following';
 
@@ -27,24 +25,24 @@ describe( 'is-following', () => {
 						blog_ID: 20,
 						feed_URL: 'https://badexample.com/feed',
 						is_following: false,
-					},
-				},
-			},
-		},
+					}
+				}
+			}
+		}
 	} );
-	test( 'should find an item by feed ID', () => {
+	it( 'should find an item by feed ID', () => {
 		expect( isFollowing( state, { feedId: 1 } ) ).to.be.true;
 	} );
-	test( 'should find an item by blog ID', () => {
+	it( 'should find an item by blog ID', () => {
 		expect( isFollowing( state, { blogId: 2 } ) ).to.be.true;
 	} );
-	test( 'should find an item by url', () => {
+	it( 'should find an item by url', () => {
 		expect( isFollowing( state, { feedUrl: 'https://example.com/feed' } ) ).to.be.true;
 	} );
-	test( 'should respect is_following', () => {
+	it( 'should respect is_following', () => {
 		expect( isFollowing( state, { feedId: 10 } ) ).to.be.false;
 	} );
-	test( 'should return false for an unknown follow', () => {
+	it( 'should return false for an unknown follow', () => {
 		expect( isFollowing( state, { feedId: -1 } ) ).to.be.false;
 	} );
 } );

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import { noop } from 'lodash';
@@ -21,19 +17,19 @@ export class BusinessATStep extends Component {
 	static propTypes = {
 		recordTracksEvent: PropTypes.func.isRequired,
 		translate: PropTypes.func.isRequired,
-	};
+	}
 
 	static defaultProps = {
 		translate: noop,
-	};
+	}
 
 	onClickPluginSupport = () => {
 		this.props.recordTracksEvent( 'calypso_cancellation_business_at_plugin_support_click' );
-	};
+	}
 
 	onClickThemeSupport = () => {
 		this.props.recordTracksEvent( 'calypso_cancellation_business_at_theme_support_click' );
-	};
+	}
 
 	render() {
 		const { translate } = this.props;
@@ -61,18 +57,22 @@ export class BusinessATStep extends Component {
 				</FormSectionHeading>
 				<FormFieldset>
 					<p>
-						{ translate(
-							'Have a theme or plugin you need to install to build the site you want? ' +
+						{
+							translate(
+								'Have a theme or plugin you need to install to build the site you want? ' +
 								'Now you can! ' +
 								'Learn more about {{pluginLink}}installing plugins{{/pluginLink}} and ' +
 								'{{themeLink}}uploading themes{{/themeLink}} today.',
-							{ components: { pluginLink, themeLink } }
-						) }
+								{ components: { pluginLink, themeLink } }
+							)
+						}
 					</p>
 					<p>
-						{ translate(
-							'Are you sure you want to cancel your subscription and lose access to these new features?'
-						) }
+						{
+							translate(
+								'Are you sure you want to cancel your subscription and lose access to these new features?'
+							)
+						}
 					</p>
 				</FormFieldset>
 			</div>
@@ -83,4 +83,7 @@ export class BusinessATStep extends Component {
 const mapStateToProps = null;
 const mapDispatchToProps = { recordTracksEvent };
 
-export default connect( mapStateToProps, mapDispatchToProps )( localize( BusinessATStep ) );
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)( localize( BusinessATStep ) );

@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -59,7 +58,7 @@ export function requestSiteBlock( siteId ) {
 					dispatch( errorNotice( translate( 'Sorry, there was a problem blocking that site.' ) ) );
 
 					return Promise.reject( error );
-				}
+				},
 			);
 	};
 }
@@ -103,11 +102,11 @@ export function requestSiteUnblock( siteId ) {
 					} );
 
 					dispatch(
-						errorNotice( translate( 'Sorry, there was a problem unblocking that site.' ) )
+						errorNotice( translate( 'Sorry, there was a problem unblocking that site.' ) ),
 					);
 
 					return Promise.reject( error );
-				}
+				},
 			);
 	};
 }

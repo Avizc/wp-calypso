@@ -1,9 +1,8 @@
-/** @format */
 /**
  * Feed post display types
  * @type {Object} Types of post for display
  */
-export default {
+module.exports = {
 	UNCLASSIFIED: 0,
 	PHOTO_ONLY: 1,
 	LARGE_BANNER: 2,

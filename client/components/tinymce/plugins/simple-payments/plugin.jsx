@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import tinymce from 'tinymce/tinymce';
 import { createElement } from 'react';
 import { unmountComponentAtNode } from 'react-dom';
@@ -12,7 +9,7 @@ import { unmountComponentAtNode } from 'react-dom';
  * Internal Dependencies
  */
 import SimplePaymentsDialog from './dialog';
-import { serialize, deserialize } from './shortcode-utils';
+import { serialize } from './shortcode-utils';
 import { renderWithReduxStore } from 'lib/react-helpers';
 
 const simplePayments = editor => {
@@ -30,28 +27,35 @@ const simplePayments = editor => {
 	} );
 
 	editor.addCommand( 'simplePaymentsButton', content => {
-		let editPaymentId = null;
+		let isEdit = false;
 		if ( content ) {
-			const shortCodeData = deserialize( content );
-			editPaymentId = shortCodeData.id || null;
+			isEdit = true;
 		}
 
-		function renderModal( visibility = 'show' ) {
+		function renderModal( visibility = 'show', activeTab = 'addNew' ) {
 			renderWithReduxStore(
 				createElement( SimplePaymentsDialog, {
 					showDialog: visibility === 'show',
-					editPaymentId,
+					activeTab,
+					isEdit,
 					onInsert( productData ) {
-						editor.execCommand( 'mceInsertContent', false, serialize( productData ) );
-						renderModal( 'hide' );
+						editor.execCommand(
+							'mceInsertContent',
+							false,
+							serialize( productData )
+						);
+						renderModal( 'hide', activeTab );
 					},
 					onClose() {
 						editor.focus();
-						renderModal( 'hide' );
+						renderModal( 'hide', activeTab );
+					},
+					onChangeTabs( tab ) {
+						renderModal( 'show', tab );
 					},
 				} ),
 				node,
-				store
+				store,
 			);
 		}
 

@@ -1,59 +1,45 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { localize } from 'i18n-calypso';
+var React = require( 'react' ),
+	debug = require( 'debug' )( 'calypso:me:security:password' );
 
 /**
  * Internal dependencies
  */
-import AccountPassword from 'me/account-password';
-import Card from 'components/card';
-import DocumentHead from 'components/data/document-head';
-import Main from 'components/main';
-import MeSidebarNavigation from 'me/sidebar-navigation';
-import ReauthRequired from 'me/reauth-required';
-import SecuritySectionNav from 'me/security-section-nav';
-import twoStepAuthorization from 'lib/two-step-authorization';
+var MeSidebarNavigation = require( 'me/sidebar-navigation' ),
+	Card = require( 'components/card' ),
+	AccountPassword = require( 'me/account-password' ),
+	ReauthRequired = require( 'me/reauth-required' ),
+	twoStepAuthorization = require( 'lib/two-step-authorization' ),
+	SecuritySectionNav = require( 'me/security-section-nav' ),
+	Main = require( 'components/main' );
 
-const debug = debugFactory( 'calypso:me:security:password' );
+module.exports = React.createClass( {
 
-class Security extends React.Component {
-	static displayName = 'Security';
+	displayName: 'Security',
 
-	static propTypes = {
-		translate: PropTypes.func.isRequired,
-	};
-
-	componentDidMount() {
+	componentDidMount: function() {
 		debug( this.constructor.displayName + ' React component is mounted.' );
-	}
+	},
 
-	componentWillUnmount() {
+	componentWillUnmount: function() {
 		debug( this.constructor.displayName + ' React component is unmounting.' );
-	}
+	},
 
-	render() {
-		const { translate } = this.props;
-
+	render: function() {
 		return (
 			<Main className="security">
-				<DocumentHead title={ translate( 'Password', { textOnly: true } ) } />
 				<MeSidebarNavigation />
 
 				<SecuritySectionNav path={ this.props.path } />
 
 				<ReauthRequired twoStepAuthorization={ twoStepAuthorization } />
-				<Card className="me-security-settings security__settings">
+				<Card className="me-security-settings">
 					<p>
-						{ translate(
+						{ this.translate(
 							'To update your password enter a new one below. Your password should be at least six characters long. ' +
-								'To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ & ).'
+							'To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ & ).'
 						) }
 					</p>
 
@@ -65,6 +51,4 @@ class Security extends React.Component {
 			</Main>
 		);
 	}
-}
-
-export default localize( Security );
+} );

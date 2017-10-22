@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { find, findIndex, isEmpty, isEqual, isNil, reject } from 'lodash';
 
 /**
@@ -50,9 +47,11 @@ const reducer = {};
  * @param {Object} state Current edit state
  * @return {Object} Object with an "index" property, guaranteed to be unique
  */
-const nextCreateId = state => {
+const nextCreateId = ( state ) => {
 	return {
-		index: isEmpty( state.creates ) ? 0 : state.creates[ state.creates.length - 1 ].id.index + 1,
+		index: isEmpty( state.creates )
+			? 0
+			: state.creates[ state.creates.length - 1 ].id.index + 1,
 	};
 };
 
@@ -67,8 +66,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_ADD ] = ( state, action ) => {
 			title,
 		};
 	}
-	return {
-		...state,
+	return { ...state,
 		currentlyEditingId: id,
 		currentlyEditingNew: true,
 		currentlyEditingChangedType: false,
@@ -77,8 +75,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_ADD ] = ( state, action ) => {
 };
 
 reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_OPEN ] = ( state, action ) => {
-	return {
-		...state,
+	return { ...state,
 		currentlyEditingId: action.methodId,
 		currentlyEditingChanges: {},
 		currentlyEditingChangedType: false,
@@ -86,16 +83,15 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_OPEN ] = ( state, action ) => {
 	};
 };
 
-reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CANCEL ] = state => {
-	return {
-		...state,
+reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CANCEL ] = ( state ) => {
+	return { ...state,
 		currentlyEditingId: null,
 		currentlyEditingChangedType: false,
 		currentlyEditingNew: false,
 	};
 };
 
-reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = state => {
+reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = ( state ) => {
 	const {
 		currentlyEditingId,
 		currentlyEditingChanges,
@@ -108,8 +104,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = state => {
 	}
 	if ( isEmpty( currentlyEditingChanges ) ) {
 		// Nothing to save, no need to go through the rest of the algorithm
-		return {
-			...state,
+		return { ...state,
 			currentlyEditingChangedType: false,
 			currentlyEditingNew: false,
 			currentlyEditingId: null,
@@ -119,8 +114,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = state => {
 	const bucket = getBucket( { id: currentlyEditingId } );
 
 	if ( currentlyEditingNew ) {
-		return {
-			...state,
+		return { ...state,
 			creates: [ ...state.creates, currentlyEditingChanges ],
 			currentlyEditingId: null,
 			currentlyEditingNew: false,
@@ -137,11 +131,8 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = state => {
 			originalId = method._originalId;
 		}
 
-		state = reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_REMOVE ]( state, {
-			methodId: currentlyEditingId,
-		} );
-		return {
-			...state,
+		state = reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_REMOVE ]( state, { methodId: currentlyEditingId } );
+		return { ...state,
 			currentlyEditingId: null,
 			currentlyEditingChangedType: false,
 			currentlyEditingNew: false,
@@ -150,12 +141,10 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = state => {
 				{
 					...currentlyEditingChanges,
 					// If the "Enabled" toggle hasn't been modified in the current changes, use the value from the old method
-					enabled: isNil( currentlyEditingChanges.enabled )
-						? method && method.enabled
-						: currentlyEditingChanges.enabled,
+					enabled: isNil( currentlyEditingChanges.enabled ) ? ( method && method.enabled ) : currentlyEditingChanges.enabled,
 					id: nextCreateId( state ),
-					_originalId: originalId,
-				},
+					_originalId: originalId
+				}
 			],
 		};
 	}
@@ -178,8 +167,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CLOSE ] = state => {
 		newBucket.push( { id: currentlyEditingId, ...currentlyEditingChanges } );
 	}
 
-	return {
-		...state,
+	return { ...state,
 		currentlyEditingId: null,
 		currentlyEditingChangedType: false,
 		currentlyEditingNew: false,
@@ -216,30 +204,25 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_CHANGE_TYPE ] = ( state, action ) => {
 		enabled: state.currentlyEditingChanges && state.currentlyEditingChanges.enabled,
 	};
 
-	return {
-		...state,
+	return { ...state,
 		currentlyEditingChangedType: true,
 		currentlyEditingChanges,
 	};
 };
 
 reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_EDIT_TITLE ] = ( state, { title } ) => {
-	return {
-		...state,
-		currentlyEditingChanges: {
-			...state.currentlyEditingChanges,
+	return { ...state,
+		currentlyEditingChanges: { ...state.currentlyEditingChanges,
 			title,
-		},
+		}
 	};
 };
 
 reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_TOGGLE_OPENED_ENABLED ] = ( state, { enabled } ) => {
-	return {
-		...state,
-		currentlyEditingChanges: {
-			...state.currentlyEditingChanges,
+	return { ...state,
+		currentlyEditingChanges: { ...state.currentlyEditingChanges,
 			enabled,
-		},
+		}
 	};
 };
 
@@ -248,8 +231,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_TOGGLE_ENABLED ] = ( state, { methodId
 	const index = findIndex( state[ bucket ], { id: methodId } );
 
 	if ( -1 === index ) {
-		return {
-			...state,
+		return { ...state,
 			[ bucket ]: [
 				...state[ bucket ],
 				{
@@ -260,8 +242,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_TOGGLE_ENABLED ] = ( state, { methodId
 		};
 	}
 
-	const methodState = {
-		...state[ bucket ][ index ],
+	const methodState = { ...state[ bucket ][ index ],
 		enabled,
 	};
 
@@ -275,10 +256,7 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_TOGGLE_ENABLED ] = ( state, { methodId
 	};
 };
 
-reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_UPDATED ] = (
-	state,
-	{ data, originatingAction: { methodId } }
-) => {
+reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_UPDATED ] = ( state, { data, originatingAction: { methodId } } ) => {
 	const bucket = getBucket( { id: methodId } );
 	const newState = {
 		...state,
@@ -288,13 +266,10 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_UPDATED ] = (
 	if ( 'creates' === bucket ) {
 		const createEdit = find( state.creates, { id: methodId } );
 		if ( createEdit ) {
-			newState.updates = [
-				...state.updates,
-				{
-					...createEdit,
-					id: data.id,
-				},
-			];
+			newState.updates = [ ...state.updates, {
+				...createEdit,
+				id: data.id,
+			} ];
 		}
 	}
 
@@ -302,12 +277,8 @@ reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_UPDATED ] = (
 	return newState;
 };
 
-reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_DELETED ] = (
-	state,
-	{ originatingAction: { methodId } }
-) => {
-	return {
-		...state,
+reducer[ WOOCOMMERCE_SHIPPING_ZONE_METHOD_DELETED ] = ( state, { originatingAction: { methodId } } ) => {
+	return { ...state,
 		creates: reject( state.creates, { id: methodId } ),
 		updates: reject( state.updates, { id: methodId } ),
 		deletes: reject( state.deletes, { id: methodId } ),
@@ -330,8 +301,7 @@ export default ( state, action ) => {
 		const newMethodState = builtInShippingMethods[ methodType ]( methodState, action );
 
 		if ( newMethodState !== methodState ) {
-			return {
-				...state,
+			return { ...state,
 				currentlyEditingChanges: newMethodState,
 			};
 		}

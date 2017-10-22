@@ -1,25 +1,36 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import { expect } from 'chai';
-import { shallow } from 'enzyme';
-import { noop } from 'lodash';
 import React from 'react';
+import { expect } from 'chai';
+import { noop } from 'lodash';
+import { shallow } from 'enzyme';
 
 /**
  * Internal dependencies
  */
-import { EditPostStatus } from '../';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
-jest.mock( 'lib/user', () => () => {} );
+describe( 'EditPostStatus', function() {
+	let EditPostStatus;
 
-describe( 'EditPostStatus', () => {
-	test( 'should hide sticky option for password protected posts', () => {
+	useFakeDom();
+	useMockery();
+
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/wp', {
+			me: () => ( {
+				get: noop
+			} )
+		} );
+	} );
+
+	before( function() {
+		EditPostStatus = require( '../' ).EditPostStatus;
+	} );
+
+	it( 'should hide sticky option for password protected posts', function() {
 		const wrapper = shallow(
 			<EditPostStatus post={ { password: 'password' } } isPostPrivate={ false } type={ 'post' } />
 		);
@@ -27,7 +38,7 @@ describe( 'EditPostStatus', () => {
 		expect( wrapper.find( '.edit-post-status__sticky' ) ).to.have.lengthOf( 0 );
 	} );
 
-	test( 'should hide sticky option for private posts', () => {
+	it( 'should hide sticky option for private posts', function() {
 		const wrapper = shallow(
 			<EditPostStatus post={ { password: '' } } isPostPrivate={ true } type={ 'post' } />
 		);
@@ -35,14 +46,9 @@ describe( 'EditPostStatus', () => {
 		expect( wrapper.find( '.edit-post-status__sticky' ) ).to.have.lengthOf( 0 );
 	} );
 
-	test( 'should show sticky option for published posts', () => {
+	it( 'should show sticky option for published posts', function() {
 		const wrapper = shallow(
-			<EditPostStatus
-				post={ { password: '' } }
-				type={ 'post' }
-				isPostPrivate={ false }
-				translate={ noop }
-			/>
+			<EditPostStatus post={ { password: '' } } type={ 'post' } isPostPrivate={ false } translate={ noop } />
 		);
 
 		expect( wrapper.find( '.edit-post-status__sticky' ) ).to.have.lengthOf( 1 );

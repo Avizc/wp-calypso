@@ -1,28 +1,23 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
+const React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import HeaderCake from 'components/header-cake';
-import DocumentHead from 'components/data/document-head';
+const HeaderCake = require( 'components/header-cake' );
+const DocumentHead = require( 'components/data/document-head' );
 
 const DomainManagementHeader = React.createClass( {
 	render() {
 		return (
-			<HeaderCake
-				className="domain-management-header"
-				onClick={ this.props.onClick }
-				backHref={ this.props.backHref }
-			>
+			<HeaderCake className="domain-management-header" onClick={ this.props.onClick } backHref={ this.props.backHref }>
 				<div className="domain-management-header__children">
 					{ this.domainName() }
-					<span className="domain-management-header__title">{ this.props.children }</span>
+					<span className="domain-management-header__title">
+						{ this.props.children }
+					</span>
 				</div>
 				<DocumentHead title={ this.props.children } />
 			</HeaderCake>
@@ -35,7 +30,7 @@ const DomainManagementHeader = React.createClass( {
 		}
 
 		return <span>{ this.props.selectedDomainName }: </span>;
-	},
+	}
 } );
 
-export default DomainManagementHeader;
+module.exports = DomainManagementHeader;

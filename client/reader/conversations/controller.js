@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -20,7 +19,7 @@ export function conversations( context ) {
 	const title = 'Reader > Conversations';
 
 	trackPageLoad( basePath, 'Reader > Conversations', mcKey );
-	recordTrack( 'calypso_reader_conversations_viewed' );
+	recordTrack( 'calypso_reader_discover_viewed' );
 
 	const convoStream = feedStreamStore( 'conversations' );
 	ensureStoreLoading( convoStream, context );
@@ -36,38 +35,6 @@ export function conversations( context ) {
 			trackScrollPage={ scrollTracker }
 		/>,
 		document.getElementById( 'primary' ),
-		context.store
-	);
-}
-
-export function conversationsA8c( context ) {
-	const basePath = route.sectionify( context.path );
-	const mcKey = 'conversations-a8c';
-	const title = 'Reader > Conversations > Automattic';
-
-	trackPageLoad( basePath, 'Reader > Conversations > Automattic', mcKey );
-	recordTrack( 'calypso_reader_conversations_a8c_viewed' );
-
-	const convoStream = feedStreamStore( 'conversations-a8c' );
-	ensureStoreLoading( convoStream, context );
-
-	const scrollTracker = trackScrollPage.bind(
-		null,
-		'/read/conversations/a8c',
-		title,
-		'Reader',
-		mcKey
-	);
-
-	renderWithReduxStore(
-		<AsyncLoad
-			require="reader/conversations/stream"
-			key={ 'conversations' }
-			title="Conversations @ Automattic"
-			store={ convoStream }
-			trackScrollPage={ scrollTracker }
-		/>,
-		document.getElementById( 'primary' ),
-		context.store
+		context.store,
 	);
 }

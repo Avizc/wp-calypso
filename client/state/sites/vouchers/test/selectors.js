@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,20 +10,24 @@ import {
 	getVouchersBySite,
 	getVouchersBySiteId,
 	getVouchersBySiteIdAndServiceType,
-	isRequestingSiteVouchers,
+	isRequestingSiteVouchers
 } from '../selectors';
+
+/**
+ * Fixture data
+ */
 import {
 	SITE_ID_0 as firstSiteId,
 	SITE_ID_1 as secondSiteId,
 	AD_CREDITS_0 as firstAdCredits,
 	VOUCHER_0 as firstVoucher,
 	SERVICE_TYPE as serviceType,
-	getStateInstance,
+	getStateInstance
 } from './fixture';
 
 describe( 'selectors', () => {
 	describe( '#getVouchersBySite()', () => {
-		test( 'should return vouchers by site', () => {
+		it( 'should return vouchers by site', () => {
 			const state = getStateInstance();
 			const vouchers = getVouchersBySite( state, { ID: firstSiteId } );
 			expect( vouchers ).to.eql( firstAdCredits );
@@ -33,7 +35,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getVouchersBySiteId()', () => {
-		test( 'should return vouchers by site id', () => {
+		it( 'should return vouchers by site id', () => {
 			const state = getStateInstance();
 			const vouchers = getVouchersBySiteId( state, firstSiteId );
 			expect( vouchers ).to.eql( firstAdCredits );
@@ -41,7 +43,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getVouchersBySiteIdAndServiceType()', () => {
-		test( 'should return vouchers by site id', () => {
+		it( 'should return vouchers by site id', () => {
 			const state = getStateInstance();
 			const vouchers = getVouchersBySiteIdAndServiceType( state, firstSiteId, serviceType );
 			expect( vouchers ).to.eql( [ firstVoucher ] );
@@ -49,7 +51,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#isRequestingSiteVouchers()', () => {
-		test( 'should return true if we are fetching vouchers', () => {
+		it( 'should return true if we are fetching vouchers', () => {
 			const state = getStateInstance();
 
 			expect( isRequestingSiteVouchers( state, firstSiteId ) ).to.equal( false );

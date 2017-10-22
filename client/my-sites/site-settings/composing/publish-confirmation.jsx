@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
@@ -23,6 +19,7 @@ import { isConfirmationSidebarEnabled } from 'state/ui/editor/selectors';
 import { saveConfirmationSidebarPreference } from 'state/ui/editor/actions';
 
 class PublishConfirmation extends Component {
+
 	constructor( props ) {
 		super( props );
 		this.state = { isToggleOn: props.publishConfirmationEnabled };
@@ -59,7 +56,7 @@ class PublishConfirmation extends Component {
 				<FormSettingExplanation isIndented>
 					{ translate(
 						'This adds a confirmation step with helpful settings and tips ' +
-							'for double-checking your content before publishing.'
+						'for double-checking your content before publishing.'
 					) }
 				</FormSettingExplanation>
 			</FormFieldset>
@@ -72,15 +69,15 @@ PublishConfirmation.defaultProps = {
 };
 
 PublishConfirmation.propTypes = {
-	siteId: PropTypes.number,
-	fetchingPreferences: PropTypes.bool,
-	publishConfirmationEnabled: PropTypes.bool,
-	savePublishConfirmationPreference: PropTypes.func,
-	translate: PropTypes.func,
+	siteId: React.PropTypes.number,
+	fetchingPreferences: React.PropTypes.bool,
+	publishConfirmationEnabled: React.PropTypes.bool,
+	savePublishConfirmationPreference: React.PropTypes.func,
+	translate: React.PropTypes.func,
 };
 
 export default connect(
-	state => {
+	( state ) => {
 		const siteId = getSelectedSiteId( state );
 
 		return {
@@ -89,12 +86,9 @@ export default connect(
 			publishConfirmationEnabled: isConfirmationSidebarEnabled( state, siteId ),
 		};
 	},
-	dispatch => {
-		return bindActionCreators(
-			{
-				savePublishConfirmationPreference: saveConfirmationSidebarPreference,
-			},
-			dispatch
-		);
-	}
+	( dispatch ) => {
+		return bindActionCreators( {
+			savePublishConfirmationPreference: saveConfirmationSidebarPreference,
+		}, dispatch );
+	},
 )( localize( PublishConfirmation ) );

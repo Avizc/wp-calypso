@@ -1,12 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
-import { omit } from 'lodash';
+import React, { PropTypes } from 'react';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies
@@ -23,13 +19,13 @@ export default React.createClass( {
 
 		text: PropTypes.string,
 		loadingText: PropTypes.string,
-		size: PropTypes.number,
+		size: PropTypes.number
 	},
 
 	getDefaultProps() {
 		return {
 			size: 24,
-			loading: false,
+			loading: false
 		};
 	},
 
@@ -43,7 +39,7 @@ export default React.createClass( {
 			'loadingText',
 			'text',
 			'size',
-			'disabled',
+			'disabled'
 		] );
 
 		return (
@@ -52,8 +48,13 @@ export default React.createClass( {
 					{ loading ? loadingText : text }
 				</Button>
 
-				{ loading && <Spinner size={ size } className="spinner-button__spinner" /> }
+				{ loading &&
+					<Spinner
+						size={ size }
+						className="spinner-button__spinner"
+					/>
+				}
 			</div>
 		);
-	},
+	}
 } );

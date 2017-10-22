@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,13 +7,15 @@ import { spy, match } from 'sinon';
 /**
  * Internal dependencies
  */
-import { handleProductCategoryCreate } from '../';
-import { WOOCOMMERCE_API_REQUEST } from 'woocommerce/state/action-types';
 import { createProductCategory } from 'woocommerce/state/sites/product-categories/actions';
+import { handleProductCategoryCreate } from '../';
+import {
+	WOOCOMMERCE_API_REQUEST,
+} from 'woocommerce/state/action-types';
 
 describe( 'handlers', () => {
 	describe( '#handleProductCategoryCreate', () => {
-		test( 'should dispatch a post action', () => {
+		it( 'should dispatch a post action', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -34,11 +34,12 @@ describe( 'handlers', () => {
 					siteId: 123,
 					body: { name: 'Category 1', slug: 'category-1' },
 					onFailureAction: failureAction,
-				} ).and( match.has( 'onSuccessAction' ) )
+				} )
+				.and( match.has( 'onSuccessAction' ) )
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -72,7 +73,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra parameters', () => {
+		it( 'should dispatch a success function with extra parameters', () => {
 			const store = {
 				dispatch: spy(),
 			};

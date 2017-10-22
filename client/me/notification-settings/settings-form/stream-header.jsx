@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import PureRenderMixin from 'react-pure-render/mixin';
 import Gridicon from 'gridicons';
 
@@ -21,7 +17,7 @@ export default React.createClass( {
 
 	propTypes: {
 		stream: PropTypes.string,
-		title: PropTypes.string,
+		title: PropTypes.string
 	},
 
 	renderTitle() {
@@ -36,5 +32,5 @@ export default React.createClass( {
 				</div>
 			</div>
 		);
-	},
+	}
 } );

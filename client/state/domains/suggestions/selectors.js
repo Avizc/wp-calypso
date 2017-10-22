@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { getSerializedDomainsSuggestionsQuery } from './utils';
 
 /**

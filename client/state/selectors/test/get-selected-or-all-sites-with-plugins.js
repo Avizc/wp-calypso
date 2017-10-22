@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,11 +10,11 @@ import { getSelectedOrAllSitesWithPlugins } from '../';
 import { userState } from './fixtures/user-state';
 
 describe( 'getSelectedOrAllSitesWithPlugins()', () => {
-	test( 'should return an empty array if no sites exist in state', () => {
+	it( 'should return an empty array if no sites exist in state', () => {
 		const state = {
 			...userState,
 			sites: {
-				items: {},
+				items: {}
 			},
 			ui: { selectedSiteId: 2916284 },
 		};
@@ -24,7 +22,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 		expect( sites ).to.eql( [] );
 	} );
 
-	test( 'should return an empty array if the sites existing are not able to contain plugins', () => {
+	it( 'should return an empty array if the sites existing are not able to contain plugins', () => {
 		const state = {
 			...userState,
 			sites: {
@@ -33,7 +31,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 						ID: 2916288,
 						visible: true,
 					},
-				},
+				}
 			},
 			ui: {},
 		};
@@ -41,7 +39,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 		expect( sites ).to.eql( [] );
 	} );
 
-	test( 'should return an array with one site if just one site exists and the user is able to manage plugins there', () => {
+	it( 'should return an array with one site if just one site exists and the user is able to manage plugins there', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -50,7 +48,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 					2916288: {
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -59,7 +57,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 						jetpack: true,
 						visible: true,
 					},
-				},
+				}
 			},
 			ui: {},
 		};
@@ -68,7 +66,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 		expect( sites[ 0 ].ID ).to.eql( 2916288 );
 	} );
 
-	test( 'should return an array with all the sites able to have plugins', () => {
+	it( 'should return an array with all the sites able to have plugins', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -80,7 +78,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 					2916289: {
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -98,7 +96,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 						jetpack: true,
 						visible: true,
 					},
-				},
+				}
 			},
 			ui: {},
 		};
@@ -108,7 +106,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 		expect( sites[ 1 ].ID ).to.eql( 2916289 );
 	} );
 
-	test( 'should return an array with the selected site if it is able to have plugins', () => {
+	it( 'should return an array with the selected site if it is able to have plugins', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -120,7 +118,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 					2916289: {
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -134,7 +132,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 						jetpack: true,
 						visible: true,
 					},
-				},
+				}
 			},
 			ui: { selectedSiteId: 2916289 },
 		};
@@ -143,7 +141,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 		expect( sites[ 0 ].ID ).to.eql( 2916289 );
 	} );
 
-	test( 'should return an empty array if the selected site is not able to have plugins', () => {
+	it( 'should return an empty array if the selected site is not able to have plugins', () => {
 		const state = {
 			users: userState.users,
 			currentUser: {
@@ -155,7 +153,7 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 					2916287: {
 						manage_options: true,
 					},
-				},
+				}
 			},
 			sites: {
 				items: {
@@ -165,13 +163,13 @@ describe( 'getSelectedOrAllSitesWithPlugins()', () => {
 						visible: true,
 						capabilities: {
 							manage_options: true,
-						},
+						}
 					},
 					2916287: {
 						ID: 2916287,
 						visible: true,
-					},
-				},
+					}
+				}
 			},
 			ui: { selectedSiteId: 2916287 },
 		};

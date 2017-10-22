@@ -1,21 +1,15 @@
-/**
- * Internal dependencies
- *
- * @format
- */
-
-import untrailingslashit from './untrailingslashit';
-import page from 'page';
+var untrailingslashit = require( './untrailingslashit' ),
+	page = require( 'page' );
 
 function appendQueryString( basepath, querystring ) {
 	return basepath + ( querystring ? '?' + querystring : '' );
 }
 
-export default function normalize( context, next ) {
-	const normalizedPathName = untrailingslashit( context.pathname );
+module.exports = function normalize( context, next ) {
+	var normalizedPathName = untrailingslashit( context.pathname );
 	if ( normalizedPathName !== context.pathname ) {
 		page.redirect( appendQueryString( normalizedPathName, context.querystring ) );
 	} else {
 		next();
 	}
-}
+};

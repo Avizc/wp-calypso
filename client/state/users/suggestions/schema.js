@@ -1,4 +1,3 @@
-/** @format */
 export const itemsSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -14,11 +13,11 @@ export const itemsSchema = {
 					image_URL: { type: 'string' },
 					source: {
 						type: 'array',
-						items: { type: 'string' },
+						items: { type: 'string' }
 					},
-					user_login: { type: 'string' },
-				},
-			},
-		},
-	},
+					user_login: { type: 'string' }
+				}
+			}
+		}
+	}
 };

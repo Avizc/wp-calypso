@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -18,7 +15,7 @@ class CartToggle extends Component {
 		this.state = { isShowingCartOnMobile: false };
 	}
 
-	toggleCartOnMobile = event => {
+	toggleCartOnMobile = ( event ) => {
 		event.preventDefault();
 
 		const show = ! this.state.isShowingCartOnMobile;
@@ -30,11 +27,7 @@ class CartToggle extends Component {
 		const label = this.state.isShowingCartOnMobile
 			? this.props.translate( 'Hide order summary' )
 			: this.props.translate( 'Show order summary' );
-		return (
-			<a className="checkout__summary-toggle" onClick={ this.toggleCartOnMobile }>
-				{ label }
-			</a>
-		);
+		return <a className="checkout__summary-toggle" onClick={ this.toggleCartOnMobile }>{ label }</a>;
 	}
 }
 

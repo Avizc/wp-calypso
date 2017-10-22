@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get } from 'lodash';
 
 function getSettingsState( state ) {
@@ -40,11 +37,7 @@ export function isRestoringSettings( state, siteId ) {
  * @return {Boolean} Whether settings are being saved
  */
 export function isSavingSettings( state, siteId ) {
-	return get(
-		state,
-		[ 'extensions', 'wpSuperCache', 'settings', 'saveStatus', siteId, 'saving' ],
-		false
-	);
+	return get( state, [ 'extensions', 'wpSuperCache', 'settings', 'saveStatus', siteId, 'saving' ], false );
 }
 
 /**

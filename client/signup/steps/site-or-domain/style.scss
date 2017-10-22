@@ -27,10 +27,6 @@
 	}
 }
 
-.site-or-domain__choice-is-placeholder {
-	cursor: default;
-}
-
 .site-or-domain__button {
 	text-align: center;
 }
@@ -40,10 +36,6 @@
 
 	.button {
 		text-transform: uppercase;
-
-		&.site-or-domain__is-placeholder {
-			width: 90%;
-		}
 	}
 }
 
@@ -76,8 +68,4 @@
 		display: flex;
 		flex-direction: column-reverse;
 	}
-}
-
-.site-or-domain__is-placeholder {
-	@include placeholder(23%);
 }

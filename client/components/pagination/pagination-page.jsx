@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import classNames from 'classnames';
 import Gridicon from 'gridicons';
 import { localize } from 'i18n-calypso';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 /**
@@ -17,15 +13,20 @@ import Button from 'components/button';
 
 class PaginationPage extends Component {
 	static propTypes = {
-		pageNumber: PropTypes.node.isRequired,
-		currentPage: PropTypes.number.isRequired,
-		totalPages: PropTypes.number.isRequired,
-		pageClick: PropTypes.func.isRequired,
-	};
+		pageNumber: React.PropTypes.node.isRequired,
+		currentPage: React.PropTypes.number.isRequired,
+		totalPages: React.PropTypes.number.isRequired,
+		pageClick: React.PropTypes.func.isRequired,
+	}
 
-	clickHandler = event => {
+	clickHandler = ( event ) => {
 		event.stopPropagation();
-		const { currentPage, pageClick, pageNumber, totalPages } = this.props;
+		const {
+			currentPage,
+			pageClick,
+			pageNumber,
+			totalPages
+		} = this.props;
 
 		switch ( pageNumber ) {
 			case 'previous':
@@ -47,10 +48,15 @@ class PaginationPage extends Component {
 				pageClick( pageNumber );
 				break;
 		}
-	};
+	}
 
 	render() {
-		const { currentPage, numberFormat, pageNumber, totalPages } = this.props;
+		const {
+			currentPage,
+			numberFormat,
+			pageNumber,
+			totalPages,
+		} = this.props;
 
 		switch ( pageNumber ) {
 			case 'more':

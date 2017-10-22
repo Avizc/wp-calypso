@@ -1,28 +1,24 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import MediaUtils from 'lib/media/utils';
-import MediaLibraryListItemFileDetails from './list-item-file-details';
+var MediaUtils = require( 'lib/media/utils' ),
+	MediaLibraryListItemFileDetails = require( './list-item-file-details' );
 
 import { MEDIA_IMAGE_PHOTON, MEDIA_IMAGE_THUMBNAIL } from 'lib/media/constants';
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaLibraryListItemImage',
 
 	propTypes: {
-		media: PropTypes.object,
-		scale: PropTypes.number,
-		maxImageWidth: PropTypes.number,
-		thumbnailType: PropTypes.string,
+		media: React.PropTypes.object,
+		scale: React.PropTypes.number,
+		maxImageWidth: React.PropTypes.number,
+		thumbnailType: React.PropTypes.string,
 	},
 
 	getDefaultProps: function() {
@@ -53,7 +49,7 @@ export default React.createClass( {
 
 		return {
 			width: width,
-			height: height,
+			height: height
 		};
 	},
 
@@ -62,20 +58,20 @@ export default React.createClass( {
 
 		return {
 			maxHeight: dimensions.height > dimensions.width ? 'none' : '100%',
-			maxWidth: dimensions.height < dimensions.width ? 'none' : '100%',
+			maxWidth: dimensions.height < dimensions.width ? 'none' : '100%'
 		};
 	},
 
 	setUnknownImageDimensions: function( event ) {
 		if ( ! this.props.media.width ) {
 			this.setState( {
-				imageWidth: event.target.clientWidth,
+				imageWidth: event.target.clientWidth
 			} );
 		}
 
 		if ( ! this.props.media.height ) {
 			this.setState( {
-				imageHeight: event.target.clientHeight,
+				imageHeight: event.target.clientHeight
 			} );
 		}
 	},
@@ -92,8 +88,7 @@ export default React.createClass( {
 				<MediaLibraryListItemFileDetails
 					scale={ this.props.scale }
 					media={ this.props.media }
-					icon="image"
-				/>
+					icon="image" />
 			);
 		}
 
@@ -104,8 +99,7 @@ export default React.createClass( {
 				alt={ this.props.media.alt || this.props.media.title }
 				style={ this.getImageStyle() }
 				className="media-library__list-item-centered"
-				draggable="false"
-			/>
+				draggable="false" />
 		);
-	},
+	}
 } );

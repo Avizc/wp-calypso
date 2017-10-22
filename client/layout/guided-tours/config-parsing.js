@@ -1,11 +1,15 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { Children } from 'react';
-import { chunk, fromPairs, flatMap, flow, property, zipObject } from 'lodash';
+import {
+	chunk,
+	fromPairs,
+	flatMap,
+	flow,
+	property,
+	zipObject,
+} from 'lodash';
 
 /*
  * Transforms
@@ -16,7 +20,10 @@ import { chunk, fromPairs, flatMap, flow, property, zipObject } from 'lodash';
  *
  *   { a: 'b', c: 'd', e: 'f' }
  */
-const fromPairsSequence = flow( xs => chunk( xs, 2 ), fromPairs );
+const fromPairsSequence = flow(
+	xs => chunk( xs, 2 ),
+	fromPairs
+);
 
 /*
  * Transforms a tree of elements (Step or deeper) into a sequence with the
@@ -63,13 +70,22 @@ const branching = element => {
 		return [ element.type.name.toLowerCase(), element.props.step ];
 	}
 
-	return flatMap( Children.toArray( element.props.children ), c => branching( c ) || [] );
+	return flatMap(
+		Children.toArray( element.props.children ),
+		c => branching( c ) || []
+	);
 };
 
 export const tourBranching = tourTree => {
-	const steps = Children.toArray( tourTree.props.children );
+	const steps = Children
+		.toArray( tourTree.props.children );
 
-	const stepsBranching = steps.map( branching ).map( fromPairsSequence );
+	const stepsBranching = steps
+		.map( branching )
+		.map( fromPairsSequence );
 
-	return zipObject( steps.map( property( 'props.name' ) ), stepsBranching );
+	return zipObject(
+		steps.map( property( 'props.name' ) ),
+		stepsBranching
+	);
 };

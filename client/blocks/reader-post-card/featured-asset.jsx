@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 
 /**
@@ -38,11 +36,11 @@ const FeaturedAsset = ( {
 };
 
 FeaturedAsset.propTypes = {
-	canonicalMedia: PropTypes.object,
-	postUrl: PropTypes.string,
-	allowVideoPlaying: PropTypes.bool,
-	onVideoThumbnailClick: PropTypes.func,
-	isVideoExpanded: PropTypes.bool,
+	canonicalMedia: React.PropTypes.object,
+	postUrl: React.PropTypes.string,
+	allowVideoPlaying: React.PropTypes.bool,
+	onVideoThumbnailClick: React.PropTypes.func,
+	isVideoExpanded: React.PropTypes.bool,
 };
 
 FeaturedAsset.defaultProps = {

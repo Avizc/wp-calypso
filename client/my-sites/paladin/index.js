@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import page from 'page';
 
 /**
@@ -13,14 +10,10 @@ import controller from 'my-sites/controller';
 import paladinController from './controller';
 import config from 'config';
 
-export default function() {
+module.exports = function() {
 	if ( config.isEnabled( 'paladin' ) ) {
 		page( '/paladin', controller.siteSelection, controller.sites );
-		page(
-			'/paladin/:domain',
-			controller.siteSelection,
-			controller.navigation,
-			paladinController.activate
-		);
+		page( '/paladin/:domain', controller.siteSelection, controller.navigation, paladinController.activate );
 	}
-}
+};
+

@@ -1,23 +1,41 @@
-/** @format */
 /**
  * External dependencies
  */
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { Field } from 'redux-form';
+import { omit } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import FormSelect from 'components/forms/form-select';
 
-// eslint-disable-next-line no-unused-vars
-const SelectRenderer = ( { input, meta, ...props } ) => <FormSelect { ...input } { ...props } />;
+class ReduxFormSelect extends Component {
+	static propTypes = {
+		name: PropTypes.string.isRequired,
+	};
 
-const ReduxFormSelect = props => <Field component={ SelectRenderer } { ...props } />;
+	renderSelect = ( { input: { onChange, value } } ) => {
+		const otherProps = omit( this.props, 'name' );
 
-ReduxFormSelect.propTypes = {
-	name: PropTypes.string.isRequired,
-};
+		return (
+			<FormSelect
+				{ ...otherProps }
+				onChange={ this.updateSelect( onChange ) }
+				value={ value } />
+		);
+	}
+
+	updateSelect = onChange => event => onChange( event.target.value );
+
+	render() {
+		return (
+			<Field
+				{ ...this.props }
+				component={ this.renderSelect }
+				name={ this.props.name } />
+		);
+	}
+}
 
 export default ReduxFormSelect;

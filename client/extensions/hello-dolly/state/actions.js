@@ -1,13 +1,12 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
-import { HELLO_DOLLY_NEXT_LYRIC } from './action-types';
+import {
+	HELLO_DOLLY_NEXT_LYRIC,
+} from './action-types';
 
 export function nextLyric() {
 	return {
-		type: HELLO_DOLLY_NEXT_LYRIC,
+		type: HELLO_DOLLY_NEXT_LYRIC
 	};
 }

@@ -1,10 +1,8 @@
 /**
  * Module exports.
- *
- * @format
  */
 
-export default {
+module.exports = {
 	/**
 	 * This test is for touch events.
 	 * It may not accurately detect a touch screen, but may be close enough depending on the use case.
@@ -17,9 +15,6 @@ export default {
 	 */
 	hasTouch: function() {
 		/* global DocumentTouch:true */
-		return (
-			window &&
-			( 'ontouchstart' in window || ( window.DocumentTouch && document instanceof DocumentTouch ) )
-		);
-	},
+		return window && ( ( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch );
+	}
 };

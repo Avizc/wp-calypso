@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { memoize } from 'lodash';
+import memoize from 'lodash/memoize';
 import shallowEqual from 'react-pure-render/shallowEqual';
 
 /**
@@ -28,7 +25,7 @@ const VALID_ARG_TYPES = [ 'number', 'boolean', 'string' ];
  * @param  {Object}    state Current state object
  * @return {(Array|*)}       Value(s) to be shallow compared
  */
-const DEFAULT_GET_DEPENDANTS = state => state;
+const DEFAULT_GET_DEPENDANTS = ( state ) => state;
 
 /**
  * At runtime, assigns a function which returns a cache key for the memoized
@@ -51,7 +48,7 @@ const DEFAULT_GET_CACHE_KEY = ( () => {
 	}
 
 	return ( state, ...args ) => {
-		const hasInvalidArg = args.some( arg => {
+		const hasInvalidArg = args.some( ( arg ) => {
 			return arg && ! includes( VALID_ARG_TYPES, typeof arg );
 		} );
 
@@ -70,8 +67,9 @@ const DEFAULT_GET_CACHE_KEY = ( () => {
  * @param  {Function[]} dependants Array of getDependants
  * @return {Function}              Function mapping getDependants results
  */
-const makeSelectorFromArray = dependants => ( state, ...args ) =>
-	dependants.map( dependant => dependant( state, ...args ) );
+const makeSelectorFromArray = ( dependants ) =>
+	( state, ...args ) => dependants.map( dependant =>
+		dependant( state, ...args ) );
 
 /**
  * Returns a memoized state selector for use with the global application state.
@@ -83,11 +81,7 @@ const makeSelectorFromArray = dependants => ( state, ...args ) =>
  * @param  {Function}            getCacheKey   Function generating cache key
  * @return {Function}                          Memoized selector
  */
-export default function createSelector(
-	selector,
-	getDependants = DEFAULT_GET_DEPENDANTS,
-	getCacheKey = DEFAULT_GET_CACHE_KEY
-) {
+export default function createSelector( selector, getDependants = DEFAULT_GET_DEPENDANTS, getCacheKey = DEFAULT_GET_CACHE_KEY ) {
 	const memoizedSelector = memoize( selector, getCacheKey );
 	let lastDependants;
 
@@ -95,21 +89,19 @@ export default function createSelector(
 		getDependants = makeSelectorFromArray( getDependants );
 	}
 
-	return Object.assign(
-		function( state, ...args ) {
-			let currentDependants = getDependants( state, ...args );
-			if ( ! Array.isArray( currentDependants ) ) {
-				currentDependants = [ currentDependants ];
-			}
+	return Object.assign( function( state, ...args ) {
+		let currentDependants = getDependants( state, ...args );
+		if ( ! Array.isArray( currentDependants ) ) {
+			currentDependants = [ currentDependants ];
+		}
 
-			if ( lastDependants && ! shallowEqual( currentDependants, lastDependants ) ) {
-				memoizedSelector.cache.clear();
-			}
+		if ( lastDependants && ! shallowEqual( currentDependants, lastDependants ) ) {
+			memoizedSelector.cache.clear();
+		}
 
-			lastDependants = currentDependants;
+		lastDependants = currentDependants;
 
-			return memoizedSelector( state, ...args );
-		},
-		{ memoizedSelector }
-	);
+		return memoizedSelector( state, ...args );
+	}, { memoizedSelector } );
 }
+

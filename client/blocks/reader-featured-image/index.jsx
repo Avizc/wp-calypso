@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { noop } from 'lodash';
 import classnames from 'classnames';
@@ -35,9 +33,9 @@ const ReaderFeaturedImage = ( { imageUrl, imageWidth, href, children, onClick, c
 };
 
 ReaderFeaturedImage.propTypes = {
-	imageUrl: PropTypes.string,
-	href: PropTypes.string,
-	onClick: PropTypes.func,
+	imageUrl: React.PropTypes.string,
+	href: React.PropTypes.string,
+	onClick: React.PropTypes.func,
 };
 
 ReaderFeaturedImage.defaultProps = {

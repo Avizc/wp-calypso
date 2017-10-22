@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import Gridicon from 'gridicons';
 
@@ -25,14 +21,14 @@ const PostEditButton = ( { post, site, iconSize, onClick, translate } ) => {
 };
 
 PostEditButton.propTypes = {
-	post: PropTypes.object.isRequired,
-	site: PropTypes.object.isRequired,
-	iconSize: PropTypes.number,
-	onClick: PropTypes.func,
+	post: React.PropTypes.object.isRequired,
+	site: React.PropTypes.object.isRequired,
+	iconSize: React.PropTypes.number,
+	onClick: React.PropTypes.func
 };
 
 PostEditButton.defaultProps = {
-	iconSize: 24,
+	iconSize: 24
 };
 
 export default localize( PostEditButton );

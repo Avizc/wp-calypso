@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -16,17 +12,17 @@ import ActionHeader from 'woocommerce/components/action-header';
 import { getLink } from 'woocommerce/lib/nav-utils';
 import { getSelectedSiteWithFallback } from 'woocommerce/state/sites/selectors';
 import SettingsNavigation from '../navigation';
-import ShippingSettingsSaveButton from './save-button';
+import ShippingSettingsFinishedButton from './finished-button';
 
 const ShippingHeader = ( { translate, site } ) => {
 	const breadcrumbs = [
-		<a href={ getLink( '/store/settings/:site/', site ) }>{ translate( 'Settings' ) }</a>,
-		<span>{ translate( 'Shipping' ) }</span>,
+		( <a href={ getLink( '/store/settings/:site/', site ) }>{ translate( 'Settings' ) }</a> ),
+		( <span>{ translate( 'Shipping' ) }</span> ),
 	];
 	return (
 		<div>
 			<ActionHeader breadcrumbs={ breadcrumbs }>
-				<ShippingSettingsSaveButton />
+				<ShippingSettingsFinishedButton />
 			</ActionHeader>
 			<SettingsNavigation activeSection="shipping" />
 		</div>

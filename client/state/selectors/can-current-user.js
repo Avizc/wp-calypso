@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { isValidCapability } from 'state/current-user/selectors';
 
 /**

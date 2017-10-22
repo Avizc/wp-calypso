@@ -1,12 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
-import { assign, fromPairs, includes, noop, times } from 'lodash';
+import React, { PropTypes } from 'react';
+import assign from 'lodash/assign';
+import noop from 'lodash/noop';
+import includes from 'lodash/includes';
+import times from 'lodash/times';
+import fromPairs from 'lodash/fromPairs';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -20,18 +20,19 @@ import { GalleryColumnedTypes, GallerySizeableTypes } from 'lib/media/constants'
 import { isModuleActive } from 'lib/site/utils';
 
 export const EditorMediaModalGalleryFields = React.createClass( {
+
 	propTypes: {
 		site: PropTypes.object,
 		settings: PropTypes.object,
 		onUpdateSetting: PropTypes.func,
-		numberOfItems: PropTypes.number,
+		numberOfItems: PropTypes.number
 	},
 
 	getDefaultProps() {
 		return {
 			settings: Object.freeze( {} ),
 			onUpdateSetting: noop,
-			numberOfItems: 0,
+			numberOfItems: 0
 		};
 	},
 
@@ -40,7 +41,7 @@ export const EditorMediaModalGalleryFields = React.createClass( {
 
 		const options = {
 			individual: this.props.translate( 'Individual Images' ),
-			default: this.props.translate( 'Thumbnail Grid' ),
+			'default': this.props.translate( 'Thumbnail Grid' )
 		};
 
 		if ( site && ( ! site.jetpack || isModuleActive( site, 'tiled-gallery' ) ) ) {
@@ -48,13 +49,13 @@ export const EditorMediaModalGalleryFields = React.createClass( {
 				rectangular: this.props.translate( 'Tiled Mosaic' ),
 				square: this.props.translate( 'Square Tiles' ),
 				circle: this.props.translate( 'Circles' ),
-				columns: this.props.translate( 'Tiled Columns' ),
+				columns: this.props.translate( 'Tiled Columns' )
 			} );
 		}
 
 		if ( site && ( ! site.jetpack || isModuleActive( site, 'shortcodes' ) ) ) {
 			assign( options, {
-				slideshow: this.props.translate( 'Slideshow' ),
+				slideshow: this.props.translate( 'Slideshow' )
 			} );
 		}
 
@@ -88,7 +89,7 @@ export const EditorMediaModalGalleryFields = React.createClass( {
 
 	getColumnOptions() {
 		const max = Math.min( this.props.numberOfItems, 9 );
-		return fromPairs( times( max, n => [ n + 1, ( n + 1 ).toString() ] ) );
+		return fromPairs( times( max, ( n ) => [ n + 1, ( n + 1 ).toString() ] ) );
 	},
 
 	updateRandomOrder( event ) {
@@ -105,16 +106,14 @@ export const EditorMediaModalGalleryFields = React.createClass( {
 		return (
 			<EditorMediaModalFieldset legend={ legend } className={ 'for-setting-' + settingName }>
 				<SelectDropdown selectedText={ options[ settings[ settingName ] ] }>
-					{ Object.keys( options ).map( value => {
+					{ Object.keys( options ).map( ( value ) => {
 						const label = options[ value ];
 
 						return (
 							<SelectDropdownItem
 								key={ 'value-' + value }
 								selected={ value === settings[ settingName ] }
-								onClick={ () =>
-									onUpdateSetting( settingName, isFinite( parseInt( value ) ) ? +value : value ) }
-							>
+								onClick={ () => onUpdateSetting( settingName, isFinite( parseInt( value ) ) ? +value : value ) }>
 								{ label }
 							</SelectDropdownItem>
 						);
@@ -129,11 +128,7 @@ export const EditorMediaModalGalleryFields = React.createClass( {
 			return;
 		}
 
-		return this.renderDropdown(
-			this.props.translate( 'Columns' ),
-			this.getColumnOptions(),
-			'columns'
-		);
+		return this.renderDropdown( this.props.translate( 'Columns' ), this.getColumnOptions(), 'columns' );
 	},
 
 	renderRandomOption() {
@@ -164,7 +159,7 @@ export const EditorMediaModalGalleryFields = React.createClass( {
 				{ this.renderDropdown( this.props.translate( 'Size' ), sizes, 'size' ) }
 			</div>
 		);
-	},
+	}
 } );
 
 export default localize( EditorMediaModalGalleryFields );

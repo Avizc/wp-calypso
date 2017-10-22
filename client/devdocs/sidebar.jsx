@@ -1,10 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
+import PureRenderMixin from 'react-pure-render/mixin';
 
 /**
  * Internal dependencies
@@ -14,18 +12,11 @@ import SidebarHeading from 'layout/sidebar/heading';
 import SidebarMenu from 'layout/sidebar/menu';
 import SidebarItem from 'layout/sidebar/item';
 
-export default class DevdocsSidebar extends React.PureComponent {
-	static displayName = 'DevdocsSidebar';
+export default React.createClass( {
 
-	isItemSelected( itemPath, isStrict = true ) {
-		const { path } = this.props;
+	displayName: 'DevdocsSidebar',
 
-		if ( isStrict ) {
-			return path === itemPath;
-		}
-
-		return path.indexOf( itemPath ) === 0;
-	}
+	mixins: [ PureRenderMixin ],
 
 	render() {
 		return (
@@ -40,21 +31,21 @@ export default class DevdocsSidebar extends React.PureComponent {
 							icon="search"
 							label="Search"
 							link="/devdocs"
-							selected={ this.isItemSelected( '/devdocs' ) }
+							selected={ '/devdocs' === this.props.path }
 						/>
 						<SidebarItem
 							className="devdocs__navigation-item"
 							icon="location"
 							label="The Calypso Guide"
 							link="/devdocs/docs/guide/index.md"
-							selected={ this.isItemSelected( '/devdocs/docs/guide', false ) }
+							selected={ '/devdocs/docs/guide/index.md' === this.props.path }
 						/>
 						<SidebarItem
 							className="devdocs__navigation-item"
 							icon="pencil"
 							label="Contributing"
 							link="/devdocs/.github/CONTRIBUTING.md"
-							selected={ this.isItemSelected( '/devdocs/.github/CONTRIBUTING.md' ) }
+							selected={ '/devdocs/.github/CONTRIBUTING.md' === this.props.path }
 						/>
 					</ul>
 				</SidebarMenu>
@@ -66,39 +57,39 @@ export default class DevdocsSidebar extends React.PureComponent {
 							icon="layout-blocks"
 							label="UI Components"
 							link="/devdocs/design"
-							selected={ this.isItemSelected( '/devdocs/design', false ) }
+							selected={ '/devdocs/design' === this.props.path }
 						/>
 						<SidebarItem
 							className="devdocs__navigation-item"
 							icon="custom-post-type"
 							label="Blocks"
 							link="/devdocs/blocks"
-							selected={ this.isItemSelected( '/devdocs/blocks', false ) }
+							selected={ '/devdocs/blocks' === this.props.path }
 						/>
 						<SidebarItem
 							className="devdocs__navigation-item"
 							icon="plugins"
 							label="State Selectors"
 							link="/devdocs/selectors"
-							selected={ this.isItemSelected( '/devdocs/selectors', false ) }
+							selected={ 0 === this.props.path.indexOf( '/devdocs/selectors' ) }
 						/>
 						<SidebarItem
 							className="devdocs__navigation-item"
 							icon="heading"
 							label="Typography"
-							link="/devdocs/typography"
-							selected={ this.isItemSelected( '/devdocs/typography' ) }
+							link="/devdocs/design/typography"
+							selected={ '/devdocs/design/typography' === this.props.path }
 						/>
 						<SidebarItem
 							className="devdocs__navigation-item"
 							icon="types"
 							label="Icons"
 							link="/devdocs/docs/icons.md"
-							selected={ this.isItemSelected( '/devdocs/docs/icons.md' ) }
+							selected={ '/devdocs/docs/icons.md' === this.props.path }
 						/>
 					</ul>
 				</SidebarMenu>
 			</Sidebar>
 		);
 	}
-}
+} );

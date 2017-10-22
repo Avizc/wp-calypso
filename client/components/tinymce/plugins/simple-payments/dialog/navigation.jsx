@@ -1,13 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
-import Gridicon from 'gridicons';
 
 /**
  * Internal dependencies
@@ -18,9 +13,9 @@ import Button from 'components/button';
 
 class SimplePaymentsDialogNavigation extends Component {
 	static propTypes = {
-		activeTab: PropTypes.oneOf( [ 'list', 'form' ] ).isRequired,
+		activeTab: PropTypes.oneOf( [ 'paymentButtons', 'addNew' ] ).isRequired,
 		onChangeTabs: PropTypes.func.isRequired,
-		paymentButtons: PropTypes.array,
+		paymentButtons: PropTypes.array.isRequired,
 	};
 
 	onChangeTabs = tab => () => this.props.onChangeTabs( tab );
@@ -30,31 +25,31 @@ class SimplePaymentsDialogNavigation extends Component {
 
 		const classNames = 'editor-simple-payments-modal__navigation';
 
-		if ( activeTab === 'form' ) {
-			// Navigation for the editing form
+		if ( activeTab === 'addNew' ) {
+			if ( ! paymentButtons.length ) {
+				// We are on "Add New" view without previously made payment buttons.
+				return null;
+			}
+
+			// We are on "Add New" view with previously made payment buttons.
 			return (
 				<HeaderCake
 					className={ classNames }
-					onClick={ this.onChangeTabs( 'list' ) }
+					onClick={ this.onChangeTabs( 'paymentButtons' ) }
 					backText={ translate( 'Payment Buttons' ) }
 				/>
 			);
 		}
 
 		// We are on "Payment Buttons" view.
-		if ( ! paymentButtons ) {
-			// Render an empty SectionHeader as a placeholder
-			return <SectionHeader className={ classNames } />;
-		}
-
 		return (
 			<SectionHeader
 				className={ classNames }
 				label={ translate( 'Payment Buttons' ) }
 				count={ paymentButtons.length }
 			>
-				<Button compact icon onClick={ this.onChangeTabs( 'form' ) }>
-					<Gridicon icon="plus-small" /> { translate( 'Add New' ) }
+				<Button compact onClick={ this.onChangeTabs( 'addNew' ) }>
+					{ translate( '+ Add New' ) }
 				</Button>
 			</SectionHeader>
 		);

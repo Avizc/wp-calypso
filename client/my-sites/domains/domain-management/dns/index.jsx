@@ -1,13 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import page from 'page';
-import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -19,72 +14,56 @@ import DomainMainPlaceholder from 'my-sites/domains/domain-management/components
 import Header from 'my-sites/domains/domain-management/components/header';
 import Main from 'components/main';
 import paths from 'my-sites/domains/paths';
-import { getSelectedDomain, isMappedDomain, isRegisteredDomain } from 'lib/domains';
+import { getSelectedDomain, isRegisteredDomain } from 'lib/domains';
 import Card from 'components/card/compact';
 import SectionHeader from 'components/section-header';
-import DnsTemplates from '../name-servers/dns-templates';
-import VerticalNav from 'components/vertical-nav';
 
-class Dns extends React.Component {
-	static propTypes = {
-		domains: PropTypes.object.isRequired,
-		dns: PropTypes.object.isRequired,
-		selectedDomainName: PropTypes.string.isRequired,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ).isRequired,
-	};
+const Dns = React.createClass( {
+	propTypes: {
+		domains: React.PropTypes.object.isRequired,
+		dns: React.PropTypes.object.isRequired,
+		selectedDomainName: React.PropTypes.string.isRequired,
+		selectedSite: React.PropTypes.oneOfType( [
+			React.PropTypes.object,
+			React.PropTypes.bool
+		] ).isRequired
+	},
 
-	state = {
-		addNew: true,
-	};
-
-	renderDnsTemplates() {
-		const selectedDomain = getSelectedDomain( this.props );
-
-		if ( ! selectedDomain || ! isMappedDomain( selectedDomain ) ) {
-			return null;
-		}
-
-		return (
-			<VerticalNav>
-				<DnsTemplates selectedDomainName={ this.props.selectedDomainName } />
-			</VerticalNav>
-		);
-	}
+	getInitialState() {
+		return { addNew: true };
+	},
 
 	render() {
-		const { dns, selectedDomainName, selectedSite, translate } = this.props;
-
-		if ( ! dns.hasLoadedFromServer ) {
+		if ( ! this.props.dns.hasLoadedFromServer ) {
 			return <DomainMainPlaceholder goBack={ this.goBack } />;
 		}
 
 		return (
 			<Main className="dns">
-				<Header onClick={ this.goBack } selectedDomainName={ selectedDomainName }>
-					{ translate( 'DNS Records' ) }
+				<Header
+					onClick={ this.goBack }
+					selectedDomainName={ this.props.selectedDomainName }>
+					{ this.translate( 'DNS Records' ) }
 				</Header>
 
-				<SectionHeader label={ translate( 'DNS Records' ) } />
+				<SectionHeader label={ this.translate( 'DNS Records' ) } />
 				<Card>
 					<DnsDetails />
 
 					<DnsList
-						dns={ dns }
-						selectedSite={ selectedSite }
-						selectedDomainName={ selectedDomainName }
-					/>
+						dns={ this.props.dns }
+						selectedSite={ this.props.selectedSite }
+						selectedDomainName={ this.props.selectedDomainName } />
 
 					<DnsAddNew
-						isSubmittingForm={ dns.isSubmittingForm }
-						selectedDomainName={ selectedDomainName }
-					/>
+						isSubmittingForm={ this.props.dns.isSubmittingForm }
+						selectedDomainName={ this.props.selectedDomainName } />
 				</Card>
-				{ this.renderDnsTemplates() }
 			</Main>
 		);
-	}
+	},
 
-	goBack = () => {
+	goBack() {
 		let path;
 
 		if ( isRegisteredDomain( getSelectedDomain( this.props ) ) ) {
@@ -93,8 +72,11 @@ class Dns extends React.Component {
 			path = paths.domainManagementEdit;
 		}
 
-		page( path( this.props.selectedSite.slug, this.props.selectedDomainName ) );
-	};
-}
+		page( path(
+			this.props.selectedSite.slug,
+			this.props.selectedDomainName
+		) );
+	}
+} );
 
-export default localize( Dns );
+export default Dns;

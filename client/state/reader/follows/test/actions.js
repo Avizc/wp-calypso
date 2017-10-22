@@ -1,27 +1,30 @@
-/** @format */
 /**
  * External dependencies
  */
-import { expect } from 'chai';
+import useMockery from 'test/helpers/use-mockery';
 import sinon from 'sinon';
+import { expect } from 'chai';
 
 /**
  * Internal dependencies
  */
-import { recordFollowError } from '../actions';
 import {
 	READER_RECORD_FOLLOW,
 	READER_RECORD_UNFOLLOW,
 	READER_FOLLOW_ERROR,
 } from 'state/action-types';
-jest.mock( 'state/reader/posts/actions', () => ( {
-	receivePosts: posts => Promise.resolve( posts ),
-} ) );
+import { recordFollowError } from '../actions';
 
 describe( 'actions', () => {
 	let recordFollow, recordUnfollow;
 
-	beforeAll( () => {
+	useMockery( mockery => {
+		mockery.registerMock( 'state/reader/posts/actions', {
+			receivePosts: posts => {
+				return Promise.resolve( posts );
+			},
+		} );
+
 		const actions = require( '../actions' );
 		recordFollow = actions.recordFollow;
 		recordUnfollow = actions.recordUnfollow;
@@ -37,7 +40,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#recordFollow', () => {
-		test( 'should dispatch an action when a URL is followed', () => {
+		it( 'should dispatch an action when a URL is followed', () => {
 			recordFollow( 'http://discover.wordpress.com' )( dispatchSpy );
 			expect( dispatchSpy ).to.have.been.calledWith( {
 				type: READER_RECORD_FOLLOW,
@@ -47,7 +50,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#recordUnfollow', () => {
-		test( 'should dispatch an action when a URL is unfollowed', () => {
+		it( 'should dispatch an action when a URL is unfollowed', () => {
 			recordUnfollow( 'http://discover.wordpress.com' )( dispatchSpy );
 			expect( dispatchSpy ).to.have.been.calledWith( {
 				type: READER_RECORD_UNFOLLOW,
@@ -57,7 +60,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#recordFollowError', () => {
-		test( 'should dispatch an action on follow error', () => {
+		it( 'should dispatch an action on follow error', () => {
 			const action = recordFollowError( 'http://discover.wordpress.com', 'invalid_feed' );
 			expect( action ).to.deep.equal( {
 				type: READER_FOLLOW_ERROR,

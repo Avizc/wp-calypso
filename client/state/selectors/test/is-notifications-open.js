@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,15 +9,15 @@ import { expect } from 'chai';
 import { isNotificationsOpen } from '../';
 
 describe( 'isNotificationsOpen()', () => {
-	test( 'returns true if notifications are open', () => {
+	it( 'returns true if notifications are open', () => {
 		const isOpen = isNotificationsOpen( { ui: { isNotificationsOpen: true } } );
 		expect( isOpen ).to.equal( true );
 	} );
-	test( 'returns false if notifications are closed', () => {
+	it( 'returns false if notifications are closed', () => {
 		const isOpen = isNotificationsOpen( { ui: { isNotificationsOpen: false } } );
 		expect( isOpen ).to.equal( false );
 	} );
-	test( 'defaults to false if no data is available', () => {
+	it( 'defaults to false if no data is available', () => {
 		const isOpen = isNotificationsOpen( {} );
 		expect( isOpen ).to.equal( false );
 	} );

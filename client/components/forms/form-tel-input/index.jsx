@@ -1,17 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
-export default function FormTelInput( { className, isError, isValid, ...props } ) {
+export default function FormTelInput( { className, isError, ...props } ) {
 	const classes = classNames( 'form-tel-input', className, {
-		'is-error': isError,
-		'is-valid': isValid,
+		'is-error': isError
 	} );
 
 	return <input { ...props } type="tel" pattern="[0-9]*" className={ classes } />;
@@ -19,11 +14,9 @@ export default function FormTelInput( { className, isError, isValid, ...props } 
 
 FormTelInput.propTypes = {
 	className: PropTypes.string,
-	isError: PropTypes.bool,
-	isValid: PropTypes.bool,
+	isError: PropTypes.bool
 };
 
 FormTelInput.defaultProps = {
-	isError: false,
-	isValid: false,
+	isError: false
 };

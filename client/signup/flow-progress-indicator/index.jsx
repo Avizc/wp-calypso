@@ -1,28 +1,21 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { localize } from 'i18n-calypso';
-import classNames from 'classnames';
 
-const FlowProgressIndicator = ( { flowLength, positionInFlow, translate, flowName } ) => {
+const FlowProgressIndicator = ( { flowLength, positionInFlow, translate } ) => {
 	if ( flowLength > 1 ) {
-		const flowClassName = classNames(
-			'flow-progress-indicator',
-			`flow-progress-indicator__${ flowName }`
-		);
-
 		return (
-			<div className={ flowClassName }>
-				{ translate( 'Step %(stepNumber)d of %(stepTotal)d', {
-					args: {
-						stepNumber: positionInFlow + 1,
-						stepTotal: flowLength,
-					},
-				} ) }
+			<div className="flow-progress-indicator">
+				{
+					translate( 'Step %(stepNumber)d of %(stepTotal)d', {
+						args: {
+							stepNumber: positionInFlow + 1,
+							stepTotal: flowLength
+						}
+					} )
+				}
 			</div>
 		);
 	}

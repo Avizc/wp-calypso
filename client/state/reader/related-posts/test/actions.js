@@ -1,28 +1,33 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
-import { requestRelatedPosts } from '../actions';
+import useNock from 'test/helpers/use-nock';
+import useMockery from 'test/helpers/use-mockery';
 import {
 	READER_RELATED_POSTS_REQUEST,
 	READER_RELATED_POSTS_REQUEST_SUCCESS,
 	READER_RELATED_POSTS_REQUEST_FAILURE,
 	READER_RELATED_POSTS_RECEIVE,
 } from 'state/action-types';
-import useNock from 'test/helpers/use-nock';
-jest.mock( 'state/reader/posts/actions', () => ( {
-	receivePosts( posts ) {
-		return Promise.resolve( posts );
-	},
-} ) );
 
 describe( 'actions', () => {
+	let requestRelatedPosts;
+	useMockery( mockery => {
+		mockery.registerMock( 'state/reader/posts/actions', {
+			receivePosts( posts ) {
+				return Promise.resolve( posts );
+			},
+		} );
+
+		requestRelatedPosts = require( '../actions' ).requestRelatedPosts;
+	} );
+
 	describe( 'success', () => {
 		useNock( nock => {
 			nock( 'https://public-api.wordpress.com:443' )
@@ -40,13 +45,13 @@ describe( 'actions', () => {
 
 		let fakeDispatch;
 		let requestPromise;
-		beforeAll( () => {
+		before( () => {
 			fakeDispatch = sinon.stub();
 			fakeDispatch.withArgs( sinon.match.instanceOf( Promise ) ).returnsArg( 0 );
 			requestPromise = requestRelatedPosts( 1, 1 )( fakeDispatch );
 		} );
 
-		test( 'should have dispatched request', () => {
+		it( 'should have dispatched request', () => {
 			expect( fakeDispatch ).to.have.been.calledWith( {
 				type: READER_RELATED_POSTS_REQUEST,
 				payload: {
@@ -57,7 +62,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should return a promise which has dispatched related posts', () => {
+		it( 'should return a promise which has dispatched related posts', () => {
 			return requestPromise.then( () => {
 				expect( fakeDispatch ).to.have.been.calledWith( {
 					type: READER_RELATED_POSTS_RECEIVE,
@@ -77,7 +82,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should return a promise which has dispatched success', () => {
+		it( 'should return a promise which has dispatched success', () => {
 			return requestPromise.then( () => {
 				expect( fakeDispatch ).to.have.been.calledWith( {
 					type: READER_RELATED_POSTS_REQUEST_SUCCESS,
@@ -100,12 +105,12 @@ describe( 'actions', () => {
 
 		let fakeDispatch;
 		let requestPromise;
-		beforeAll( () => {
+		before( () => {
 			fakeDispatch = sinon.spy();
 			requestPromise = requestRelatedPosts( 1, 1 )( fakeDispatch );
 		} );
 
-		test( 'should have dispatched request', () => {
+		it( 'should have dispatched request', () => {
 			expect( fakeDispatch ).to.have.been.calledWith( {
 				type: READER_RELATED_POSTS_REQUEST,
 				payload: {
@@ -116,21 +121,19 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should have dispatched receive with an empty array', () => {
-			return requestPromise.catch( () => {
-				expect( fakeDispatch ).to.have.been.calledWith( {
-					type: READER_RELATED_POSTS_RECEIVE,
-					payload: {
-						siteId: 1,
-						postId: 1,
-						scope: 'all',
-						posts: [],
-					},
-				} );
+		it( 'should have dispatched receive with an empty array', () => {
+			expect( fakeDispatch ).to.have.been.calledWith( {
+				type: READER_RELATED_POSTS_RECEIVE,
+				payload: {
+					siteId: 1,
+					postId: 1,
+					scope: 'all',
+					posts: [],
+				},
 			} );
 		} );
 
-		test( 'should fail the promise and dispatch failure', () => {
+		it( 'should fail the promise and dispatch failure', () => {
 			return requestPromise.catch( () => {
 				expect( fakeDispatch ).to.have.been.calledWith( {
 					type: READER_RELATED_POSTS_REQUEST_FAILURE,

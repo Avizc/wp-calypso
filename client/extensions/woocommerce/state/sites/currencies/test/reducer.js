@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,26 +6,26 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
+import reducer from 'woocommerce/state/sites/reducer';
+import { LOADING } from 'woocommerce/state/constants';
 import {
 	WOOCOMMERCE_CURRENCIES_REQUEST,
 	WOOCOMMERCE_CURRENCIES_REQUEST_SUCCESS,
 } from 'woocommerce/state/action-types';
-import { LOADING } from 'woocommerce/state/constants';
-import reducer from 'woocommerce/state/sites/reducer';
 
 describe( 'reducer', () => {
-	test( 'should mark the currencies array as being "loading"', () => {
+	it( 'should mark the currencies array as being "loading"', () => {
 		const siteId = 123;
 		const action = {
 			type: WOOCOMMERCE_CURRENCIES_REQUEST,
-			siteId,
+			siteId
 		};
 
 		const newSiteData = reducer( {}, action );
 		expect( newSiteData[ siteId ].currencies ).to.eql( LOADING );
 	} );
 
-	test( 'should store data from the action', () => {
+	it( 'should store data from the action', () => {
 		const siteId = 123;
 		const currencies = [
 			{ code: 'AED', name: 'United Arab Emirates dirham', symbol: '&#x62f;.&#x625;' },

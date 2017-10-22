@@ -1,9 +1,4 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
@@ -11,22 +6,24 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import preloadImage from '../preload-image';
+import useFakeDom from 'test/helpers/use-fake-dom';
 import { useSandbox } from 'test/helpers/use-sinon';
+import preloadImage from '../preload-image';
 
-describe( '#preloadImage()', () => {
+describe( '#preloadImage()', function() {
 	let sandbox, Image;
 
-	useSandbox( newSandbox => {
+	useFakeDom();
+	useSandbox( ( newSandbox ) => {
 		sandbox = newSandbox;
 		Image = sandbox.stub( global.window, 'Image' );
 	} );
 
-	beforeEach( () => {
+	beforeEach( function() {
 		preloadImage.cache.clear();
 	} );
 
-	test( 'should load an image', () => {
+	it( 'should load an image', function() {
 		var src = 'example.jpg';
 
 		preloadImage( src );
@@ -35,14 +32,14 @@ describe( '#preloadImage()', () => {
 		expect( Image.thisValues[ 0 ].src ).to.equal( src );
 	} );
 
-	test( 'should only load an image once per `src`', () => {
+	it( 'should only load an image once per `src`', function() {
 		preloadImage( 'example.jpg' );
 		preloadImage( 'example.jpg' );
 
 		expect( Image ).to.have.been.calledOnce;
 	} );
 
-	test( 'should load an image per unique `src`', () => {
+	it( 'should load an image per unique `src`', function() {
 		preloadImage( 'example1.jpg' );
 		preloadImage( 'example2.jpg' );
 

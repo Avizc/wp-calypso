@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -32,8 +28,8 @@ class QueryKeyringConnections extends Component {
 }
 
 export default connect(
-	state => ( {
-		isRequesting: isKeyringConnectionsFetching( state ),
+	( state ) => ( {
+		isRequesting: isKeyringConnectionsFetching( state )
 	} ),
 	{ requestKeyringConnections }
 )( QueryKeyringConnections );

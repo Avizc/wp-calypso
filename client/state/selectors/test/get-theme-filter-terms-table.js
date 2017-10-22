@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,11 +6,11 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { state } from './fixtures/theme-filters';
-import { getThemeFilterTermsTable } from 'state/selectors';
+import { getThemeFilterTermsTable } from 'state/selectors';
+import { state } from './fixtures/theme-filters';
 
 describe( 'getThemeFilterTermsTable()', () => {
-	test( 'should return a dictionary mapping terms to taxonomies', () => {
+	it( 'should return a dictionary mapping terms to taxonomies', () => {
 		const table = getThemeFilterTermsTable( state );
 		expect( table ).to.deep.equal( {
 			artwork: 'subject',
@@ -25,7 +23,7 @@ describe( 'getThemeFilterTermsTable()', () => {
 			clean: 'style',
 			minimal: 'style',
 			'feature:video': 'feature',
-			wordads: 'feature',
+			wordads: 'feature'
 		} );
 	} );
 } );

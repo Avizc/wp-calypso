@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
@@ -16,34 +12,28 @@ import Gridicon from 'gridicons';
  * Internal dependencies
  */
 import Button from 'components/button';
-import EditorPublishDate from 'post-editor/editor-publish-date';
 import EditorVisibility from 'post-editor/editor-visibility';
 import FormCheckbox from 'components/forms/form-checkbox';
 import FormLabel from 'components/forms/form-label';
-import EditorConfirmationSidebarHeader from './header';
 import { editPost } from 'state/posts/actions';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getEditorPostId } from 'state/ui/editor/selectors';
 import { getEditedPost } from 'state/posts/selectors';
 import { getPublishButtonStatus } from 'post-editor/editor-publish-button';
-import { isEditedPostPrivate, isPrivateEditedPostPasswordValid } from 'state/posts/selectors';
 
 class EditorConfirmationSidebar extends React.Component {
 	static propTypes = {
-		handlePreferenceChange: PropTypes.func,
-		onPrivatePublish: PropTypes.func,
-		onPublish: PropTypes.func,
-		post: PropTypes.object,
-		savedPost: PropTypes.object,
-		isPrivatePost: PropTypes.bool,
-		isPrivatePostPasswordValid: PropTypes.bool,
-		setPostDate: PropTypes.func,
-		setStatus: PropTypes.func,
-		site: PropTypes.object,
-		status: PropTypes.string,
+		handlePreferenceChange: React.PropTypes.func,
+		onPrivatePublish: React.PropTypes.func,
+		onPublish: React.PropTypes.func,
+		post: React.PropTypes.object,
+		savedPost: React.PropTypes.object,
+		setStatus: React.PropTypes.func,
+		site: React.PropTypes.object,
+		status: React.PropTypes.string,
 	};
 
-	getCloseOverlayHandler = context => () => this.props.setStatus( { status: 'closed', context } );
+	getCloseOverlayHandler = ( context ) => () => this.props.setStatus( { status: 'closed', context } );
 
 	closeAndPublish = () => {
 		this.props.setStatus( { status: 'closed', context: 'publish' } );
@@ -68,18 +58,11 @@ class EditorConfirmationSidebar extends React.Component {
 			return;
 		}
 
-		const publishButtonStatus = getPublishButtonStatus(
-			this.props.site,
-			this.props.post,
-			this.props.savedPost
-		);
+		const publishButtonStatus = getPublishButtonStatus( this.props.site, this.props.post, this.props.savedPost );
 		const buttonLabel = this.getPublishButtonLabel( publishButtonStatus );
-		const enabled = ! this.props.isPrivatePost || this.props.isPrivatePostPasswordValid;
 
 		return (
-			<Button disabled={ ! enabled } onClick={ this.closeAndPublish }>
-				{ buttonLabel }
-			</Button>
+			<Button onClick={ this.closeAndPublish }>{ buttonLabel }</Button>
 		);
 	}
 
@@ -103,8 +86,7 @@ class EditorConfirmationSidebar extends React.Component {
 			return;
 		}
 
-		const { password, type } = this.props.post || {};
-		const status = get( this.props.post, 'status', 'draft' );
+		const { password, type, status } = this.props.post || {};
 		const isPrivateSite = get( this.props, 'site.is_private' );
 		const savedStatus = get( this.props, 'savedPost.status' );
 		const savedPassword = get( this.props, 'savedPost.password' );
@@ -119,7 +101,9 @@ class EditorConfirmationSidebar extends React.Component {
 			context: 'confirmation-sidebar',
 		};
 
-		return <EditorVisibility { ...props } />;
+		return (
+			<EditorVisibility { ...props } />
+		);
 	}
 
 	renderPublishingBusyButton() {
@@ -131,20 +115,11 @@ class EditorConfirmationSidebar extends React.Component {
 			return;
 		}
 
-		const publishButtonStatus = getPublishButtonStatus(
-			this.props.site,
-			this.props.post,
-			this.props.savedPost
-		);
+		const publishButtonStatus = getPublishButtonStatus( this.props.site, this.props.post, this.props.savedPost );
 		const buttonLabel = this.getBusyButtonLabel( publishButtonStatus );
 
 		return (
-			<Button
-				disabled
-				className="editor-confirmation-sidebar__publishing-button is-busy is-primary"
-			>
-				{ buttonLabel }
-			</Button>
+			<Button disabled className="editor-confirmation-sidebar__publishing-button is-busy is-primary">{ buttonLabel }</Button>
 		);
 	}
 
@@ -157,15 +132,11 @@ class EditorConfirmationSidebar extends React.Component {
 						defaultChecked
 						className="editor-confirmation-sidebar__display-preference-checkbox"
 						id="confirmation_sidebar_display_preference"
-						name="confirmation_sidebar_display_preference"
-					/>
-					<span>
-						{ this.props.translate( 'Show this every time I publish', {
-							comment:
-								'This string appears in the bottom of a publish confirmation sidebar.' +
-								'There is limited space. Longer strings will wrap.',
-						} ) }
-					</span>
+						name="confirmation_sidebar_display_preference" />
+					<span>{ this.props.translate( 'Show this every time I publish', {
+						comment: 'This string appears in the bottom of a publish confirmation sidebar.' +
+							'There is limited space. Longer strings will wrap.'
+					} ) }</span>
 				</FormLabel>
 			</div>
 		);
@@ -176,28 +147,23 @@ class EditorConfirmationSidebar extends React.Component {
 		const isOverlayActive = this.props.status !== 'closed';
 
 		return (
-			<div
-				className={ classnames( {
-					'editor-confirmation-sidebar': true,
-					'is-active': isOverlayActive,
-				} ) }
-			>
+			<div className={ classnames( {
+				'editor-confirmation-sidebar': true,
+				'is-active': isOverlayActive,
+			} ) } >
 				{ this.renderPublishingBusyButton() }
 
-				<div
-					className={ classnames( {
-						'editor-confirmation-sidebar__sidebar': true,
-						'is-active': isSidebarActive,
-					} ) }
-				>
+				<div className={ classnames( {
+					'editor-confirmation-sidebar__sidebar': true,
+					'is-active': isSidebarActive,
+				} ) }>
 					<div className="editor-confirmation-sidebar__ground-control">
 						<div className="editor-confirmation-sidebar__close">
 							<Button
 								borderless
 								onClick={ this.getCloseOverlayHandler( 'dismiss_x' ) }
 								title={ this.props.translate( 'Close sidebar' ) }
-								aria-label={ this.props.translate( 'Close sidebar' ) }
-							>
+								aria-label={ this.props.translate( 'Close sidebar' ) }>
 								<Gridicon icon="cross" />
 							</Button>
 						</div>
@@ -206,8 +172,19 @@ class EditorConfirmationSidebar extends React.Component {
 						</div>
 					</div>
 					<div className="editor-confirmation-sidebar__content-wrap">
-						<EditorConfirmationSidebarHeader post={ this.props.post } />
-						<EditorPublishDate post={ this.props.post } setPostDate={ this.props.setPostDate } />
+						<div className="editor-confirmation-sidebar__header">
+							{
+								this.props.translate( '{{strong}}Almost there!{{/strong}} ' +
+									'You can double-check your post’s settings below. When you’re happy, ' +
+									'use the big green button to send your post out into the world!', {
+										comment: 'This string appears as the header for the confirmation sidebar ' +
+										'when a user publishes a post or page.',
+										components: {
+											strong: <strong />
+										},
+									} )
+							}
+						</div>
 						<div className="editor-confirmation-sidebar__privacy-control">
 							{ this.renderPrivacyControl() }
 						</div>
@@ -220,19 +197,15 @@ class EditorConfirmationSidebar extends React.Component {
 }
 
 export default connect(
-	state => {
+	( state ) => {
 		const siteId = getSelectedSiteId( state );
 		const postId = getEditorPostId( state );
 		const post = getEditedPost( state, siteId, postId );
-		const isPrivatePost = isEditedPostPrivate( state, siteId, postId );
-		const isPrivatePostPasswordValid = isPrivateEditedPostPasswordValid( state, siteId, postId );
 
 		return {
 			siteId,
 			postId,
-			post,
-			isPrivatePost,
-			isPrivatePostPasswordValid,
+			post
 		};
 	},
 	{ editPost }

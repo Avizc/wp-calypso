@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import classnames from 'classnames';
 
@@ -13,7 +10,7 @@ import classnames from 'classnames';
 import FormLabel from 'components/forms/form-label';
 import FormRadio from 'components/forms/form-radio';
 
-const ResetOptionSet = props => {
+const ResetOptionSet = ( props ) => {
 	const {
 		email,
 		sms,
@@ -36,11 +33,10 @@ const ResetOptionSet = props => {
 						value={ emailFieldValue }
 						checked={ emailFieldValue === selectedResetOption }
 						disabled={ disabled }
-						onChange={ onOptionChanged }
-					/>
+						onChange={ onOptionChanged } />
 					<span>{ displayStrings.email }</span>
-				</FormLabel>
-			) }
+				</FormLabel> )
+			}
 			{ sms && (
 				<FormLabel>
 					<FormRadio
@@ -48,11 +44,10 @@ const ResetOptionSet = props => {
 						value={ smsFieldValue }
 						checked={ smsFieldValue === selectedResetOption }
 						disabled={ disabled }
-						onChange={ onOptionChanged }
-					/>
+						onChange={ onOptionChanged } />
 					<span>{ displayStrings.sms }</span>
-				</FormLabel>
-			) }
+				</FormLabel> )
+			}
 		</div>
 	);
 };

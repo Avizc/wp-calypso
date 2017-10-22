@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 import page from 'page';
 
@@ -30,15 +26,13 @@ class ManageNoOrdersView extends Component {
 		const { site, translate } = this.props;
 		return (
 			<ShareWidget
-				text={ translate(
-					'Your store is ready to take orders - congratulations! ' +
-						'Spread the word to get orders rolling in.'
-				) }
+				text={ translate( 'Your store is ready to take orders - congratulations! ' +
+					'Spread the word to get orders rolling in.' ) }
 				title={ translate( 'Your store is ready, the world awaits!' ) }
 				urlToShare={ site.URL }
 			/>
 		);
-	};
+	}
 
 	renderStatsWidget = () => {
 		const { site, translate } = this.props;
@@ -56,14 +50,12 @@ class ManageNoOrdersView extends Component {
 				title={ translate( 'Looking for stats?' ) }
 			>
 				<p>
-					{ translate(
-						'Store statistics and reports can be found on the site stats screen.' +
-							' Keep an eye on revenue, order totals, popular products, and more.'
-					) }
+					{ translate( 'Store statistic and reports can be found on the site stats screen.' +
+						' Keep an eye on revenues, order totals, popular products and more.' ) }
 				</p>
 			</BasicWidget>
 		);
-	};
+	}
 
 	renderViewAndTestWidget = () => {
 		const { site, translate } = this.props;
@@ -81,20 +73,20 @@ class ManageNoOrdersView extends Component {
 				title={ translate( 'Test all the things' ) }
 			>
 				<p>
-					{ translate(
-						'Your store is live! It’s a good idea to double check' +
-							' your tax, shipping, and payment configurations are set up correctly.'
-					) }
+					{
+						translate( 'Your store is live! It’s a good idea to double check' +
+							' your tax, shipping, and payment configurations are set up correctly.' )
+					}
 				</p>
 				<p>
-					{ translate(
-						'The easiest way to do this is to view your store, add' +
-							' a product to your cart, and attempt to check out using different addresses.'
-					) }
+					{
+						translate( 'The easiest way to do this is to view your store, add' +
+							' a product to your cart, and attempt to check out using different addresses.' )
+					}
 				</p>
 			</BasicWidget>
 		);
-	};
+	}
 
 	render = () => {
 		return (
@@ -106,7 +98,7 @@ class ManageNoOrdersView extends Component {
 				</WidgetGroup>
 			</div>
 		);
-	};
+	}
 }
 
 export default localize( ManageNoOrdersView );

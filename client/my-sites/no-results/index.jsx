@@ -1,14 +1,14 @@
-/** @format */
 /**
  * External dependencies
  */
-import React from 'react';
+var React = require( 'react' );
 
-const NoResults = React.createClass( {
+var noResults = React.createClass( {
+
 	getDefaultProps: function() {
 		return {
 			text: 'No results',
-			image: false,
+			image: false
 		};
 	},
 
@@ -19,7 +19,7 @@ const NoResults = React.createClass( {
 				<span>{ this.props.text }</span>
 			</div>
 		);
-	},
+	}
 } );
 
-export default NoResults;
+module.exports = noResults;

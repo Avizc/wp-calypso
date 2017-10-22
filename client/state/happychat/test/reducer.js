@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,13 +6,23 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { lastActivityTimestamp, message } from '../reducer';
+import { useSandbox } from 'test/helpers/use-sinon';
 import {
 	HAPPYCHAT_RECEIVE_EVENT,
+	HAPPYCHAT_BLUR,
+	HAPPYCHAT_FOCUS,
 	HAPPYCHAT_SEND_MESSAGE,
 	HAPPYCHAT_SET_MESSAGE,
+	SERIALIZE,
+	DESERIALIZE,
+	HAPPYCHAT_SET_GEO_LOCATION,
 } from 'state/action-types';
-import { useSandbox } from 'test/helpers/use-sinon';
+import {
+	lastActivityTimestamp,
+	lostFocusAt,
+	message,
+	geoLocation,
+} from '../reducer';
 
 // Simulate the time Feb 27, 2017 05:25 UTC
 const NOW = 1488173100125;
@@ -25,12 +33,12 @@ describe( 'reducers', () => {
 			sandbox.stub( Date, 'now' ).returns( NOW );
 		} );
 
-		test( 'defaults to null', () => {
+		it( 'defaults to null', () => {
 			const result = lastActivityTimestamp( undefined, {} );
 			expect( result ).to.be.null;
 		} );
 
-		test( 'should update on certain activity-specific actions', () => {
+		it( 'should update on certain activity-specific actions', () => {
 			let result;
 
 			result = lastActivityTimestamp( null, { type: HAPPYCHAT_RECEIVE_EVENT } );
@@ -41,20 +49,67 @@ describe( 'reducers', () => {
 		} );
 	} );
 
+	describe( '#lostFocusAt', () => {
+		useSandbox( sandbox => {
+			sandbox.stub( Date, 'now' ).returns( NOW );
+		} );
+
+		it( 'defaults to null', () => {
+			expect( lostFocusAt( undefined, {} ) ).to.be.null;
+		} );
+
+		it( 'SERIALIZEs to Date.now() if state is null', () => {
+			expect( lostFocusAt( null, { type: SERIALIZE } ) ).to.eql( NOW );
+		} );
+
+		it( 'returns Date.now() on HAPPYCHAT_BLUR actions', () => {
+			expect( lostFocusAt( null, { type: HAPPYCHAT_BLUR } ) ).to.eql( NOW );
+		} );
+
+		it( 'returns null on HAPPYCHAT_FOCUS actions', () => {
+			expect( lostFocusAt( 12345, { type: HAPPYCHAT_FOCUS } ) ).to.be.null;
+		} );
+	} );
+
 	describe( '#message()', () => {
-		test( 'defaults to an empty string', () => {
+		it( 'defaults to an empty string', () => {
 			const result = message( undefined, {} );
 			expect( result ).to.eql( '' );
 		} );
-		test( 'saves messages passed from HAPPYCHAT_SET_MESSAGE', () => {
+		it( 'saves messages passed from HAPPYCHAT_SET_MESSAGE', () => {
 			const action = { type: HAPPYCHAT_SET_MESSAGE, message: 'abcd' };
 			const result = message( 'abc', action );
 			expect( result ).to.eql( 'abcd' );
 		} );
-		test( 'resets to empty string on HAPPYCHAT_SEND_MESSAGE', () => {
+		it( 'resets to empty string on HAPPYCHAT_SEND_MESSAGE', () => {
 			const action = { type: HAPPYCHAT_SEND_MESSAGE, message: 'abcd' };
 			const result = message( 'abcd', action );
 			expect( result ).to.eql( '' );
+		} );
+	} );
+
+	describe( '#geoLocation()', () => {
+		it( 'should default to null', () => {
+			const state = geoLocation( undefined, {} );
+
+			expect( state ).to.be.null;
+		} );
+
+		it( 'should set the current user geolocation', () => {
+			const state = geoLocation( null, {
+				type: HAPPYCHAT_SET_GEO_LOCATION,
+				geoLocation: { city: 'Timisoara' }
+			} );
+
+			expect( state ).to.eql( { city: 'Timisoara' } );
+		} );
+
+		it( 'returns valid geolocation', () => {
+			const state = geoLocation( { city: 'Timisoara' }, {
+				type: DESERIALIZE
+			} );
+
+			expect( state ).to.eql( { city: 'Timisoara' } );
 		} );
 	} );
 } );
