@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugFactory from 'debug';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 import page from 'page';
-import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDom from 'react-dom';
 
@@ -24,7 +20,7 @@ import smartSetState from 'lib/react-smart-set-state';
 
 const debug = debugFactory( 'calypso:infinite-list' );
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'InfiniteList',
 
 	lastScrollTop: -1,
@@ -33,23 +29,26 @@ export default React.createClass( {
 	isScrolling: false,
 
 	propTypes: {
-		items: PropTypes.array.isRequired,
-		fetchingNextPage: PropTypes.bool.isRequired,
-		lastPage: PropTypes.bool.isRequired,
-		guessedItemHeight: PropTypes.number.isRequired,
-		itemsPerRow: PropTypes.number,
-		fetchNextPage: PropTypes.func.isRequired,
-		getItemRef: PropTypes.func.isRequired,
-		renderItem: PropTypes.func.isRequired,
-		renderLoadingPlaceholders: PropTypes.func.isRequired,
-		renderTrailingItems: PropTypes.func,
-		context: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ),
+		items: React.PropTypes.array.isRequired,
+		fetchingNextPage: React.PropTypes.bool.isRequired,
+		lastPage: React.PropTypes.bool.isRequired,
+		guessedItemHeight: React.PropTypes.number.isRequired,
+		itemsPerRow: React.PropTypes.number,
+		fetchNextPage: React.PropTypes.func.isRequired,
+		getItemRef: React.PropTypes.func.isRequired,
+		renderItem: React.PropTypes.func.isRequired,
+		renderLoadingPlaceholders: React.PropTypes.func.isRequired,
+		renderTrailingItems: React.PropTypes.func,
+		context: React.PropTypes.oneOfType( [
+			React.PropTypes.object,
+			React.PropTypes.bool
+		] )
 	},
 
 	getDefaultProps() {
 		return {
 			itemsPerRow: 1,
-			renderTrailingItems: () => {},
+			renderTrailingItems: () => {}
 		};
 	},
 
@@ -87,7 +86,7 @@ export default React.createClass( {
 				topPlaceholderHeight: 0,
 				lastRenderedIndex: this.scrollHelper.initialLastRenderedIndex(),
 				bottomPlaceholderHeight: 0,
-				scrollTop: 0,
+				scrollTop: 0
 			};
 		}
 		debug( 'infinite list mounting', newState );
@@ -105,7 +104,7 @@ export default React.createClass( {
 		}
 		debug( 'setting scrollTop:', this.state.scrollTop );
 		this.updateScroll( {
-			triggeredByScroll: false,
+			triggeredByScroll: false
 		} );
 		if ( this._contextLoaded() ) {
 			this._scrollContainer.addEventListener( 'scroll', this.onScroll );
@@ -119,7 +118,7 @@ export default React.createClass( {
 		if ( ! this.isScrolling ) {
 			this.cancelAnimationFrame();
 			this.updateScroll( {
-				triggeredByScroll: false,
+				triggeredByScroll: false
 			} );
 		}
 
@@ -157,7 +156,7 @@ export default React.createClass( {
 		if ( ! this.isScrolling ) {
 			this.cancelAnimationFrame();
 			this.updateScroll( {
-				triggeredByScroll: false,
+				triggeredByScroll: false
 			} );
 		}
 	},
@@ -179,7 +178,7 @@ export default React.createClass( {
 			topPlaceholderHeight: 0,
 			lastRenderedIndex: this.scrollHelper.initialLastRenderedIndex(),
 			bottomPlaceholderHeight: 0,
-			scrollTop: 0,
+			scrollTop: 0
 		} );
 	},
 
@@ -227,7 +226,7 @@ export default React.createClass( {
 			return;
 		}
 		this.updateScroll( {
-			triggeredByScroll: true,
+			triggeredByScroll: true
 		} );
 	},
 
@@ -248,7 +247,7 @@ export default React.createClass( {
 						this.updateScroll( { triggeredByScroll: false } );
 					}
 					this.isScrolling = false;
-				},
+				}
 			} );
 		}
 	},
@@ -276,7 +275,7 @@ export default React.createClass( {
 				topPlaceholderHeight: this.scrollHelper.topPlaceholderHeight,
 				lastRenderedIndex: this.scrollHelper.lastRenderedIndex,
 				bottomPlaceholderHeight: this.scrollHelper.bottomPlaceholderHeight,
-				scrollTop: this.lastScrollTop,
+				scrollTop: this.lastScrollTop
 			};
 
 			// Force one more check on next animation frame,
@@ -312,10 +311,7 @@ export default React.createClass( {
 			firstIndex = this.state.firstRenderedIndex,
 			lastIndex = this.state.lastRenderedIndex,
 			offsetTop = options && options.offsetTop ? options.offsetTop : 0;
-		let windowHeight,
-			rect,
-			children,
-			i,
+		let windowHeight, rect, children, i,
 			offsetBottom = options && options.offsetBottom ? options.offsetBottom : 0;
 
 		offsetBottom = offsetBottom || 0;
@@ -329,11 +325,10 @@ export default React.createClass( {
 				windowHeight = window.innerHeight || document.documentElement.clientHeight;
 				if (
 					( rect.top < 0 && Math.abs( rect.top ) < rect.height - offsetTop ) ||
-					( rect.top > 0 && rect.top < windowHeight - offsetBottom )
-				) {
+					( rect.top > 0 && rect.top < windowHeight - offsetBottom ) ) {
 					visibleItemIndexes.push( {
 						index: firstIndex + i - 1,
-						bounds: rect,
+						bounds: rect
 					} );
 				}
 			}
@@ -349,13 +344,10 @@ export default React.createClass( {
 			itemsToRender = [];
 
 		if ( lastRenderedIndex === -1 || lastRenderedIndex > this.props.items.length - 1 ) {
-			debug(
-				'resetting lastRenderedIndex, currently at %s, %d items',
-				lastRenderedIndex,
-				this.props.items.length
-			);
+			debug( 'resetting lastRenderedIndex, currently at %s, %d items', lastRenderedIndex, this.props.items.length );
 			lastRenderedIndex = Math.min(
-				this.state.firstRenderedIndex + this.scrollHelper.initialLastRenderedIndex(),
+				this.state.firstRenderedIndex +
+				this.scrollHelper.initialLastRenderedIndex(),
 				this.props.items.length - 1
 			);
 			debug( 'reset lastRenderedIndex to %s', lastRenderedIndex );
@@ -373,18 +365,14 @@ export default React.createClass( {
 
 		return (
 			<div { ...propsToTransfer }>
-				<div
-					ref="topPlaceholder"
+				<div ref="topPlaceholder"
 					className={ spacerClassName }
-					style={ { height: this.state.topPlaceholderHeight } }
-				/>
+					style={ { height: this.state.topPlaceholderHeight } } />
 				{ itemsToRender }
 				{ this.props.renderTrailingItems() }
-				<div
-					ref="bottomPlaceholder"
+				<div ref="bottomPlaceholder"
 					className={ spacerClassName }
-					style={ { height: this.state.bottomPlaceholderHeight } }
-				/>
+					style={ { height: this.state.bottomPlaceholderHeight } } />
 			</div>
 		);
 	},
@@ -426,5 +414,6 @@ export default React.createClass( {
 	 */
 	_contextLoaded() {
 		return this.props.context || this.props.context === false || ! ( 'context' in this.props );
-	},
+	}
+
 } );

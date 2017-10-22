@@ -1,15 +1,12 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import wpcom from 'lib/wp';
 import {
 	POST_STATS_RECEIVE,
 	POST_STATS_REQUEST,
 	POST_STATS_REQUEST_FAILURE,
-	POST_STATS_REQUEST_SUCCESS,
+	POST_STATS_REQUEST_SUCCESS
 } from 'state/action-types';
 
 /**
@@ -40,16 +37,15 @@ export function receivePostStats( siteId, postId, stats ) {
  * @return {Function}      Action thunk
  */
 export function requestPostStats( siteId, postId, fields = [] ) {
-	return dispatch => {
+	return ( dispatch ) => {
 		dispatch( {
 			type: POST_STATS_REQUEST,
 			postId,
 			siteId,
-			fields,
+			fields
 		} );
 
-		return wpcom
-			.site( siteId )
+		return wpcom.site( siteId )
 			.statsPostViews( postId, { fields: fields.join() } )
 			.then( stats => {
 				dispatch( receivePostStats( siteId, postId, stats ) );
@@ -57,7 +53,7 @@ export function requestPostStats( siteId, postId, fields = [] ) {
 					type: POST_STATS_REQUEST_SUCCESS,
 					siteId,
 					postId,
-					fields,
+					fields
 				} );
 			} )
 			.catch( error => {
@@ -66,7 +62,7 @@ export function requestPostStats( siteId, postId, fields = [] ) {
 					siteId,
 					postId,
 					fields,
-					error,
+					error
 				} );
 			} );
 	};

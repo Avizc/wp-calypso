@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
@@ -24,9 +22,9 @@ import QueryReaderTag from 'components/data/query-reader-tag';
 
 class TagStream extends React.Component {
 	static propTypes = {
-		encodedTagSlug: PropTypes.string,
-		decodedTagSlug: PropTypes.string,
-		followSource: PropTypes.string.isRequired,
+		encodedTagSlug: React.PropTypes.string,
+		decodedTagSlug: React.PropTypes.string,
+		followSource: React.PropTypes.string.isRequired,
 	};
 
 	state = {
@@ -85,13 +83,13 @@ class TagStream extends React.Component {
 		recordAction( isFollowing ? 'unfollowed_topic' : 'followed_topic' );
 		recordGaEvent(
 			isFollowing ? 'Clicked Unfollow Topic' : 'Clicked Follow Topic',
-			decodedTagSlug
+			decodedTagSlug,
 		);
 		recordTrack(
 			isFollowing ? 'calypso_reader_reader_tag_unfollowed' : 'calypso_reader_reader_tag_followed',
 			{
 				tag: decodedTagSlug,
-			}
+			},
 		);
 	};
 
@@ -141,5 +139,5 @@ export default connect(
 	{
 		followTag: requestFollowTag,
 		unfollowTag: requestUnfollowTag,
-	}
+	},
 )( localize( TagStream ) );

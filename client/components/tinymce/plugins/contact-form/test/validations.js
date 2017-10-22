@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,128 +9,115 @@ import { expect } from 'chai';
 import { validateFormFields, validateSettingsToEmail } from '../dialog/validations';
 
 describe( 'contact form validations', () => {
-	describe( '#validateFormFields()', () => {
-		test( 'should fail on an empty form', () => {
+	describe( '#validateFormFields()', function() {
+		it( 'should fail on an empty form', function() {
 			expect( validateFormFields( [] ) ).to.be.false;
 		} );
 
-		test( 'should accept a single valid field', () => {
-			expect(
-				validateFormFields( [
-					{
-						type: 'text',
-						label: 'something',
-					},
-				] )
-			).to.be.true;
+		it( 'should accept a single valid field', function() {
+			expect( validateFormFields( [
+				{
+					type: 'text',
+					label: 'something'
+				}
+			] ) ).to.be.true;
 		} );
 
-		test( 'should fail on a single invalid field', () => {
-			expect(
-				validateFormFields( [
-					{
-						type: 'text',
-						label: '',
-					},
-				] )
-			).to.be.false;
+		it( 'should fail on a single invalid field', function() {
+			expect( validateFormFields( [
+				{
+					type: 'text',
+					label: ''
+				}
+			] ) ).to.be.false;
 		} );
 
-		test( 'should require a label in every field', () => {
-			expect(
-				validateFormFields( [
-					{
-						type: 'text',
-						label: 'a',
-					},
-					{
-						type: 'text',
-						label: 'b',
-					},
-					{
-						type: 'text',
-						label: '',
-					},
-				] )
-			).to.be.false;
+		it( 'should require a label in every field', function() {
+			expect( validateFormFields( [
+				{
+					type: 'text',
+					label: 'a'
+				},
+				{
+					type: 'text',
+					label: 'b'
+				},
+				{
+					type: 'text',
+					label: ''
+				}
+			] ) ).to.be.false;
 		} );
 
-		test( 'should fail if a radio does not have options', () => {
-			expect(
-				validateFormFields( [
-					{
-						type: 'radio',
-						label: 'a',
-					},
-				] )
-			).to.be.false;
+		it( 'should fail if a radio does not have options', function() {
+			expect( validateFormFields( [
+				{
+					type: 'radio',
+					label: 'a'
+				}
+			] ) ).to.be.false;
 		} );
 
-		test( 'should fail if a select does not have options', () => {
-			expect(
-				validateFormFields( [
-					{
-						type: 'select',
-						label: 'a',
-					},
-				] )
-			).to.be.false;
+		it( 'should fail if a select does not have options', function() {
+			expect( validateFormFields( [
+				{
+					type: 'select',
+					label: 'a'
+				}
+			] ) ).to.be.false;
 		} );
 
-		test( 'should accept a complex form', () => {
-			expect(
-				validateFormFields( [
-					{
-						type: 'text',
-						label: 'a',
-						required: true,
-					},
-					{
-						type: 'textarea',
-						label: 'b',
-					},
-					{
-						type: 'url',
-						label: 'c',
-					},
-					{
-						type: 'radio',
-						label: 'd',
-						options: '1,2',
-					},
-					{
-						type: 'select',
-						label: 'e',
-						options: 'x,y,z',
-					},
-				] )
-			).to.be.true;
+		it( 'should accept a complex form', function() {
+			expect( validateFormFields( [
+				{
+					type: 'text',
+					label: 'a',
+					required: true
+				},
+				{
+					type: 'textarea',
+					label: 'b'
+				},
+				{
+					type: 'url',
+					label: 'c'
+				},
+				{
+					type: 'radio',
+					label: 'd',
+					options: '1,2'
+				},
+				{
+					type: 'select',
+					label: 'e',
+					options: 'x,y,z'
+				}
+			] ) ).to.be.true;
 		} );
 	} );
 
-	describe( '#validateSettingsToEmail()', () => {
-		test( 'should validate a single e-mail', () => {
+	describe( '#validateSettingsToEmail()', function() {
+		it( 'should validate a single e-mail', function() {
 			expect( validateSettingsToEmail( 'something@example.com' ) ).to.be.true;
 		} );
 
-		test( 'should accept an empty string', () => {
+		it( 'should accept an empty string', function() {
 			expect( validateSettingsToEmail( '' ) ).to.be.true;
 		} );
 
-		test( 'should fail on invalid e-mail', () => {
+		it( 'should fail on invalid e-mail', function() {
 			expect( validateSettingsToEmail( 'hocus_pocus' ) ).to.be.false;
 		} );
 
-		test( 'should validate multiple comma-separated e-mails', () => {
+		it( 'should validate multiple comma-separated e-mails', function() {
 			expect( validateSettingsToEmail( 'something@example.com,another@example.com' ) ).to.be.true;
 		} );
 
-		test( 'should ignore trailing and leading whitespace', () => {
-			expect( validateSettingsToEmail( '  something@example.com ,  another@example.com  ' ) ).to.be
-				.true;
+		it( 'should ignore trailing and leading whitespace', function() {
+			expect( validateSettingsToEmail( '  something@example.com ,  another@example.com  ' ) ).to.be.true;
 		} );
 
-		test( 'should fail if one e-mail is invalid', () => {
+		it( 'should fail if one e-mail is invalid', function() {
 			expect( validateSettingsToEmail( 'something@example.com, hocus_pocus' ) ).to.be.false;
 		} );
 	} );

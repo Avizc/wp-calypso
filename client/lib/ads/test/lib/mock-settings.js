@@ -1,5 +1,4 @@
-/** @format */
-export default {
+module.exports = {
 	settings: {
 		paypal: 'foo@bar.com',
 		who_owns: 'person',
@@ -13,6 +12,6 @@ export default {
 		city: 'Anytowne',
 		show_to_logged_in: 'yes',
 		tos: 'signed',
-		optimized_ads: true,
-	},
+		optimized_ads: true
+	}
 };

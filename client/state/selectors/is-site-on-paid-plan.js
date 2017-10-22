@@ -1,9 +1,8 @@
-/** @format */
 /**
  * Internal dependencies
  */
 import { getCurrentPlan } from 'state/sites/plans/selectors';
-import { isFreePlan } from 'lib/plans';
+import { PLAN_FREE } from 'lib/plans/constants';
 
 /**
  * Returns true if site is on a paid plan, false if the site is not
@@ -20,7 +19,7 @@ const isSiteOnPaidPlan = ( state, siteId ) => {
 		return false;
 	}
 
-	return ! isFreePlan( currentPlan.productSlug );
+	return currentPlan.productSlug !== PLAN_FREE;
 };
 
 export default isSiteOnPaidPlan;

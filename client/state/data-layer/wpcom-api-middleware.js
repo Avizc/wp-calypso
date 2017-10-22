@@ -1,21 +1,17 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
-import { bypassDataLayer } from './utils';
+import { local } from './utils';
 import { mergeHandlers } from 'state/action-watchers/utils';
-import wpcomHttpHandlers from './wpcom-http';
-import httpHandlers from 'state/http';
+
+import httpHandlers from './wpcom-http';
 import thirdPartyHandlers from './third-party';
 import wpcomHandlers from './wpcom';
 
 const mergedHandlers = mergeHandlers(
 	httpHandlers,
-	wpcomHttpHandlers,
 	thirdPartyHandlers,
-	wpcomHandlers
+	wpcomHandlers,
 );
 
 const shouldNext = action => {
@@ -62,6 +58,8 @@ const shouldNext = action => {
  * @returns {Function} middleware handler
  */
 export const middleware = handlers => store => next => {
+	const localNext = action => next( local( action ) );
+
 	/**
 	 * Middleware handler
 	 *
@@ -90,11 +88,24 @@ export const middleware = handlers => store => next => {
 			}
 		}
 
-		handlerChain.forEach( handler => handler( store, action ) );
+		// as we transition to making next() implicit we want
+		// to limit the extent of our changes so make this new
+		// function which gives us the ability to incrementally
+		// remove the uses of `next( action )` inside the handlers
+		//
+		// this guarantees that we don't double-dispatch
+		const nextActions = new Set();
+		const safeNext = a => nextActions.add( a );
 
+		handlerChain.forEach( handler => handler( store, action, safeNext ) );
+
+		// make sure we pass along this action
+		// eventually this will return to the
+		// simpler `return next( action )`
 		if ( shouldNext( action ) ) {
-			next( bypassDataLayer( action ) );
+			nextActions.add( action );
 		}
+		nextActions.forEach( localNext );
 	};
 };
 

@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import update from 'immutability-helper';
+import update from 'react-addons-update';
 
 /**
  * Internal dependencies
@@ -15,7 +12,7 @@ const initialDomainState = {
 	data: null,
 	hasLoadedFromServer: false,
 	isFetching: false,
-	needsUpdate: true,
+	needsUpdate: true
 };
 
 /**
@@ -29,8 +26,8 @@ const initialDomainState = {
 function updateDomainState( state, domainName, data ) {
 	const command = {
 		[ domainName ]: {
-			$set: Object.assign( {}, state[ domainName ] || initialDomainState, data ),
-		},
+			$set: Object.assign( {}, state[ domainName ] || initialDomainState, data )
+		}
 	};
 
 	return update( state, command );
@@ -43,13 +40,13 @@ function reducer( state, payload ) {
 		case ActionTypes.WHOIS_FETCH:
 			state = updateDomainState( state, action.domainName, {
 				isFetching: true,
-				needsUpdate: false,
+				needsUpdate: false
 			} );
 			break;
 		case ActionTypes.WHOIS_FETCH_FAILED:
 			state = updateDomainState( state, action.domainName, {
 				isFetching: false,
-				needsUpdate: true,
+				needsUpdate: true
 			} );
 			break;
 		case ActionTypes.WHOIS_FETCH_COMPLETED:
@@ -57,12 +54,12 @@ function reducer( state, payload ) {
 				data: action.data,
 				hasLoadedFromServer: true,
 				isFetching: false,
-				needsUpdate: false,
+				needsUpdate: false
 			} );
 			break;
 		case ActionTypes.WHOIS_UPDATE_COMPLETED:
 			state = updateDomainState( state, action.domainName, {
-				needsUpdate: true,
+				needsUpdate: true
 			} );
 			break;
 	}
@@ -70,4 +67,7 @@ function reducer( state, payload ) {
 	return state;
 }
 
-export { initialDomainState, reducer };
+export {
+	initialDomainState,
+	reducer
+};

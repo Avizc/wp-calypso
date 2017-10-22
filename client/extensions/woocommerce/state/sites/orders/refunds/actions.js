@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { fetchOrder } from '../actions';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { isOrderRefunding } from './selectors';
@@ -31,24 +28,21 @@ export const sendRefund = ( siteId, orderId, refund ) => ( dispatch, getState ) 
 		orderId,
 	} );
 
-	return request( siteId )
-		.post( `orders/${ orderId }/refunds`, refund )
-		.then( () => {
-			dispatch( successNotice( translate( 'Refund granted.' ), { duration: 5000 } ) );
-			dispatch( fetchOrder( siteId, orderId, true ) );
-			dispatch( {
-				type: WOOCOMMERCE_ORDER_REFUND_CREATE_SUCCESS,
-				siteId,
-				orderId,
-			} );
-		} )
-		.catch( error => {
-			dispatch( errorNotice( translate( 'Unable to grant refund.' ), { duration: 5000 } ) );
-			dispatch( {
-				type: WOOCOMMERCE_ORDER_REFUND_CREATE_FAILURE,
-				siteId,
-				orderId,
-				error,
-			} );
+	return request( siteId ).post( `orders/${ orderId }/refunds`, refund ).then( () => {
+		dispatch( successNotice( translate( 'Refund granted.' ), { duration: 5000 } ) );
+		dispatch( fetchOrder( siteId, orderId, true ) );
+		dispatch( {
+			type: WOOCOMMERCE_ORDER_REFUND_CREATE_SUCCESS,
+			siteId,
+			orderId,
 		} );
+	} ).catch( error => {
+		dispatch( errorNotice( translate( 'Unable to grant refund.' ), { duration: 5000 } ) );
+		dispatch( {
+			type: WOOCOMMERCE_ORDER_REFUND_CREATE_FAILURE,
+			siteId,
+			orderId,
+			error,
+		} );
+	} );
 };

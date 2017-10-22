@@ -1,14 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import classNames from 'classnames';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 import page from 'page';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 /**
@@ -40,10 +36,10 @@ const user = userFactory();
 
 const CancelPrivacyProtection = React.createClass( {
 	propTypes: {
-		hasLoadedSites: PropTypes.bool.isRequired,
-		hasLoadedUserPurchasesFromServer: PropTypes.bool.isRequired,
-		selectedPurchase: PropTypes.object,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.object ] ),
+		hasLoadedSites: React.PropTypes.bool.isRequired,
+		hasLoadedUserPurchasesFromServer: React.PropTypes.bool.isRequired,
+		selectedPurchase: React.PropTypes.object,
+		selectedSite: React.PropTypes.oneOfType( [ React.PropTypes.bool, React.PropTypes.object ] ),
 	},
 
 	getInitialState() {
@@ -76,8 +72,7 @@ const CancelPrivacyProtection = React.createClass( {
 			return true;
 		}
 
-		const { selectedSite } = props,
-			purchase = getPurchase( props );
+		const { selectedSite } = props, purchase = getPurchase( props );
 
 		return selectedSite && purchase && hasPrivacyProtection( purchase );
 	},
@@ -142,11 +137,9 @@ const CancelPrivacyProtection = React.createClass( {
 
 		return (
 			<strong>
-				{ isRefundable( purchase ) ? (
-					this.props.translate( 'You will receive a refund when the upgrade is cancelled.' )
-				) : (
-					this.props.translate( 'You will not receive a refund when the upgrade is cancelled.' )
-				) }
+				{ isRefundable( purchase )
+					? this.props.translate( 'You will receive a refund when the upgrade is cancelled.' )
+					: this.props.translate( 'You will not receive a refund when the upgrade is cancelled.' ) }
 			</strong>
 		);
 	},
@@ -158,11 +151,9 @@ const CancelPrivacyProtection = React.createClass( {
 				className="cancel-privacy-protection__cancel-button"
 				disabled={ this.state.disabled }
 			>
-				{ this.state.cancelling ? (
-					this.props.translate( 'Processing…' )
-				) : (
-					this.props.translate( 'Cancel Privacy Protection' )
-				) }
+				{ this.state.cancelling
+					? this.props.translate( 'Processing…' )
+					: this.props.translate( 'Cancel Privacy Protection' ) }
 			</Button>
 		);
 	},
@@ -173,7 +164,8 @@ const CancelPrivacyProtection = React.createClass( {
 		if ( error ) {
 			return (
 				<Notice status="is-error" showDismiss={ false }>
-					{ error }{' '}
+					{ error }
+					{ ' ' }
 					{ translate( 'Please try again later or {{a}}contact support.{{/a}}', {
 						components: { a: <a href={ CALYPSO_CONTACT } /> },
 					} ) }

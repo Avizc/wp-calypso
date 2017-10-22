@@ -1,15 +1,10 @@
-/** @format */
 export const transferStates = {
 	INQUIRING: 'inquiring',
 	FAILURE: 'failure',
 	START: 'start',
 	SETUP: 'setup',
 	CONFLICTS: 'conflicts',
-	ACTIVE: 'active',
-	UPLOADING: 'uploading',
-	BACKFILLING: 'backfilling',
 	COMPLETE: 'complete',
-	ERROR: 'error',
 };
 
 export const eligibilityHolds = {

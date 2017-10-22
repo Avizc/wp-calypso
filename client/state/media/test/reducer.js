@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,8 +7,6 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import reducer, { queries, queryRequests, mediaItemRequests } from '../reducer';
-import MediaQueryManager from 'lib/query-manager/media';
 import {
 	DESERIALIZE,
 	MEDIA_DELETE,
@@ -21,32 +17,31 @@ import {
 	MEDIA_REQUEST_FAILURE,
 	MEDIA_REQUEST_SUCCESS,
 	MEDIA_REQUESTING,
-	SERIALIZE,
-} from 'state/action-types';
+	SERIALIZE } from 'state/action-types';
+import reducer, { queries, queryRequests, mediaItemRequests } from '../reducer';
+import MediaQueryManager from 'lib/query-manager/media';
 
 describe( 'reducer', () => {
-	test( 'should include expected keys in return value', () => {
+	it( 'should include expected keys in return value', () => {
 		expect( reducer( undefined, {} ) ).to.have.keys( [
 			'queries',
 			'queryRequests',
-			'mediaItemRequests',
+			'mediaItemRequests'
 		] );
 	} );
 
 	describe( 'queries()', () => {
-		const items = [
-			{
-				ID: 42,
-				title: 'flowers',
-			},
-		];
+		const items = [ {
+			ID: 42,
+			title: 'flowers'
+		} ];
 
 		const query1 = {
-			search: 'flower',
+			search: 'flower'
 		};
 
 		const query2 = {
-			search: 'flowers',
+			search: 'flowers'
 		};
 
 		const action1 = {
@@ -54,7 +49,7 @@ describe( 'reducer', () => {
 			siteId: 2916284,
 			media: items,
 			found: 1,
-			query: query1,
+			query: query1
 		};
 
 		const action2 = {
@@ -62,16 +57,16 @@ describe( 'reducer', () => {
 			siteId: 2916284,
 			media: items,
 			found: 1,
-			query: query2,
+			query: query2
 		};
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = queries( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should track media receive', () => {
+		it( 'should track media receive', () => {
 			const state = queries( deepFreeze( {} ), action1 );
 
 			expect( state ).to.have.keys( '2916284' );
@@ -79,7 +74,7 @@ describe( 'reducer', () => {
 			expect( state[ 2916284 ].getItems( query1 ) ).to.eql( items );
 		} );
 
-		test( 'should accumulate query requests', () => {
+		it( 'should accumulate query requests', () => {
 			const previousState = deepFreeze( queries( deepFreeze( {} ), action1 ) );
 			const state = queries( previousState, action2 );
 
@@ -89,18 +84,18 @@ describe( 'reducer', () => {
 			expect( state[ 2916284 ].getItems( query2 ) ).to.have.length( 1 );
 		} );
 
-		test( 'should return the same state if successful request has no changes', () => {
+		it( 'should return the same state if successful request has no changes', () => {
 			const previousState = deepFreeze( queries( deepFreeze( {} ), action1 ) );
 			const state = queries( previousState, action1 );
 
 			expect( state ).to.equal( previousState );
 		} );
 
-		test( 'should track posts even if not associated with a query', () => {
+		it( 'should track posts even if not associated with a query', () => {
 			const state = queries( deepFreeze( {} ), {
 				type: MEDIA_RECEIVE,
 				siteId: 2916284,
-				media: items,
+				media: items
 			} );
 
 			expect( state ).to.have.keys( [ '2916284' ] );
@@ -108,27 +103,27 @@ describe( 'reducer', () => {
 			expect( state[ 2916284 ].getItems() ).to.eql( items );
 		} );
 
-		test( 'should update received posts', () => {
+		it( 'should update received posts', () => {
 			const updatedItem = {
 				ID: 42,
-				title: 'test',
+				title: 'test'
 			};
 
 			const previousState = deepFreeze( queries( deepFreeze( {} ), action1 ) );
 			const state = queries( previousState, {
 				...action1,
-				media: [ updatedItem ],
+				media: [ updatedItem ]
 			} );
 
 			expect( state[ 2916284 ].getItem( 42 ) ).to.eql( updatedItem );
 		} );
 
-		test( 'should remove item when post delete action success dispatched', () => {
+		it( 'should remove item when post delete action success dispatched', () => {
 			const previousState = deepFreeze( queries( deepFreeze( {} ), action1 ) );
 			const state = queries( previousState, {
 				type: MEDIA_DELETE,
 				siteId: 2916284,
-				mediaIds: [ 42 ],
+				mediaIds: [ 42 ]
 			} );
 
 			expect( state[ 2916284 ].getItem( 42 ) ).to.be.undefined;
@@ -138,79 +133,79 @@ describe( 'reducer', () => {
 
 	describe( 'queryRequests()', () => {
 		const query1 = {
-			search: 'flower',
+			search: 'flower'
 		};
 
 		const query2 = {
-			search: 'flowers',
+			search: 'flowers'
 		};
 
 		const state1 = {
 			2916284: {
-				[ MediaQueryManager.QueryKey.stringify( query1 ) ]: true,
-			},
+				[ MediaQueryManager.QueryKey.stringify( query1 ) ]: true
+			}
 		};
 
 		const state2 = {
 			2916284: {
 				...state1[ 2916284 ],
-				[ MediaQueryManager.QueryKey.stringify( query2 ) ]: true,
-			},
+				[ MediaQueryManager.QueryKey.stringify( query2 ) ]: true
+			}
 		};
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = queryRequests( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should track media requesting', () => {
+		it( 'should track media requesting', () => {
 			const state = queryRequests( deepFreeze( {} ), {
 				type: MEDIA_REQUESTING,
 				siteId: 2916284,
-				query: query1,
+				query: query1
 			} );
 
 			expect( state ).to.deep.eql( state1 );
 		} );
 
-		test( 'should accumulate queries', () => {
+		it( 'should accumulate queries', () => {
 			const state = queryRequests( deepFreeze( state1 ), {
 				type: MEDIA_REQUESTING,
 				siteId: 2916284,
-				query: query2,
+				query: query2
 			} );
 
 			expect( state ).to.deep.eql( state2 );
 		} );
 
-		test( 'should track media request success', () => {
+		it( 'should track media request success', () => {
 			const state = queryRequests( deepFreeze( state2 ), {
 				type: MEDIA_REQUEST_SUCCESS,
 				siteId: 2916284,
-				query: query2,
+				query: query2
 			} );
 
 			expect( state ).to.deep.eql( state1 );
 		} );
 
-		test( 'should track media request failures', () => {
+		it( 'should track media request failures', () => {
 			const state = queryRequests( deepFreeze( state2 ), {
 				type: MEDIA_REQUEST_FAILURE,
 				siteId: 2916284,
-				query: query2,
+				query: query2
 			} );
 
 			expect( state ).to.deep.eql( state1 );
 		} );
 
-		test( 'should never persist state', () => {
+		it( 'should never persist state', () => {
 			const state = queryRequests( deepFreeze( state1 ), { type: SERIALIZE } );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should never load persisted state', () => {
+		it( 'should never load persisted state', () => {
 			const state = queryRequests( deepFreeze( state1 ), { type: DESERIALIZE } );
 
 			expect( state ).to.eql( {} );
@@ -220,70 +215,70 @@ describe( 'reducer', () => {
 	describe( 'mediaItemRequests()', () => {
 		const state1 = {
 			2916284: {
-				[ 10 ]: true,
-			},
+				[ 10 ]: true
+			}
 		};
 
 		const state2 = {
 			2916284: {
 				...state1[ 2916284 ],
-				[ 20 ]: true,
-			},
+				[ 20 ]: true
+			}
 		};
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = mediaItemRequests( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should track media item requesting', () => {
+		it( 'should track media item requesting', () => {
 			const state = mediaItemRequests( deepFreeze( {} ), {
 				type: MEDIA_ITEM_REQUESTING,
 				siteId: 2916284,
-				mediaId: 10,
+				mediaId: 10
 			} );
 
 			expect( state ).to.deep.eql( state1 );
 		} );
 
-		test( 'should accumulate requests', () => {
+		it( 'should accumulate requests', () => {
 			const state = mediaItemRequests( deepFreeze( state1 ), {
 				type: MEDIA_ITEM_REQUESTING,
 				siteId: 2916284,
-				mediaId: 20,
+				mediaId: 20
 			} );
 
 			expect( state ).to.deep.eql( state2 );
 		} );
 
-		test( 'should track media request success', () => {
+		it( 'should track media request success', () => {
 			const state = mediaItemRequests( deepFreeze( state2 ), {
 				type: MEDIA_ITEM_REQUEST_SUCCESS,
 				siteId: 2916284,
-				mediaId: 20,
+				mediaId: 20
 			} );
 
 			expect( state ).to.deep.eql( state1 );
 		} );
 
-		test( 'should track media request failures', () => {
+		it( 'should track media request failures', () => {
 			const state = mediaItemRequests( deepFreeze( state2 ), {
 				type: MEDIA_ITEM_REQUEST_FAILURE,
 				siteId: 2916284,
-				mediaId: 20,
+				mediaId: 20
 			} );
 
 			expect( state ).to.deep.eql( state1 );
 		} );
 
-		test( 'should never persist state', () => {
+		it( 'should never persist state', () => {
 			const state = mediaItemRequests( deepFreeze( state1 ), { type: SERIALIZE } );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should never load persisted state', () => {
+		it( 'should never load persisted state', () => {
 			const state = mediaItemRequests( deepFreeze( state1 ), { type: DESERIALIZE } );
 
 			expect( state ).to.eql( {} );

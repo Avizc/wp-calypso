@@ -1,15 +1,13 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { stubTrue, stubFalse } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { combineReducers, createReducer } from 'state/utils';
+
 import {
 	ACCOUNT_RECOVERY_RESET_OPTIONS_ERROR,
 	ACCOUNT_RECOVERY_RESET_OPTIONS_RECEIVE,
@@ -48,12 +46,9 @@ const options = combineReducers( {
 	} ),
 } );
 
-const userData = createReducer(
-	{},
-	{
-		[ ACCOUNT_RECOVERY_RESET_UPDATE_USER_DATA ]: ( state, action ) => action.userData,
-	}
-);
+const userData = createReducer( {}, {
+	[ ACCOUNT_RECOVERY_RESET_UPDATE_USER_DATA ]: ( state, action ) => action.userData,
+} );
 
 const method = createReducer( null, {
 	[ ACCOUNT_RECOVERY_RESET_SET_METHOD ]: ( state, action ) => action.method,

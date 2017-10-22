@@ -1,18 +1,20 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
 import sinon from 'sinon';
 
+/**
+ * Internal Dependencies
+ */
+import useFakeDom from 'test/helpers/use-fake-dom';
+
 describe( 'scroll-to', () => {
 	let scrollTo;
 
-	beforeAll( () => {
+	useFakeDom();
+
+	before( () => {
 		scrollTo = require( '..' );
 		sinon.spy( window, 'scrollTo' );
 	} );
@@ -21,7 +23,7 @@ describe( 'scroll-to', () => {
 		window.scrollTo.reset();
 	} );
 
-	test( 'window position x', done => {
+	it( 'window position x', done => {
 		scrollTo( {
 			x: 500,
 			y: 300,
@@ -30,10 +32,10 @@ describe( 'scroll-to', () => {
 				expect( window.scrollTo.lastCall.args[ 0 ] ).to.equal( 500 );
 				expect( window.scrollTo.lastCall.args[ 1 ] ).to.equal( 300 );
 				done();
-			},
+			}
 		} );
 	} );
-	test( 'window position y', done => {
+	it( 'window position y', done => {
 		scrollTo( {
 			x: 0,
 			y: 100,
@@ -42,7 +44,7 @@ describe( 'scroll-to', () => {
 				expect( window.scrollTo.lastCall.args[ 0 ] ).to.equal( 0 );
 				expect( window.scrollTo.lastCall.args[ 1 ] ).to.equal( 100 );
 				done();
-			},
+			}
 		} );
 	} );
 } );

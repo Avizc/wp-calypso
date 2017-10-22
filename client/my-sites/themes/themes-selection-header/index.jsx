@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
 /**
@@ -21,14 +17,16 @@ const ThemesSelectionHeader = ( { label, count, translate } ) => {
 
 	return (
 		<div className={ selectionHeaderClassName }>
-			<SectionHeader label={ label || translate( 'WordPress.com themes' ) } count={ count } />
+			<SectionHeader
+				label={ label || translate( 'WordPress.com themes' ) }
+				count={ count } />
 		</div>
 	);
 };
 
 ThemesSelectionHeader.propTypes = {
 	label: PropTypes.string,
-	count: PropTypes.number,
+	count: PropTypes.number
 };
 
 export default localize( ThemesSelectionHeader );

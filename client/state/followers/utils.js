@@ -1,11 +1,11 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import deterministicStringify from 'json-stable-stringify';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
+/**
+ * Internal dependencies
+ */
+import deterministicStringify from 'lib/deterministic-stringify';
 
 /**
  * Converts an object of query parameters into an alphebetically ordered string

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,6 +6,7 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
+import reducer, { initialState } from '../reducer';
 import {
 	addNewShippingZone,
 	openShippingZoneForEdit,
@@ -16,7 +15,6 @@ import {
 	changeShippingZoneName,
 	deleteShippingZone,
 } from '../actions';
-import reducer, { initialState } from '../reducer';
 
 const siteId = 123;
 
@@ -43,7 +41,7 @@ const emptyChanges = {
 
 describe( 'reducer', () => {
 	describe( 'addNewShippingZone', () => {
-		test( 'should create a new zone and mark it as "editing", without commiting it to the "creates" bucket', () => {
+		it( 'should create a new zone and mark it as "editing", without commiting it to the "creates" bucket', () => {
 			const newState = reducer( initialState, addNewShippingZone( siteId ) );
 			expect( newState.creates ).to.be.empty;
 			expect( newState.currentlyEditingId ).to.deep.equal( { index: 0 } );
@@ -52,7 +50,7 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'openShippingZoneForEdit', () => {
-		test( 'should not add anything to "updates" when the zone has a server-side ID', () => {
+		it( 'should not add anything to "updates" when the zone has a server-side ID', () => {
 			const newState = reducer( initialState, openShippingZoneForEdit( siteId, 1 ) );
 			expect( newState.creates ).to.be.empty;
 			expect( newState.updates ).to.be.empty;
@@ -60,7 +58,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingChanges ).to.deep.equal( emptyChanges );
 		} );
 
-		test( 'should not add anything to "creates" when the zone has a provisional ID', () => {
+		it( 'should not add anything to "creates" when the zone has a provisional ID', () => {
 			const newState = reducer( initialState, openShippingZoneForEdit( siteId, { index: 0 } ) );
 			expect( newState.creates ).to.be.empty;
 			expect( newState.updates ).to.be.empty;
@@ -70,7 +68,7 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'closeEditingShippingZone', () => {
-		test( 'should do nothing if there are no changes to save', () => {
+		it( 'should do nothing if there are no changes to save', () => {
 			const state = {
 				creates: [],
 				updates: [],
@@ -85,7 +83,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should commit changes to the "updates" bucket if the zone has a server-side ID', () => {
+		it( 'should commit changes to the "updates" bucket if the zone has a server-side ID', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 42 } ],
@@ -103,7 +101,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should overwrite data on the "updates" bucket if the zone has a server-side ID', () => {
+		it( 'should overwrite data on the "updates" bucket if the zone has a server-side ID', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, ...emptyChanges, name: 'OldName' } ],
@@ -114,11 +112,13 @@ describe( 'reducer', () => {
 
 			const newState = reducer( state, closeEditingShippingZone( siteId ) );
 			expect( newState.creates ).to.be.empty;
-			expect( newState.updates ).to.deep.equal( [ { id: 1, ...emptyChanges, name: 'Hi There' } ] );
+			expect( newState.updates ).to.deep.equal( [
+				{ id: 1, ...emptyChanges, name: 'Hi There' },
+			] );
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should commit changes to the "creates" bucket if the zone has a provisional ID', () => {
+		it( 'should commit changes to the "creates" bucket if the zone has a provisional ID', () => {
 			const state = {
 				creates: [ { id: { index: 0 } } ],
 				updates: [],
@@ -136,7 +136,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should overwrite data on the "creates" bucket if the zone has a provisional ID', () => {
+		it( 'should overwrite data on the "creates" bucket if the zone has a provisional ID', () => {
 			const state = {
 				creates: [ { id: { index: 0 }, ...emptyChanges, name: 'OldName' } ],
 				updates: [],
@@ -155,7 +155,7 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'cancelEditingShippingZone', () => {
-		test( 'should not commit changes for an "update" shipping zone', () => {
+		it( 'should not commit changes for an "update" shipping zone', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, name: 'Good Name' } ],
@@ -170,7 +170,7 @@ describe( 'reducer', () => {
 			expect( newState.currentlyEditingId ).to.be.null;
 		} );
 
-		test( 'should not commit changes for a "create" shipping zone', () => {
+		it( 'should not commit changes for a "create" shipping zone', () => {
 			const state = {
 				creates: [ { id: { index: 0 }, name: 'Good Name' } ],
 				updates: [],
@@ -187,12 +187,12 @@ describe( 'reducer', () => {
 	} );
 
 	describe( 'changeShippingZoneName', () => {
-		test( 'should not do anything if there is no zone being edited', () => {
+		it( 'should not do anything if there is no zone being edited', () => {
 			const newState = reducer( initialState, changeShippingZoneName( siteId, 'something' ) );
 			expect( newState ).to.deep.equal( initialState );
 		} );
 
-		test( 'should change the shipping zone name without committing it', () => {
+		it( 'should change the shipping zone name without committing it', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, ...emptyChanges, name: 'Previous Name' } ],
@@ -203,26 +203,21 @@ describe( 'reducer', () => {
 
 			const newState = reducer( state, changeShippingZoneName( siteId, 'New Name' ) );
 			expect( newState.creates ).to.be.empty;
-			expect( newState.updates ).to.deep.equal( [
-				{ id: 1, ...emptyChanges, name: 'Previous Name' },
-			] );
-			expect( newState.currentlyEditingChanges ).to.deep.equal( {
-				...emptyChanges,
-				name: 'New Name',
-			} );
+			expect( newState.updates ).to.deep.equal( [ { id: 1, ...emptyChanges, name: 'Previous Name' } ] );
+			expect( newState.currentlyEditingChanges ).to.deep.equal( { ...emptyChanges, name: 'New Name' } );
 			expect( newState.currentlyEditingId ).to.equal( 1 );
 		} );
 	} );
 
 	describe( 'deleteShippingZone', () => {
-		test( 'should mark the zone as to be deleted', () => {
+		it( 'should mark the zone as to be deleted', () => {
 			const newState = reducer( initialState, deleteShippingZone( siteId, 42 ) );
 			expect( newState.creates ).to.be.empty;
 			expect( newState.updates ).to.be.empty;
 			expect( newState.deletes ).to.deep.equal( [ { id: 42 } ] );
 		} );
 
-		test( 'should remove the zone from the "updates" list', () => {
+		it( 'should remove the zone from the "updates" list', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, name: 'Previous Name' }, { id: 2 } ],
@@ -237,7 +232,7 @@ describe( 'reducer', () => {
 			expect( newState.deletes ).to.deep.equal( [ { id: 1 } ] );
 		} );
 
-		test( 'should remove the zone from the "creates" list - should NOT mark it to delete', () => {
+		it( 'should remove the zone from the "creates" list - should NOT mark it to delete', () => {
 			const state = {
 				creates: [ { id: { index: 0 }, name: 'Previous Name' }, { id: { index: 1 } } ],
 				updates: [],
@@ -252,7 +247,7 @@ describe( 'reducer', () => {
 			expect( newState.deletes ).to.be.empty;
 		} );
 
-		test( 'should discard the currently edited zone ID', () => {
+		it( 'should discard the currently edited zone ID', () => {
 			const state = {
 				creates: [],
 				updates: [ { id: 1, name: 'Previous Name' } ],
@@ -269,3 +264,4 @@ describe( 'reducer', () => {
 		} );
 	} );
 } );
+

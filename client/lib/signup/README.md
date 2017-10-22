@@ -63,7 +63,7 @@ SignupDependencyStore.get() // => { userId: 1337 }
 var SignupFlowController = require( 'lib/signup/flow-controller' );
 
 // this is the component that renders the signup flow
-const SignupComponent = React.createClass( {
+var SignupComponent = React.createClass( {
 	componentWillMount: function() {
 		this.signupFlowController = SignupFlowController( {
 			flowName: 'default', // the name of the flow to begin, from flows.json

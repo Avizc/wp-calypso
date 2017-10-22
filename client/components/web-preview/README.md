@@ -3,12 +3,10 @@ Web Preview
 
 This component facilitates the display of iframed content. See the `propTypes` for configurable options. Basic usage is:
 
-```jsx
-<WebPreview 
-	showPreview={ this.showPreview() }
+```js
+<WebPreview showPreview={ this.showPreview() }
 	onClose={ this.hidePreview }
-	previewUrl={ this.getUrlToIframe() }
->
+	previewUrl={ this.getUrlToIframe() } >
 ```
 
 * * *
@@ -26,11 +24,10 @@ Calypso is meant to be run over HTTPS when in production. Since WebPreview uses 
 
 With those constraints in mind, usage is the following:
 
-```jsx
+```js
 <WithPreviewProps
-	url={ myFrontEndPreview }
-	isPreviewable={ isMySitePreviewable }
->
+		url={ myFrontEndPreview }
+		isPreviewable={ isMySitePreviewable }>
 	{ ( props ) =>
 		<Button { ...props } icon={ isMySitePreviewable ? 'visible' : 'external' }>
 			View Site
@@ -41,7 +38,7 @@ With those constraints in mind, usage is the following:
 
 `isPreviewable` should be a boolean to determine whether the URL should be loaded in WebPreview or externally. Bear in mind that not all front-end links are previewable — Jetpack sites, for instance, may not be supported for a number of reasons, including absent HTTPS support. As of this writing, a suggestion is to rely on the `getSite` (state/sites/selectors) selector, which relies on `lib/site/computed-attributes` to return a `is_previewable` attribute:
 
-```jsx
+```js
 const site = getSite( state, siteId );
 const isPreviewable = get( site, 'is_previewable' );
 

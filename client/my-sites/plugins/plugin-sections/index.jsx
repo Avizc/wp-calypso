@@ -1,25 +1,23 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { filter, find } from 'lodash';
-import { localize } from 'i18n-calypso';
-import React from 'react';
-import titleCase from 'to-title-case';
-import classNames from 'classnames';
+const React = require( 'react' ),
+	titleCase = require( 'to-title-case' ),
+	find = require( 'lodash/find' ),
+	filter = require( 'lodash/filter' ),
+	classNames = require( 'classnames' );
 
 /**
  * Internal dependencies
  */
-import analytics from 'lib/analytics';
-import Card from 'components/card';
-import SectionNav from 'components/section-nav';
-import NavTabs from 'components/section-nav/tabs';
-import NavItem from 'components/section-nav/item';
+const analytics = require( 'lib/analytics' ),
+	Card = require( 'components/card' ),
+	SectionNav = require( 'components/section-nav' ),
+	NavTabs = require( 'components/section-nav/tabs' ),
+	NavItem = require( 'components/section-nav/item' );
 
-const PluginSections = React.createClass( {
+module.exports = React.createClass( {
+
 	_COLLAPSED_DESCRIPTION_HEIGHT: 140,
 
 	displayName: 'PluginSections',
@@ -48,39 +46,39 @@ const PluginSections = React.createClass( {
 		return [
 			{
 				key: 'description',
-				title: this.props.translate( 'Description', {
+				title: this.translate( 'Description', {
 					context: 'Navigation item',
-					textOnly: true,
-				} ),
+					textOnly: true
+				} )
 			},
 			{
 				key: 'installation',
-				title: this.props.translate( 'Installation', {
+				title: this.translate( 'Installation', {
 					context: 'Navigation item',
-					textOnly: true,
-				} ),
+					textOnly: true
+				} )
 			},
 			{
 				key: 'changelog',
-				title: this.props.translate( 'Changelog', {
+				title: this.translate( 'Changelog', {
 					context: 'Navigation item',
-					textOnly: true,
-				} ),
+					textOnly: true
+				} )
 			},
 			{
 				key: 'faq',
-				title: this.props.translate( 'FAQs', {
+				title: this.translate( 'FAQs', {
 					context: 'Navigation item',
-					textOnly: true,
-				} ),
+					textOnly: true
+				} )
 			},
 			{
 				key: 'other_notes',
-				title: this.props.translate( 'Other Notes', {
+				title: this.translate( 'Other Notes', {
 					context: 'Navigation item',
-					textOnly: true,
-				} ),
-			},
+					textOnly: true
+				} )
+			}
 		];
 	},
 
@@ -88,18 +86,18 @@ const PluginSections = React.createClass( {
 		return [
 			{
 				key: 'description',
-				title: this.props.translate( 'Description', {
+				title: this.translate( 'Description', {
 					context: 'Navigation item',
-					textOnly: true,
-				} ),
-			},
-		];
+					textOnly: true
+				} )
+			}
+		]
 	},
 
 	getInitialState: function() {
 		return {
 			selectedSection: false,
-			readMore: false,
+			readMore: false
 		};
 	},
 
@@ -126,13 +124,13 @@ const PluginSections = React.createClass( {
 			return section.key === sectionKey;
 		} );
 
-		return titleSection && titleSection.title ? titleSection.title : titleCase( sectionKey );
+		return ( titleSection && titleSection.title ) ? titleSection.title : titleCase( sectionKey );
 	},
 
 	setSelectedSection: function( section, event ) {
 		this.setState( {
 			readMore: false !== this.state.readMore || this.getSelected() !== section,
-			selectedSection: section,
+			selectedSection: section
 		} );
 		if ( event ) {
 			this.recordEvent( 'Clicked Section Tab: ' + section );
@@ -150,23 +148,26 @@ const PluginSections = React.createClass( {
 		const button = (
 			<button className="plugin-sections__read-more-link" onClick={ this.toggleReadMore }>
 				<span className="plugin-sections__read-more-text">
-					{ this.props.translate( 'Read More' ) }
+					{ this.translate( 'Read More' ) }
 				</span>
 			</button>
 		);
 		return (
 			<div className="plugin-sections__read-more">
-				{ // We remove the link but leave the plugin-sections__read-more container
-				// in order to minimize jump on small sections.
-				this.state.readMore ? null : button }
+				{
+					// We remove the link but leave the plugin-sections__read-more container
+					// in order to minimize jump on small sections.
+					this.state.readMore ? null : button
+				}
 			</div>
 		);
 	},
 
 	render: function() {
-		const contentClasses = classNames( 'plugin-sections__content', {
-			trimmed: ! this.props.isWpcom && ! this.state.readMore,
-		} );
+		const contentClasses = classNames(
+			'plugin-sections__content',
+			{ trimmed: ! this.props.isWpcom && ! this.state.readMore }
+		);
 
 		// Defensively check if this plugin has sections. If not, don't render anything.
 		if ( ! this.props.plugin || ! this.props.plugin.sections || ! this.getAvailableSections() ) {
@@ -179,35 +180,31 @@ const PluginSections = React.createClass( {
 				<div className="plugin-sections__header">
 					<SectionNav selectedText={ this.getNavTitle( this.getSelected() ) }>
 						<NavTabs>
-							{ this.getAvailableSections().map( function( section ) {
-								return (
-									<NavItem
-										key={ section.key }
-										onClick={ this.setSelectedSection.bind( this, section.key ) }
-										selected={ this.getSelected() === section.key }
-									>
-										{ section.title }
-									</NavItem>
-								);
-							}, this ) }
+							{
+								this.getAvailableSections().map( function( section ) {
+									return (
+										<NavItem
+											key={ section.key }
+											onClick={ this.setSelectedSection.bind( this, section.key ) }
+											selected={ this.getSelected() === section.key }
+										>
+											{ section.title }
+										</NavItem>
+									);
+								}, this )
+							}
 						</NavTabs>
 					</SectionNav>
 				</div>
 				<Card>
-					<div
-						ref="content"
+					<div ref="content"
 						className={ contentClasses }
 						// Sanitized in client/lib/plugins/utils.js with sanitizeHtml
-						dangerouslySetInnerHTML={ {
-							__html: this.props.plugin.sections[ this.getSelected() ],
-						} }
-					/>
+						dangerouslySetInnerHTML={ { __html: this.props.plugin.sections[ this.getSelected() ] } } />
 					{ this.renderReadMore() }
 				</Card>
 			</div>
 		);
 		/*eslint-enable react/no-danger*/
-	},
+	}
 } );
-
-export default localize( PluginSections );

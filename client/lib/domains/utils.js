@@ -1,9 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-import { drop, isEmpty, join, find, split, values } from 'lodash';
+import { isEmpty, find, values } from 'lodash';
 
 /**
  * Internal dependencies
@@ -55,19 +53,7 @@ function getDomainNameFromReceiptOrCart( receipt, cart ) {
 	return null;
 }
 
-function parseDomainAgainstTldList( domainFragment, tldList ) {
-	if ( ! domainFragment ) {
-		return '';
-	}
-
-	if ( tldList[ domainFragment ] !== undefined ) {
-		return domainFragment;
-	}
-
-	const parts = split( domainFragment, '.' );
-	const suffix = join( drop( parts ), '.' );
-
-	return parseDomainAgainstTldList( suffix, tldList );
-}
-
-export { getDomainNameFromReceiptOrCart, getDomainType, parseDomainAgainstTldList };
+export {
+	getDomainNameFromReceiptOrCart,
+	getDomainType,
+};

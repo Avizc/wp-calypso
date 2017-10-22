@@ -1,29 +1,25 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+var React = require( 'react' );
 
 /**
  * Interanl dependencies
  */
-import MediaValidationStore from 'lib/media/validation-store';
-import passToChildren from 'lib/react-pass-to-children';
+var MediaValidationStore = require( 'lib/media/validation-store' ),
+	passToChildren = require( 'lib/react-pass-to-children' );
 
 function getStateData( siteId ) {
 	return {
-		mediaValidationErrors: MediaValidationStore.getAllErrors( siteId ),
+		mediaValidationErrors: MediaValidationStore.getAllErrors( siteId )
 	};
 }
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaValidationData',
 
 	propTypes: {
-		siteId: PropTypes.number.isRequired,
+		siteId: React.PropTypes.number.isRequired
 	},
 
 	getInitialState: function() {
@@ -50,5 +46,5 @@ export default React.createClass( {
 
 	render: function() {
 		return passToChildren( this, this.state );
-	},
+	}
 } );

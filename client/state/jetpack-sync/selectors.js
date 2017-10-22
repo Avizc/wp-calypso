@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get, reduce } from 'lodash';
 
 /**
@@ -43,8 +40,7 @@ function isPendingSyncStart( state, siteId ) {
 	}
 
 	// Have we requested a full sync from Calypso?
-	const requestingFullSync =
-		get( fullSyncRequest, 'isRequesting' ) || get( fullSyncRequest, 'scheduled' );
+	const requestingFullSync = get( fullSyncRequest, 'isRequesting' ) || get( fullSyncRequest, 'scheduled' );
 	if ( ! requestingFullSync ) {
 		return false;
 	}
@@ -96,29 +92,17 @@ function getSyncProgressPercentage( state, siteId ) {
 		return 0;
 	}
 
-	const countQueued = reduce(
-		queued,
-		( sum, value ) => {
-			return ( sum += value );
-		},
-		0
-	);
+	const countQueued = reduce( queued, ( sum, value ) => {
+		return sum += value;
+	}, 0 );
 
-	const countSent = reduce(
-		sent,
-		( sum, value ) => {
-			return ( sum += value );
-		},
-		0
-	);
+	const countSent = reduce( sent, ( sum, value ) => {
+		return sum += value;
+	}, 0 );
 
-	const countTotal = reduce(
-		total,
-		( sum, value ) => {
-			return ( sum += value );
-		},
-		0
-	);
+	const countTotal = reduce( total, ( sum, value ) => {
+		return sum += value;
+	}, 0 );
 
 	const percentQueued = countQueued / countTotal * queuedMultiplier * 100;
 	const percentSent = countSent / countTotal * sentMultiplier * 100;
@@ -131,5 +115,5 @@ export default {
 	getFullSyncRequest,
 	isPendingSyncStart,
 	isFullSyncing,
-	getSyncProgressPercentage,
+	getSyncProgressPercentage
 };

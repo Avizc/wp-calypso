@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import React from 'react';
 import page from 'page';
 
@@ -19,13 +16,11 @@ export function redirect() {
 
 export function list( context, next ) {
 	context.primary = (
-		<Types
-			query={ {
-				type: context.params.type,
-				status: mapPostStatus( context.params.status ),
-				search: context.query.s,
-			} }
-		/>
+		<Types query={ {
+			type: context.params.type,
+			status: mapPostStatus( context.params.status ),
+			search: context.query.s
+		} } />
 	);
 
 	next();

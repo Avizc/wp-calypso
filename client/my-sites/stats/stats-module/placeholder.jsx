@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import classNames from 'classnames';
 
 /**
@@ -16,7 +12,7 @@ import Spinner from 'components/spinner';
 export default class StatsModulePlaceholder extends PureComponent {
 	static propTypes = {
 		className: PropTypes.string,
-		isLoading: PropTypes.bool,
+		isLoading: PropTypes.bool
 	};
 
 	render() {

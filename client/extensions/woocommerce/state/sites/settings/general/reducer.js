@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { createReducer } from 'state/utils';
 import { ERROR, LOADING } from 'woocommerce/state/constants';
 import { isNull } from 'lodash';
@@ -21,7 +18,7 @@ import {
 export default createReducer( null, {
 	[ WOOCOMMERCE_CURRENCY_UPDATE_SUCCESS ]: ( state, { data } ) => {
 		const settings = state || [];
-		const newSettings = settings.map( setting => {
+		const newSettings = settings.map( ( setting ) => {
 			if ( setting.id === data.id ) {
 				return data;
 			}
@@ -32,7 +29,7 @@ export default createReducer( null, {
 
 	[ WOOCOMMERCE_TAXES_ENABLED_UPDATE_SUCCESS ]: ( state, { data } ) => {
 		const settings = state || [];
-		const newSettings = settings.map( setting => {
+		const newSettings = settings.map( ( setting ) => {
 			if ( setting.id === data.id ) {
 				return data;
 			}

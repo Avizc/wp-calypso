@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { isEmpty } from 'lodash';
@@ -51,51 +47,33 @@ class StateSelect extends Component {
 
 	render() {
 		const classes = classNames( this.props.additionalClasses, 'state' );
-		const {
-			countryCode,
-			countryStates,
-			errorMessage,
-			name,
-			value,
-			disabled,
-			onChange,
-			isError,
-			inputRef,
-		} = this.props;
 
 		return (
 			<div>
-				{ countryCode && <QueryCountryStates countryCode={ countryCode } /> }
-				{ isEmpty( countryStates ) ? (
-					<Input ref="input" { ...this.props } />
-				) : (
-					<div className={ classes }>
-						<FormLabel htmlFor={ `${ this.constructor.name }-${ this.instance }` }>
-							{ this.props.label }
-						</FormLabel>
+				{ this.props.countryCode && <QueryCountryStates countryCode={ this.props.countryCode } /> }
+				{ isEmpty( this.props.countryStates )
+					? <Input ref="input" { ...this.props } />
+					: <div className={ classes }>
+						<FormLabel htmlFor={ `${ this.constructor.name }-${ this.instance }` }>{ this.props.label }</FormLabel>
 						<FormSelect
 							ref="input"
 							id={ `${ this.constructor.name }-${ this.instance }` }
-							name={ name }
-							value={ value }
-							disabled={ disabled }
-							onChange={ onChange }
+							name={ this.props.name }
+							value={ this.props.value }
+							disabled={ this.props.disabled }
+							onChange={ this.props.onChange }
 							onClick={ this.recordStateSelectClick }
-							isError={ isError }
-							inputRef={ inputRef }
-						>
-							<option key="--" value="" disabled="disabled">
-								{ this.props.translate( 'Select State' ) }
-							</option>
-							{ countryStates.map( state => (
-								<option key={ state.code } value={ state.code }>
-									{ state.name }
-								</option>
-							) ) }
+							isError={ this.props.isError }
+							inputRef={ this.props.inputRef } >
+
+							<option key="--" value="--" disabled="disabled">{ this.props.translate( 'Select State' ) }</option>
+							{ this.props.countryStates.map( ( state ) =>
+								<option key={ state.code } value={ state.code }>{ state.name }</option>
+							) }
 						</FormSelect>
-						{ errorMessage && <FormInputValidation text={ errorMessage } isError /> }
+						{ this.props.errorMessage && <FormInputValidation text={ this.props.errorMessage } isError /> }
 					</div>
-				) }
+				}
 			</div>
 		);
 	}
@@ -118,7 +96,7 @@ StateSelect.propTypes = {
 
 export default connect(
 	( state, { countryCode } ) => ( {
-		countryStates: countryCode ? getCountryStates( state, countryCode ) : [],
+		countryStates: countryCode ? getCountryStates( state, countryCode ) : []
 	} ),
 	{ recordGoogleEvent }
 )( localize( StateSelect ) );

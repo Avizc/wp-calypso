@@ -1,79 +1,71 @@
-/** @format */
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import store from 'store';
+import mockery from 'mockery';
+import noop from 'lodash/noop';
 
 /**
  * Internal dependencies
  */
-import * as PreferencesActions from '../actions';
 import { USER_SETTING_KEY, LOCALSTORAGE_KEY } from '../constants';
-import Dispatcher from 'dispatcher';
-import { getSettings, postSettings } from 'lib/wp';
-import useNock from 'test/helpers/use-nock';
 import { useSandbox } from 'test/helpers/use-sinon';
-jest.mock( 'lib/user/utils', () => ( {
-	isLoggedIn: () => true,
-} ) );
-jest.mock( 'store', () => ( {
-	get: () => {},
-	set: () => {},
-} ) );
-jest.mock( 'dispatcher', () => ( {
-	handleViewAction: () => {},
-	handleServerAction: () => {},
-} ) );
-jest.mock( 'lib/wp', () => {
-	const { stub } = require( 'sinon' );
-	const getSettings = stub();
-	const postSettings = stub();
-
-	return {
-		getSettings,
-		postSettings,
-		undocumented: () => ( {
-			me: () => ( {
-				settings: () => ( {
-					get: getSettings,
-					update: postSettings,
-				} ),
-			} ),
-		} ),
-	};
-} );
+import useMockery from 'test/helpers/use-mockery';
+import useNock from 'test/helpers/use-nock';
 
 /**
  * Constants
  */
 const DUMMY_PERSISTED_PREFERENCES = { saved: true };
 
-describe( 'PreferencesActions', () => {
-	let sandbox;
-	useSandbox( _sandbox => ( sandbox = _sandbox ) );
+describe( 'PreferencesActions', function() {
+	let sandbox, PreferencesActions, getSettings, postSettings;
+	const store = { get: noop, set: noop };
+	const Dispatcher = { handleViewAction: noop, handleServerAction: noop };
+
+	useSandbox( ( _sandbox ) => sandbox = _sandbox );
+	useMockery();
 	useNock();
 
-	beforeEach( () => {
+	before( function() {
+		mockery.registerMock( 'lib/user/utils', { isLoggedIn: () => true } );
+		mockery.registerMock( 'store', store );
+		mockery.registerMock( 'dispatcher', Dispatcher );
+		mockery.registerMock( 'lib/wp', {
+			undocumented: function() {
+				return {
+					me: function() {
+						return {
+							settings: function() {
+								return {
+									get: getSettings,
+									update: postSettings
+								};
+							}
+						};
+					}
+				};
+			}
+		} );
+
+		PreferencesActions = require( '../actions' );
+	} );
+
+	beforeEach( function() {
 		sandbox.restore();
 		sandbox.stub( store, 'get' );
 		sandbox.stub( store, 'set' );
 		sandbox.stub( Dispatcher, 'handleViewAction' );
 		sandbox.stub( Dispatcher, 'handleServerAction' );
 
-		getSettings.callsArgWithAsync( 0, null, {
-			[ USER_SETTING_KEY ]: DUMMY_PERSISTED_PREFERENCES,
+		getSettings = sandbox.stub().callsArgWithAsync( 0, null, {
+			[ USER_SETTING_KEY ]: DUMMY_PERSISTED_PREFERENCES
 		} );
-		postSettings.callsArgAsync( 1 );
+		postSettings = sandbox.stub().callsArgAsync( 1 );
 	} );
 
-	afterEach( () => {
-		getSettings.reset();
-		postSettings.reset();
-	} );
-
-	describe( '#fetch()', () => {
-		test( 'should retrieve from localStorage and trigger a request to the REST API', done => {
+	describe( '#fetch()', function() {
+		it( 'should retrieve from localStorage and trigger a request to the REST API', function( done ) {
 			store.get.restore();
 			sandbox.stub( store, 'get' ).returns( DUMMY_PERSISTED_PREFERENCES );
 
@@ -83,24 +75,21 @@ describe( 'PreferencesActions', () => {
 			expect( Dispatcher.handleServerAction ).to.have.been.calledWithMatch( {
 				type: 'RECEIVE_ME_SETTINGS',
 				data: {
-					[ USER_SETTING_KEY ]: DUMMY_PERSISTED_PREFERENCES,
-				},
+					[ USER_SETTING_KEY ]: DUMMY_PERSISTED_PREFERENCES
+				}
 			} );
 
 			process.nextTick( function() {
 				expect( Dispatcher.handleServerAction ).to.have.been.calledTwice;
-				expect( store.set ).to.have.been.calledWith(
-					LOCALSTORAGE_KEY,
-					DUMMY_PERSISTED_PREFERENCES
-				);
+				expect( store.set ).to.have.been.calledWith( LOCALSTORAGE_KEY, DUMMY_PERSISTED_PREFERENCES );
 				done();
 			} );
 		} );
 
-		test( 'should not persist to localStorage from remote request if error occurs', done => {
+		it( 'should not persist to localStorage from remote request if error occurs', function( done ) {
 			sandbox.stub( PreferencesActions, 'mergePreferencesToLocalStorage' );
 
-			getSettings.callsArgWithAsync( 0, true );
+			getSettings = sandbox.stub().callsArgWithAsync( 0, true );
 
 			PreferencesActions.fetch();
 			process.nextTick( function() {
@@ -109,7 +98,7 @@ describe( 'PreferencesActions', () => {
 			} );
 		} );
 
-		test( 'should not dispatch an empty local store', done => {
+		it( 'should not dispatch an empty local store', function( done ) {
 			store.get.restore();
 			sandbox.stub( store, 'get' ).returns( undefined );
 
@@ -129,29 +118,27 @@ describe( 'PreferencesActions', () => {
 		} );
 	} );
 
-	describe( '#set()', () => {
-		test( 'should save to localStorage and trigger a request to the REST API', done => {
+	describe( '#set()', function() {
+		it( 'should save to localStorage and trigger a request to the REST API', function( done ) {
 			PreferencesActions.set( 'one', 1 );
 
 			expect( store.set ).to.have.been.calledWith( LOCALSTORAGE_KEY, { one: 1 } );
 			expect( Dispatcher.handleViewAction ).to.have.been.calledWithMatch( {
-				type: 'UPDATE_ME_SETTINGS',
+				type: 'UPDATE_ME_SETTINGS'
 			} );
-			expect( postSettings ).to.have.been.calledWithMatch(
-				JSON.stringify( {
-					[ USER_SETTING_KEY ]: { one: 1 },
-				} )
-			);
+			expect( postSettings ).to.have.been.calledWithMatch( JSON.stringify( {
+				[ USER_SETTING_KEY ]: { one: 1 }
+			} ) );
 
 			process.nextTick( function() {
 				expect( Dispatcher.handleServerAction ).to.have.been.calledWithMatch( {
-					type: 'RECEIVE_ME_SETTINGS',
+					type: 'RECEIVE_ME_SETTINGS'
 				} );
 				done();
 			} );
 		} );
 
-		test( 'should add to, not replace, existing values', () => {
+		it( 'should add to, not replace, existing values', function() {
 			store.get.restore();
 			sandbox.stub( store, 'get' ).returns( { one: 1 } );
 			PreferencesActions.set( 'two', 2 );
@@ -160,12 +147,12 @@ describe( 'PreferencesActions', () => {
 			expect( Dispatcher.handleViewAction ).to.have.been.calledWithMatch( {
 				type: 'UPDATE_ME_SETTINGS',
 				data: {
-					[ USER_SETTING_KEY ]: { two: 2 },
-				},
+					[ USER_SETTING_KEY ]: { two: 2 }
+				}
 			} );
 		} );
 
-		test( 'should assume a null value is to be removed', () => {
+		it( 'should assume a null value is to be removed', function() {
 			PreferencesActions.set( 'one', 1 );
 			PreferencesActions.set( 'one', null );
 
@@ -174,28 +161,26 @@ describe( 'PreferencesActions', () => {
 			expect( Dispatcher.handleViewAction ).to.have.been.calledWithMatch( {
 				type: 'UPDATE_ME_SETTINGS',
 				data: {
-					[ USER_SETTING_KEY ]: { one: null },
-				},
+					[ USER_SETTING_KEY ]: { one: null }
+				}
 			} );
 		} );
 
-		test( 'should only dispatch a receive after all pending updates have finished', done => {
+		it( 'should only dispatch a receive after all pending updates have finished', function( done ) {
 			PreferencesActions.set( 'one', 1 );
 			PreferencesActions.set( 'one', null );
 
 			process.nextTick( function() {
 				expect( postSettings ).to.have.been.calledTwice;
 				expect( Dispatcher.handleServerAction ).to.have.been.calledOnce;
-				expect( Dispatcher.handleServerAction ).to.have.been.calledWithMatch( {
-					type: 'RECEIVE_ME_SETTINGS',
-				} );
+				expect( Dispatcher.handleServerAction ).to.have.been.calledWithMatch( { type: 'RECEIVE_ME_SETTINGS' } );
 				done();
 			} );
 		} );
 	} );
 
-	describe( '#remove()', () => {
-		test( 'should remove from localStorage and trigger a request to the REST API', done => {
+	describe( '#remove()', function() {
+		it( 'should remove from localStorage and trigger a request to the REST API', function( done ) {
 			PreferencesActions.set( 'one', 1 );
 			PreferencesActions.remove( 'one' );
 
@@ -203,18 +188,16 @@ describe( 'PreferencesActions', () => {
 			expect( Dispatcher.handleViewAction ).to.have.been.calledWithMatch( {
 				type: 'UPDATE_ME_SETTINGS',
 				data: {
-					[ USER_SETTING_KEY ]: { one: 1 },
-				},
+					[ USER_SETTING_KEY ]: { one: 1 }
+				}
 			} );
-			expect( postSettings ).to.have.been.calledWithMatch(
-				JSON.stringify( {
-					[ USER_SETTING_KEY ]: { one: 1 },
-				} )
-			);
+			expect( postSettings ).to.have.been.calledWithMatch( JSON.stringify( {
+				[ USER_SETTING_KEY ]: { one: 1 }
+			} ) );
 
 			process.nextTick( function() {
 				expect( Dispatcher.handleServerAction ).to.have.been.calledWithMatch( {
-					type: 'RECEIVE_ME_SETTINGS',
+					type: 'RECEIVE_ME_SETTINGS'
 				} );
 
 				done();

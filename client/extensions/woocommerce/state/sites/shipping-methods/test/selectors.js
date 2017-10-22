@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -18,7 +16,7 @@ import { LOADING } from 'woocommerce/state/constants';
 
 describe( 'selectors', () => {
 	describe( 'shipping methods loading state', () => {
-		test( 'when woocommerce state is not available.', () => {
+		it( 'when woocommerce state is not available.', () => {
 			const state = {
 				extensions: {
 					woocommerce: {},
@@ -30,7 +28,7 @@ describe( 'selectors', () => {
 			expect( areShippingMethodsLoading( state, 123 ) ).to.be.false;
 		} );
 
-		test( 'when methods are loaded.', () => {
+		it( 'when methods are loaded.', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
@@ -48,7 +46,7 @@ describe( 'selectors', () => {
 			expect( areShippingMethodsLoading( state, 123 ) ).to.be.false;
 		} );
 
-		test( 'when methods are currently being fetched.', () => {
+		it( 'when methods are currently being fetched.', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
@@ -66,7 +64,7 @@ describe( 'selectors', () => {
 			expect( areShippingMethodsLoading( state, 123 ) ).to.be.true;
 		} );
 
-		test( 'when methods are loaded only for a different site.', () => {
+		it( 'when methods are loaded only for a different site.', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
@@ -84,7 +82,7 @@ describe( 'selectors', () => {
 			expect( areShippingMethodsLoading( state, 456 ) ).to.be.false;
 		} );
 
-		test( 'should get the siteId from the UI tree if not provided.', () => {
+		it( 'should get the siteId from the UI tree if not provided.', () => {
 			const stateLoaded = {
 				extensions: {
 					woocommerce: {
@@ -125,7 +123,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( 'getShippingMethodNameMap', () => {
-		test( 'should return id of the service if the methods are loading', () => {
+		it( 'should return id of the service if the methods are loading', () => {
 			const state = {
 				extensions: {
 					woocommerce: {
@@ -142,7 +140,7 @@ describe( 'selectors', () => {
 			expect( map( 'flat_rate' ) ).to.equal( 'flat_rate' );
 		} );
 
-		test( 'should return map function', () => {
+		it( 'should return map function', () => {
 			const state = {
 				extensions: {
 					woocommerce: {

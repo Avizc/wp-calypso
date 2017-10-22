@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -22,33 +21,31 @@ export function recordGaEvent( action, label, value ) {
 	ga.recordEvent( 'Reader', action, label, value );
 }
 
-export function recordPermalinkClick( source, post, eventProperties = {} ) {
+export function recordPermalinkClick( where, post ) {
 	mc.bumpStat( {
 		reader_actions: 'visited_post_permalink',
-		reader_permalink_source: source,
+		reader_permalink_source: where,
 	} );
-	recordGaEvent( 'Clicked Post Permalink', source );
+	recordGaEvent( 'Clicked Post Permalink', where );
 	const trackEvent = 'calypso_reader_permalink_click';
-
-	// Add source as Tracks event property
-	eventProperties = Object.assign( { source }, eventProperties );
-
+	const args = {
+		source: where,
+	};
 	if ( post ) {
-		recordTrackForPost( trackEvent, post, eventProperties );
+		recordTrackForPost( trackEvent, post, args );
 	} else {
-		recordTrack( trackEvent, eventProperties );
+		recordTrack( trackEvent, args );
 	}
 }
 
-function getLocation( path ) {
-	if ( path === undefined || path === '' ) {
+function getLocation() {
+	if ( typeof window === 'undefined' ) {
 		return 'unknown';
 	}
+
+	const path = window.location.pathname;
 	if ( path === '/' ) {
 		return 'following';
-	}
-	if ( path.indexOf( '/read/a8c' ) === 0 ) {
-		return 'following_a8c';
 	}
 	if ( path.indexOf( '/tag/' ) === 0 ) {
 		return 'topic_page';
@@ -86,34 +83,24 @@ function getLocation( path ) {
 	if ( path.indexOf( '/read/search' ) === 0 ) {
 		return 'search';
 	}
-	if ( path.indexOf( '/read/conversations/a8c' ) === 0 ) {
-		return 'conversations_a8c';
-	}
-	if ( path.indexOf( '/read/conversations' ) === 0 ) {
-		return 'conversations';
-	}
 	return 'unknown';
 }
 
-/**
- * @param {*} eventName track event name
- * @param {*} eventProperties extra event props
- * @param {String} $2.pathnameOverride Overwrites the location for ui_algo Useful for when
- *   recordTrack() is called after loading the next window.
- *   For example: opening an article (calypso_reader_article_opened) would call
- *   recordTrack after changing windows and would result in a `ui_algo: single_post`
- *   regardless of the stream the post was opened. This now allows the article_opened
- *   Tracks event to correctly specify which stream the post was opened.
- */
-export function recordTrack( eventName, eventProperties, { pathnameOverride } = {} ) {
+export function recordTrack( eventName, eventProperties ) {
 	debug( 'reader track', ...arguments );
 	const subCount = 0; // todo: fix subCount by moving to redux middleware for recordTrack
 
-	const location = getLocation( pathnameOverride || window.location.pathname );
+	// Add location as ui_algo prop
+	const location = getLocation();
 	eventProperties = Object.assign( { ui_algo: location }, eventProperties );
 
 	if ( subCount != null ) {
 		eventProperties = Object.assign( { subscription_count: subCount }, eventProperties );
+	}
+
+	if ( location === 'topic_page' && ! eventProperties.hasOwnProperty( 'tag' ) ) {
+		const tag = decodeURIComponent( window.location.pathname.split( '/tag/' ).pop() );
+		eventProperties = Object.assign( { tag: tag }, eventProperties );
 	}
 
 	if ( process.env.NODE_ENV !== 'production' ) {
@@ -151,21 +138,21 @@ export function recordTracksRailcar( action, eventName, railcar, overrides = {} 
 		Object.assign(
 			eventName ? { action: eventName.replace( 'calypso_reader_', '' ) } : {},
 			railcar,
-			overrides
-		)
+			overrides,
+		),
 	);
 }
 
 export const recordTracksRailcarRender = partial(
 	recordTracksRailcar,
-	'calypso_traintracks_render'
+	'calypso_traintracks_render',
 );
 export const recordTracksRailcarInteract = partial(
 	recordTracksRailcar,
-	'calypso_traintracks_interact'
+	'calypso_traintracks_interact',
 );
 
-export function recordTrackForPost( eventName, post = {}, additionalProps = {}, options ) {
+export function recordTrackForPost( eventName, post = {}, additionalProps = {} ) {
 	recordTrack(
 		eventName,
 		assign(
@@ -176,16 +163,15 @@ export function recordTrackForPost( eventName, post = {}, additionalProps = {}, 
 				feed_item_id: post.feed_item_ID > 0 ? post.feed_item_ID : undefined,
 				is_jetpack: post.is_jetpack,
 			},
-			additionalProps
+			additionalProps,
 		),
-		options
 	);
 	if ( post.railcar && tracksRailcarEventWhitelist.has( eventName ) ) {
 		// check for overrides for the railcar
 		recordTracksRailcarInteract(
 			eventName,
 			post.railcar,
-			pick( additionalProps, [ 'ui_position', 'ui_algo' ] )
+			pick( additionalProps, [ 'ui_position', 'ui_algo' ] ),
 		);
 	} else if ( process.env.NODE_ENV !== 'production' && post.railcar ) {
 		console.warn( 'Consider whitelisting reader track', eventName ); //eslint-disable-line no-console
@@ -197,7 +183,7 @@ export function recordTrackWithRailcar( eventName, railcar, eventProperties ) {
 	recordTracksRailcarInteract(
 		eventName,
 		railcar,
-		pick( eventProperties, [ 'ui_position', 'ui_algo' ] )
+		pick( eventProperties, [ 'ui_position', 'ui_algo' ] ),
 	);
 }
 
@@ -217,7 +203,7 @@ export function pageViewForPost( blogId, blogUrl, postId, isPrivate ) {
 }
 
 export function recordFollow( url, railcar, additionalProps = {} ) {
-	const source = additionalProps.source || getLocation( window.location.pathname );
+	const source = additionalProps.source || getLocation();
 	mc.bumpStat( 'reader_follows', source );
 	recordAction( 'followed_blog' );
 	recordGaEvent( 'Clicked Follow Blog', source );
@@ -232,7 +218,7 @@ export function recordFollow( url, railcar, additionalProps = {} ) {
 }
 
 export function recordUnfollow( url, railcar, additionalProps = {} ) {
-	const source = getLocation( window.location.pathname );
+	const source = getLocation();
 	mc.bumpStat( 'reader_unfollows', source );
 	recordAction( 'unfollowed_blog' );
 	recordGaEvent( 'Clicked Unfollow Blog', source );

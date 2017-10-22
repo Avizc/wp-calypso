@@ -1,23 +1,20 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { map } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import MediaStore from './store';
-import Dispatcher from 'dispatcher';
-import emitter from 'lib/mixins/emitter';
+var MediaStore = require( './store' ),
+	Dispatcher = require( 'dispatcher' ),
+	emitter = require( 'lib/mixins/emitter' );
 
 /**
  * Module variables
  */
 const MediaLibrarySelectedStore = {
-	_media: {},
+	_media: {}
 };
 
 function ensureSelectedItemsForSiteId( siteId ) {
@@ -88,9 +85,12 @@ MediaLibrarySelectedStore.getAll = function( siteId ) {
 	}
 
 	// Avoid keeping invalid items in the selected list.
-	return MediaLibrarySelectedStore._media[ siteId ]
-		.map( itemId => MediaStore.get( siteId, itemId ) )
-		.filter( item => item && ( item.guid || item.transient ) );
+	return (
+		MediaLibrarySelectedStore
+			._media[ siteId ]
+			.map( itemId => MediaStore.get( siteId, itemId ) )
+			.filter( ( item ) => ( item && ( item.guid || item.transient ) ) )
+	);
 };
 
 MediaLibrarySelectedStore.dispatchToken = Dispatcher.register( function( payload ) {
@@ -153,4 +153,4 @@ MediaLibrarySelectedStore.dispatchToken = Dispatcher.register( function( payload
 	}
 } );
 
-export default MediaLibrarySelectedStore;
+module.exports = MediaLibrarySelectedStore;

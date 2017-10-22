@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import page from 'page';
@@ -26,7 +22,7 @@ class PluginEligibility extends Component {
 		siteSlug: PropTypes.string,
 		translate: PropTypes.func,
 		navigateTo: PropTypes.func,
-		initiateTransfer: PropTypes.func,
+		initiateTransfer: PropTypes.func
 	};
 
 	getBackUrl = () => {
@@ -48,7 +44,10 @@ class PluginEligibility extends Component {
 
 		return (
 			<MainComponent>
-				<HeaderCake isCompact={ true } onClick={ this.goBack }>
+				<HeaderCake
+					isCompact={ true }
+					onClick={ this.goBack }
+				>
 					{ translate( 'Install plugin' ) }
 				</HeaderCake>
 				<EligibilityWarnings
@@ -61,9 +60,7 @@ class PluginEligibility extends Component {
 }
 
 // It was 2:45AM, I wanted to deploy, and @dmsnell made me do it... props to @dmsnell :)
-const withNavigation = WrappedComponent => props => (
-	<WrappedComponent { ...{ ...props, navigateTo: page } } />
-);
+const withNavigation = WrappedComponent => props => <WrappedComponent { ...{ ...props, navigateTo: page } } />;
 
 const mapStateToProps = state => {
 	const siteId = getSelectedSiteId( state );
@@ -74,9 +71,10 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-	initiateTransfer: initiateThemeTransfer,
+	initiateTransfer: initiateThemeTransfer
 };
 
-export default connect( mapStateToProps, mapDispatchToProps )(
-	withNavigation( localize( PluginEligibility ) )
-);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)( withNavigation( localize( PluginEligibility ) ) );

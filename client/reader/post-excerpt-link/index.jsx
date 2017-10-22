@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 import classNames from 'classnames';
@@ -14,8 +12,8 @@ import { recordPermalinkClick } from 'reader/stats';
 
 class PostExcerptLink extends React.Component {
 	static propTypes = {
-		siteName: PropTypes.string,
-		postUrl: PropTypes.string,
+		siteName: React.PropTypes.string,
+		postUrl: React.PropTypes.string,
 	};
 
 	state = {
@@ -45,15 +43,16 @@ class PostExcerptLink extends React.Component {
 				target="_blank"
 				rel="external noopener noreferrer"
 			>
-				<span className="post-excerpt-only-site-name">{ this.props.siteName || '(untitled)' }</span>
+				<span className="post-excerpt-only-site-name">
+					{ this.props.siteName || '(untitled)' }
+				</span>
 			</a>
 		);
 		const classes = classNames( {
 			'post-excerpt-link': true,
 			'is-showing-notice': this.state.isShowingNotice,
 		} );
-		/*eslint-disable wpcalypso/jsx-classname-namespace*/
-		/*eslint-disable max-len*/
+
 		return (
 			<div className={ classes }>
 				{ this.props.translate( 'Visit {{siteName/}} for the full post.', {
@@ -70,9 +69,7 @@ class PostExcerptLink extends React.Component {
 				</svg>
 				<p className="post-excerpt-link__helper">
 					{ this.props.translate(
-						'The owner of this site only allows us to show a brief summary of their content.' +
-							' ' +
-							"To view the full post, you'll have to visit their site."
+						"The owner of this site only allows us to show a brief summary of their content. To view the full post, you'll have to visit their site.",
 					) }
 				</p>
 			</div>

@@ -1,16 +1,13 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { translate } from 'i18n-calypso';
 import { find, includes, toLower } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { PLUGIN_UPLOAD } from 'state/action-types';
+import { PLUGIN_UPLOAD, PLUGIN_INSTALL_REQUEST_SUCCESS } from 'state/action-types';
 import {
 	completePluginUpload,
 	pluginUploadError,
@@ -18,35 +15,34 @@ import {
 } from 'state/plugins/upload/actions';
 import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 import { http } from 'state/data-layer/wpcom-http/actions';
-import { errorNotice } from 'state/notices/actions';
-import { recordTracksEvent } from 'state/analytics/actions';
-import { getSite } from 'state/sites/selectors';
-import Dispatcher from 'dispatcher';
+import { successNotice, errorNotice } from 'state/notices/actions';
 
 export const uploadPlugin = ( { dispatch }, action ) => {
 	const { siteId, file } = action;
 
-	dispatch( recordTracksEvent( 'calypso_plugin_upload' ) );
+	dispatch( http( {
+		method: 'POST',
+		path: `/sites/${ siteId }/plugins/new`,
+		apiVersion: '1',
+		formData: [ [ 'zip[]', file ] ],
+	}, action ) );
+};
 
-	dispatch(
-		http(
-			{
-				method: 'POST',
-				path: `/sites/${ siteId }/plugins/new`,
-				apiVersion: '1',
-				formData: [ [ 'zip[]', file ] ],
-			},
-			action
-		)
-	);
+const showSuccessNotice = ( dispatch, { name } ) => {
+	dispatch( successNotice(
+		translate( "You've successfully uploaded the %(name)s plugin.", {
+			args: { name }
+		} ),
+		{ duration: 5000 }
+	) );
 };
 
 const showErrorNotice = ( dispatch, error ) => {
 	const knownErrors = {
 		exists: translate( 'This plugin is already installed on your site.' ),
 		'too large': translate( 'The plugin zip file must be smaller than 10MB.' ),
-		incompatible: translate( 'The uploaded file is not a compatible plugin.' ),
-		unsupported_mime_type: translate( 'The uploaded file is not a valid zip.' ),
+		incompatible: translate( 'Not a compatible plugin.' ),
+		unsupported_mime_type: translate( 'Not a valid zip file.' ),
 	};
 	const errorString = toLower( error.error + error.message );
 	const knownError = find( knownErrors, ( v, key ) => includes( errorString, key ) );
@@ -56,65 +52,43 @@ const showErrorNotice = ( dispatch, error ) => {
 		return;
 	}
 	if ( error.error ) {
-		dispatch(
-			errorNotice(
-				translate( 'Upload problem: %(error)s.', {
-					args: { error: error.error },
-				} )
-			)
-		);
+		dispatch( errorNotice( translate( 'Upload problem: %(error)s.', {
+			args: { error: error.error }
+		} ) ) );
 		return;
 	}
 	dispatch( errorNotice( translate( 'Problem installing the plugin.' ) ) );
 };
 
-export const uploadComplete = ( { dispatch, getState }, { siteId }, data ) => {
+export const uploadComplete = ( { dispatch }, { siteId }, next, data ) => {
 	const { slug: pluginId } = data;
-	const state = getState();
-	const site = getSite( state, siteId );
-
-	dispatch(
-		recordTracksEvent( 'calypso_plugin_upload_complete', {
-			plugin_id: pluginId,
-		} )
-	);
-
 	dispatch( completePluginUpload( siteId, pluginId ) );
-
-	/*
-	 * Adding plugin to legacy flux store provides data for plugin page
-	 * and displays a success message.
-	 */
-	Dispatcher.handleServerAction( {
-		type: 'RECEIVE_INSTALLED_PLUGIN',
-		action: 'PLUGIN_UPLOAD',
-		site,
-		plugin: data,
-		data,
+	dispatch( {
+		type: PLUGIN_INSTALL_REQUEST_SUCCESS,
+		siteId,
+		pluginId,
+		data
 	} );
+
+	showSuccessNotice( dispatch, data );
 };
 
-export const receiveError = ( { dispatch }, { siteId }, error ) => {
-	dispatch(
-		recordTracksEvent( 'calypso_plugin_upload_error', {
-			error_code: error.error,
-			error_message: error.message,
-		} )
-	);
-
+export const receiveError = ( { dispatch }, { siteId }, next, error ) => {
 	showErrorNotice( dispatch, error );
 	dispatch( pluginUploadError( siteId, error ) );
 };
 
-export const updateUploadProgress = ( { dispatch }, { siteId }, { loaded, total } ) => {
-	const progress = total ? loaded / total * 100 : total;
+export const updateUploadProgress = ( { dispatch }, { siteId }, next, { loaded, total } ) => {
+	const progress = total ? ( loaded / total ) * 100 : total;
 	dispatch( updatePluginUploadProgress( siteId, progress ) );
 };
 
 export default {
-	[ PLUGIN_UPLOAD ]: [
-		dispatchRequest( uploadPlugin, uploadComplete, receiveError, {
-			onProgress: updateUploadProgress,
-		} ),
-	],
+	[ PLUGIN_UPLOAD ]: [ dispatchRequest(
+		uploadPlugin,
+		uploadComplete,
+		receiveError,
+		updateUploadProgress
+	) ]
 };
+

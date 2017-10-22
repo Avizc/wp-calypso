@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { cloneElement, Component } from 'react';
+import { cloneElement, Component, PropTypes } from 'react';
 import { Container } from 'flux/utils';
-import { pick } from 'lodash';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -23,7 +19,7 @@ class ShortcodeData extends Component {
 		const { siteId, shortcode } = props;
 
 		return {
-			data: ShortcodesStore.get( siteId, shortcode ),
+			data: ShortcodesStore.get( siteId, shortcode )
 		};
 	}
 
@@ -37,11 +33,11 @@ class ShortcodeData extends Component {
 ShortcodeData.propTypes = {
 	siteId: PropTypes.number.isRequired,
 	shortcode: PropTypes.string.isRequired,
-	filterRenderResult: PropTypes.func,
+	filterRenderResult: PropTypes.func
 };
 
 ShortcodeData.defaultProps = {
-	filterRenderResult: props => props,
+	filterRenderResult: ( props ) => props
 };
 
 export default Container.create( ShortcodeData, { withProps: true } );

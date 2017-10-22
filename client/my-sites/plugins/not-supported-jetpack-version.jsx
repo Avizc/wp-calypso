@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -15,11 +11,12 @@ import { localize } from 'i18n-calypso';
 import config from 'config';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { warningNotice } from 'state/notices/actions';
+
 import {
 	isJetpackSite,
 	getSiteAdminUrl,
 	getSiteDomain,
-	siteHasMinimumJetpackVersion,
+	siteHasMinimumJetpackVersion
 } from 'state/sites/selectors';
 
 class NonSupportedJetpackVersionNotice extends Component {
@@ -37,7 +34,7 @@ class NonSupportedJetpackVersionNotice extends Component {
 		minimumJetpackVersionFailed,
 		siteId,
 		translate,
-		triggerNotice,
+		triggerNotice
 	} ) {
 		if ( minimumJetpackVersionFailed ) {
 			const jetpackMinVersion = config( 'jetpack_min_version' );
@@ -47,14 +44,14 @@ class NonSupportedJetpackVersionNotice extends Component {
 					{
 						args: {
 							version: jetpackMinVersion,
-							site: domain,
-						},
+							site: domain
+						}
 					}
-				),
-				{
+				), {
 					button: translate( 'Update now' ),
 					href: adminUrl,
 					id: `allSitesNotOnMinJetpackVersion-${ jetpackMinVersion }-${ siteId }`,
+					displayOnNextPage: true
 				}
 			);
 		}
@@ -80,12 +77,11 @@ export default connect(
 			siteId: selectedSiteId,
 			adminUrl: getSiteAdminUrl( state, selectedSiteId, 'plugins.php?plugin_status=upgrade' ),
 			domain: getSiteDomain( state, selectedSiteId ),
-			minimumJetpackVersionFailed:
-				!! isJetpackSite( state, selectedSiteId ) &&
-				! siteHasMinimumJetpackVersion( state, selectedSiteId ),
+			minimumJetpackVersionFailed: !! isJetpackSite( state, selectedSiteId ) &&
+				! siteHasMinimumJetpackVersion( state, selectedSiteId )
 		};
 	},
 	{
-		triggerNotice: warningNotice,
+		triggerNotice: warningNotice
 	}
 )( localize( NonSupportedJetpackVersionNotice ) );

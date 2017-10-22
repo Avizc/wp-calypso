@@ -1,4 +1,3 @@
-/** @format */
 export const DEFAULT_POST_QUERY = {
 	context: 'display',
 	http_envelope: false,
@@ -11,7 +10,7 @@ export const DEFAULT_POST_QUERY = {
 	type: 'post',
 	status: 'publish',
 	sticky: 'include',
-	search: '',
+	search: ''
 };
 
 export const DEFAULT_NEW_POST_VALUES = {
@@ -23,5 +22,5 @@ export const DEFAULT_NEW_POST_VALUES = {
 	password: '',
 	type: 'post',
 	parent: 0,
-	format: 'default',
+	format: 'default'
 };

@@ -1,4 +1,3 @@
-/** @format */
 export const DEFAULT_TERM_QUERY = {
 	context: 'display',
 	http_envelope: false,
@@ -8,5 +7,5 @@ export const DEFAULT_TERM_QUERY = {
 	page: 1,
 	search: '',
 	order: 'ASC',
-	order_by: 'name',
+	order_by: 'name'
 };

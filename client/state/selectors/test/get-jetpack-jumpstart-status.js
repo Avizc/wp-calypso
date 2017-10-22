@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,26 +10,26 @@ import { getJetpackJumpstartStatus } from '../';
 import { items as ITEMS_FIXTURE } from './fixtures/jetpack-jumpstart';
 
 describe( 'getJetpackJumpstartStatus()', () => {
-	test( 'should return jumpstart status for a known site', () => {
+	it( 'should return jumpstart status for a known site', () => {
 		const stateIn = {
 				jetpack: {
 					jumpstart: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 12345678;
 		const output = getJetpackJumpstartStatus( stateIn, siteId );
 		expect( output ).to.eql( 'jumpstart_activated' );
 	} );
 
-	test( 'should return null for an unknown site', () => {
+	it( 'should return null for an unknown site', () => {
 		const stateIn = {
 				jetpack: {
 					jumpstart: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 88888888;
 		const output = getJetpackJumpstartStatus( stateIn, siteId );

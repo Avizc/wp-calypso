@@ -1,17 +1,11 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { mergeHandlers } from 'state/action-watchers/utils';
-import config from 'config';
 import activity from './activity';
 import automatedTransfer from './automated-transfer';
 import blogStickers from './blog-stickers';
 import comments from './comments';
-import commentsTree from './comments-tree';
-import jitm from './jitm';
 import media from './media';
 import plugins from './plugins';
 import posts from './posts';
@@ -22,10 +16,8 @@ export default mergeHandlers(
 	automatedTransfer,
 	blogStickers,
 	comments,
-	commentsTree,
-	config.isEnabled( 'jitms' ) ? jitm : null,
 	media,
 	plugins,
 	posts,
-	simplePayments
+	simplePayments,
 );

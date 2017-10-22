@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 export function getSurveyVertical( state ) {
 	return get( state, 'signup.steps.survey.vertical', '' );

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -23,6 +20,8 @@ const SiteSettingsGeneral = ( { site } ) => {
 	);
 };
 
-export default connect( state => ( {
-	site: getSelectedSite( state ),
-} ) )( SiteSettingsGeneral );
+export default connect(
+	( state ) => ( {
+		site: getSelectedSite( state ),
+	} )
+)( SiteSettingsGeneral );

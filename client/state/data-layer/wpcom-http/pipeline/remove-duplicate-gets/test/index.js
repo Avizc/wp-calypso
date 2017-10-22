@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -53,74 +51,81 @@ const postLike = {
 const cp = o => ( { ...o } );
 
 describe( '#buildKey', () => {
-	test( 'should collapse "duplicate" requests', () => {
-		const duplicates = [
-			[
-				{ path: '/', apiNamespace: 'wpcom/v2', query: { id: 1, limit: 5 } },
-				{ path: '/', apiNamespace: 'wpcom/v2', query: { limit: 5, id: 1 } },
-			],
-			[ { path: '/' }, { path: '/', query: undefined } ],
-			[ { path: '/' }, { path: '/', query: {} } ],
-			[ { path: '/' }, { path: '/', apiNamespace: undefined } ],
-			[ { path: '/', onSuccess: succeeder }, { path: '/', onSuccess: filler } ],
-		];
+	it( 'should collapse "duplicate" requests', () => {
+		const duplicates = [ [
+			{ path: '/', apiNamespace: 'wpcom/v2', query: { id: 1, limit: 5 } },
+			{ path: '/', apiNamespace: 'wpcom/v2', query: { limit: 5, id: 1 } },
+		], [
+			{ path: '/' },
+			{ path: '/', query: undefined },
+		], [
+			{ path: '/' },
+			{ path: '/', query: {} },
+		], [
+			{ path: '/' },
+			{ path: '/', apiNamespace: undefined }
+		], [
+			{ path: '/', onSuccess: succeeder },
+			{ path: '/', onSuccess: filler },
+		] ];
 
 		duplicates.forEach( ( [ a, b ] ) => expect( buildKey( a ) ).to.equal( buildKey( b ) ) );
 	} );
 
-	test( 'should differentiate "unique" requests', () => {
-		const uniques = [
-			[ { path: '/', apiNamespace: 'wp/v1' }, { path: '/', apiNamespace: 'wpcom/v1' } ],
-			[ { path: '/', apiNamespace: 'wp/v1' }, { path: '/', apiVersion: 'wp/v1' } ],
-			[ { path: '/' }, { path: '/a' } ],
-			[ { path: '/', query: { id: 1 } }, { path: '/', query: { id: 2 } } ],
-		];
+	it( 'should differentiate "unique" requests', () => {
+		const uniques = [ [
+			{ path: '/', apiNamespace: 'wp/v1' },
+			{ path: '/', apiNamespace: 'wpcom/v1' },
+		], [
+			{ path: '/', apiNamespace: 'wp/v1' },
+			{ path: '/', apiVersion: 'wp/v1' },
+		], [
+			{ path: '/' },
+			{ path: '/a' },
+		], [
+			{ path: '/', query: { id: 1 } },
+			{ path: '/', query: { id: 2 } },
+		] ];
 
 		uniques.forEach( ( [ a, b ] ) => expect( buildKey( a ) ).to.not.equal( buildKey( b ) ) );
 	} );
 } );
 
 describe( '#addResponder', () => {
-	test( 'should add an `onFailure` action to an empty list', () => {
+	it( 'should add an `onFailure` action to an empty list', () => {
 		const union = addResponder( {}, { onFailure: cp( failer ) } );
 
 		expect( union.failures ).to.eql( [ failer ] );
 		expect( union.successes ).to.be.empty;
 	} );
 
-	test( 'should add an `onSuccess` action to an empty list', () => {
+	it( 'should add an `onSuccess` action to an empty list', () => {
 		const union = addResponder( {}, { onSuccess: cp( succeeder ) } );
 
 		expect( union.failures ).to.be.empty;
 		expect( union.successes ).to.eql( [ succeeder ] );
 	} );
 
-	test( 'should add a "unique" action to an existing list', () => {
+	it( 'should add a "unique" action to an existing list', () => {
 		const union = addResponder( { successes: [ cp( succeeder ) ] }, { onSuccess: cp( filler ) } );
 
 		expect( union.successes ).to.eql( [ succeeder, filler ] );
 	} );
 
-	test( 'should merge "duplicate" actions to an existing list', () => {
-		const union = addResponder(
-			{ successes: [ cp( succeeder ) ] },
-			{ onSuccess: cp( succeeder ) }
-		);
+	it( 'should merge "duplicate" actions to an existing list', () => {
+		const union = addResponder( { successes: [ cp( succeeder ) ] }, { onSuccess: cp( succeeder ) } );
 
 		expect( union.successes ).to.eql( [ succeeder ] );
 	} );
 
-	test( 'should add both `onSuccess` and `onFailure`', () => {
-		const union = addResponder(
-			{
-				failures: [ cp( failer ) ],
-				successes: [ cp( succeeder ) ],
-			},
-			{
-				onFailure: cp( filler ),
-				onSuccess: cp( filler ),
-			}
-		);
+	it( 'should add both `onSuccess` and `onFailure`', () => {
+		const union = addResponder( {
+			failures: [ cp( failer ) ],
+			successes: [ cp( succeeder ) ],
+		}, {
+			onFailure: cp( filler ),
+			onSuccess: cp( filler ),
+		} );
 
 		expect( union.failures ).to.eql( [ failer, filler ] );
 		expect( union.successes ).to.eql( [ succeeder, filler ] );
@@ -130,7 +135,7 @@ describe( '#addResponder', () => {
 describe( '#removeDuplicateGets', () => {
 	beforeEach( clearQueue );
 
-	test( 'should pass through non-GET requests', () => {
+	it( 'should pass through non-GET requests', () => {
 		const primed = removeDuplicateGets( { nextRequest: cp( postLike ) } );
 
 		expect( primed.nextRequest ).to.eql( postLike );
@@ -140,13 +145,13 @@ describe( '#removeDuplicateGets', () => {
 		expect( processed.nextRequest ).to.eql( postLike );
 	} );
 
-	test( 'should pass through new requests', () => {
+	it( 'should pass through new requests', () => {
 		const processed = removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
 		expect( processed.nextRequest ).to.eql( getSites );
 	} );
 
-	test( 'should pass through "unique" requests', () => {
+	it( 'should pass through "unique" requests', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
 		const processed = removeDuplicateGets( { nextRequest: cp( getPosts ) } );
@@ -154,7 +159,7 @@ describe( '#removeDuplicateGets', () => {
 		expect( processed.nextRequest ).to.eql( getPosts );
 	} );
 
-	test( 'should drop "duplicate" requests', () => {
+	it( 'should drop "duplicate" requests', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
 		const processed = removeDuplicateGets( { nextRequest: cp( getSites ) } );
@@ -164,9 +169,9 @@ describe( '#removeDuplicateGets', () => {
 } );
 
 describe( '#applyDuplicateHandlers', () => {
-	beforeAll( clearQueue );
+	before( clearQueue );
 
-	test( 'should return new requests', () => {
+	it( 'should return new requests', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
 		const processed = applyDuplicatesHandlers( { originalRequest: cp( getSites ) } );
@@ -175,7 +180,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( processed.successes ).to.eql( [ getSites.onSuccess ] );
 	} );
 
-	test( 'should collapse "duplicate" requests having same responders', () => {
+	it( 'should collapse "duplicate" requests having same responders', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
@@ -185,7 +190,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( processed.successes ).to.eql( [ getSites.onSuccess ] );
 	} );
 
-	test( 'should spread "duplicate" requests having different responders', () => {
+	it( 'should spread "duplicate" requests having different responders', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 		removeDuplicateGets( { nextRequest: { ...getSites, onSuccess: cp( filler ) } } );
 
@@ -195,7 +200,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( processed.successes ).to.eql( [ getSites.onSuccess, filler ] );
 	} );
 
-	test( 'should pass through "unique" requests', () => {
+	it( 'should pass through "unique" requests', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 		removeDuplicateGets( { nextRequest: cp( getPosts ) } );
 
@@ -210,7 +215,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( posts.successes ).to.eql( [ succeeder ] );
 	} );
 
-	test( 'should pass through "duplicate" requests which never overlap', () => {
+	it( 'should pass through "duplicate" requests which never overlap', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
 		const first = applyDuplicatesHandlers( { originalRequest: cp( getSites ) } );
@@ -228,7 +233,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( second.successes ).to.eql( [ succeeder ] );
 	} );
 
-	test( 'should not collapse non-GET requests', () => {
+	it( 'should not collapse non-GET requests', () => {
 		removeDuplicateGets( { nextRequest: cp( postLike ) } );
 		removeDuplicateGets( { nextRequest: cp( postLike ) } );
 
@@ -242,7 +247,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( processed.successes ).to.eql( [ postLike.onSuccess ] );
 	} );
 
-	test( 'should not wipe out previous responders in the pipeline', () => {
+	it( 'should not wipe out previous responders in the pipeline', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 
@@ -256,7 +261,7 @@ describe( '#applyDuplicateHandlers', () => {
 		expect( processed.successes ).to.eql( [ filler, getSites.onSuccess ] );
 	} );
 
-	test( 'should combine previous responders with "duplicate" responders in the pipeline', () => {
+	it( 'should combine previous responders with "duplicate" responders in the pipeline', () => {
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 		removeDuplicateGets( { nextRequest: cp( getSites ) } );
 

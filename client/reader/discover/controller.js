@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -50,7 +49,7 @@ const exported = {
 					basePath,
 					fullAnalyticsPageTitle,
 					ANALYTICS_PAGE_TITLE,
-					mcKey
+					mcKey,
 				) }
 				onUpdatesShown={ trackUpdatesLoaded.bind( null, mcKey ) }
 				suppressSiteNameLink={ true }
@@ -61,7 +60,7 @@ const exported = {
 				featuredStore={ featuredStore }
 			/>,
 			document.getElementById( 'primary' ),
-			context.store
+			context.store,
 		);
 	},
 };

@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { localize } from 'i18n-calypso';
 import Gridicon from 'gridicons';
@@ -17,14 +15,16 @@ const ReaderFullPostBack = ( { onBackClick, translate } ) => {
 		<div className="reader-full-post__back-container">
 			<Button className="reader-full-post__back" borderless compact onClick={ onBackClick }>
 				<Gridicon icon="arrow-left" />
-				<span className="reader-full-post__back-label">{ translate( 'Back' ) }</span>
+				<span className="reader-full-post__back-label">
+					{ translate( 'Back' ) }
+				</span>
 			</Button>
 		</div>
 	);
 };
 
 ReaderFullPostBack.propTypes = {
-	onBackClick: PropTypes.func.isRequired,
+	onBackClick: React.PropTypes.func.isRequired,
 };
 
 export default localize( ReaderFullPostBack );

@@ -3,9 +3,9 @@ $autobar-height: 20px;
 
 // The WordPress.com Masterbar
 .masterbar {
-	background: var( --masterbar-background-color );
-	border-bottom: 1px solid var( --masterbar-border-color );
-	color: var( --masterbar-color );
+	background: $masterbar-color;
+	border-bottom: 1px solid darken( $masterbar-color, 4% );
+	color: $white;
 	font-size: 16px;
 	display: flex;
 	height: $masterbar-height;
@@ -33,42 +33,12 @@ $autobar-height: 20px;
 	}
 }
 
-.pride .masterbar {
-	background: linear-gradient(
-		to bottom,
-		#e24c3e 0%,
-		#e24c3e 16.66666666666667%,
-		#f47d3b 16.66666666666667%,
-		#f47d3b 33.33333333333334%,
-		#fdb813 33.33333333333334%,
-		#fdb813 50%,
-		#74bb5d 50%,
-		#74bb5d 66.66666666666667%,
-		#38a6d7 66.66666666666667%,
-		#38a6d7 83.33333333333333%,
-		#8c7ab8 83.33333333333333%,
-		#8c7ab8 100%);
-
-	>.masterbar__item:not( .masterbar__item-title ),
-	>.masterbar__notifications,
-	>.masterbar__login-links a {
-		&:not( .is-active ) {
-			background: rgba( $blue-wordpress, 0.85 );
-		}
-
-		&:hover,
-		&:focus {
-			background: lighten( $masterbar-color, 5% );
-		}
-	}
-}
-
 .masterbar__item {
 	flex: 0 1 auto;
 	display: flex;
 		align-items: center;
 	position: relative;
-	color: var( --masterbar-color );
+	color: $white;
 	font-size: 14px;
 	height: $masterbar-height;
 	line-height: $masterbar-height;
@@ -78,7 +48,7 @@ $autobar-height: 20px;
 	transition: all 150ms ease-in;
 
 	&:visited {
-		color: var( --masterbar-color );
+		color: $white;
 	}
 
 	&[href] {
@@ -86,7 +56,7 @@ $autobar-height: 20px;
 	}
 
 	.masterbar__item-content {
-		color: var( --masterbar-color );
+		color: $white;
 	}
 
 	.gridicon + .masterbar__item-content {
@@ -95,13 +65,13 @@ $autobar-height: 20px;
 
 	&:hover,
 	&:focus {
-		background: var( --masterbar-item-hover-background );
-		color: var( --masterbar-color );
+		background: lighten( $masterbar-color, 5% );
+		color: $white;
 		outline: 0;
 	}
 
 	&.is-active {
-		background: var( --masterbar-item-active-background );
+		background: darken( $masterbar-color, 17% );
 	}
 
 	.is-support-user &.is-active {
@@ -135,7 +105,7 @@ $autobar-height: 20px;
 
 	@include breakpoint( "<480px" ) {
 		& {
-			padding-right: 14px;
+			margin-right: 10px;
 		}
 
 		.masterbar__item-content {
@@ -170,13 +140,13 @@ $autobar-height: 20px;
 .masterbar__item-new {
 	background: $white;
 	border-radius: 3px;
-	color: var( --masterbar-item-new-color );
+	color: $blue-wordpress;
 	height: 36px;
 	margin: 5px 8px;
 	transition: all 0.2s ease-out;
 
 	&:visited {
-		color: var( --masterbar-item-new-color );
+		color: $blue-wordpress;
 	}
 
 	&.is-active {
@@ -186,11 +156,11 @@ $autobar-height: 20px;
 	&:hover,
 	&:focus {
 		background: $gray-light;
-		color: var( --masterbar-item-new-color );
+		color: $blue-wordpress;
 	}
 
 	.masterbar__item-content {
-		color: var( --masterbar-item-new-color );
+		color: $blue-wordpress;
 		display: none;
 
 		@include breakpoint( ">960px" ) {
@@ -321,14 +291,11 @@ $autobar-height: 20px;
 .masterbar__login-links {
 	display: flex;
 	margin-left: auto;
+	margin-right: 5px;
 
 	.masterbar__item-content {
 		display: block;
 		padding-left: 0;
-	}
-
-	.masterbar__item:last-child {
-			padding-right: 20px;
 	}
 }
 

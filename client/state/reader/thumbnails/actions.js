@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -94,7 +93,7 @@ export const requestThumbnail = embedUrl => dispatch => {
 				},
 				error => {
 					dispatch( requestFailure( embedUrl, error ) );
-				}
+				},
 			);
 		}
 		default:

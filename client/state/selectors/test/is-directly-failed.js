@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,7 +6,6 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { isDirectlyFailed } from '../';
 import {
 	STATUS_ERROR,
 	STATUS_INITIALIZING,
@@ -16,23 +13,25 @@ import {
 	STATUS_UNINITIALIZED,
 } from 'state/help/directly/constants';
 
+import { isDirectlyFailed } from '../';
+
 describe( 'isDirectlyFailed()', () => {
-	test( 'should be false when uninitialized', () => {
+	it( 'should be false when uninitialized', () => {
 		const state = { help: { directly: { status: STATUS_UNINITIALIZED } } };
 		expect( isDirectlyFailed( state ) ).to.be.false;
 	} );
 
-	test( 'should be false when initializing', () => {
+	it( 'should be false when initializing', () => {
 		const state = { help: { directly: { status: STATUS_INITIALIZING } } };
 		expect( isDirectlyFailed( state ) ).to.be.false;
 	} );
 
-	test( 'should be false when ready', () => {
+	it( 'should be false when ready', () => {
 		const state = { help: { directly: { status: STATUS_READY } } };
 		expect( isDirectlyFailed( state ) ).to.be.false;
 	} );
 
-	test( 'should be true when failed', () => {
+	it( 'should be true when failed', () => {
 		const state = { help: { directly: { status: STATUS_ERROR } } };
 		expect( isDirectlyFailed( state ) ).to.be.true;
 	} );

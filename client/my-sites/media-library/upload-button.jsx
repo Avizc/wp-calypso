@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import ReactDom from 'react-dom';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { noop, uniq } from 'lodash';
+import noop from 'lodash/noop';
 import classNames from 'classnames';
 import page from 'page';
 
@@ -17,15 +13,16 @@ import page from 'page';
 import analytics from 'lib/analytics';
 import MediaActions from 'lib/media/actions';
 import MediaUtils from 'lib/media/utils';
+import uniq from 'lodash/uniq';
 import { VideoPressFileTypes } from 'lib/media/constants';
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaLibraryUploadButton',
 
 	propTypes: {
-		site: PropTypes.object,
-		onAddMedia: PropTypes.func,
-		className: PropTypes.string,
+		site: React.PropTypes.object,
+		onAddMedia: React.PropTypes.func,
+		className: React.PropTypes.string,
 	},
 
 	getDefaultProps: function() {
@@ -68,9 +65,7 @@ export default React.createClass( {
 		}
 		const allowedFileTypesForSite = MediaUtils.getAllowedFileTypesForSite( this.props.site );
 
-		return uniq( allowedFileTypesForSite.concat( VideoPressFileTypes ) )
-			.map( type => `.${ type }` )
-			.join();
+		return uniq( allowedFileTypesForSite.concat( VideoPressFileTypes ) ).map( ( type ) => `.${type}` ).join();
 	},
 
 	render: function() {
@@ -85,9 +80,8 @@ export default React.createClass( {
 					multiple
 					onChange={ this.uploadFiles }
 					onClick={ this.onClick }
-					className="media-library__upload-button-input"
-				/>
+					className="media-library__upload-button-input" />
 			</form>
 		);
-	},
+	}
 } );

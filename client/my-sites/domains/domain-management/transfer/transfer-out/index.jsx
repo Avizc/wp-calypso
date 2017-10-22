@@ -1,14 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import page from 'page';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { omit } from 'lodash';
-import { localize } from 'i18n-calypso';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies
@@ -24,17 +19,20 @@ import Locked from './locked.jsx';
 import Unlocked from './unlocked.jsx';
 import TransferProhibited from './transfer-prohibited.jsx';
 
-class Transfer extends React.Component {
-	static propTypes = {
-		domains: PropTypes.object.isRequired,
-		selectedDomainName: PropTypes.string.isRequired,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ).isRequired,
-		wapiDomainInfo: PropTypes.object.isRequired,
-	};
+const Transfer = React.createClass( {
+	propTypes: {
+		domains: React.PropTypes.object.isRequired,
+		selectedDomainName: React.PropTypes.string.isRequired,
+		selectedSite: React.PropTypes.oneOfType( [
+			React.PropTypes.object,
+			React.PropTypes.bool
+		] ).isRequired,
+		wapiDomainInfo: React.PropTypes.object.isRequired
+	},
 
 	renderSection() {
-		const { locked, transferProhibited } = this.props.wapiDomainInfo.data;
-		const { isPendingIcannVerification, currentUserCanManage } = getSelectedDomain( this.props );
+		const { locked, transferProhibited } = this.props.wapiDomainInfo.data,
+			{ isPendingIcannVerification, currentUserCanManage } = getSelectedDomain( this.props );
 		let section = null;
 
 		if ( ! currentUserCanManage ) {
@@ -50,34 +48,37 @@ class Transfer extends React.Component {
 		}
 
 		return React.createElement( section, omit( this.props, [ 'children' ] ) );
-	}
+	},
 
 	render() {
 		if ( this.isDataLoading() ) {
-			return <DomainMainPlaceholder goBack={ this.goToEdit } />;
+			return <DomainMainPlaceholder goBack={ this.goToEdit }/>;
 		}
 
 		return (
 			<Main className="domain-management-transfer">
-				<Header onClick={ this.goToEdit } selectedDomainName={ this.props.selectedDomainName }>
-					{ this.props.translate( 'Transfer Domain' ) }
+				<Header
+					onClick={ this.goToEdit }
+					selectedDomainName={ this.props.selectedDomainName }>
+					{ this.translate( 'Transfer Domain' ) }
 				</Header>
 				{ this.renderSection() }
 			</Main>
 		);
-	}
+	},
 
-	goToEdit = () => {
-		page(
-			paths.domainManagementTransfer( this.props.selectedSite.slug, this.props.selectedDomainName )
-		);
-	};
+	goToEdit() {
+		page( paths.domainManagementTransfer(
+			this.props.selectedSite.slug,
+			this.props.selectedDomainName
+		) );
+	},
 
 	isDataLoading() {
 		return (
 			! this.props.wapiDomainInfo.hasLoadedFromServer || ! this.props.domains.hasLoadedFromServer
 		);
 	}
-}
+} );
 
-export default localize( Transfer );
+export default Transfer;

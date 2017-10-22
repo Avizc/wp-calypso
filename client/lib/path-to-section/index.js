@@ -1,16 +1,15 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import config from 'config';
 import { find, startsWith } from 'lodash';
 
 /**
  * Conditional dependency
  */
-const sections = config( 'project' ) === 'wordpress-com' ? require( 'wordpress-com' ) : null;
+const sections = config( 'project' ) === 'wordpress-com'
+	? require( 'wordpress-com' )
+	: null;
 
 /*
  * wordpress-com-aware implementation where
@@ -22,8 +21,8 @@ const sections = config( 'project' ) === 'wordpress-com' ? require( 'wordpress-c
  */
 export const wpcomImplementation = path => {
 	const match = find( sections, section =>
-		section.paths.some( sectionPath => startsWith( path, sectionPath ) )
-	);
+			section.paths.some( sectionPath =>
+				startsWith( path, sectionPath ) ) );
 
 	return match && match.name;
 };
@@ -39,6 +38,8 @@ export const fallbackImplementation = path => {
 	return match && match[ 0 ];
 };
 
-const pathToSection = sections ? wpcomImplementation : fallbackImplementation;
+const pathToSection = sections
+	? wpcomImplementation
+	: fallbackImplementation;
 
 export default pathToSection;

@@ -1,11 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
 import React from 'react';
 
 /**
@@ -14,14 +9,14 @@ import React from 'react';
 import { isExternal } from 'lib/url';
 import { preload } from 'sections-preload';
 
-const SidebarButton = React.createClass( {
+export default React.createClass( {
 	displayName: 'SidebarButton',
 
 	propTypes: {
-		href: PropTypes.string,
-		onClick: PropTypes.func,
-		preloadSectionName: PropTypes.string,
-		children: PropTypes.node,
+		href: React.PropTypes.string,
+		onClick: React.PropTypes.func,
+		preloadSectionName: React.PropTypes.string,
+		children: React.PropTypes.node
 	},
 
 	_preloaded: false,
@@ -48,10 +43,8 @@ const SidebarButton = React.createClass( {
 				onMouseEnter={ this.preload }
 				data-tip-target={ this.props.tipTarget }
 			>
-				{ this.props.children || this.props.translate( 'Add' ) }
+				{ this.props.children || this.translate( 'Add' ) }
 			</a>
 		);
-	},
+	}
 } );
-
-export default localize( SidebarButton );

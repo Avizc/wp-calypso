@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -16,13 +13,18 @@ import support from 'lib/url/support';
 const FailedPurchaseDetails = ( { failedPurchases, purchases, translate } ) => {
 	const successfulPurchases = purchases.length > 0 && (
 			<div>
-				<p>{ translate( 'These items were added successfully:' ) }</p>
+				<p>
+					{
+						translate(
+							'These items were added successfully:'
+						)
+					}
+				</p>
 				<ul className="checkout-thank-you__failed-purchases-details-list">
 					{ purchases.map( ( item, index ) => {
 						return (
 							<li key={ `purchases-${ index }-${ item.productId }` }>
-								{ item.productName }
-								{ item.meta && `: ${ item.meta }` }
+								{ item.productName }{ item.meta && `: ${ item.meta }` }
 							</li>
 						);
 					} ) }
@@ -31,32 +33,38 @@ const FailedPurchaseDetails = ( { failedPurchases, purchases, translate } ) => {
 			</div>
 		),
 		description = (
-			<div>
-				{ successfulPurchases }
-				<p>{ translate( 'These items could not be added:' ) }</p>
-				<ul className="checkout-thank-you__failed-purchases-details-list">
-					{ failedPurchases.map( ( item, index ) => {
-						return (
-							<li key={ `failed-purchase-${ index }-${ item.productId }` }>
-								{ item.productName }
-								{ item.meta && `: ${ item.meta }` }
-							</li>
-						);
-					} ) }
-				</ul>
-				<p>
-					{ translate(
-						'We added credits to your account, so you can try adding these items again. ' +
-							"If the problem persists, please don't hesitate to {{a}}contact support{{/a}}.",
+		<div>
+			{ successfulPurchases }
+			<p>
+				{
+					translate(
+						'These items could not be added:'
+					)
+				}
+			</p>
+			<ul className="checkout-thank-you__failed-purchases-details-list">
+				{ failedPurchases.map( ( item, index ) => {
+					return (
+						<li key={ `failed-purchase-${ index }-${ item.productId }` }>
+							{ item.productName }{ item.meta && `: ${ item.meta }` }
+						</li>
+					);
+				} ) }
+			</ul>
+			<p>
+				{
+					translate( 'We added credits to your account, so you can try adding these items again. ' +
+						'If the problem persists, please don\'t hesitate to {{a}}contact support{{/a}}.',
 						{
 							components: {
-								a: <a href={ support.CALYPSO_CONTACT } target="_blank" rel="noopener noreferrer" />,
-							},
+								a: <a href={ support.CALYPSO_CONTACT } target="_blank" rel="noopener noreferrer" />
+							}
 						}
-					) }
-				</p>
-			</div>
-		);
+					)
+				}
+			</p>
+		</div>
+	);
 
 	return (
 		<div className="checkout-thank-you__purchase-details-list">
@@ -66,8 +74,7 @@ const FailedPurchaseDetails = ( { failedPurchases, purchases, translate } ) => {
 					description={ description }
 					target="_blank"
 					rel="noopener noreferrer"
-					isRequired
-				/>
+					isRequired />
 			</div>
 		</div>
 	);

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,31 +9,56 @@ import { expect } from 'chai';
 import { isRtl } from '../';
 
 describe( 'isRtl()', () => {
-	test( 'should return null if the value is not known', () => {
-		const result = isRtl( {} );
+	it( 'should return null if there is no current user', () => {
+		const result = isRtl( {
+			currentUser: {
+				id: null
+			}
+		} );
 
 		expect( result ).to.be.null;
 	} );
 
-	test( 'should return true if the localeSlug is RTL language', () => {
+	it( 'should return null if the value is not known', () => {
 		const result = isRtl( {
-			ui: {
-				language: {
-					localeSlug: 'he',
-				},
+			users: {
+				items: {
+					123: { ID: 123 }
+				}
 			},
+			currentUser: {
+				id: 123
+			}
+		} );
+
+		expect( result ).to.be.null;
+	} );
+
+	it( 'should return true if the value is true', () => {
+		const result = isRtl( {
+			users: {
+				items: {
+					123: { ID: 123, isRTL: true }
+				}
+			},
+			currentUser: {
+				id: 123
+			}
 		} );
 
 		expect( result ).to.be.true;
 	} );
 
-	test( 'should return true if the localeSlug is LTR language', () => {
+	it( 'should return false if the value is false', () => {
 		const result = isRtl( {
-			ui: {
-				language: {
-					localeSlug: 'fr',
-				},
+			users: {
+				items: {
+					123: { ID: 123, isRTL: false }
+				}
 			},
+			currentUser: {
+				id: 123
+			}
 		} );
 
 		expect( result ).to.be.false;

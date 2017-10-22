@@ -1,15 +1,12 @@
 /**
  * Internal dependencies
- *
- * @format
  */
+var masking = require( './masking' ),
+	validation = require( './validation');
 
-import masking from './masking';
-import validation from './validation';
-
-export default {
+module.exports = {
 	getCreditCardType: validation.getCreditCardType,
 	maskField: masking.maskField,
 	unmaskField: masking.unmaskField,
-	validateCardDetails: validation.validateCardDetails,
+	validateCardDetails: validation.validateCardDetails
 };

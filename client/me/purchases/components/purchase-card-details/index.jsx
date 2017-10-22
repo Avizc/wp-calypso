@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import page from 'page';
 import { Component } from 'react';
 import { curry } from 'lodash';
@@ -36,8 +33,7 @@ class PurchaseCardDetails extends Component {
 	}
 
 	isDataValid( props = this.props ) {
-		const purchase = getPurchase( props ),
-			{ selectedSite } = props;
+		const purchase = getPurchase( props ), { selectedSite } = props;
 
 		return purchase && selectedSite;
 	}

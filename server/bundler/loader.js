@@ -14,7 +14,6 @@ function getSectionsModule( sections ) {
 			"\tactivateNextLayoutFocus = require( 'state/ui/layout-focus/actions' ).activateNextLayoutFocus,",
 			"\tLoadingError = require( 'layout/error' ),",
 			"\tcontroller = require( 'controller' ),",
-			"\trestoreLastSession = require( 'lib/restore-last-path' ).restoreLastSession,",
 			"\tpreloadHub = require( 'sections-preload' ).hub;",
 			'\n',
 			'var _loadedSections = {};\n'
@@ -81,48 +80,39 @@ function getRequires( sections ) {
 
 function splitTemplate( path, section ) {
 	var pathRegex = getPathRegex( path ),
-		sectionString = JSON.stringify( section ),
-		sectionNameString = JSON.stringify( section.name ),
-		moduleString = JSON.stringify( section.module ),
-		envIdString = JSON.stringify( section.envId ),
 		result;
 
 	result = [
 		'page( ' + pathRegex + ', function( context, next ) {',
-		'	var envId = ' + envIdString + ';',
+		'	var envId = ' + JSON.stringify( section.envId ) + ';',
 		'	if ( envId && envId.indexOf( config( "env_id" ) ) === -1 ) {',
 		'		return next();',
 		'	}',
-		'	if ( _loadedSections[ ' + moduleString + ' ] ) {',
-		'		controller.setSection( ' + sectionString + ' )( context );',
+		'	if ( _loadedSections[ ' + JSON.stringify( section.module ) + ' ] ) {',
+		'		controller.setSection( ' + JSON.stringify( section ) + ' )( context );',
 		'		context.store.dispatch( activateNextLayoutFocus() );',
 		'		return next();',
-		'	}',
-		'	if ( config.isEnabled( "restore-last-location" ) && restoreLastSession( context.path ) ) {',
-		'		return;',
 		'	}',
 		'	context.store.dispatch( { type: "SECTION_SET", isLoading: true } );',
 		'	require.ensure([], function( require ) {',
 		'		context.store.dispatch( { type: "SECTION_SET", isLoading: false } );',
-		'		controller.setSection( ' + sectionString + ' )( context );',
-		'		if ( ! _loadedSections[ ' + moduleString + ' ] ) {',
-		'			require( ' + moduleString + ' )( controller.clientRouter );',
-		'			_loadedSections[ ' + moduleString + ' ] = true;',
+		'		controller.setSection( ' + JSON.stringify( section ) + ' )( context );',
+		'		if ( ! _loadedSections[ ' + JSON.stringify( section.module ) + ' ] ) {',
+		'			require( ' + JSON.stringify( section.module ) + ' )( controller.clientRouter );',
+		'			_loadedSections[ ' + JSON.stringify( section.module ) + ' ] = true;',
 		'		}',
 		'		context.store.dispatch( activateNextLayoutFocus() );',
 		'		next();',
 		'	}, function onError( error ) {',
 		'		if ( ! LoadingError.isRetry() ) {',
-		'			console.warn( error );',
-		'			LoadingError.retry( ' + sectionNameString + ' );',
+		'			LoadingError.retry( ' + JSON.stringify( section.name ) + ' );',
 		'		} else {',
-		'			console.error( error );',
 		'			context.store.dispatch( { type: "SECTION_SET", isLoading: false } );',
-		'			LoadingError.show( ' + sectionNameString + ' );',
+		'			LoadingError.show( ' + JSON.stringify( section.name ) + ' );',
 		'		}',
 		'		return;',
 		'	},',
-		sectionNameString + ' );',
+		JSON.stringify( section.name ) + ' );',
 		'} );\n'
 	];
 
@@ -170,14 +160,10 @@ function singleEnsure( chunkName ) {
 	return result.join( '\n' );
 }
 
-function sectionsWithCSSUrls( sections ) {
-	return sections.map( section => Object.assign( {}, section, section.css && {
-		cssUrls: utils.getCssUrls( section.css )
-	} ) );
-}
-
 module.exports = function( content ) {
-	const sections = require( this.resourcePath );
+	var sections;
+
+	sections = require( this.resourcePath );
 
 	if ( ! Array.isArray( sections ) ) {
 		this.emitError( 'Chunks module is not an array' );
@@ -186,5 +172,5 @@ module.exports = function( content ) {
 
 	this.addDependency( 'page' );
 
-	return getSectionsModule( sectionsWithCSSUrls( sections ) );
+	return getSectionsModule( sections );
 };

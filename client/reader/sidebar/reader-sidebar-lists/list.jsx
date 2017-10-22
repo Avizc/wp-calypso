@@ -1,24 +1,23 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
-import { localize } from 'i18n-calypso';
-import { identity, map } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
+import map from 'lodash/map';
+import { identity } from 'lodash';
+import { localize } from 'i18n-calypso';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import ReaderSidebarListsListItem from './list-item';
 
 export class ReaderSidebarListsList extends React.Component {
 	static propTypes = {
-		lists: PropTypes.array,
-		path: PropTypes.string.isRequired,
-		currentListOwner: PropTypes.string,
-		currentListSlug: PropTypes.string,
-		translate: PropTypes.func,
+		lists: React.PropTypes.array,
+		path: React.PropTypes.string.isRequired,
+		currentListOwner: React.PropTypes.string,
+		currentListSlug: React.PropTypes.string,
+		translate: React.PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -50,7 +49,11 @@ export class ReaderSidebarListsList extends React.Component {
 			);
 		}
 
-		return <div>{ this.renderItems() }</div>;
+		return (
+			<div>
+				{ this.renderItems() }
+			</div>
+		);
 	}
 }
 

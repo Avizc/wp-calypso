@@ -1,20 +1,17 @@
+
 /**
  * External dependencies
- *
- * @format
  */
-
-import { find } from 'lodash';
-import { localize } from 'i18n-calypso';
-import React from 'react';
+var React = require( 'react' ),
+	find = require( 'lodash/find' );
 
 /**
  * Internal dependencies
  */
-import { isPlan } from 'lib/products-values';
-import PayButton from './pay-button';
-import PaymentBox from './payment-box';
-import TermsOfService from './terms-of-service';
+var isPlan = require( 'lib/products-values' ).isPlan,
+	PayButton = require( './pay-button' ),
+	PaymentBox = require( './payment-box' ),
+	TermsOfService = require( './terms-of-service' );
 
 const FreeTrialConfirmationBox = React.createClass( {
 	content() {
@@ -22,21 +19,23 @@ const FreeTrialConfirmationBox = React.createClass( {
 			<form onSubmit={ this.props.onSubmit }>
 				<div className="payment-box-section">
 					<h6>
-						{ this.props.translate( 'Get started with %(productName)s', {
-							args: { productName: this.getProductName() },
-						} ) }
+					{
+						this.translate( 'Get started with %(productName)s', { args: { productName: this.getProductName() } } )
+					}
 					</h6>
 
 					<span>
-						{ this.props.translate(
-							'Enjoy your free trial with no strings attached: your site will simply revert to the free plan when the period is over.'
-						) }
+					{
+						this.translate( 'Enjoy your free trial with no strings attached: your site will simply revert to the free plan when the period is over.' )
+					}
 					</span>
 				</div>
 
 				<TermsOfService />
 				<div className="payment-box-actions">
-					<PayButton cart={ this.props.cart } transactionStep={ this.props.transactionStep } />
+					<PayButton
+						cart={ this.props.cart }
+						transactionStep={ this.props.transactionStep } />
 				</div>
 			</form>
 		);
@@ -49,8 +48,12 @@ const FreeTrialConfirmationBox = React.createClass( {
 	},
 
 	render() {
-		return <PaymentBox classSet="credits-payment-box">{ this.content() }</PaymentBox>;
-	},
+		return (
+			<PaymentBox classSet="credits-payment-box">
+				{ this.content() }
+			</PaymentBox>
+		);
+	}
 } );
 
-export default localize( FreeTrialConfirmationBox );
+module.exports = FreeTrialConfirmationBox;

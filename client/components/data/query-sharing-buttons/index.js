@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -43,13 +39,13 @@ class QuerySharingButtons extends Component {
 QuerySharingButtons.propTypes = {
 	siteId: PropTypes.number,
 	requestingSharingButtons: PropTypes.bool,
-	requestSharingButtons: PropTypes.func,
+	requestSharingButtons: PropTypes.func
 };
 
 export default connect(
 	( state, { siteId } ) => {
 		return {
-			requestingSharingButtons: isRequestingSharingButtons( state, siteId ),
+			requestingSharingButtons: isRequestingSharingButtons( state, siteId )
 		};
 	},
 	{ requestSharingButtons }

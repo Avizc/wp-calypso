@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -14,11 +12,11 @@ import { getRewindStatusError } from 'state/selectors';
 const siteId = 77203074;
 
 describe( 'getRewindStatusError()', () => {
-	test( 'should return null if no error exists for a site', () => {
+	it( 'should return null if no error exists for a site', () => {
 		const stateNoSite = deepFreeze( {
 			activityLog: {
-				rewindStatusError: {},
-			},
+				rewindStatusError: {}
+			}
 		} );
 		expect( getRewindStatusError( stateNoSite, siteId ) ).to.be.null;
 
@@ -26,13 +24,13 @@ describe( 'getRewindStatusError()', () => {
 			activityLog: {
 				rewindStatusError: {
 					[ siteId ]: null,
-				},
-			},
+				}
+			}
 		} );
 		expect( getRewindStatusError( stateNoError, siteId ) ).to.be.null;
 	} );
 
-	test( 'should return an existing error for a site', () => {
+	it( 'should return an existing error for a site', () => {
 		const error = {
 			error: 'vp_api_error',
 			message: 'No site found.',
@@ -42,8 +40,8 @@ describe( 'getRewindStatusError()', () => {
 			activityLog: {
 				rewindStatusError: {
 					[ siteId ]: error,
-				},
-			},
+				}
+			}
 		} );
 
 		expect( getRewindStatusError( state, siteId ) ).to.equal( error );

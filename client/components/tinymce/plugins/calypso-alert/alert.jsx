@@ -1,11 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
 import React from 'react';
 
 /**
@@ -14,13 +9,13 @@ import React from 'react';
 import Dialog from 'components/dialog';
 import FormButton from 'components/forms/form-button';
 
-const Alert = React.createClass( {
+export default React.createClass( {
 	displayName: 'Alert',
 
 	propTypes: {
-		isVisible: PropTypes.bool.isRequired,
-		onClose: PropTypes.func.isRequired,
-		message: PropTypes.string.isRequired,
+		isVisible: React.PropTypes.bool.isRequired,
+		onClose: React.PropTypes.func.isRequired,
+		message: React.PropTypes.string.isRequired,
 	},
 
 	splitMessage() {
@@ -32,11 +27,11 @@ const Alert = React.createClass( {
 		return [
 			<FormButton
 				isPrimary={ false }
-				aria-label={ this.props.translate( 'Dismiss alert message' ) }
+				aria-label={ this.translate( 'Dismiss alert message' ) }
 				onClick={ this.props.onClose }
 			>
-				{ this.props.translate( 'OK' ) }
-			</FormButton>,
+				{ this.translate( 'OK' ) }
+			</FormButton>
 		];
 	},
 
@@ -51,7 +46,5 @@ const Alert = React.createClass( {
 				{ this.splitMessage() }
 			</Dialog>
 		);
-	},
+	}
 } );
-
-export default localize( Alert );

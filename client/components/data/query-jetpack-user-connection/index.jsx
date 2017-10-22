@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -20,7 +16,7 @@ class QueryJetpackUserConnection extends Component {
 		// Connected props
 		isRequesting: PropTypes.bool,
 		requestJetpackUserConnectionData: PropTypes.func.isRequired,
-	};
+	}
 
 	componentDidMount() {
 		this.request( this.props );

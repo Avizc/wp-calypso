@@ -1,30 +1,22 @@
-/**
- * @format
- * @jest-environment jsdom
- */
-
-/**
- * External dependencies
- */
+import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import React from 'react';
 import { spy } from 'sinon';
 
-/**
- * Internal dependencies
- */
-import { PageViewTracker } from '../';
+import useFakeDom from 'test/helpers/use-fake-dom';
 import { useFakeTimers } from 'test/helpers/use-sinon';
+
+import { PageViewTracker } from '../';
 
 describe( 'PageViewTracker', () => {
 	let clock;
 
+	useFakeDom();
 	useFakeTimers( fakeClock => {
-		clock = fakeClock;
+		clock = fakeClock
 	} );
 
-	test( 'should immediately fire off event when given no delay', () => {
+	it( 'should immediately fire off event when given no delay', () => {
 		const recorder = spy();
 
 		mount( <PageViewTracker path="/test" title="test" recorder={ recorder } /> );
@@ -32,7 +24,7 @@ describe( 'PageViewTracker', () => {
 		expect( recorder ).to.have.been.calledOnce;
 	} );
 
-	test( 'should wait for the delay before firing off the event', () => {
+	it( 'should wait for the delay before firing off the event', () => {
 		const recorder = spy();
 
 		mount( <PageViewTracker delay={ 500 } path="/test" title="test" recorder={ recorder } /> );
@@ -41,10 +33,10 @@ describe( 'PageViewTracker', () => {
 
 		clock.tick( 500 );
 
-		expect( recorder ).to.have.been.calledOnce;
+		expect( recorder ).to.have.been.calledOnce
 	} );
 
-	test( 'should pass the appropriate event information', () => {
+	it( 'should pass the appropriate event information', () => {
 		const recorder = spy();
 
 		mount( <PageViewTracker path="/test" title="test" recorder={ recorder } /> );

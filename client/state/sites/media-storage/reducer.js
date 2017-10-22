@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { pick } from 'lodash';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -28,12 +25,9 @@ import { itemsSchema } from './schema';
 export function items( state = {}, action ) {
 	switch ( action.type ) {
 		case SITE_MEDIA_STORAGE_RECEIVE:
-			const mediaStorage = pick( action.mediaStorage, [
-				'max_storage_bytes',
-				'storage_used_bytes',
-			] );
+			const mediaStorage = pick( action.mediaStorage, [ 'max_storage_bytes', 'storage_used_bytes' ] );
 			return Object.assign( {}, state, {
-				[ action.siteId ]: mediaStorage,
+				[ action.siteId ]: mediaStorage
 			} );
 	}
 	return state;
@@ -53,7 +47,7 @@ export function fetchingItems( state = {}, action ) {
 		case SITE_MEDIA_STORAGE_REQUEST_SUCCESS:
 		case SITE_MEDIA_STORAGE_REQUEST_FAILURE:
 			return Object.assign( {}, state, {
-				[ action.siteId ]: action.type === SITE_MEDIA_STORAGE_REQUEST,
+				[ action.siteId ]: action.type === SITE_MEDIA_STORAGE_REQUEST
 			} );
 	}
 	return state;
@@ -61,5 +55,5 @@ export function fetchingItems( state = {}, action ) {
 
 export default combineReducers( {
 	items,
-	fetchingItems,
+	fetchingItems
 } );

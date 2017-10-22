@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -23,7 +19,10 @@ import SidebarNavigation from 'my-sites/sidebar-navigation';
 import JetpackDevModeNotice from './jetpack-dev-mode-notice';
 import Placeholder from 'my-sites/site-settings/placeholder';
 
-const SiteSettingsComponent = ( { siteId, translate } ) => {
+const SiteSettingsComponent = ( {
+	siteId,
+	translate
+} ) => {
 	if ( ! siteId ) {
 		return <Placeholder />;
 	}
@@ -46,6 +45,8 @@ SiteSettingsComponent.propTypes = {
 	siteId: PropTypes.number,
 };
 
-export default connect( state => ( {
-	siteId: getSelectedSiteId( state ),
-} ) )( localize( SiteSettingsComponent ) );
+export default connect(
+	( state ) => ( {
+		siteId: getSelectedSiteId( state ),
+	} )
+)( localize( SiteSettingsComponent ) );

@@ -1,5 +1,4 @@
-/** @format */
-export default {
+module.exports = {
 	found: 4,
 	viewers: [
 		{
@@ -10,7 +9,7 @@ export default {
 			name: 'Test Person501',
 			nice_name: 'test501',
 			profile_URL: 'http://en.gravatar.com',
-			site_ID: 501,
+			site_ID: 501
 		},
 		{
 			ID: 502,
@@ -20,7 +19,7 @@ export default {
 			name: 'Test Person502',
 			nice_name: 'test502',
 			profile_URL: 'http://en.gravatar.com',
-			site_ID: 502,
-		},
-	],
+			site_ID: 502
+		}
+	]
 };

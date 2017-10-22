@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { every } from 'lodash';
+import every from 'lodash/every';
 import emailValidator from 'email-validator';
 
 export function validateFormFields( fields ) {

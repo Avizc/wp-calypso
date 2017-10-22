@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -19,7 +16,10 @@ const stopPropagation = event => event.stopPropagation();
 
 export default function SelectDropdownLabel( props ) {
 	return (
-		<li onClick={ stopPropagation } className="select-dropdown__label">
+		<li
+			onClick= { stopPropagation }
+			className="select-dropdown__label"
+		>
 			<label>{ props.children }</label>
 		</li>
 	);

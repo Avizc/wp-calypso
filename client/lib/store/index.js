@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import Dispatcher from 'dispatcher';
 import emitter from 'lib/mixins/emitter';
 
@@ -34,7 +31,7 @@ export const createReducerStore = ( reducer, initialState = {}, waitFor = [] ) =
 
 	ReducerStore.get = () => state;
 
-	ReducerStore.dispatchToken = Dispatcher.register( payload => {
+	ReducerStore.dispatchToken = Dispatcher.register( ( payload ) => {
 		Dispatcher.waitFor( waitFor );
 
 		const newState = reducer( state, payload );

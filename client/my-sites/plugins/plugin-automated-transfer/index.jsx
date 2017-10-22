@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import wrapWithClickOutside from 'react-click-outside';
@@ -17,13 +13,16 @@ import { transferStates } from 'state/automated-transfer/constants';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getSite } from 'state/sites/selectors';
 import { getAutomatedTransferStatus } from 'state/automated-transfer/selectors';
-import { isAutomatedTransferActive, isAutomatedTransferFailed } from 'state/selectors';
+import {
+	isAutomatedTransferActive,
+	isAutomatedTransferFailed,
+} from 'state/selectors';
 import Notice from 'components/notice';
 import NoticeAction from 'components/notice/notice-action';
 import WpAdminAutoLogin from 'components/wpadmin-auto-login';
-import { requestSite } from 'state/sites/actions';
 
 class PluginAutomatedTransfer extends Component {
+
 	static propTypes = {
 		isTransferring: PropTypes.bool,
 		plugin: PropTypes.object,
@@ -45,7 +44,11 @@ class PluginAutomatedTransfer extends Component {
 
 	componentWillMount() {
 		const { COMPLETE } = transferStates;
-		const { isTransferring, isFailedTransfer, transferState } = this.props;
+		const {
+			isTransferring,
+			isFailedTransfer,
+			transferState,
+		} = this.props;
 
 		if ( COMPLETE === transferState ) {
 			this.setState( { transferComplete: true } );
@@ -54,12 +57,7 @@ class PluginAutomatedTransfer extends Component {
 		}
 	}
 
-	componentWillUnmount() {
-		clearInterval( this.interval );
-	}
-
 	componentWillReceiveProps( nextProps ) {
-		const { siteId } = this.props;
 		const { COMPLETE } = transferStates;
 		const { transferComplete } = this.state;
 		const newState = {};
@@ -69,8 +67,6 @@ class PluginAutomatedTransfer extends Component {
 		}
 
 		if ( COMPLETE === nextProps.transferState ) {
-			this.interval = this.interval || setInterval( () => this.props.requestSite( siteId ), 1000 );
-
 			newState.transferComplete = true;
 			if ( ! transferComplete ) {
 				newState.shouldDisplay = true;
@@ -94,16 +90,11 @@ class PluginAutomatedTransfer extends Component {
 			return translate( 'Activating %(plugin)s…', { args: { plugin: plugin.name } } );
 		}
 		switch ( transferState ) {
-			case START:
-				return translate( 'Installing %(plugin)s…', { args: { plugin: plugin.name } } );
-			case CONFLICTS:
-				return translate( 'Sorry, we found some conflicts to fix before proceeding.' );
-			case FAILURE:
-				return translate(
-					'There was a problem installing the plugin. Please try again in a few minutes.'
-				);
+			case START: return translate( 'Installing %(plugin)s…', { args: { plugin: plugin.name } } );
+			case CONFLICTS: return translate( 'Sorry, we found some conflicts to fix before proceeding.' );
+			case FAILURE: return translate( 'There was a problem installing the plugin. Please try again in a few minutes.' );
 		}
-	};
+	}
 
 	getStatus = () => {
 		const { isFailedTransfer } = this.props;
@@ -116,7 +107,7 @@ class PluginAutomatedTransfer extends Component {
 			return 'is-error';
 		}
 		return 'is-info';
-	};
+	}
 
 	getIcon = () => {
 		const { isFailedTransfer } = this.props;
@@ -129,7 +120,7 @@ class PluginAutomatedTransfer extends Component {
 			return 'notice';
 		}
 		return 'sync';
-	};
+	}
 
 	handleClickOutside( event ) {
 		if ( this.props.isTransferring && ! this.state.transferComplete ) {
@@ -157,26 +148,24 @@ class PluginAutomatedTransfer extends Component {
 					status={ this.getStatus() }
 					text={ this.getNoticeText() }
 				>
-					{ ! transferComplete &&
-					CONFLICTS === transferState && (
+					{ ! transferComplete && CONFLICTS === transferState &&
 						<NoticeAction href="#">
 							{ translate( 'View Conflicts', {
-								comment:
-									'Conflicts arose during an Automated Transfer started by a plugin install.',
+								comment: 'Conflicts arose during an Automated Transfer started by a plugin install.',
 							} ) }
 						</NoticeAction>
-					) }
+					}
 				</Notice>
 				{ this.state.transferComplete && <WpAdminAutoLogin site={ this.props.site } /> }
 			</div>
 		);
 	}
+
 }
 
 const mapStateToProps = state => {
 	const siteId = getSelectedSiteId( state );
 	return {
-		siteId,
 		transferState: getAutomatedTransferStatus( state, siteId ),
 		isTransferring: isAutomatedTransferActive( state, siteId ),
 		isFailedTransfer: isAutomatedTransferFailed( state, siteId ),
@@ -184,6 +173,4 @@ const mapStateToProps = state => {
 	};
 };
 
-export default connect( mapStateToProps, {
-	requestSite,
-} )( localize( wrapWithClickOutside( PluginAutomatedTransfer ) ) );
+export default connect( mapStateToProps )( localize( wrapWithClickOutside( PluginAutomatedTransfer ) ) );

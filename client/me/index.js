@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import config from 'config';
 import page from 'page';
 
@@ -22,12 +19,7 @@ export default function() {
 	}
 
 	if ( config.isEnabled( 'me/next-steps' ) ) {
-		page(
-			'/me/next/:welcome?',
-			controller.sidebar,
-			controller.nextStepsWelcomeRedirect,
-			controller.nextSteps
-		);
+		page( '/me/next/:welcome?', controller.sidebar, controller.nextStepsWelcomeRedirect, controller.nextSteps );
 	}
 
 	// Trophies and Find-Friends only exist in Atlas
@@ -42,4 +34,4 @@ export default function() {
 	}
 
 	page( '/me/get-apps', controller.sidebar, controller.apps );
-}
+};

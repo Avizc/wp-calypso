@@ -1,15 +1,13 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 const HrWithText = ( { children } ) => (
 	<div className="hr-with-text">
-		<div>{ children }</div>
+		<div>
+			{ children }
+		</div>
 	</div>
 );
 

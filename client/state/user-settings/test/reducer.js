@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,132 +7,135 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import reducer, { settings, unsavedSettings } from '../reducer';
 import {
 	USER_SETTINGS_UPDATE,
 	USER_SETTINGS_UNSAVED_SET,
 	USER_SETTINGS_UNSAVED_REMOVE,
 	USER_SETTINGS_UNSAVED_CLEAR,
 } from 'state/action-types';
+import reducer, { settings, unsavedSettings } from '../reducer';
 
 describe( 'reducer', () => {
-	test( 'should export expected reducer keys', () => {
-		expect( reducer( undefined, {} ) ).to.have.keys( [ 'settings', 'unsavedSettings' ] );
+	it( 'should export expected reducer keys', () => {
+		expect( reducer( undefined, {} ) ).to.have.keys( [
+			'settings',
+			'unsavedSettings',
+		] );
 	} );
 
 	describe( 'settings', () => {
-		test( 'should default to a `null` value', () => {
+		it( 'should default to a `null` value', () => {
 			const state = settings( undefined, {} );
 
 			expect( state ).to.be.null;
 		} );
 
-		test( 'should store user settings after initial update', () => {
+		it( 'should store user settings after initial update', () => {
 			const state = settings( null, {
 				type: USER_SETTINGS_UPDATE,
-				settingValues: { foo: 'bar' },
+				settingValues: { foo: 'bar' }
 			} );
 
 			expect( state ).to.eql( {
-				foo: 'bar',
+				foo: 'bar'
 			} );
 		} );
 
-		test( 'should keep existing settings after update', () => {
+		it( 'should keep existing settings after update', () => {
 			const original = deepFreeze( {
-				foo: 'bar',
+				foo: 'bar'
 			} );
 
 			const state = settings( original, {
 				type: USER_SETTINGS_UPDATE,
-				settingValues: { baz: 'qux' },
+				settingValues: { baz: 'qux' }
 			} );
 
 			expect( state ).to.eql( {
 				foo: 'bar',
-				baz: 'qux',
+				baz: 'qux'
 			} );
 		} );
 	} );
 
 	describe( 'unsavedSettings', () => {
-		test( 'should default to empty object', () => {
+		it( 'should default to empty object', () => {
 			const state = unsavedSettings( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should store a user settings after it is set', () => {
+		it( 'should store a user settings after it is set', () => {
 			const state = unsavedSettings( undefined, {
 				type: USER_SETTINGS_UNSAVED_SET,
 				settingName: 'foo',
-				value: 'bar',
+				value: 'bar'
 			} );
 
 			expect( state ).to.eql( {
-				foo: 'bar',
+				foo: 'bar'
 			} );
 		} );
 
-		test( 'should store additional user setting after it is set', () => {
+		it( 'should store additional user setting after it is set', () => {
 			const original = deepFreeze( {
-				foo: 'bar',
+				foo: 'bar'
 			} );
 
 			const state = unsavedSettings( original, {
 				type: USER_SETTINGS_UNSAVED_SET,
 				settingName: 'baz',
-				value: 'qux',
+				value: 'qux'
 			} );
 
 			expect( state ).to.eql( {
 				foo: 'bar',
-				baz: 'qux',
+				baz: 'qux'
 			} );
 		} );
 
-		test( 'should remove a user setting', () => {
+		it( 'should remove a user setting', () => {
 			const original = deepFreeze( {
 				foo: 'bar',
-				baz: 'qux',
+				baz: 'qux'
 			} );
 
 			const state = unsavedSettings( original, {
 				type: USER_SETTINGS_UNSAVED_REMOVE,
-				settingName: 'baz',
+				settingName: 'baz'
 			} );
 
 			expect( state ).to.eql( {
-				foo: 'bar',
+				foo: 'bar'
 			} );
 		} );
 
-		test( 'should clear user settings after successful save', () => {
+		it( 'should clear user settings after successful save', () => {
 			const original = deepFreeze( {
 				foo: 'bar',
-				baz: 'qux',
+				baz: 'qux'
 			} );
 
 			const state = unsavedSettings( original, {
-				type: USER_SETTINGS_UNSAVED_CLEAR,
+				type: USER_SETTINGS_UNSAVED_CLEAR
 			} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should clear user settings after successful partial save', () => {
+		it( 'should clear user settings after successful partial save', () => {
 			const original = deepFreeze( {
 				foo: 'bar',
-				baz: 'qux',
+				baz: 'qux'
 			} );
 
 			const state = unsavedSettings( original, {
 				type: USER_SETTINGS_UNSAVED_CLEAR,
-				settingNames: [ 'baz' ],
+				settingNames: [ 'baz' ]
 			} );
 
 			expect( state ).to.eql( {
-				foo: 'bar',
+				foo: 'bar'
 			} );
 		} );
 	} );

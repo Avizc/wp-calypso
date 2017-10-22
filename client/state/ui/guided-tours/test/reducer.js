@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,7 +10,7 @@ import { guidedTour } from '../reducer';
 
 describe( 'reducer', () => {
 	describe( '#guidedTour()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = guidedTour( undefined, {} );
 
 			expect( state ).to.be.empty;

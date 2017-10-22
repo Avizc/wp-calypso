@@ -1,10 +1,7 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import { reduce } from 'lodash';
+import reduce from 'lodash/reduce';
 
 /**
  * Internal Dependencies
@@ -19,13 +16,9 @@ export default function createDomTransformRunner( transforms ) {
 
 		const dom = domForHtml( post.content );
 
-		post = reduce(
-			transforms,
-			( memo, transform ) => {
-				return transform( memo, dom );
-			},
-			post
-		);
+		post = reduce( transforms, ( memo, transform ) => {
+			return transform( memo, dom );
+		}, post );
 
 		post.content = dom.innerHTML;
 		dom.innerHTML = '';

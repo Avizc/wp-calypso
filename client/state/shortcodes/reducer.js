@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { merge } from 'lodash';
 
 /**
@@ -15,15 +12,15 @@ import {
 	SHORTCODE_RECEIVE,
 	SHORTCODE_REQUEST,
 	SHORTCODE_REQUEST_FAILURE,
-	SHORTCODE_REQUEST_SUCCESS,
+	SHORTCODE_REQUEST_SUCCESS
 } from 'state/action-types';
 
-const createRequestingReducer = requesting => {
+const createRequestingReducer = ( requesting ) => {
 	return ( state, { siteId, shortcode } ) => {
 		return merge( {}, state, {
 			[ siteId ]: {
-				[ shortcode ]: requesting,
-			},
+				[ shortcode ]: requesting
+			}
 		} );
 	};
 };
@@ -37,14 +34,11 @@ const createRequestingReducer = requesting => {
  * @param  {Object} action Action payload
  * @return {Object}        Updated state
  */
-export const requesting = createReducer(
-	{},
-	{
-		[ SHORTCODE_REQUEST ]: createRequestingReducer( true ),
-		[ SHORTCODE_REQUEST_FAILURE ]: createRequestingReducer( false ),
-		[ SHORTCODE_REQUEST_SUCCESS ]: createRequestingReducer( false ),
-	}
-);
+export const requesting = createReducer( {}, {
+	[ SHORTCODE_REQUEST ]: createRequestingReducer( true ),
+	[ SHORTCODE_REQUEST_FAILURE ]: createRequestingReducer( false ),
+	[ SHORTCODE_REQUEST_SUCCESS ]: createRequestingReducer( false ),
+} );
 
 /**
  * Returns the updated items state after an action has been dispatched. The
@@ -54,21 +48,17 @@ export const requesting = createReducer(
  * @param  {Object} action Action payload
  * @return {Object}        Updated state
  */
-export const items = createReducer(
-	{},
-	{
-		[ SHORTCODE_RECEIVE ]: ( state, { siteId, shortcode, data } ) => {
-			return merge( {}, state, {
-				[ siteId ]: {
-					[ shortcode ]: data,
-				},
-			} );
-		},
-	},
-	shortcodesSchema
-);
+export const items = createReducer( {}, {
+	[ SHORTCODE_RECEIVE ]: ( state, { siteId, shortcode, data } ) => {
+		return merge( {}, state, {
+			[ siteId ]: {
+				[ shortcode ]: data
+			}
+		} );
+	}
+}, shortcodesSchema );
 
 export default combineReducers( {
 	requesting,
-	items,
+	items
 } );

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { get, pick } from 'lodash';
 
@@ -25,7 +22,6 @@ const CdnTab = ( {
 	fields: {
 		ossdl_cname,
 		ossdl_https,
-		ossdl_off_blog_url,
 		ossdl_off_cdn_url,
 		ossdl_off_exclude,
 		ossdl_off_include_dirs,
@@ -42,8 +38,15 @@ const CdnTab = ( {
 	return (
 		<div>
 			<SectionHeader label={ translate( 'CDN' ) }>
-				<Button compact primary disabled={ isRequesting || isSaving } onClick={ handleSubmitForm }>
-					{ isSaving ? translate( 'Saving…' ) : translate( 'Save Settings' ) }
+				<Button
+					compact
+					primary
+					disabled={ isRequesting || isSaving }
+					onClick={ handleSubmitForm }>
+					{ isSaving
+						? translate( 'Saving…' )
+						: translate( 'Save Settings' )
+					}
 				</Button>
 			</SectionHeader>
 
@@ -53,37 +56,24 @@ const CdnTab = ( {
 						<FormToggle
 							checked={ !! ossdlcdn }
 							disabled={ isRequesting || isSaving }
-							onChange={ handleAutosavingToggle( 'ossdlcdn' ) }
-						>
-							<span>{ translate( 'Enable CDN Support' ) }</span>
+							onChange={ handleAutosavingToggle( 'ossdlcdn' ) }>
+							<span>
+								{ translate( 'Enable CDN Support' ) }
+							</span>
 						</FormToggle>
 					</FormFieldset>
 
 					<div className="wp-super-cache__cdn-fieldsets">
 						<FormFieldset>
-							<FormLabel htmlFor="ossdl_off_blog_url">{ translate( 'Site URL' ) }</FormLabel>
-
-							<FormTextInput
-								disabled={ isRequesting || isSaving || ! ossdlcdn }
-								id="ossdl_off_cdn_url"
-								onChange={ handleChange( 'ossdl_off_blog_url' ) }
-								value={ ossdl_off_blog_url || '' }
-							/>
-
-							<FormSettingExplanation>
-								{ translate( 'The URL of your site. No trailing / please.' ) }
-							</FormSettingExplanation>
-						</FormFieldset>
-
-						<FormFieldset>
-							<FormLabel htmlFor="ossdl_off_cdn_url">{ translate( 'Off-site URL' ) }</FormLabel>
+							<FormLabel htmlFor="ossdl_off_cdn_url">
+								{ translate( 'Off-site URL' ) }
+							</FormLabel>
 
 							<FormTextInput
 								disabled={ isRequesting || isSaving || ! ossdlcdn }
 								id="ossdl_off_cdn_url"
 								onChange={ handleChange( 'ossdl_off_cdn_url' ) }
-								value={ ossdl_off_cdn_url || '' }
-							/>
+								value={ ossdl_off_cdn_url || '' } />
 
 							<FormSettingExplanation>
 								{ translate(
@@ -104,15 +94,14 @@ const CdnTab = ( {
 								disabled={ isRequesting || isSaving || ! ossdlcdn }
 								id="ossdl_off_include_dirs"
 								onChange={ handleChange( 'ossdl_off_include_dirs' ) }
-								value={ ossdl_off_include_dirs || '' }
-							/>
+								value={ ossdl_off_include_dirs || '' } />
 
 							<FormSettingExplanation>
 								{ translate(
 									'Directories to include in static file matching. Use a comma as the delimiter. Default is ' +
-										'{{code}}wp-content, wp-includes{{/code}}, which will be enforced if this field is left empty.',
+									'{{code}}wp-content, wp-includes{{/code}}, which will be enforced if this field is left empty.',
 									{
-										components: { code: <code /> },
+										components: { code: <code /> }
 									}
 								) }
 							</FormSettingExplanation>
@@ -127,36 +116,36 @@ const CdnTab = ( {
 								disabled={ isRequesting || isSaving || ! ossdlcdn }
 								id="ossdl_off_exclude"
 								onChange={ handleChange( 'ossdl_off_exclude' ) }
-								value={ ossdl_off_exclude || '' }
-							/>
+								value={ ossdl_off_exclude || '' } />
 
 							<FormSettingExplanation>
 								{ translate(
 									'Excludes something from being rewritten if one of the above strings is found in the match. ' +
-										'Use a comma as the delimiter like this, {{code}}.php, .flv, .do{{/code}}, and always ' +
-										'include {{code}}.php{{/code}} (default).',
+									'Use a comma as the delimiter like this, {{code}}.php, .flv, .do{{/code}}, and always ' +
+									'include {{code}}.php{{/code}} (default).',
 									{
-										components: { code: <code /> },
+										components: { code: <code /> }
 									}
 								) }
 							</FormSettingExplanation>
 						</FormFieldset>
 
 						<FormFieldset>
-							<FormLabel htmlFor="ossdl_cname">{ translate( 'Additional CNAMES' ) }</FormLabel>
+							<FormLabel htmlFor="ossdl_cname">
+								{ translate( 'Additional CNAMES' ) }
+							</FormLabel>
 
 							<FormTextInput
 								disabled={ isRequesting || isSaving || ! ossdlcdn }
 								id="ossdl_cname"
 								onChange={ handleChange( 'ossdl_cname' ) }
-								value={ ossdl_cname || '' }
-							/>
+								value={ ossdl_cname || '' } />
 
 							<FormSettingExplanation>
 								{ translate(
 									'These {{a}}CNAMES{{/a}} will be used in place of %(url)s for rewriting (in addition to the ' +
-										'off-site URL above). Use a comma as the delimiter. For pages with a large number of static files, ' +
-										'this can improve browser performance. CNAMEs may also need to be configured on your CDN.',
+									'off-site URL above). Use a comma as the delimiter. For pages with a large number of static files, ' +
+									'this can improve browser performance. CNAMEs may also need to be configured on your CDN.',
 									{
 										args: { url: get( site, 'URL' ) },
 										components: {
@@ -177,9 +166,10 @@ const CdnTab = ( {
 							<FormToggle
 								checked={ !! ossdl_https }
 								disabled={ isRequesting || isSaving || ! ossdlcdn }
-								onChange={ handleAutosavingToggle( 'ossdl_https' ) }
-							>
-								<span>{ translate( 'Skip https URLs to avoid "mixed content" errors' ) }</span>
+								onChange={ handleAutosavingToggle( 'ossdl_https' ) }>
+							<span>
+								{ translate( 'Skip https URLs to avoid "mixed content" errors' ) }
+							</span>
 							</FormToggle>
 						</FormFieldset>
 					</div>
@@ -192,7 +182,6 @@ const getFormSettings = settings => {
 	return pick( settings, [
 		'ossdl_cname',
 		'ossdl_https',
-		'ossdl_off_blog_url',
 		'ossdl_off_cdn_url',
 		'ossdl_off_exclude',
 		'ossdl_off_include_dirs',

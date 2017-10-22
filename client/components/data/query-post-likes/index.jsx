@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -19,7 +15,7 @@ class QueryPostLikes extends Component {
 		siteId: PropTypes.number.isRequired,
 		postId: PropTypes.number.isRequired,
 		isRequesting: PropTypes.bool,
-		requestPostLikes: PropTypes.func,
+		requestPostLikes: PropTypes.func
 	};
 
 	componentWillMount() {
@@ -27,7 +23,10 @@ class QueryPostLikes extends Component {
 	}
 
 	componentWillReceiveProps( nextProps ) {
-		if ( this.props.siteId !== nextProps.siteId || this.props.postId !== nextProps.postId ) {
+		if (
+			this.props.siteId !== nextProps.siteId ||
+			this.props.postId !== nextProps.postId
+		) {
 			this.request( nextProps );
 		}
 	}
@@ -49,7 +48,7 @@ class QueryPostLikes extends Component {
 export default connect(
 	( state, ownProps ) => {
 		return {
-			isRequesting: isRequestingPostLikes( state, ownProps.siteId ),
+			isRequesting: isRequestingPostLikes( state, ownProps.siteId )
 		};
 	},
 	{ requestPostLikes }

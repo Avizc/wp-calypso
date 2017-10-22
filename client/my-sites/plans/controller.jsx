@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import page from 'page';
 import React from 'react';
 
@@ -11,7 +8,7 @@ import React from 'react';
  * Internal Dependencies
  */
 import { renderWithReduxStore } from 'lib/react-helpers';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { isValidFeatureKey } from 'lib/plans';
 
 export default {
@@ -59,5 +56,5 @@ export default {
 		}
 
 		return page.redirect( '/plans' );
-	},
+	}
 };

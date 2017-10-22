@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import ReactDomServer from 'react-dom/server';
 import tinymce from 'tinymce/tinymce';
@@ -52,7 +49,7 @@ function advanced( editor ) {
 		} );
 
 		tinymce.DOM.setStyles( editor.getContainer(), {
-			'padding-top': containerPadding,
+			'padding-top': containerPadding
 		} );
 
 		if ( menuButton ) {
@@ -70,16 +67,14 @@ function advanced( editor ) {
 			// visibility update handler can change its active state.
 			menuButton = this;
 
-			this.innerHtml(
-				ReactDomServer.renderToStaticMarkup(
-					<button type="button" role="presentation" tabIndex="-1">
-						{ /* eslint-disable wpcalypso/jsx-gridicon-size */ }
-						<Gridicon icon="ellipsis" size={ 28 } />
-						{ /* eslint-enable wpcalypso/jsx-gridicon-size */ }
-					</button>
-				)
-			);
-		},
+			this.innerHtml( ReactDomServer.renderToStaticMarkup(
+				<button type="button" role="presentation" tabIndex="-1">
+					{ /* eslint-disable wpcalypso/jsx-gridicon-size */ }
+					<Gridicon icon="ellipsis" size={ 28 } />
+					{ /* eslint-enable wpcalypso/jsx-gridicon-size */ }
+				</button>
+			) );
+		}
 	} );
 
 	editor.addCommand( 'WPCOM_ToggleAdvancedVisible', () => {

@@ -1,100 +1,105 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { forEach, omit } from 'lodash';
-import React, { PureComponent } from 'react';
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' ),
+	forEach = require( 'lodash/forEach' ),
+	omit = require( 'lodash/omit' );
 
 /**
  * Internal dependencies
  */
-import NavTabs from 'components/section-nav/tabs';
-import NavSegmented from 'components/section-nav/segmented';
-import NavItem from 'components/section-nav/item';
-import Search from 'components/search';
-import SectionNav from 'components/section-nav';
+var SectionNav = require( 'components/section-nav' ),
+	NavTabs = require( 'components/section-nav/tabs' ),
+	NavSegmented = require( 'components/section-nav/segmented' ),
+	NavItem = require( 'components/section-nav/item' ),
+	Search = require( 'components/search' );
 
 /**
  * Main
  */
-class SectionNavigation extends PureComponent {
-	static displayName = 'SectionNav';
+var SectionNavigation = React.createClass( {
+	displayName: 'SectionNav',
 
-	static defaultProps = {
-		basicTabs: [
-			'Days',
-			'Weeks',
-			{
-				name: 'Months',
-				count: 45,
-			},
-			{
-				name: 'Years',
-				count: 11,
-			},
-		],
-		manyTabs: [
-			'Staff Picks',
-			'Trending',
-			'Blog',
-			{
-				name: 'Business',
-				count: 8761,
-			},
-			'Food',
-			'Music',
-			{
-				name: 'Travel',
-				count: 761,
-			},
-			'Wedding',
-			'Minimal',
-			'Magazine',
-			'Photography',
-		],
-		siblingTabs: [
-			{
-				name: 'Published',
-				count: 8,
-			},
-			'Scheduled',
-			'Drafts',
-			'Trashed',
-		],
-		siblingSegmented: [ 'Only Me', 'Everyone' ],
-	};
+	mixins: [ PureRenderMixin ],
 
-	state = {
-		basicTabsSelectedIndex: 0,
-		manyTabsSelectedIndex: 0,
-		siblingTabsSelectedIndex: 0,
-		siblingSegmentedSelectedIndex: 0,
-	};
+	getInitialState: function() {
+		return {
+			basicTabsSelectedIndex: 0,
+			manyTabsSelectedIndex: 0,
+			siblingTabsSelectedIndex: 0,
+			siblingSegmentedSelectedIndex: 0
+		};
+	},
 
-	render() {
+	getDefaultProps: function() {
+		return {
+			basicTabs: [
+				'Days',
+				'Weeks',
+				{
+					name: 'Months',
+					count: 45
+				},
+				{
+					name: 'Years',
+					count: 11
+				}
+			],
+			manyTabs: [
+				'Staff Picks',
+				'Trending',
+				'Blog',
+				{
+					name: 'Business',
+					count: 8761
+				},
+				'Food',
+				'Music',
+				{
+					name: 'Travel',
+					count: 761
+				},
+				'Wedding',
+				'Minimal',
+				'Magazine',
+				'Photography'
+			],
+			siblingTabs: [
+				{
+					name: 'Published',
+					count: 8
+				},
+				'Scheduled',
+				'Drafts',
+				'Trashed'
+			],
+			siblingSegmented: [
+				'Only Me',
+				'Everyone'
+			]
+		};
+	},
+
+	render: function() {
 		var demoSections = {};
 
-		forEach(
-			omit( this.props, 'isolated', 'uniqueInstance' ),
-			function( prop, key ) {
-				demoSections[ key ] = [];
+		forEach( omit( this.props, 'isolated', 'uniqueInstance' ), function( prop, key ) {
+			demoSections[ key ] = [];
 
-				prop.forEach( function( item, index ) {
-					demoSections[ key ].push(
-						<NavItem
-							key={ key + '-' + index }
-							count={ item.count }
-							selected={ this.state[ key + 'SelectedIndex' ] === index }
-							onClick={ this.handleNavItemClick( key, index ) }
-						>
-							{ 'object' === typeof item ? item.name : item }
-						</NavItem>
-					);
-				}, this );
-			}.bind( this )
-		);
+			prop.forEach( function( item, index ) {
+				demoSections[ key ].push( (
+					<NavItem
+						key={ key + '-' + index }
+						count={ item.count }
+						selected={ this.state[ key + 'SelectedIndex' ] === index }
+						onClick={ this.handleNavItemClick( key, index ) }
+					>
+						{ 'object' === typeof item ? item.name : item }
+					</NavItem>
+				) );
+			}, this );
+		}.bind( this ) );
 
 		return (
 			<div>
@@ -103,7 +108,9 @@ class SectionNavigation extends PureComponent {
 					selectedText={ this.getSelectedText( 'basicTabs' ) }
 					selectedCount={ this.getSelectedCount( 'basicTabs' ) }
 				>
-					<NavTabs>{ demoSections.basicTabs }</NavTabs>
+					<NavTabs>
+						{ demoSections.basicTabs }
+					</NavTabs>
 				</SectionNav>
 
 				<h3>Many Tabs</h3>
@@ -111,7 +118,9 @@ class SectionNavigation extends PureComponent {
 					selectedText={ this.getSelectedText( 'manyTabs' ) }
 					selectedCount={ this.getSelectedCount( 'manyTabs' ) }
 				>
-					<NavTabs>{ demoSections.manyTabs }</NavTabs>
+					<NavTabs>
+						{ demoSections.manyTabs }
+					</NavTabs>
 				</SectionNav>
 
 				<h3>Sibling Control Groups</h3>
@@ -124,7 +133,9 @@ class SectionNavigation extends PureComponent {
 						{ demoSections.siblingTabs }
 					</NavTabs>
 
-					<NavSegmented label="author">{ demoSections.siblingSegmented }</NavSegmented>
+					<NavSegmented label="author">
+						{ demoSections.siblingSegmented }
+					</NavSegmented>
 
 					<Search
 						pinned
@@ -135,43 +146,45 @@ class SectionNavigation extends PureComponent {
 				</SectionNav>
 			</div>
 		);
-	}
+	},
 
-	getSelectedText = section => {
+	getSelectedText: function( section ) {
 		var selected = this.state[ section + 'SelectedIndex' ],
 			text = this.props[ section ][ selected ];
 
 		return 'object' === typeof text ? text.name : text;
-	};
+	},
 
-	getSelectedCount = section => {
+	getSelectedCount: function( section ) {
 		var selected = this.state[ section + 'SelectedIndex' ],
 			selectedItem = this.props[ section ][ selected ];
 
-		return 'object' === typeof selectedItem ? selectedItem.count || null : null;
-	};
+		return 'object' === typeof selectedItem
+			? selectedItem.count || null
+			: null;
+	},
 
-	getSiblingDemoSelectedText = () => {
+	getSiblingDemoSelectedText: function() {
 		return (
 			<span>
 				<span>{ this.getSelectedText( 'siblingTabs' ) }</span>
 				<small>{ this.getSelectedText( 'siblingSegmented' ) }</small>
 			</span>
 		);
-	};
+	},
 
-	handleNavItemClick = ( section, index ) => {
+	handleNavItemClick: function( section, index ) {
 		return function() {
 			var stateUpdate = {};
 
 			stateUpdate[ section + 'SelectedIndex' ] = index;
 			this.setState( stateUpdate );
 		}.bind( this );
-	};
+	},
 
-	demoSearch = keywords => {
+	demoSearch: function( keywords ) {
 		console.log( 'Section Nav Search (keywords):', keywords );
-	};
-}
+	}
+} );
 
-export default SectionNavigation;
+module.exports = SectionNavigation;

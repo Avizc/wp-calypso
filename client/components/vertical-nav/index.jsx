@@ -1,15 +1,16 @@
 /**
  * External dependencies
- *
- * @format
  */
+import React from 'react';
 
-import React, { Component } from 'react';
-
-class VerticalNav extends Component {
+const VerticalNav = React.createClass( {
 	render() {
-		return <div className="vertical-nav">{ this.props.children }</div>;
+		return (
+			<div className="vertical-nav">
+				{ this.props.children }
+			</div>
+		);
 	}
-}
+} );
 
 export default VerticalNav;

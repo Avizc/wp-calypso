@@ -1,5 +1,4 @@
-.card.login__form,
-.card.login__form-social {
+.card.login__form {
 	margin-bottom: 0;
 }
 
@@ -36,14 +35,6 @@
 	}
 }
 
-.login__form-header-wrapper {
-	text-align: center;
-
-	.gridicon {
-		color: $blue-wordpress;
-	}
-}
-
 .login__form-header {
 	font-size: 22px;
 	margin-bottom: 24px;
@@ -63,25 +54,12 @@
 	}
 }
 
-.login__form-terms,
-.login__form-signup-link {
+.login__form-terms {
 	font-size: 11px;
 	text-align: center;
 
 	a {
 		white-space: pre;
-	}
-}
-
-.login__form-signup-link {
-	font-size: 13px;
-	margin-top: 20px;
-
-	&.disabled {
-		a, a:hover {
-			pointer-events: none;
-			color: $gray;
-		}
 	}
 }
 
@@ -120,7 +98,7 @@
 	margin: 0 10px 10px;
 }
 
-.wp-login__links {
+.wp-login__footer {
 	a {
 		font-size: 14px;
 
@@ -151,31 +129,4 @@
 	clear: both;
 	font-size: 11px;
 	padding: 1em 0;
-}
-
-.login__social-connect-prompt-logos {
-	align-items: center;
-	display: flex;
-	justify-content: center;
-}
-
-.login__social-connect-prompt-logo {
-	height: 72px;
-	width: 72px;
-}
-
-.login__social-connect-prompt-dots {
-	margin: 0 5px;
-}
-
-.login__social-connect-prompt-logo.wordpress {
-	color: $blue-wordpress;
-}
-
-.login__social-connect-prompt-message {
-	margin: 20px 0;
-}
-
-.login__social-connect-prompt-action .button {
-	width: 100%;
 }

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -23,7 +21,7 @@ const preInitializedState = {
 				123: {
 					settings: {
 						products: null,
-					},
+					}
 				},
 			},
 		},
@@ -36,7 +34,7 @@ const loadingState = {
 				123: {
 					settings: {
 						products: LOADING,
-					},
+					}
 				},
 			},
 		},
@@ -46,14 +44,14 @@ const weightUnitSetting = {
 	id: 'woocommerce_weight_unit',
 	label: 'Weight unit',
 	type: 'select',
-	default: 'kg',
+	'default': 'kg',
 	value: 'lbs',
 };
 const dimensionsUnitSetting = {
 	id: 'woocommerce_dimension_unit',
 	label: 'Dimensions unit',
 	type: 'select',
-	default: 'cm',
+	'default': 'cm',
 	value: 'in',
 };
 const loadedState = {
@@ -63,7 +61,7 @@ const loadedState = {
 				123: {
 					settings: {
 						products: [ weightUnitSetting, dimensionsUnitSetting ],
-					},
+					}
 				},
 			},
 		},
@@ -75,65 +73,65 @@ const loadedStateWithUi = { ...loadedState, ui: { selectedSiteId: 123 } };
 
 describe( 'selectors', () => {
 	describe( '#areSettingsProductsLoaded', () => {
-		test( 'should be false when woocommerce state is not available.', () => {
+		it( 'should be false when woocommerce state is not available.', () => {
 			expect( areSettingsProductsLoaded( preInitializedState, 123 ) ).to.be.false;
 		} );
 
-		test( 'should be false when products settings are currently being fetched.', () => {
+		it( 'should be false when products settings are currently being fetched.', () => {
 			expect( areSettingsProductsLoaded( loadingState, 123 ) ).to.be.false;
 		} );
 
-		test( 'should be true when products settings are loaded.', () => {
+		it( 'should be true when products settings are loaded.', () => {
 			expect( areSettingsProductsLoaded( loadedState, 123 ) ).to.be.true;
 		} );
 
-		test( 'should be false when products settings are loaded only for a different site.', () => {
+		it( 'should be false when products settings are loaded only for a different site.', () => {
 			expect( areSettingsProductsLoaded( loadedState, 456 ) ).to.be.false;
 		} );
 
-		test( 'should get the siteId from the UI tree if not provided.', () => {
+		it( 'should get the siteId from the UI tree if not provided.', () => {
 			expect( areSettingsProductsLoaded( loadingStateWithUi ) ).to.be.false;
 		} );
 	} );
 
 	describe( '#areSettingsProductsLoading', () => {
-		test( 'should be false when woocommerce state is not available.', () => {
+		it( 'should be false when woocommerce state is not available.', () => {
 			expect( areSettingsProductsLoading( preInitializedState, 123 ) ).to.be.false;
 		} );
 
-		test( 'should be true when products settings are currently being fetched.', () => {
+		it( 'should be true when products settings are currently being fetched.', () => {
 			expect( areSettingsProductsLoading( loadingState, 123 ) ).to.be.true;
 		} );
 
-		test( 'should be false when products settings are loaded.', () => {
+		it( 'should be false when products settings are loaded.', () => {
 			expect( areSettingsProductsLoading( loadedState, 123 ) ).to.be.false;
 		} );
 
-		test( 'should be false when products settings are loaded only for a different site.', () => {
+		it( 'should be false when products settings are loaded only for a different site.', () => {
 			expect( areSettingsProductsLoading( loadedState, 456 ) ).to.be.false;
 		} );
 
-		test( 'should get the siteId from the UI tree if not provided.', () => {
+		it( 'should get the siteId from the UI tree if not provided.', () => {
 			expect( areSettingsProductsLoading( loadingStateWithUi ) ).to.be.true;
 		} );
 	} );
 
 	describe( '#getWeightUnitSetting', () => {
-		test( 'should get the weight unit setting from the state.', () => {
+		it( 'should get the weight unit setting from the state.', () => {
 			expect( getWeightUnitSetting( loadedState, 123 ) ).to.eql( weightUnitSetting );
 		} );
 
-		test( 'should get the siteId from the UI tree if not provided.', () => {
+		it( 'should get the siteId from the UI tree if not provided.', () => {
 			expect( getWeightUnitSetting( loadedStateWithUi ) ).to.eql( weightUnitSetting );
 		} );
 	} );
 
 	describe( '#getDimensionsUnitSetting', () => {
-		test( 'should get the dimensions unit setting from the state.', () => {
+		it( 'should get the dimensions unit setting from the state.', () => {
 			expect( getDimensionsUnitSetting( loadedState, 123 ) ).to.eql( dimensionsUnitSetting );
 		} );
 
-		test( 'should get the siteId from the UI tree if not provided.', () => {
+		it( 'should get the siteId from the UI tree if not provided.', () => {
 			expect( getDimensionsUnitSetting( loadedStateWithUi ) ).to.eql( dimensionsUnitSetting );
 		} );
 	} );

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -10,6 +8,7 @@ import { assert } from 'chai';
  */
 import reducer from '../reducer';
 import { dummyConfiguration, dummyError } from './test-data';
+
 import {
 	HELP_TICKET_CONFIGURATION_REQUEST,
 	HELP_TICKET_CONFIGURATION_REQUEST_SUCCESS,
@@ -18,7 +17,7 @@ import {
 } from 'state/action-types';
 
 describe( 'ticket-support/configuration reducer', () => {
-	test( 'should default to the expected structure', () => {
+	it( 'should default to the expected structure', () => {
 		const defaultState = reducer( undefined, {} );
 
 		assert.deepEqual( defaultState, {
@@ -29,7 +28,7 @@ describe( 'ticket-support/configuration reducer', () => {
 		} );
 	} );
 
-	test( 'should set isRequesting to true', () => {
+	it( 'should set isRequesting to true', () => {
 		const state = reducer( undefined, {
 			type: HELP_TICKET_CONFIGURATION_REQUEST,
 		} );
@@ -37,7 +36,7 @@ describe( 'ticket-support/configuration reducer', () => {
 		assert.isTrue( state.isRequesting );
 	} );
 
-	test( 'should set isUserEligible as is and isReady to true', () => {
+	it( 'should set isUserEligible as is and isReady to true', () => {
 		const state = reducer( undefined, {
 			type: HELP_TICKET_CONFIGURATION_REQUEST_SUCCESS,
 			configuration: dummyConfiguration,
@@ -48,14 +47,11 @@ describe( 'ticket-support/configuration reducer', () => {
 		assert.isFalse( state.isRequesting );
 	} );
 
-	test( 'should leave isReady as it is and requestError as the error on failed requests', () => {
-		const state = reducer(
-			{ isReady: false },
-			{
-				type: HELP_TICKET_CONFIGURATION_REQUEST_FAILURE,
-				error: dummyError,
-			}
-		);
+	it( 'should leave isReady as it is and requestError as the error on failed requests', () => {
+		const state = reducer( { isReady: false }, {
+			type: HELP_TICKET_CONFIGURATION_REQUEST_FAILURE,
+			error: dummyError,
+		} );
 
 		assert.isFalse( state.isReady );
 		assert.isFalse( state.isRequesting );
@@ -64,7 +60,7 @@ describe( 'ticket-support/configuration reducer', () => {
 
 	const requestErrorState = { requestError: dummyError };
 
-	test( 'should clear reqeustError on receiving the dismiss action', () => {
+	it( 'should clear reqeustError on receiving the dismiss action', () => {
 		const state = reducer( requestErrorState, {
 			type: HELP_TICKET_CONFIGURATION_DISMISS_ERROR,
 		} );
@@ -72,7 +68,7 @@ describe( 'ticket-support/configuration reducer', () => {
 		assert.isNull( state.requestError );
 	} );
 
-	test( 'should set requestError as false on receiving the new request', () => {
+	it( 'should set requestError as false on receiving the new request', () => {
 		const state = reducer( requestErrorState, {
 			type: HELP_TICKET_CONFIGURATION_REQUEST,
 		} );
@@ -80,7 +76,7 @@ describe( 'ticket-support/configuration reducer', () => {
 		assert.isNull( state.requestError );
 	} );
 
-	test( 'should set requestError as false on receiving the successful action', () => {
+	it( 'should set requestError as false on receiving the successful action', () => {
 		const state = reducer( requestErrorState, {
 			type: HELP_TICKET_CONFIGURATION_REQUEST_SUCCESS,
 			configuration: dummyConfiguration,

@@ -1,21 +1,23 @@
-/** @format */
 /**
  * External dependencies
  */
-import { expect } from 'chai';
 import sinon from 'sinon';
+import { expect } from 'chai';
 
 /**
  * Internal dependencies
  */
-import { receivePostStats, requestPostStats } from '../actions';
+import useNock from 'test/helpers/use-nock';
 import {
 	POST_STATS_RECEIVE,
 	POST_STATS_REQUEST,
 	POST_STATS_REQUEST_FAILURE,
-	POST_STATS_REQUEST_SUCCESS,
+	POST_STATS_REQUEST_SUCCESS
 } from 'state/action-types';
-import useNock from 'test/helpers/use-nock';
+import {
+	receivePostStats,
+	requestPostStats
+} from '../actions';
 
 describe( 'actions', () => {
 	const spy = sinon.spy();
@@ -25,20 +27,20 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#receivePostStat()', () => {
-		test( 'should return an action object', () => {
+		it( 'should return an action object', () => {
 			const action = receivePostStats( 2916284, 2454, { views: 2 } );
 
 			expect( action ).to.eql( {
 				type: POST_STATS_RECEIVE,
 				siteId: 2916284,
 				postId: 2454,
-				stats: { views: 2 },
+				stats: { views: 2 }
 			} );
 		} );
 	} );
 
 	describe( '#requestPostStat()', () => {
-		useNock( nock => {
+		useNock( ( nock ) => {
 			nock( 'https://public-api.wordpress.com:443' )
 				.persist()
 				.get( '/rest/v1.1/sites/2916284/stats/post/2454?fields=views%2Cyears' )
@@ -46,11 +48,11 @@ describe( 'actions', () => {
 				.get( '/rest/v1.1/sites/2916285/stats/post/2455?fields=views' )
 				.reply( 403, {
 					error: 'authorization_required',
-					message: 'User cannot access this private blog.',
+					message: 'User cannot access this private blog.'
 				} );
 		} );
 
-		test( 'should dispatch fetch action when thunk triggered', () => {
+		it( 'should dispatch fetch action when thunk triggered', () => {
 			requestPostStats( 2916284, 2454, [ 'views', 'years' ] )( spy );
 
 			expect( spy ).to.have.been.calledWith( {
@@ -61,7 +63,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch receive action when request completes', () => {
+		it( 'should dispatch receive action when request completes', () => {
 			return requestPostStats( 2916284, 2454, [ 'views', 'years' ] )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith(
 					receivePostStats( 2916284, 2454, { views: 2, years: {} } )
@@ -69,7 +71,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch request success action when request completes', () => {
+		it( 'should dispatch request success action when request completes', () => {
 			return requestPostStats( 2916284, 2454, [ 'views', 'years' ] )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: POST_STATS_REQUEST_SUCCESS,
@@ -80,14 +82,14 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch fail action when request fails', () => {
+		it( 'should dispatch fail action when request fails', () => {
 			return requestPostStats( 2916285, 2455, [ 'views' ] )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: POST_STATS_REQUEST_FAILURE,
 					siteId: 2916285,
 					postId: 2455,
 					fields: [ 'views' ],
-					error: sinon.match( { message: 'User cannot access this private blog.' } ),
+					error: sinon.match( { message: 'User cannot access this private blog.' } )
 				} );
 			} );
 		} );

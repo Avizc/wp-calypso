@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { camelCase } from 'lodash';
+import camelCase from 'lodash/camelCase';
 import i18n from 'i18n-calypso';
 
 /**
@@ -19,7 +16,6 @@ function createPurchaseObject( purchase ) {
 		amount: Number( purchase.amount ),
 		attachedToPurchaseId: Number( purchase.attached_to_purchase_id ),
 		canDisableAutoRenew: Boolean( purchase.can_disable_auto_renew ),
-		canExplicitRenew: Boolean( purchase.can_explicit_renew ),
 		currencyCode: purchase.currency_code,
 		currencySymbol: purchase.currency_symbol,
 		domain: purchase.domain,
@@ -41,7 +37,7 @@ function createPurchaseObject( purchase ) {
 			name: purchase.payment_name,
 			type: purchase.payment_type,
 			countryCode: purchase.payment_country_code,
-			countryName: purchase.payment_country_name,
+			countryName: purchase.payment_country_name
 		},
 		pendingTransfer: Boolean( purchase.pending_transfer ),
 		productId: Number( purchase.product_id ),
@@ -51,14 +47,15 @@ function createPurchaseObject( purchase ) {
 		refundPeriodInDays: purchase.refund_period_in_days,
 		renewDate: purchase.renew_date,
 		// only generate a moment if `renewDate` is present and positive
-		renewMoment:
-			purchase.renew_date && purchase.renew_date > '0' ? i18n.moment( purchase.renew_date ) : null,
+		renewMoment: purchase.renew_date && purchase.renew_date > '0'
+			? i18n.moment( purchase.renew_date )
+			: null,
 		siteId: Number( purchase.blog_id ),
 		siteName: purchase.blogname,
 		subscribedDate: purchase.subscribed_date,
 		subscriptionStatus: purchase.subscription_status,
 		tagLine: purchase.tag_line,
-		userId: Number( purchase.user_id ),
+		userId: Number( purchase.user_id )
 	};
 
 	if ( 'credit_card' === purchase.payment_type ) {
@@ -68,19 +65,15 @@ function createPurchaseObject( purchase ) {
 				type: purchase.payment_card_type,
 				number: Number( purchase.payment_details ),
 				expiryDate: purchase.payment_expiry,
-				expiryMoment: purchase.payment_expiry
-					? i18n.moment( purchase.payment_expiry, 'MM/YY' )
-					: null,
-			},
+				expiryMoment: purchase.payment_expiry ? i18n.moment( purchase.payment_expiry, 'MM/YY' ) : null
+			}
 		} );
 
 		return Object.assign( {}, object, { payment } );
 	}
 
 	if ( 'paypal_direct' === purchase.payment_type ) {
-		object.payment.expiryMoment = purchase.payment_expiry
-			? i18n.moment( purchase.payment_expiry, 'MM/YY' )
-			: null;
+		object.payment.expiryMoment = purchase.payment_expiry ? i18n.moment( purchase.payment_expiry, 'MM/YY' ) : null;
 	}
 
 	return object;
@@ -96,5 +89,5 @@ function createPurchasesArray( dataTransferObject ) {
 
 export default {
 	createPurchaseObject,
-	createPurchasesArray,
+	createPurchasesArray
 };

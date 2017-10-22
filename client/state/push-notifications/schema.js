@@ -1,4 +1,3 @@
-/** @format */
 
 const boolType = { type: 'boolean' };
 const stringType = { type: 'string' };
@@ -10,9 +9,9 @@ export const settingsSchema = {
 		enabled: boolType,
 		dismissedNotice: boolType,
 		dismissedNoticeAt: numberType,
-		showingUnblockInstructions: boolType,
+		showingUnblockInstructions: boolType
 	},
-	additionalProperties: false,
+	additionalProperties: false
 };
 
 export const systemSchema = {
@@ -28,10 +27,10 @@ export const systemSchema = {
 				ID: stringType,
 				settings: {
 					type: 'object',
-					additionalProperties: true,
-				},
-			},
-		},
+					additionalProperties: true
+				}
+			}
+		}
 	},
-	additionalProperties: false,
+	additionalProperties: false
 };

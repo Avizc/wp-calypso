@@ -1,12 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import React, { Component, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import shallowEqual from 'react-pure-render/shallowEqual';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
@@ -19,7 +15,6 @@ import { partial, noop } from 'lodash';
 import { isEnabled } from 'config';
 import Card from 'components/card';
 import PostControls from './post-controls';
-import PostFormat from 'components/post-format';
 import PostHeader from './post-header';
 import PostImage from '../post/post-image';
 import PostExcerpt from 'components/post-excerpt';
@@ -31,8 +26,9 @@ import { setPreviewUrl } from 'state/ui/preview/actions';
 import { setLayoutFocus } from 'state/ui/layout-focus/actions';
 import { getPostPreviewUrl } from 'state/posts/selectors';
 import { isSingleUserSite, isSitePreviewable } from 'state/sites/selectors';
-import { getSelectedSiteId } from 'state/ui/selectors';
-import { getEditorPath } from 'state/ui/editor/selectors';
+import { getSelectedSiteId } from 'state/ui/selectors';
+import { getEditorPath } from 'state/ui/editor/selectors';
+
 import Comments from 'blocks/comments';
 import PostShare from 'blocks/post-share';
 import PostActions from 'blocks/post-actions';
@@ -73,13 +69,13 @@ class Post extends Component {
 		previousStatus: PropTypes.string,
 		showMoreOptions: PropTypes.bool.isRequired,
 		showPageActions: PropTypes.bool.isRequired,
-	};
+	}
 
 	state = {
 		showComments: false,
 		showShare: false,
 		commentsFilter: 'all',
-	};
+	}
 
 	shouldComponentUpdate( nextProps, nextState ) {
 		if ( ! shallowEqual( this.state, nextState ) ) {
@@ -104,22 +100,22 @@ class Post extends Component {
 	publishPost = () => {
 		this.props.updatePostStatus( 'publish' );
 		this.props.recordPublishPost();
-	};
+	}
 
 	restorePost = () => {
 		this.props.updatePostStatus( 'restore' );
 		this.props.recordRestorePost();
-	};
+	}
 
 	deletePost = () => {
 		this.props.updatePostStatus( 'delete' );
 		this.props.recordDeletePost();
-	};
+	}
 
 	trashPost = () => {
 		this.props.updatePostStatus( 'trash' );
 		this.props.recordTrashPost();
-	};
+	}
 
 	getPostClass() {
 		return classNames( 'post', {
@@ -135,9 +131,7 @@ class Post extends Component {
 					href={ this.getContentLinkURL() }
 					className="post__title-link post__content-link"
 					target={ this.getContentLinkTarget() }
-					onClick={ this.props.recordPostTitleClick }
-				>
-					<PostFormat format={ this.props.post.format } />
+					onClick={ this.props.recordPostTitleClick }>
 					<h4 className="post__title">{ this.props.post.title }</h4>
 				</a>
 			);
@@ -147,18 +141,22 @@ class Post extends Component {
 	getPostImage() {
 		if ( ! this.props.postImages ) {
 			if ( this.props.post.canonical_image ) {
-				return <div className="post-image is-placeholder" />;
+				return (
+					<div className="post-image is-placeholder" />
+				);
 			}
 
 			return null;
 		}
 
-		return <PostImage postImages={ this.props.postImages } />;
+		return (
+			<PostImage postImages={ this.props.postImages } />
+		);
 	}
 
 	getTrimmedExcerpt() {
 		const excerpt = this.props.post.excerpt;
-		return excerpt.length <= 220 ? excerpt : excerpt.substring( 0, 220 ) + '\u2026';
+		return ( excerpt.length <= 220 ) ? excerpt : excerpt.substring( 0, 220 ) + '\u2026';
 	}
 
 	getExcerpt() {
@@ -192,12 +190,10 @@ class Post extends Component {
 		}
 
 		return (
-			<PostHeader
-				siteId={ this.props.post.site_ID }
+			<PostHeader siteId={ this.props.post.site_ID }
 				author={ this.props.post.author ? this.props.post.author.name : '' }
 				path={ this.props.path }
-				showAuthor={ ! this.props.isPostFromSingleUserSite }
-			/>
+				showAuthor={ ! this.props.isPostFromSingleUserSite } />
 		);
 	}
 
@@ -235,20 +231,20 @@ class Post extends Component {
 
 	toggleComments = () => {
 		this.setState( {
-			showComments: ! this.state.showComments,
+			showComments: ! this.state.showComments
 		} );
 		this.props.recordCommentIconClick();
-	};
+	}
 
 	toggleShare = () => {
 		this.setState( { showShare: ! this.state.showShare } );
-	};
+	}
 
-	setCommentsFilter = commentsFilter => {
+	setCommentsFilter = ( commentsFilter ) => {
 		this.setState( { commentsFilter } );
-	};
+	}
 
-	viewPost = event => {
+	viewPost = ( event ) => {
 		event.preventDefault();
 		const { isPreviewable, previewUrl, selectedSiteId } = this.props;
 
@@ -258,13 +254,16 @@ class Post extends Component {
 			this.props.recordViewPost();
 		}
 
-		if ( ( ! isPreviewable || ! selectedSiteId ) && typeof window === 'object' ) {
+		if (
+				( ! isPreviewable || ! selectedSiteId ) &&
+				typeof window === 'object'
+		) {
 			return window.open( previewUrl );
 		}
 
 		this.props.setPreviewUrl( previewUrl );
 		this.props.setLayoutFocus( 'preview' );
-	};
+	}
 
 	render() {
 		return (
@@ -273,11 +272,9 @@ class Post extends Component {
 					{ this.getHeader() }
 					{ this.getPostImage() }
 					{ this.getContent() }
-					<PostActions
-						siteId={ this.props.post.site_ID }
+					<PostActions siteId={ this.props.post.site_ID }
 						post={ this.props.post }
-						toggleComments={ this.toggleComments }
-					/>
+						toggleComments={ this.toggleComments } />
 				</div>
 				<PostControls
 					post={ this.props.post }
@@ -297,35 +294,32 @@ class Post extends Component {
 				<ReactCSSTransitionGroup
 					transitionName="updated-trans"
 					transitionEnterTimeout={ 300 }
-					transitionLeaveTimeout={ 300 }
-				>
+					transitionLeaveTimeout={ 300 }>
 					{ this.props.buildUpdateTemplate() }
 				</ReactCSSTransitionGroup>
-				{ this.state.showComments && (
+				{ this.state.showComments &&
 					<Comments
 						showCommentCount={ false }
-						commentCount={ this.props.post.discussion.comment_count }
 						post={ this.props.post }
 						showFilters={ isEnabled( 'comments/filters-in-posts' ) }
 						showModerationTools={ isEnabled( 'comments/moderation-tools-in-posts' ) }
-						commentsFilter={
-							config.isEnabled( 'comments/filters-in-posts' ) ? (
-								this.state.commentsFilter
-							) : (
-								'approved'
-							)
-						}
+						commentsFilter={ config.isEnabled( 'comments/filters-in-posts' ) ? this.state.commentsFilter : 'approved' }
 						onFilterChange={ this.setCommentsFilter }
 						onCommentsUpdate={ noop }
 					/>
-				) }
-				{ this.state.showShare &&
-				config.isEnabled( 'republicize' ) && (
-					<PostShare post={ this.props.post } siteId={ this.props.post.site_ID } />
-				) }
+				}
+				{
+					this.state.showShare &&
+					config.isEnabled( 'republicize' ) &&
+					<PostShare
+						post={ this.props.post }
+						siteId={ this.props.post.site_ID }
+					/>
+				}
 			</Card>
 		);
 	}
+
 }
 
 const analyticsEvents = [
@@ -349,15 +343,16 @@ const mapDispatch = {
 	}, {} ),
 };
 
-export default connect( ( state, { post } ) => {
-	const selectedSiteId = getSelectedSiteId( state );
-	return {
-		editUrl: getEditorPath( state, post.site_ID, post.ID, 'post' ),
-		isPostFromSingleUserSite: isSingleUserSite( state, post.site_ID ),
-		isPreviewable: false !== isSitePreviewable( state, post.site_ID ),
-		selectedSiteId,
+export default connect(
+	( state, { post } ) => {
+		const selectedSiteId = getSelectedSiteId( state );
+		return {
+			editUrl: getEditorPath( state, post.site_ID, post.ID, 'post' ),
+			isPostFromSingleUserSite: isSingleUserSite( state, post.site_ID ),
+			isPreviewable: false !== isSitePreviewable( state, post.site_ID ),
+			selectedSiteId,
 
-		/*
+			/*
 			 * getPostPreviewUrl() relies on the post to be in Redux.
 			 *
 			 * There is an out of sync issue, because the posts list is fetched
@@ -371,6 +366,10 @@ export default connect( ( state, { post } ) => {
 			 * FIXME(biskobe,mcsf): undo hack
 			 * //previewUrl: getPostPreviewUrl( state, post.site_ID, post.ID ),
 			 */
-		previewUrl: getPostPreviewUrl( state, post.site_ID, post.ID, { __forceUseRawPost: post } ),
-	};
-}, mapDispatch )( updatePostStatus( localize( Post ) ) );
+			previewUrl: getPostPreviewUrl( state, post.site_ID, post.ID,
+				{ __forceUseRawPost: post }
+			)
+		};
+	},
+	mapDispatch
+)( updatePostStatus( localize( Post ) ) );

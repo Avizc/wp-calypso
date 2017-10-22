@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -13,18 +11,18 @@ import { getPluginUploadProgress } from 'state/selectors';
 const siteId = 77203074;
 
 describe( 'getPluginUploadProgress', () => {
-	test( 'should return 0 by default', () => {
+	it( 'should return 0 by default', () => {
 		const state = {
 			plugins: {
 				upload: {
-					progressPercent: {},
-				},
-			},
+					progressPercent: {}
+				}
+			}
 		};
 		expect( getPluginUploadProgress( state, siteId ) ).to.equal( 0 );
 	} );
 
-	test( 'should return current value for site', () => {
+	it( 'should return current value for site', () => {
 		const state = {
 			plugins: {
 				upload: {

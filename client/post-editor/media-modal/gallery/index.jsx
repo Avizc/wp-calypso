@@ -1,11 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
 import React from 'react';
 import { connect } from 'react-redux';
 import { noop, assign, omitBy, some, isEqual, partial } from 'lodash';
@@ -25,22 +20,22 @@ import { isModuleActive } from 'lib/site/utils';
 
 const EditorMediaModalGallery = React.createClass( {
 	propTypes: {
-		site: PropTypes.object,
-		items: PropTypes.array,
-		settings: PropTypes.object,
-		onUpdateSettings: PropTypes.func,
-		onReturnToList: PropTypes.func,
+		site: React.PropTypes.object,
+		items: React.PropTypes.array,
+		settings: React.PropTypes.object,
+		onUpdateSettings: React.PropTypes.func,
+		onReturnToList: React.PropTypes.func
 	},
 
 	getInitialState() {
 		return {
-			invalidItemDropped: false,
+			invalidItemDropped: false
 		};
 	},
 
 	getDefaultProps() {
 		return {
-			onUpdateSettings: noop,
+			onUpdateSettings: noop
 		};
 	},
 
@@ -70,18 +65,13 @@ const EditorMediaModalGallery = React.createClass( {
 		// in the original set, and that any items since added to the original
 		// set are similarly appended to the settings set.
 		// Finally, make sure that all items are the latest version
-		const newItems = settings.items
-			.filter( item => {
-				return some( items, { ID: item.ID } );
-			} )
-			.concat(
-				items.filter( item => {
-					return ! some( settings.items, { ID: item.ID } );
-				} )
-			)
-			.map( item => {
-				return MediaStore.get( this.props.site.ID, item.ID );
-			} );
+		const newItems = settings.items.filter( ( item ) => {
+			return some( items, { ID: item.ID } );
+		} ).concat( items.filter( ( item ) => {
+			return ! some( settings.items, { ID: item.ID } );
+		} ) ).map( ( item ) => {
+			return MediaStore.get( this.props.site.ID, item.ID );
+		} );
 
 		if ( ! isEqual( newItems, settings.items ) ) {
 			this.updateSetting( 'items', newItems );
@@ -121,7 +111,7 @@ const EditorMediaModalGallery = React.createClass( {
 
 		// Merge object of settings with existing set
 		let updatedSettings = assign( {}, this.props.settings, setting );
-		updatedSettings = omitBy( updatedSettings, updatedValue => null === updatedValue );
+		updatedSettings = omitBy( updatedSettings, ( updatedValue ) => null === updatedValue );
 		this.props.onUpdateSettings( updatedSettings );
 	},
 
@@ -132,12 +122,8 @@ const EditorMediaModalGallery = React.createClass( {
 			<div className="editor-media-modal-gallery">
 				<EditorMediaModalGalleryDropZone
 					site={ site }
-					onInvalidItemAdded={ () => this.setState( { invalidItemDropped: true } ) }
-				/>
-				<HeaderCake
-					onClick={ this.props.onReturnToList }
-					backText={ this.props.translate( 'Media Library' ) }
-				/>
+					onInvalidItemAdded={ () => this.setState( { invalidItemDropped: true } ) } />
+				<HeaderCake onClick={ this.props.onReturnToList } backText={ this.translate( 'Media Library' ) } />
 				<div className="editor-media-modal-gallery__content editor-media-modal__content">
 					<EditorMediaModalGalleryPreview
 						site={ site }
@@ -145,22 +131,20 @@ const EditorMediaModalGallery = React.createClass( {
 						settings={ settings }
 						onUpdateSetting={ this.updateSetting }
 						invalidItemDropped={ this.state.invalidItemDropped }
-						onDismissInvalidItemDropped={ () => this.setState( { invalidItemDropped: false } ) }
-					/>
+						onDismissInvalidItemDropped={ () => this.setState( { invalidItemDropped: false } ) } />
 					<div className="editor-media-modal-gallery__sidebar">
 						<EditorMediaModalGalleryFields
 							site={ site }
 							settings={ settings }
 							onUpdateSetting={ this.updateSetting }
-							numberOfItems={ items.length }
-						/>
+							numberOfItems={ items.length } />
 					</div>
 				</div>
 			</div>
 		);
-	},
+	}
 } );
 
 export default connect( null, {
-	onReturnToList: partial( setEditorMediaModalView, ModalViews.LIST ),
-} )( localize( EditorMediaModalGallery ) );
+	onReturnToList: partial( setEditorMediaModalView, ModalViews.LIST )
+} )( EditorMediaModalGallery );

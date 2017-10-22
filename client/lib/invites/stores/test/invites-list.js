@@ -1,22 +1,20 @@
-/** @format */
-
 /**
  * External dependencies
  */
-import { assert } from 'chai';
+const assert = require( 'chai' ).assert;
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import { action as ActionTypes } from 'lib/invites/constants';
+const Dispatcher = require( 'dispatcher' ),
+	constants = require( 'lib/invites/constants' );
 
-describe( 'List Invites Store', () => {
-	let ListInvitesStore;
+describe( 'List Invites Store', function() {
+	var ListInvitesStore;
 	const siteId = 123;
 	const actions = {
 		receiveInvites: {
-			type: ActionTypes.RECEIVE_INVITES,
+			type: constants.action.RECEIVE_INVITES,
 			siteId: siteId,
 			offset: 0,
 			data: {
@@ -27,14 +25,14 @@ describe( 'List Invites Store', () => {
 						role: 'editor',
 						user: {
 							ID: 1234,
-							name: 'Test One',
-						},
-					},
-				],
-			},
+							name: 'Test One'
+						}
+					}
+				]
+			}
 		},
 		receiveMoreInvites: {
-			type: ActionTypes.RECEIVE_INVITES,
+			type: constants.action.RECEIVE_INVITES,
 			siteId: siteId,
 			offset: 0,
 			data: {
@@ -45,29 +43,29 @@ describe( 'List Invites Store', () => {
 						role: 'contributor',
 						user: {
 							ID: 1234,
-							name: 'Test Two',
-						},
-					},
-				],
-			},
-		},
+							name: 'Test Two'
+						}
+					}
+				]
+			}
+		}
 	};
 
-	beforeEach( () => {
+	beforeEach( function() {
 		ListInvitesStore = require( 'lib/invites/stores/invites-list' );
 	} );
 
-	describe( 'Listing invites', () => {
-		beforeEach( () => {
+	describe( 'Listing invites', function() {
+		beforeEach( function() {
 			Dispatcher.handleServerAction( actions.receiveInvites );
 		} );
 
-		test( 'List of invites should be an object', () => {
+		it( 'List of invites should be an object', function() {
 			const invites = ListInvitesStore.getInvites( siteId );
 			assert.isObject( invites );
 		} );
 
-		test( 'Fetching more invites should add to the object', () => {
+		it( 'Fetching more invites should add to the object', function() {
 			const invites = ListInvitesStore.getInvites( siteId );
 			let invitesAgain = [];
 			assert.equal( 1, invites.size );

@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -20,7 +19,7 @@ import {
 
 describe( 'selectors', () => {
 	describe( '#isRequestingList()', () => {
-		test( 'should return false if not fetching', () => {
+		it( 'should return false if not fetching', () => {
 			const isRequesting = isRequestingList( {
 				reader: {
 					lists: {
@@ -32,7 +31,7 @@ describe( 'selectors', () => {
 			expect( isRequesting ).to.be.false;
 		} );
 
-		test( 'should return true if fetching', () => {
+		it( 'should return true if fetching', () => {
 			const isRequesting = isRequestingList( {
 				reader: {
 					lists: {
@@ -46,7 +45,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#isRequestingSubscribedLists()', () => {
-		test( 'should return false if not fetching', () => {
+		it( 'should return false if not fetching', () => {
 			const isRequesting = isRequestingSubscribedLists( {
 				reader: {
 					lists: {
@@ -58,7 +57,7 @@ describe( 'selectors', () => {
 			expect( isRequesting ).to.be.false;
 		} );
 
-		test( 'should return true if fetching', () => {
+		it( 'should return true if fetching', () => {
 			const isRequesting = isRequestingSubscribedLists( {
 				reader: {
 					lists: {
@@ -72,7 +71,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getSubscribedLists()', () => {
-		test( 'should return an empty array if the user is not subscribed to any lists', () => {
+		it( 'should return an empty array if the user is not subscribed to any lists', () => {
 			const subscribedLists = getSubscribedLists( {
 				reader: {
 					lists: {
@@ -90,7 +89,7 @@ describe( 'selectors', () => {
 			expect( subscribedLists ).to.eql( [] );
 		} );
 
-		test( 'should retrieve items in a-z slug order', () => {
+		it( 'should retrieve items in a-z slug order', () => {
 			const subscribedLists = getSubscribedLists( {
 				reader: {
 					lists: {
@@ -117,7 +116,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#isUpdatedList()', () => {
-		test( 'should return false if list has not been updated', () => {
+		it( 'should return false if list has not been updated', () => {
 			const isUpdated = isUpdatedList(
 				{
 					reader: {
@@ -126,13 +125,13 @@ describe( 'selectors', () => {
 						},
 					},
 				},
-				123
+				123,
 			);
 
 			expect( isUpdated ).to.be.false;
 		} );
 
-		test( 'should return true if the list has been updated', () => {
+		it( 'should return true if the list has been updated', () => {
 			const isUpdated = isUpdatedList(
 				{
 					reader: {
@@ -141,7 +140,7 @@ describe( 'selectors', () => {
 						},
 					},
 				},
-				123
+				123,
 			);
 
 			expect( isUpdated ).to.be.true;
@@ -149,7 +148,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getListByOwnerAndSlug()', () => {
-		test( 'should return undefined if the list does not exist', () => {
+		it( 'should return undefined if the list does not exist', () => {
 			const list = getListByOwnerAndSlug(
 				{
 					reader: {
@@ -157,13 +156,13 @@ describe( 'selectors', () => {
 					},
 				},
 				'lister',
-				'bananas'
+				'bananas',
 			);
 
 			expect( list ).to.eql( undefined );
 		} );
 
-		test( 'should return a list if the owner and slug match', () => {
+		it( 'should return a list if the owner and slug match', () => {
 			const list = getListByOwnerAndSlug(
 				{
 					reader: {
@@ -184,7 +183,7 @@ describe( 'selectors', () => {
 					},
 				},
 				'lister',
-				'bananas'
+				'bananas',
 			);
 
 			expect( list ).to.eql( {
@@ -196,7 +195,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#isSubscribedByOwnerAndSlug()', () => {
-		test( 'should return false if the list does not exist', () => {
+		it( 'should return false if the list does not exist', () => {
 			const isSubscribed = isSubscribedByOwnerAndSlug(
 				{
 					reader: {
@@ -205,13 +204,13 @@ describe( 'selectors', () => {
 					},
 				},
 				'lister',
-				'bananas'
+				'bananas',
 			);
 
 			expect( isSubscribed ).to.eql( false );
 		} );
 
-		test( 'should return true if the owner and slug match a subscribed list', () => {
+		it( 'should return true if the owner and slug match a subscribed list', () => {
 			const isSubscribed = isSubscribedByOwnerAndSlug(
 				{
 					reader: {
@@ -233,7 +232,7 @@ describe( 'selectors', () => {
 					},
 				},
 				'lister',
-				'bananas'
+				'bananas',
 			);
 
 			expect( isSubscribed ).to.eql( true );
@@ -241,7 +240,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#hasError()', () => {
-		test( 'should return false if there is no error for the list', () => {
+		it( 'should return false if there is no error for the list', () => {
 			const result = hasError(
 				{
 					reader: {
@@ -250,13 +249,13 @@ describe( 'selectors', () => {
 						},
 					},
 				},
-				456
+				456,
 			);
 
 			expect( result ).to.be.false;
 		} );
 
-		test( 'should return true if the list has an error', () => {
+		it( 'should return true if the list has an error', () => {
 			const result = hasError(
 				{
 					reader: {
@@ -265,7 +264,7 @@ describe( 'selectors', () => {
 						},
 					},
 				},
-				123
+				123,
 			);
 
 			expect( result ).to.be.true;
@@ -273,7 +272,7 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#isMissingByOwnerAndSlug()', () => {
-		test( 'should return false if the missing list does not exist', () => {
+		it( 'should return false if the missing list does not exist', () => {
 			const isMissing = isMissingByOwnerAndSlug(
 				{
 					reader: {
@@ -283,13 +282,13 @@ describe( 'selectors', () => {
 					},
 				},
 				'lister',
-				'bananas'
+				'bananas',
 			);
 
 			expect( isMissing ).to.eql( false );
 		} );
 
-		test( 'should return true if the owner and slug match a missing list', () => {
+		it( 'should return true if the owner and slug match a missing list', () => {
 			const isMissing = isMissingByOwnerAndSlug(
 				{
 					reader: {
@@ -299,7 +298,7 @@ describe( 'selectors', () => {
 					},
 				},
 				'lister',
-				'bananas'
+				'bananas',
 			);
 
 			expect( isMissing ).to.eql( true );

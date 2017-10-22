@@ -1,17 +1,16 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import { shouldSiteBeFetched } from '../selectors';
 
 describe( 'selectors', () => {
 	describe( 'shouldSiteBeFetched', () => {
-		test( 'should return false if the fetch is queued', () => {
+		it( 'should return false if the fetch is queued', () => {
 			expect(
 				shouldSiteBeFetched(
 					{
@@ -25,12 +24,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1
-				)
+					1,
+				),
 			).to.be.false;
 		} );
 
-		test( 'should return false if the site is loaded and recent', () => {
+		it( 'should return false if the site is loaded and recent', () => {
 			expect(
 				shouldSiteBeFetched(
 					{
@@ -46,12 +45,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1
-				)
+					1,
+				),
 			).to.be.false;
 		} );
 
-		test( 'should return true if the site is loaded and has no last fetch time', () => {
+		it( 'should return true if the site is loaded and has no last fetch time', () => {
 			expect(
 				shouldSiteBeFetched(
 					{
@@ -65,12 +64,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1
-				)
+					1,
+				),
 			).to.be.true;
 		} );
 
-		test( 'should return true if the site is loaded and was not updated recently', () => {
+		it( 'should return true if the site is loaded and was not updated recently', () => {
 			expect(
 				shouldSiteBeFetched(
 					{
@@ -86,12 +85,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1
-				)
+					1,
+				),
 			).to.be.true;
 		} );
 
-		test( 'should return true if the site is not queued and not loaded', () => {
+		it( 'should return true if the site is not queued and not loaded', () => {
 			expect(
 				shouldSiteBeFetched(
 					{
@@ -103,12 +102,12 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1
-				)
+					1,
+				),
 			).to.be.true;
 		} );
 
-		test( 'should still return true if another site is queued or loaded', () => {
+		it( 'should still return true if another site is queued or loaded', () => {
 			expect(
 				shouldSiteBeFetched(
 					{
@@ -124,8 +123,8 @@ describe( 'selectors', () => {
 							},
 						},
 					},
-					1
-				)
+					1,
+				),
 			).to.be.true;
 		} );
 	} );

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import { map } from 'lodash';
 import { connect } from 'react-redux';
 

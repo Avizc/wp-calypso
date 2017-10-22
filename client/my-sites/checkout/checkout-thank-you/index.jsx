@@ -1,15 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { connect } from 'react-redux';
-import { localize } from 'i18n-calypso';
-import { find, get } from 'lodash';
+import { find } from 'lodash';
 import page from 'page';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import moment from 'moment';
 
 /**
@@ -36,7 +31,6 @@ import HappinessSupport from 'components/happiness-support';
 import HeaderCake from 'components/header-cake';
 import PlanThankYouCard from 'blocks/plan-thank-you-card';
 import JetpackThankYouCard from './jetpack-thank-you-card';
-import AtomicStoreThankYouCard from './atomic-store-thank-you-card';
 import {
 	isChargeback,
 	isDomainMapping,
@@ -52,7 +46,7 @@ import {
 	isPremium,
 	isBusiness,
 	isSiteRedirect,
-	isTheme,
+	isTheme
 } from 'lib/products-values';
 import JetpackPlanDetails from './jetpack-plan-details';
 import Main from 'components/main';
@@ -62,7 +56,6 @@ import BusinessPlanDetails from './business-plan-details';
 import FailedPurchaseDetails from './failed-purchase-details';
 import PurchaseDetail from 'components/purchase-detail';
 import { getFeatureByKey, shouldFetchSitePlans } from 'lib/plans';
-import RebrandCitiesThankYou from './rebrand-cities-thank-you';
 import SiteRedirectDetails from './site-redirect-details';
 import Notice from 'components/notice';
 import ThankYouCard from 'components/thank-you-card';
@@ -70,13 +63,10 @@ import domainsPaths from 'my-sites/domains/paths';
 import config from 'config';
 import { getSitePlanSlug } from 'state/sites/plans/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
-import { isRebrandCitiesSiteUrl } from 'lib/rebrand-cities';
 import {
-	PLAN_BUSINESS,
 	PLAN_JETPACK_BUSINESS,
 	PLAN_JETPACK_BUSINESS_MONTHLY,
 } from 'lib/plans/constants';
-import { getSiteOptions, isSiteAutomatedTransfer } from 'state/selectors';
 
 function getPurchases( props ) {
 	return ( props.receipt.data && props.receipt.data.purchases ) || [];
@@ -99,13 +89,21 @@ const CheckoutThankYou = React.createClass( {
 		productsList: PropTypes.object.isRequired,
 		receiptId: PropTypes.number,
 		selectedFeature: PropTypes.string,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.object ] ),
+		selectedSite: PropTypes.oneOfType( [
+			PropTypes.bool,
+			PropTypes.object
+		] ).isRequired
 	},
 
 	componentDidMount() {
 		this.redirectIfThemePurchased();
 
-		const { receipt, receiptId, selectedSite, sitePlans } = this.props;
+		const {
+			receipt,
+			receiptId,
+			selectedSite,
+			sitePlans
+		} = this.props;
 
 		if ( selectedSite && receipt.hasLoadedFromServer && this.hasPlanOrDomainProduct() ) {
 			this.props.refreshSitePlans( selectedSite );
@@ -132,17 +130,14 @@ const CheckoutThankYou = React.createClass( {
 		if (
 			! this.props.receipt.hasLoadedFromServer &&
 			nextProps.receipt.hasLoadedFromServer &&
-			this.hasPlanOrDomainProduct( nextProps ) &&
-			this.props.selectedSite
+			this.hasPlanOrDomainProduct( nextProps )
 		) {
 			this.props.refreshSitePlans( this.props.selectedSite );
 		}
 	},
 
 	hasPlanOrDomainProduct( props = this.props ) {
-		return getPurchases( props ).some(
-			purchase => isPlan( purchase ) || isDomainProduct( purchase )
-		);
+		return getPurchases( props ).some( purchase => isPlan( purchase ) || isDomainProduct( purchase ) );
 	},
 
 	renderConfirmationNotice: function() {
@@ -155,17 +150,12 @@ const CheckoutThankYou = React.createClass( {
 				className="checkout-thank-you__verification-notice"
 				showDismiss={ false }
 				status="is-warning"
-			>
-				{ this.props.translate(
-					'We’ve sent a message to {{strong}}%(email)s{{/strong}}. ' +
-						'Please check your email to confirm your address.',
-					{
+				>
+				{ this.translate( 'We’ve sent a message to {{strong}}%(email)s{{/strong}}. ' +
+					'Please check your email to confirm your address.', {
 						args: { email: this.props.user.email },
-						components: {
-							strong: <strong className="checkout-thank-you__verification-notice-email" />,
-						},
-					}
-				) }
+						components: { strong: <strong className="checkout-thank-you__verification-notice-email" />
+				} } ) }
 			</Notice>
 		);
 	},
@@ -175,10 +165,7 @@ const CheckoutThankYou = React.createClass( {
 			return true;
 		}
 
-		return (
-			( ! this.props.selectedSite || this.props.sitePlans.hasLoadedFromServer ) &&
-			this.props.receipt.hasLoadedFromServer
-		);
+		return ( ! this.props.selectedSite || this.props.sitePlans.hasLoadedFromServer ) && this.props.receipt.hasLoadedFromServer;
 	},
 
 	isGenericReceipt() {
@@ -188,11 +175,7 @@ const CheckoutThankYou = React.createClass( {
 	redirectIfThemePurchased() {
 		const purchases = getPurchases( this.props );
 
-		if (
-			this.props.receipt.hasLoadedFromServer &&
-			purchases.length > 0 &&
-			purchases.every( isTheme )
-		) {
+		if ( this.props.receipt.hasLoadedFromServer && purchases.length > 0 && purchases.every( isTheme ) ) {
 			const themeId = purchases[ 0 ].meta;
 			this.props.activatedTheme( 'premium/' + themeId, this.props.selectedSite.ID );
 
@@ -219,9 +202,7 @@ const CheckoutThankYou = React.createClass( {
 			} else if ( purchases.some( isGoogleApps ) ) {
 				const purchase = find( purchases, isGoogleApps );
 
-				return page(
-					domainsPaths.domainManagementEmail( this.props.selectedSite.slug, purchase.meta )
-				);
+				return page( domainsPaths.domainManagementEmail( this.props.selectedSite.slug, purchase.meta ) );
 			}
 		}
 
@@ -254,30 +235,14 @@ const CheckoutThankYou = React.createClass( {
 		if ( ! purchases.length && ! failedPurchases.length && ! this.isGenericReceipt() ) {
 			// disabled because we use global loader icon
 			/* eslint-disable wpcalypso/jsx-classname-namespace */
-			return <div className="wpcom-site__logo noticon noticon-wordpress" />;
+			return (
+				<div className="wpcom-site__logo noticon noticon-wordpress"></div>
+			);
 			/* eslint-enable wpcalypso/jsx-classname-namespace */
 		}
 
-		// Rebrand Cities thanks page
-		if (
-			this.props.selectedSite &&
-			isRebrandCitiesSiteUrl( this.props.selectedSite.slug ) &&
-			PLAN_BUSINESS === this.props.selectedSite.plan.product_slug
-		) {
-			return <RebrandCitiesThankYou receipt={ this.props.receipt } />;
-		}
-
-		const { signupIsStore, isAtomicSite } = this.props;
-
-		if ( wasDotcomPlanPurchased && ( signupIsStore || isAtomicSite ) ) {
-			return (
-				<Main className="checkout-thank-you">
-					{ this.renderConfirmationNotice() }
-					<AtomicStoreThankYouCard siteId={ this.props.selectedSite.ID } />
-				</Main>
-			);
-		} else if ( this.isNewUser() && wasDotcomPlanPurchased ) {
-			// streamlined paid NUX thanks page
+		// streamlined paid NUX thanks page
+		if ( this.isNewUser() && wasDotcomPlanPurchased ) {
 			return (
 				<Main className="checkout-thank-you">
 					{ this.renderConfirmationNotice() }
@@ -303,27 +268,28 @@ const CheckoutThankYou = React.createClass( {
 					<ThankYouCard
 						name={ domainName }
 						price={ this.props.receipt.data.displayPrice }
-						heading={ this.props.translate( 'Thank you for your purchase!' ) }
-						description={ this.props.translate(
-							"That looks like a great domain. Now it's time to get it all set up."
-						) }
+						heading={ this.translate( 'Thank you for your purchase!' ) }
+						description={ this.translate( "That looks like a great domain. Now it's time to get it all set up." ) }
 						buttonUrl={ domainManagementList( domainName ) }
-						buttonText={ this.props.translate( 'Go To Your Domain' ) }
+						buttonText={ this.translate( 'Go To Your Domain' ) }
 					/>
 				</Main>
 			);
 		}
 
-		const goBackText = this.props.selectedSite
-			? this.props.translate( 'Back to my site' )
-			: this.props.translate( 'Register Domain' );
+		const goBackText = this.props.selectedSite ? this.translate( 'Back to my site' ) : this.translate( 'Register Domain' );
 
 		// standard thanks page
 		return (
 			<Main className="checkout-thank-you">
-				<HeaderCake onClick={ this.goBack } isCompact backText={ goBackText } />
+				<HeaderCake
+					onClick={ this.goBack }
+					isCompact
+					backText={ goBackText } />
 
-				<Card className="checkout-thank-you__content">{ this.productRelatedMessages() }</Card>
+				<Card className="checkout-thank-you__content">
+					{ this.productRelatedMessages() }
+				</Card>
 
 				<Card className="checkout-thank-you__footer">
 					<HappinessSupport
@@ -359,10 +325,7 @@ const CheckoutThankYou = React.createClass( {
 			} else if ( purchases.some( isBusiness ) ) {
 				return [ BusinessPlanDetails, find( purchases, isBusiness ) ];
 			} else if ( purchases.some( isDomainRegistration ) ) {
-				return [
-					DomainRegistrationDetails,
-					...findPurchaseAndDomain( purchases, isDomainRegistration ),
-				];
+				return [ DomainRegistrationDetails, ...findPurchaseAndDomain( purchases, isDomainRegistration ) ];
 			} else if ( purchases.some( isGoogleApps ) ) {
 				return [ GoogleAppsDetails, ...findPurchaseAndDomain( purchases, isGoogleApps ) ];
 			} else if ( purchases.some( isDomainMapping ) ) {
@@ -385,17 +348,19 @@ const CheckoutThankYou = React.createClass( {
 			failedPurchases = getFailedPurchases( this.props ),
 			hasFailedPurchases = failedPurchases.length > 0,
 			[ ComponentClass, primaryPurchase, domain ] = this.getComponentAndPrimaryPurchaseAndDomain(),
-			registrarSupportUrl =
-				! ComponentClass || this.isGenericReceipt() || hasFailedPurchases
-					? null
-					: primaryPurchase.registrarSupportUrl;
+			registrarSupportUrl = ( ! ComponentClass || this.isGenericReceipt() || hasFailedPurchases )
+				? null
+				: primaryPurchase.registrarSupportUrl;
 
 		if ( ! this.isDataLoaded() ) {
 			return (
 				<div>
-					<CheckoutThankYouHeader isDataLoaded={ false } selectedSite={ selectedSite } />
+					<CheckoutThankYouHeader
+						isDataLoaded={ false }
+						selectedSite={ selectedSite } />
 
-					<CheckoutThankYouFeaturesHeader isDataLoaded={ false } />
+					<CheckoutThankYouFeaturesHeader
+						isDataLoaded={ false } />
 
 					<div className="checkout-thank-you__purchase-details-list">
 						<PurchaseDetail isPlaceholder />
@@ -431,20 +396,18 @@ const CheckoutThankYou = React.createClass( {
 							registrarSupportUrl={ registrarSupportUrl }
 							selectedSite={ selectedSite }
 							selectedFeature={ getFeatureByKey( this.props.selectedFeature ) }
-							sitePlans={ sitePlans }
-						/>
+							sitePlans={ sitePlans } />
 					</div>
 				) }
 			</div>
 		);
-	},
+	}
 } );
 
 export default connect(
 	( state, props ) => {
 		const siteId = getSelectedSiteId( state );
 		const planSlug = getSitePlanSlug( state, siteId );
-		const siteOptions = getSiteOptions( state, siteId );
 
 		return {
 			planSlug,
@@ -452,11 +415,9 @@ export default connect(
 			sitePlans: getPlansBySite( state, props.selectedSite ),
 			user: getCurrentUser( state ),
 			userDate: getCurrentUserDate( state ),
-			signupIsStore: get( siteOptions, 'signup_is_store', false ),
-			isAtomicSite: isSiteAutomatedTransfer( state, siteId ),
 		};
 	},
-	dispatch => {
+	( dispatch ) => {
 		return {
 			activatedTheme( meta, site ) {
 				dispatch( themeActivated( meta, site, 'calypstore', true ) );
@@ -472,7 +433,7 @@ export default connect(
 			},
 			loadTrackingTool( name ) {
 				dispatch( loadTrackingTool( name ) );
-			},
+			}
 		};
 	}
-)( localize( CheckoutThankYou ) );
+)( CheckoutThankYou );

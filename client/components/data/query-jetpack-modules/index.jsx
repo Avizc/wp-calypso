@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -18,7 +14,7 @@ class QueryJetpackModules extends Component {
 	static propTypes = {
 		siteId: PropTypes.number.isRequired,
 		requestingModules: PropTypes.bool,
-		fetchModuleList: PropTypes.func,
+		fetchModuleList: PropTypes.func
 	};
 
 	componentWillMount() {
@@ -47,7 +43,7 @@ class QueryJetpackModules extends Component {
 export default connect(
 	( state, ownProps ) => {
 		return {
-			requestingModules: isFetchingJetpackModules( state, ownProps.siteId ),
+			requestingModules: isFetchingJetpackModules( state, ownProps.siteId )
 		};
 	},
 	{ fetchModuleList }

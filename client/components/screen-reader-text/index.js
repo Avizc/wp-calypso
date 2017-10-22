@@ -1,11 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 export default function ScreenReaderText( { children } ) {
-	return <span className="screen-reader-text">{ children }</span>;
+	return (
+		<span className="screen-reader-text">
+			{ children }
+		</span>
+	);
 }

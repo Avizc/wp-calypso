@@ -1,32 +1,28 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import React from 'react';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:me:security:2fa-setup-backup-codes' );
+var React = require( 'react' ),
+	debug = require( 'debug' )( 'calypso:me:security:2fa-setup-backup-codes' );
 
 /**
  * Internal dependencies
  */
-import Security2faBackupCodesList from 'me/security-2fa-backup-codes-list';
-import Security2faProgress from 'me/security-2fa-progress';
-import twoStepAuthorization from 'lib/two-step-authorization';
-import eventRecorder from 'me/event-recorder';
-import support from 'lib/url/support';
+var Security2faBackupCodesList = require( 'me/security-2fa-backup-codes-list' ),
+	Security2faProgress = require( 'me/security-2fa-progress' ),
+	twoStepAuthorization = require( 'lib/two-step-authorization' ),
+	eventRecorder = require( 'me/event-recorder' ),
+	support = require( 'lib/url/support' );
+
 import Notice from 'components/notice';
 
-const Security2faSetupBackupCodes = React.createClass( {
+module.exports = React.createClass( {
+
 	displayName: 'Security2faSetupBackupCodes',
 
 	mixins: [ eventRecorder ],
 
 	propTypes: {
-		onFinished: PropTypes.func.isRequired,
+		onFinished: React.PropTypes.func.isRequired
 	},
 
 	componentDidMount: function() {
@@ -41,16 +37,14 @@ const Security2faSetupBackupCodes = React.createClass( {
 	getInitialState: function() {
 		return {
 			backupCodes: [],
-			lastError: false,
+			lastError: false
 		};
 	},
 
 	onRequestComplete: function( error, data ) {
 		if ( error ) {
 			this.setState( {
-				lastError: this.props.translate(
-					'Unable to obtain backup codes.  Please try again later.'
-				),
+				lastError: this.translate( 'Unable to obtain backup codes.  Please try again later.' ),
 			} );
 			return;
 		}
@@ -70,7 +64,7 @@ const Security2faSetupBackupCodes = React.createClass( {
 			return;
 		}
 
-		errorMessage = this.props.translate(
+		errorMessage = this.translate(
 			'There was an error retrieving back up codes. Please {{supportLink}}contact support{{/supportLink}}',
 			{
 				components: {
@@ -79,12 +73,18 @@ const Security2faSetupBackupCodes = React.createClass( {
 							href={ support.CALYPSO_CONTACT }
 							onClick={ this.recordClickEvent( 'No Backup Codes Contact Support Link' ) }
 						/>
-					),
-				},
+					)
+				}
 			}
 		);
 
-		return <Notice showDismiss={ false } status="is-error" text={ errorMessage } />;
+		return (
+			<Notice
+				showDismiss={ false }
+				status="is-error"
+				text={ errorMessage }
+			/>
+		);
 	},
 
 	renderList: function() {
@@ -106,18 +106,18 @@ const Security2faSetupBackupCodes = React.createClass( {
 			<div>
 				<Security2faProgress step={ 3 } />
 				<p>
-					{ this.props.translate(
-						'Backup codes let you access your account if your phone is ' +
+					{
+						this.translate(
+							'Backup codes let you access your account if your phone is ' +
 							'lost, stolen, or if you run it through the washing ' +
-							"machine and the bag of rice trick doesn't work."
-					) }
+							'machine and the bag of rice trick doesn\'t work.'
+						)
+					}
 				</p>
 
 				{ this.possiblyRenderError() }
 				{ this.renderList() }
 			</div>
 		);
-	},
+	}
 } );
-
-export default localize( Security2faSetupBackupCodes );

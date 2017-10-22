@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -17,6 +13,7 @@ import ProductFormVariationsTable from './product-form-variations-table';
 import FormToggle from 'components/forms/form-toggle';
 
 class ProductFormVariationsCard extends Component {
+
 	state = {
 		simpleProduct: [],
 		variationAttributes: [],
@@ -36,12 +33,8 @@ class ProductFormVariationsCard extends Component {
 	};
 
 	simpleFields = [
-		'dimensions',
-		'weight',
-		'regular_price',
-		'manage_stock',
-		'stock_quantity',
-		'backorders',
+		'dimensions', 'weight', 'regular_price',
+		'manage_stock', 'stock_quantity', 'backorders',
 	];
 
 	/*
@@ -58,11 +51,11 @@ class ProductFormVariationsCard extends Component {
 		} else {
 			this.setProductTypeSimple();
 		}
-	};
+	}
 
 	setProductTypeVariable() {
 		const { siteId, product, editProduct } = this.props;
-		const attributes = ( product.attributes && [ ...product.attributes ] ) || [];
+		const attributes = product.attributes && [ ...product.attributes ] || [];
 		const productData = { ...product };
 		const simpleProduct = [ ...this.state.simpleProduct ];
 
@@ -94,11 +87,8 @@ class ProductFormVariationsCard extends Component {
 				productData[ field ] = simpleProduct[ field ];
 			}
 		} );
-		const variationAttributes =
-			( product.attributes && product.attributes.filter( attribute => attribute.variation ) ) || [];
-		const attributes =
-			( product.attributes && product.attributes.filter( attribute => ! attribute.variation ) ) ||
-			null;
+		const variationAttributes = ( product.attributes && product.attributes.filter( attribute => attribute.variation ) ) || [];
+		const attributes = ( product.attributes && product.attributes.filter( attribute => ! attribute.variation ) ) || null;
 
 		this.setState( { variationAttributes, simpleProduct: [] } );
 		editProduct( siteId, product, {
@@ -113,11 +103,10 @@ class ProductFormVariationsCard extends Component {
 		const { editProductAttribute, editProductVariation } = this.props;
 		const type = product.type || 'simple';
 		const variationToggleDescription = translate(
-			'%(productName)s has variations, like size and color.',
-			{
+			'%(productName)s has variations, like size and color.', {
 				args: {
-					productName: ( product && product.name ) || translate( 'This product' ),
-				},
+					productName: ( product && product.name ) || translate( 'This product' )
+				}
 			}
 		);
 
@@ -126,11 +115,10 @@ class ProductFormVariationsCard extends Component {
 				icon=""
 				expanded
 				className="products__variation-card"
-				header={
-					<FormToggle onChange={ this.handleToggle } checked={ 'variable' === type }>
-						{ variationToggleDescription }
-					</FormToggle>
-				}
+				header={ ( <FormToggle onChange={ this.handleToggle } checked={ 'variable' === type }>
+					{ variationToggleDescription }
+				</FormToggle>
+				) }
 			>
 				{ 'variable' === type && (
 					<div>

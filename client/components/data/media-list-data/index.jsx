@@ -1,38 +1,35 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assign, isEqual } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
+var React = require( 'react' ),
+	assign = require( 'lodash/assign' ),
+	isEqual = require( 'lodash/isEqual' );
 
 /**
  * Internal dependencies
  */
-import MediaActions from 'lib/media/actions';
-import MediaListStore from 'lib/media/list-store';
-import passToChildren from 'lib/react-pass-to-children';
-import utils from './utils';
+var MediaActions = require( 'lib/media/actions' ),
+	MediaListStore = require( 'lib/media/list-store' ),
+	passToChildren = require( 'lib/react-pass-to-children' ),
+	utils = require( './utils' );
 
 function getStateData( siteId ) {
 	return {
 		media: MediaListStore.getAll( siteId ),
 		mediaHasNextPage: MediaListStore.hasNextPage( siteId ),
-		mediaFetchingNextPage: MediaListStore.isFetchingNextPage( siteId ),
+		mediaFetchingNextPage: MediaListStore.isFetchingNextPage( siteId )
 	};
 }
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaListData',
 
 	propTypes: {
-		siteId: PropTypes.number.isRequired,
-		source: PropTypes.string,
-		postId: PropTypes.number,
-		filter: PropTypes.string,
-		search: PropTypes.string,
+		siteId: React.PropTypes.number.isRequired,
+		source: React.PropTypes.string,
+		postId: React.PropTypes.number,
+		filter: React.PropTypes.string,
+		search: React.PropTypes.string
 	},
 
 	getInitialState: function() {
@@ -67,7 +64,7 @@ export default React.createClass( {
 			query.search = props.search;
 		}
 
-		if ( props.filter && ! props.source ) {
+		if ( props.filter ) {
 			if ( props.filter === 'this-post' ) {
 				if ( props.postId ) {
 					query.post_ID = props.postId;
@@ -94,11 +91,8 @@ export default React.createClass( {
 	},
 
 	render: function() {
-		return passToChildren(
-			this,
-			assign( {}, this.state, {
-				mediaOnFetchNextPage: this.fetchData,
-			} )
-		);
-	},
+		return passToChildren( this, assign( {}, this.state, {
+			mediaOnFetchNextPage: this.fetchData
+		} ) );
+	}
 } );

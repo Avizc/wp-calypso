@@ -42,7 +42,7 @@ When mixing JavaScript and HTML (via JSX) together, indent JavaScript blocks to 
 Correct:
 
 ```js
-const Post = React.createClass({
+var Post = React.createClass({
 
 	render: function() {
 		var post = this.props.post;
@@ -62,7 +62,7 @@ const Post = React.createClass({
 Incorrect:
 
 ```js
-const Post = React.createClass({
+var Post = React.createClass({
 
 	render: function() {
 		var post = this.props.post;

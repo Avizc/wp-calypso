@@ -1,9 +1,6 @@
 /**
- * External dependencies
- *
- * @format
- */
-
+* External dependencies
+*/
 import React from 'react';
 import PureRenderMixin from 'react-pure-render/mixin';
 

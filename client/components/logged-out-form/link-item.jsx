@@ -1,19 +1,15 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import classnames from 'classnames';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 export default React.createClass( {
 	displayName: 'LoggedOutFormLinkItem',
 
 	propTypes: {
-		className: PropTypes.string,
+		className: React.PropTypes.string
 	},
 
 	render() {
@@ -25,5 +21,5 @@ export default React.createClass( {
 				{ this.props.children }
 			</a>
 		);
-	},
+	}
 } );

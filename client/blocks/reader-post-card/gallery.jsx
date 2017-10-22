@@ -1,8 +1,6 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import { map, take, filter } from 'lodash';
 
@@ -51,12 +49,16 @@ const PostGallery = ( { post, children, isDiscover } ) => {
 	} );
 	return (
 		<div className="reader-post-card__post">
-			<ul className="reader-post-card__gallery">{ listItems }</ul>
+			<ul className="reader-post-card__gallery">
+				{ listItems }
+			</ul>
 			<div className="reader-post-card__post-details">
 				<AutoDirection>
 					<h1 className="reader-post-card__title">
 						<a className="reader-post-card__title-link" href={ post.URL }>
-							<Emojify>{ post.title }</Emojify>
+							<Emojify>
+								{ post.title }
+							</Emojify>
 						</a>
 					</h1>
 				</AutoDirection>
@@ -68,8 +70,8 @@ const PostGallery = ( { post, children, isDiscover } ) => {
 };
 
 PostGallery.propTypes = {
-	post: PropTypes.object.isRequired,
-	isDiscover: PropTypes.bool,
+	post: React.PropTypes.object.isRequired,
+	isDiscover: React.PropTypes.bool,
 };
 
 export default PostGallery;

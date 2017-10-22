@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import {
 	PLUGIN_UPLOAD,
 	PLUGIN_UPLOAD_CLEAR,

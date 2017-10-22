@@ -1,19 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:help-search:actions' );
+var debug = require( 'debug' )( 'calypso:help-search:actions' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import { action as ActionTypes } from './constants';
-import wpcom from 'lib/wp';
+var Dispatcher = require( 'dispatcher' ),
+	ActionTypes = require( './constants' ).action,
+	wpcom = require( 'lib/wp' );
 
 var HelpSearchActions = {
 	fetch: function( searchQuery ) {
@@ -29,10 +24,10 @@ var HelpSearchActions = {
 
 			Dispatcher.handleServerAction( {
 				type: ActionTypes.SET_HELP_LINKS,
-				helpLinks: helpLinks,
+				helpLinks: helpLinks
 			} );
 		} );
-	},
+	}
 };
 
-export default HelpSearchActions;
+module.exports = HelpSearchActions;

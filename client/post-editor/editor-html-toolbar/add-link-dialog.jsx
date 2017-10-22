@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -25,6 +21,7 @@ const REGEXP_URL = /^(https?|ftp):\/\/[A-Z0-9.-]+\.[A-Z]{2,4}[^ "]*$/i;
 const REGEXP_STANDALONE_URL = /^(?:[a-z]+:|#|\?|\.|\/)/;
 
 export class AddLinkDialog extends Component {
+
 	static propTypes = {
 		onClose: PropTypes.func,
 		onInsert: PropTypes.func,
@@ -70,29 +67,30 @@ export class AddLinkDialog extends Component {
 
 	bindLinkUrlRef = input => {
 		this.linkUrl = input;
-	};
+	}
 
 	setLinkUrl = event => {
 		const { selectedPost } = this.state;
 		this.setState( {
 			linkUrl: event.target.value,
-			selectedPost:
-				selectedPost.url === event.target.value ? selectedPost : { id: null, url: null },
+			selectedPost: selectedPost.url === event.target.value
+				? selectedPost
+				: { id: null, url: null },
 		} );
-	};
+	}
 
 	setLinkText = event => {
 		this.setState( { linkText: event.target.value } );
-	};
+	}
 
 	setLinkNewTab = event => {
 		this.setState( { linkNewTab: event.target.checked } );
-	};
+	}
 
 	onSelectPost = post => {
 		this.setState( {
 			linkUrl: post.URL,
-			selectedPost: { id: post.ID, url: post.URL },
+			selectedPost: { id: post.ID, url: post.URL }
 		} );
 	};
 
@@ -104,36 +102,42 @@ export class AddLinkDialog extends Component {
 			selectedPost: { id: null, url: null },
 		} );
 		this.props.onClose();
-	};
+	}
 
 	onInsertLink = () => {
-		const { linkNewTab, linkText } = this.state;
-		this.props.onInsert(
-			{
-				href: this.correctUrl(),
-				target: linkNewTab ? '_blank' : '',
-			},
-			linkText
-		);
+		const {
+			linkNewTab,
+			linkText,
+		} = this.state;
+		this.props.onInsert( {
+			href: this.correctUrl(),
+			target: linkNewTab ? '_blank' : '',
+		}, linkText );
 		this.onCloseDialog();
-	};
+	}
 
 	render() {
-		const { shouldDisplay, siteId, translate } = this.props;
-		const { linkNewTab, linkText, linkUrl, selectedPost } = this.state;
+		const {
+			shouldDisplay,
+			siteId,
+			translate
+		} = this.props;
+		const {
+			linkNewTab,
+			linkText,
+			linkUrl,
+			selectedPost,
+		} = this.state;
 
-		const buttons = [
-			{
-				action: 'cancel',
-				label: translate( 'Cancel' ),
-			},
-			{
-				action: 'add-link',
-				isPrimary: true,
-				label: translate( 'Add Link' ),
-				onClick: this.onInsertLink,
-			},
-		];
+		const buttons = [ {
+			action: 'cancel',
+			label: translate( 'Cancel' ),
+		}, {
+			action: 'add-link',
+			isPrimary: true,
+			label: translate( 'Add Link' ),
+			onClick: this.onInsertLink,
+		} ];
 
 		return (
 			<Dialog
@@ -144,7 +148,9 @@ export class AddLinkDialog extends Component {
 				additionalClassNames="editor-html-toolbar__dialog"
 			>
 				<FormFieldset>
-					<FormLabel htmlFor="link_url">{ translate( 'URL' ) }</FormLabel>
+					<FormLabel htmlFor="link_url">
+						{ translate( 'URL' ) }
+					</FormLabel>
 					<FormTextInput
 						name="link_url"
 						onChange={ this.setLinkUrl }
@@ -153,8 +159,14 @@ export class AddLinkDialog extends Component {
 					/>
 				</FormFieldset>
 				<FormFieldset>
-					<FormLabel htmlFor="link_text">{ translate( 'Link Text' ) }</FormLabel>
-					<FormTextInput name="link_text" onChange={ this.setLinkText } value={ linkText } />
+					<FormLabel htmlFor="link_text">
+						{ translate( 'Link Text' ) }
+					</FormLabel>
+					<FormTextInput
+						name="link_text"
+						onChange={ this.setLinkText }
+						value={ linkText }
+					/>
 				</FormFieldset>
 				<FormFieldset>
 					<FormLabel>
@@ -163,7 +175,9 @@ export class AddLinkDialog extends Component {
 							name="link_new_tab"
 							onChange={ this.setLinkNewTab }
 						/>
-						<span>{ translate( 'Open link in a new window/tab' ) }</span>
+						<span>
+							{ translate( 'Open link in a new window/tab' ) }
+						</span>
 					</FormLabel>
 				</FormFieldset>
 				<FormFieldset>

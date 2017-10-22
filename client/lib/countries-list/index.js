@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugFactory from 'debug';
 import inherits from 'inherits';
 import store from 'store';
@@ -49,29 +46,27 @@ CountriesList.prototype.fetch = function() {
 	this.isFetching = true;
 
 	// Sends a request to the API endpoint defined in the subclass
-	this.requestFromEndpoint(
-		function( error, countriesList ) {
-			if ( error ) {
-				debug( 'Unable to fetch ' + this.key + ' from api', error );
+	this.requestFromEndpoint( function( error, countriesList ) {
+		if ( error ) {
+			debug( 'Unable to fetch ' + this.key + ' from api', error );
 
-				return;
-			}
+			return;
+		}
 
-			debug( this.key + ' fetched from api successfully:', countriesList );
+		debug( this.key + ' fetched from api successfully:', countriesList );
 
-			if ( ! this.initialized ) {
-				this.initialize( countriesList );
-			} else {
-				this.data = countriesList;
-			}
+		if ( ! this.initialized ) {
+			this.initialize( countriesList );
+		} else {
+			this.data = countriesList;
+		}
 
-			this.isFetching = false;
+		this.isFetching = false;
 
-			this.emit( 'change' );
+		this.emit( 'change' );
 
-			store.set( this.key, countriesList );
-		}.bind( this )
-	);
+		store.set( this.key, countriesList );
+	}.bind( this ) );
 };
 
 /**
@@ -169,7 +164,7 @@ const domainRegistrationCountriesList = new DomainRegistrationCountriesList();
 const paymentCountriesList = new PaymentCountriesList();
 const smsCountriesList = new SmsCountriesList();
 
-export default {
+module.exports = {
 	forDomainRegistrations: function() {
 		return domainRegistrationCountriesList;
 	},
@@ -178,5 +173,5 @@ export default {
 	},
 	forSms: function() {
 		return smsCountriesList;
-	},
+	}
 };

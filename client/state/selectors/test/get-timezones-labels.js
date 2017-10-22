@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,13 +9,13 @@ import { expect } from 'chai';
 import { getTimezonesLabels } from '../';
 
 describe( 'getTimezonesLabels()', () => {
-	test( "should return {} if `timezones` aren't synced", () => {
+	it( 'should return {} if `timezones` aren\'t synced', () => {
 		const state = {
 			timezones: {
 				byContinents: {},
 				labels: {},
 				rawOffsets: {},
-			},
+			}
 		};
 
 		const timezonesLabels = getTimezonesLabels( state );
@@ -25,7 +23,7 @@ describe( 'getTimezonesLabels()', () => {
 		expect( timezonesLabels ).to.eql( {} );
 	} );
 
-	test( 'should return timezones by contienent object data', () => {
+	it( 'should return timezones by contienent object data', () => {
 		const state = {
 			timezones: {
 				byContinents: {},
@@ -35,7 +33,7 @@ describe( 'getTimezonesLabels()', () => {
 					'Indian/Comoro': 'Comoro',
 				},
 				rawOffsets: {},
-			},
+			}
 		};
 
 		const labels = getTimezonesLabels( state );

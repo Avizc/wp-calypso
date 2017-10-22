@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -20,11 +18,11 @@ import {
 
 describe( 'selectors', () => {
 	describe( 'getCurrentUserId()', () => {
-		test( 'should return the current user ID', () => {
+		it( 'should return the current user ID', () => {
 			const currentUserId = getCurrentUserId( {
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( currentUserId ).to.equal( 73705554 );
@@ -32,26 +30,26 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getCurrentUser()', () => {
-		test( 'should return null if no current user', () => {
+		it( 'should return null if no current user', () => {
 			const selected = getCurrentUser( {
 				currentUser: {
-					id: null,
-				},
+					id: null
+				}
 			} );
 
 			expect( selected ).to.be.null;
 		} );
 
-		test( 'should return the object for the current user', () => {
+		it( 'should return the object for the current user', () => {
 			const selected = getCurrentUser( {
 				users: {
 					items: {
-						73705554: { ID: 73705554, login: 'testonesite2014' },
-					},
+						73705554: { ID: 73705554, login: 'testonesite2014' }
+					}
 				},
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( selected ).to.eql( { ID: 73705554, login: 'testonesite2014' } );
@@ -59,41 +57,41 @@ describe( 'selectors', () => {
 	} );
 
 	describe( '#getCurrentUserLocale', () => {
-		test( 'should return null if the current user is not set', () => {
+		it( 'should return null if the current user is not set', () => {
 			const locale = getCurrentUserLocale( {
 				currentUser: {
-					id: null,
-				},
+					id: null
+				}
 			} );
 
 			expect( locale ).to.be.null;
 		} );
 
-		test( 'should return null if the current user locale slug is not set', () => {
+		it( 'should return null if the current user locale slug is not set', () => {
 			const locale = getCurrentUserLocale( {
 				users: {
 					items: {
-						73705554: { ID: 73705554, login: 'testonesite2014' },
-					},
+						73705554: { ID: 73705554, login: 'testonesite2014' }
+					}
 				},
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( locale ).to.be.null;
 		} );
 
-		test( 'should return the current user locale slug', () => {
+		it( 'should return the current user locale slug', () => {
 			const locale = getCurrentUserLocale( {
 				users: {
 					items: {
-						73705554: { ID: 73705554, login: 'testonesite2014', localeSlug: 'fr' },
-					},
+						73705554: { ID: 73705554, login: 'testonesite2014', localeSlug: 'fr' }
+					}
 				},
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( locale ).to.equal( 'fr' );
@@ -101,46 +99,46 @@ describe( 'selectors', () => {
 	} );
 
 	describe( 'getCurrentUserDate()', () => {
-		test( 'should return the current user registration date', () => {
+		it( 'should return the current user registration date', () => {
 			const currentUserDate = getCurrentUserDate( {
 				users: {
 					items: {
-						73705554: { ID: 73705554, login: 'testonesite2014', date: '2014-10-18T17:14:52+00:00' },
-					},
+						73705554: { ID: 73705554, login: 'testonesite2014', date: '2014-10-18T17:14:52+00:00' }
+					}
 				},
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( currentUserDate ).to.equal( '2014-10-18T17:14:52+00:00' );
 		} );
 
-		test( 'should return null if the registration date is missing', () => {
+		it( 'should return null if the registration date is missing', () => {
 			const currentUserDate = getCurrentUserDate( {
 				users: {
 					items: {
-						73705554: { ID: 73705554, login: 'testonesite2014' },
-					},
+						73705554: { ID: 73705554, login: 'testonesite2014' }
+					}
 				},
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( currentUserDate ).to.be.null;
 		} );
 
-		test( 'should return null if the user is missing', () => {
+		it( 'should return null if the user is missing', () => {
 			const currentUserDate = getCurrentUserDate( {
 				users: {
 					items: {
-						12345678: { ID: 12345678, login: 'testuser' },
-					},
+						12345678: { ID: 12345678, login: 'testuser' }
+					}
 				},
 				currentUser: {
-					id: 73705554,
-				},
+					id: 73705554
+				}
 			} );
 
 			expect( currentUserDate ).to.be.null;
@@ -148,91 +146,79 @@ describe( 'selectors', () => {
 	} );
 
 	describe( 'isValidCapability()', () => {
-		test( 'should return null if the site is not known', () => {
-			const isValid = isValidCapability(
-				{
-					currentUser: {
-						capabilities: {},
-					},
-				},
-				2916284,
-				'manage_options'
-			);
+		it( 'should return null if the site is not known', () => {
+			const isValid = isValidCapability( {
+				currentUser: {
+					capabilities: {}
+				}
+			}, 2916284, 'manage_options' );
 
 			expect( isValid ).to.be.null;
 		} );
 
-		test( 'should return true if the capability is valid', () => {
-			const isValid = isValidCapability(
-				{
-					currentUser: {
-						capabilities: {
-							2916284: {
-								manage_options: false,
-							},
-						},
-					},
-				},
-				2916284,
-				'manage_options'
-			);
+		it( 'should return true if the capability is valid', () => {
+			const isValid = isValidCapability( {
+				currentUser: {
+					capabilities: {
+						2916284: {
+							manage_options: false
+						}
+					}
+				}
+			}, 2916284, 'manage_options' );
 
 			expect( isValid ).to.be.true;
 		} );
 
-		test( 'should return false if the capability is invalid', () => {
-			const isValid = isValidCapability(
-				{
-					currentUser: {
-						capabilities: {
-							2916284: {
-								manage_options: false,
-							},
-						},
-					},
-				},
-				2916284,
-				'manage_foo'
-			);
+		it( 'should return false if the capability is invalid', () => {
+			const isValid = isValidCapability( {
+				currentUser: {
+					capabilities: {
+						2916284: {
+							manage_options: false
+						}
+					}
+				}
+			}, 2916284, 'manage_foo' );
 
 			expect( isValid ).to.be.false;
 		} );
 	} );
 
 	describe( 'getCurrentUserCurrencyCode', () => {
-		test( 'should return null if currencyCode is not set', () => {
+		it( 'should return null if currencyCode is not set', () => {
 			const selected = getCurrentUserCurrencyCode( {
 				currentUser: {
-					currencyCode: null,
-				},
+					currencyCode: null
+				}
 			} );
 			expect( selected ).to.equal( null );
 		} );
-		test( 'should return value if currencyCode is set', () => {
+		it( 'should return value if currencyCode is set', () => {
 			const selected = getCurrentUserCurrencyCode( {
 				currentUser: {
-					currencyCode: 'USD',
-				},
+					currencyCode: 'USD'
+				}
 			} );
 			expect( selected ).to.equal( 'USD' );
 		} );
 	} );
 
 	describe( 'getCurrentUserEmail', () => {
-		test( 'should return a null it the current user is not there for whatever reasons', () => {
+		it( 'should return a null it the current user is not there for whatever reasons', () => {
 			const selected = getCurrentUserEmail( {
 				users: {
-					items: {},
+					items: {}
 				},
 				currentUser: {
-					id: 123456,
+					id: 123456
 				},
 			} );
 
 			expect( selected ).to.equal( null );
 		} );
 
-		test( 'should return a null if the primary email is not set', () => {
+		it( 'should return a null if the primary email is not set', () => {
 			const selected = getCurrentUserEmail( {
 				users: {
 					items: {
@@ -242,14 +228,14 @@ describe( 'selectors', () => {
 					},
 				},
 				currentUser: {
-					id: 123456,
+					id: 123456
 				},
 			} );
 
 			expect( selected ).to.equal( null );
 		} );
 
-		test( 'should return value if the email is set', () => {
+		it( 'should return value if the email is set', () => {
 			const testEmail = 'test@example.com';
 			const selected = getCurrentUserEmail( {
 				users: {
@@ -261,7 +247,7 @@ describe( 'selectors', () => {
 					},
 				},
 				currentUser: {
-					id: 123456,
+					id: 123456
 				},
 			} );
 

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 import Gridicon from 'gridicons';
 
@@ -19,21 +15,10 @@ const AccountDialogAccount = ( { account, conflicting, onChange, selected } ) =>
 		<li className={ classes }>
 			<label className="account-dialog-account__label">
 				{ conflicting && <Gridicon icon="notice" /> }
-				{ ! account.isConnected && (
-					<input
-						type="radio"
-						onChange={ onChange }
-						checked={ selected }
-						className="account-dialog-account__input"
-					/>
-				) }
-				{ account.picture && (
-					<img
-						src={ account.picture }
-						alt={ account.name }
-						className="account-dialog-account__picture"
-					/>
-				) }
+				{ ! account.isConnected &&
+					<input type="radio" onChange={ onChange } checked={ selected } className="account-dialog-account__input" /> }
+				{ account.picture &&
+					<img src={ account.picture } alt={ account.name } className="account-dialog-account__picture" /> }
 				<span className="account-dialog-account__name">{ account.name }</span>
 			</label>
 		</li>
@@ -42,12 +27,12 @@ const AccountDialogAccount = ( { account, conflicting, onChange, selected } ) =>
 
 AccountDialogAccount.propTypes = {
 	account: PropTypes.shape( {
-		ID: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
+		ID: PropTypes.oneOfType( [ React.PropTypes.number, React.PropTypes.string ] ),
 		name: PropTypes.string,
 		picture: PropTypes.string,
 		keyringConnectionId: PropTypes.number,
 		isConnected: PropTypes.bool,
-		isExternal: PropTypes.bool,
+		isExternal: PropTypes.bool
 	} ).isRequired,
 	selected: PropTypes.bool,
 	conflicting: PropTypes.bool,

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import Gridicon from 'gridicons';
 import { localize } from 'i18n-calypso';
@@ -22,12 +18,10 @@ import Spinner from 'components/spinner';
 
 class ProductFormImages extends Component {
 	static propTypes = {
-		images: PropTypes.arrayOf(
-			PropTypes.shape( {
-				id: PropTypes.number.isRequired,
-				src: PropTypes.string.isRequired,
-			} )
-		),
+		images: PropTypes.arrayOf( PropTypes.shape( {
+			id: PropTypes.number.isRequired,
+			src: PropTypes.string.isRequired,
+		} ) ),
 		onUpload: PropTypes.func.isRequired,
 		onRemove: PropTypes.func.isRequired,
 	};
@@ -35,7 +29,7 @@ class ProductFormImages extends Component {
 	static defaultProps = {
 		onUpload: noop,
 		onRemove: noop,
-	};
+	}
 
 	constructor( props ) {
 		super( props );
@@ -53,15 +47,14 @@ class ProductFormImages extends Component {
 		}
 	}
 
-	onUpload = file => {
+	onUpload = ( file ) => {
 		const { onUpload } = this.props;
 		onUpload( file );
 
 		// Update a placeholder entry with the final source image.
-		const images = [ ...this.state.images ].map( i => {
+		const images = [ ...this.state.images ].map( ( i ) => {
 			if ( i.transientId === file.transientId ) {
-				return {
-					...i,
+				return { ...i,
 					src: file.URL,
 					id: file.ID,
 				};
@@ -72,11 +65,11 @@ class ProductFormImages extends Component {
 		this.setState( {
 			images,
 		} );
-	};
+	}
 
-	onSelect = files => {
+	onSelect = ( files ) => {
 		const { images } = this.state;
-		const newImages = files.map( file => {
+		const newImages = files.map( ( file ) => {
 			return {
 				placeholder: file.preview,
 				transientId: file.ID,
@@ -87,16 +80,16 @@ class ProductFormImages extends Component {
 		this.setState( {
 			images: [ ...images, ...newImages ],
 		} );
-	};
+	}
 
-	onError = file => {
+	onError = ( file ) => {
 		const images = [ ...this.state.images ].filter( i => i.transientId !== file.transientId );
 		this.setState( {
-			images,
+			images
 		} );
-	};
+	}
 
-	removeImage = id => {
+	removeImage = ( id ) => {
 		let images = [ ...this.state.images ];
 		if ( isNumber( id ) ) {
 			images = images.filter( i => i.id !== id ) || [];
@@ -108,29 +101,29 @@ class ProductFormImages extends Component {
 		this.setState( {
 			images,
 		} );
-	};
+	}
 
-	renderPlaceholder = image => {
+	renderPlaceholder = ( image ) => {
 		const { placeholder } = image;
 		return (
 			<figure>
-				<img src={ placeholder || <span /> } />
+				<img src={ placeholder || ( <span /> ) } />
 				<Spinner />
 			</figure>
 		);
-	};
+	}
 
-	renderUploaded = image => {
+	renderUploaded = ( image ) => {
 		const { src, placeholder } = image;
 		return (
 			<figure>
 				<ImagePreloader
 					src={ src }
-					placeholder={ ( placeholder && <img src={ placeholder } /> ) || <span /> }
+					placeholder={ placeholder && ( <img src={ placeholder } /> ) || ( <span /> ) }
 				/>
 			</figure>
 		);
-	};
+	}
 
 	renderImage = ( image, thumb = true ) => {
 		const { src } = image;
@@ -147,26 +140,24 @@ class ProductFormImages extends Component {
 
 		return (
 			<div className={ classes } key={ id }>
-				{ ( src && this.renderUploaded( image ) ) || this.renderPlaceholder( image ) }
+				{ src && this.renderUploaded( image ) || this.renderPlaceholder( image ) }
 				<Button
 					onClick={ removeImage }
 					compact
-					className="products__product-form-images-item-remove"
-				>
+					className="products__product-form-images-item-remove">
 					<Gridicon
 						icon="cross-small"
 						size={ 24 }
-						className="products__product-form-images-item-remove-icon"
-					/>
+						className="products__product-form-images-item-remove-icon" />
 				</Button>
 			</div>
 		);
-	};
+	}
 
 	render() {
 		const { translate } = this.props;
 		const images = [ ...this.state.images ];
-		const featuredImage = ( images && images.shift() ) || null;
+		const featuredImage = images && images.shift() || null;
 
 		return (
 			<div className="products__product-form-images-wrapper">
@@ -176,7 +167,9 @@ class ProductFormImages extends Component {
 					</div>
 
 					<div className="products__product-form-images-thumbs">
-						{ images.map( image => this.renderImage( image ) ) }
+						{ images.map( ( image ) =>
+							this.renderImage( image )
+						) }
 
 						<ProductImageUploader
 							onSelect={ this.onSelect }
@@ -187,9 +180,9 @@ class ProductFormImages extends Component {
 					</div>
 				</div>
 
-				<FormSettingExplanation>
-					{ translate( 'For best results, upload photos larger than 1000x1000px.' ) }
-				</FormSettingExplanation>
+				<FormSettingExplanation>{ translate(
+					'For best results, upload photos larger than 1000x1000px.'
+				) }</FormSettingExplanation>
 			</div>
 		);
 	}

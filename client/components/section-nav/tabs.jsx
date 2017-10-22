@@ -1,113 +1,124 @@
 /**
- * External dependencies
- *
- * @format
+ * External Dependencies
  */
-
-import React, { Component } from 'react';
-import ReactDom from 'react-dom';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { debounce } from 'lodash';
+var ReactDom = require( 'react-dom' ),
+	React = require( 'react' ),
+	debounce = require( 'lodash/debounce' ),
+	classNames = require( 'classnames' );
 
 /**
  * Internal Dependencies
  */
-import DropdownItem from 'components/select-dropdown/item';
-import SelectDropdown from 'components/select-dropdown';
-import viewport from 'lib/viewport';
+var SelectDropdown = require( 'components/select-dropdown' ),
+	DropdownItem = require( 'components/select-dropdown/item' ),
+	viewport = require( 'lib/viewport' );
 
 /**
  * Internal Variables
  */
-const MOBILE_PANEL_THRESHOLD = 480;
+var MOBILE_PANEL_THRESHOLD = 480;
 
 /**
  * Main
  */
-class NavTabs extends Component {
-	static propTypes = {
-		selectedText: PropTypes.string,
-		selectedCount: PropTypes.number,
-		label: PropTypes.string,
-		hasSiblingControls: PropTypes.bool,
-	};
+var NavTabs = React.createClass( {
 
-	static defaultProps = {
-		hasSiblingControls: false,
-	};
+	propTypes: {
+		selectedText: React.PropTypes.string,
+		selectedCount: React.PropTypes.number,
+		label: React.PropTypes.string,
+		hasSiblingControls: React.PropTypes.bool
+	},
 
-	state = {
-		isDropdown: false,
-	};
+	getDefaultProps: function() {
+		return {
+			hasSiblingControls: false
+		};
+	},
 
-	componentDidMount() {
+	getInitialState: function() {
+		return {
+			isDropdown: false
+		};
+	},
+
+	componentDidMount: function() {
 		this.setDropdown();
 		this.debouncedAfterResize = debounce( this.setDropdown, 300 );
 
 		window.addEventListener( 'resize', this.debouncedAfterResize );
-	}
+	},
 
-	componentDidUpdate() {
+	componentWillReceiveProps: function() {
 		this.setDropdown();
-	}
+	},
 
-	componentWillUnmount() {
+	componentWillUnmount: function() {
 		window.removeEventListener( 'resize', this.debouncedAfterResize );
-	}
+	},
 
-	render() {
-		const tabs = React.Children.map( this.props.children, function( child, index ) {
+	render: function() {
+		var tabs = React.Children.map( this.props.children, function( child, index ) {
 			return child && React.cloneElement( child, { ref: 'tab-' + index } );
 		} );
 
-		const tabsClassName = classNames( {
+		var tabsClassName = classNames( {
 			'section-nav-tabs': true,
 			'is-dropdown': this.state.isDropdown,
 			'is-open': this.state.isDropdownOpen,
-			'has-siblings': this.props.hasSiblingControls,
+			'has-siblings': this.props.hasSiblingControls
 		} );
 
-		const innerWidth = viewport.getWindowInnerWidth();
+		var innerWidth = viewport.getWindowInnerWidth();
 
 		return (
 			<div className="section-nav-group" ref="navGroup">
 				<div className={ tabsClassName }>
-					{ this.props.label && <h6 className="section-nav-group__label">{ this.props.label }</h6> }
-					<ul className="section-nav-tabs__list" role="menu" onKeyDown={ this.keyHandler }>
+					{ this.props.label &&
+						<h6 className="section-nav-group__label">
+							{ this.props.label }
+						</h6>
+					}
+					<ul
+						className="section-nav-tabs__list"
+						role="menu"
+						onKeyDown={ this.keyHandler }
+					>
 						{ tabs }
 					</ul>
 
-					{ this.state.isDropdown && innerWidth > MOBILE_PANEL_THRESHOLD && this.getDropdown() }
+					{
+						this.state.isDropdown &&
+						innerWidth > MOBILE_PANEL_THRESHOLD &&
+						this.getDropdown()
+					}
 				</div>
 			</div>
 		);
-	}
+	},
 
-	getTabWidths = () => {
-		let totalWidth = 0;
+	getTabWidths: function() {
+		var totalWidth = 0;
 
-		React.Children.forEach(
-			this.props.children,
-			function( child, index ) {
-				if ( ! child ) {
-					return;
-				}
-				const tabWidth = ReactDom.findDOMNode( this.refs[ 'tab-' + index ] ).offsetWidth;
-				totalWidth += tabWidth;
-			}.bind( this )
-		);
+		React.Children.forEach( this.props.children, function( child, index ) {
+			if ( ! child ) {
+				return;
+			}
+			let tabWidth = ReactDom.findDOMNode( this.refs[ 'tab-' + index ] ).offsetWidth;
+			totalWidth += tabWidth;
+		}.bind( this ) );
 
-		this.tabsWidth = Math.max( totalWidth, this.tabsWidth || 0 );
-	};
+		this.tabsWidth = totalWidth;
+	},
 
-	getDropdown = () => {
-		const dropdownOptions = React.Children.map( this.props.children, function( child, index ) {
+	getDropdown: function() {
+		var dropdownOptions = React.Children.map(
+		this.props.children, function( child, index ) {
 			if ( ! child ) {
 				return null;
 			}
 			return (
-				<DropdownItem { ...child.props } key={ 'navTabsDropdown-' + index }>
+				<DropdownItem {...child.props} key={ 'navTabsDropdown-' + index }>
 					{ child.props.children }
 				</DropdownItem>
 			);
@@ -122,10 +133,10 @@ class NavTabs extends Component {
 				{ dropdownOptions }
 			</SelectDropdown>
 		);
-	};
+	},
 
-	setDropdown = () => {
-		let navGroupWidth;
+	setDropdown: function() {
+		var navGroupWidth;
 
 		if ( window.innerWidth > MOBILE_PANEL_THRESHOLD ) {
 			if ( ! this.refs.navGroup ) {
@@ -134,25 +145,27 @@ class NavTabs extends Component {
 
 			navGroupWidth = this.refs.navGroup.offsetWidth;
 
-			this.getTabWidths();
+			if ( ! this.tabsWidth ) {
+				this.getTabWidths();
+			}
 
 			if ( navGroupWidth <= this.tabsWidth && ! this.state.isDropdown ) {
 				this.setState( {
-					isDropdown: true,
+					isDropdown: true
 				} );
 			} else if ( navGroupWidth > this.tabsWidth && this.state.isDropdown ) {
 				this.setState( {
-					isDropdown: false,
+					isDropdown: false
 				} );
 			}
 		} else if ( window.innerWidth <= MOBILE_PANEL_THRESHOLD && this.state.isDropdown ) {
 			this.setState( {
-				isDropdown: false,
+				isDropdown: false
 			} );
 		}
-	};
+	},
 
-	keyHandler = event => {
+	keyHandler: function( event ) {
 		switch ( event.keyCode ) {
 			case 32: // space
 			case 13: // enter
@@ -160,7 +173,7 @@ class NavTabs extends Component {
 				document.activeElement.click();
 				break;
 		}
-	};
-}
+	}
+} );
 
-export default NavTabs;
+module.exports = NavTabs;

@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { defer } from 'lodash';
+import defer from 'lodash/defer';
 
 /**
  * Internal dependencies
@@ -27,7 +24,7 @@ var CustomizeActions = {
 			Dispatcher.handleViewAction( {
 				type: 'THEME_PURCHASE_WITH_CUSTOMIZER',
 				id: id,
-				site: site,
+				site: site
 			} );
 		} );
 	},
@@ -51,9 +48,9 @@ var CustomizeActions = {
 
 		Dispatcher.handleViewAction( {
 			type: 'CLOSED_CUSTOMIZER',
-			previousPath: previousPath,
+			previousPath: previousPath
 		} );
-	},
+	}
 };
 
-export default CustomizeActions;
+module.exports = CustomizeActions;

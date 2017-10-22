@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -23,7 +21,7 @@ import {
 
 describe( 'actions', () => {
 	describe( '#addBlogSticker', () => {
-		test( 'should return an action when a blog sticker is added', () => {
+		it( 'should return an action when a blog sticker is added', () => {
 			const action = addBlogSticker( 123, 'broken-in-reader' );
 			expect( action ).to.deep.equal( {
 				type: SITES_BLOG_STICKER_ADD,
@@ -33,7 +31,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#removeBlogSticker', () => {
-		test( 'should return an action when a blog sticker is removed', () => {
+		it( 'should return an action when a blog sticker is removed', () => {
 			const action = removeBlogSticker( 123, 'broken-in-reader' );
 			expect( action ).to.deep.equal( {
 				type: SITES_BLOG_STICKER_REMOVE,
@@ -43,7 +41,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#listBlogStickers', () => {
-		test( 'should return an action when a blog sticker list is requested', () => {
+		it( 'should return an action when a blog sticker list is requested', () => {
 			const action = listBlogStickers( 123 );
 			expect( action ).to.deep.equal( {
 				type: SITES_BLOG_STICKER_LIST,
@@ -53,7 +51,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#receiveBlogStickers', () => {
-		test( 'should return an action when a blog sticker list is received', () => {
+		it( 'should return an action when a blog sticker list is received', () => {
 			const action = receiveBlogStickers( 123, [ 'dont-recommend' ] );
 			expect( action ).to.deep.equal( {
 				type: SITES_BLOG_STICKER_LIST_RECEIVE,

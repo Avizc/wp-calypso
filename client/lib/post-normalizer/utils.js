@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External Dependencies
  */
@@ -10,8 +9,11 @@ import url from 'url';
  */
 import safeImageURL from 'lib/safe-image-url';
 
-const IMAGE_SCALE_FACTOR =
-	typeof window !== 'undefined' && window.devicePixelRatio && window.devicePixelRatio > 1 ? 2 : 1;
+const IMAGE_SCALE_FACTOR = typeof window !== 'undefined' &&
+	window.devicePixelRatio &&
+	window.devicePixelRatio > 1
+	? 2
+	: 1;
 
 const DEFAULT_PHOTON_QUALITY = 80; // 80 was chosen after some heuristic testing as the best blend of size and quality
 
@@ -41,15 +43,7 @@ export function maxWidthPhotonishURL( imageURL, width ) {
 		return imageURL;
 	}
 
-	let parsedURL = {};
-	try {
-		parsedURL = url.parse( imageURL, true, true ); // true, true means allow protocol-less hosts and parse the querystring
-	} catch ( e ) {
-		/**
-		 * `url.parse` throws in a few places where it calls decodeURIComponent
-		 * @see e.g. https://github.com/Automattic/wp-calypso/issues/18645
-		 */
-	}
+	const parsedURL = url.parse( imageURL, true, true ); // true, true means allow protocol-less hosts and parse the querystring
 
 	if ( ! parsedURL.host ) {
 		return imageURL;
@@ -73,12 +67,10 @@ export function maxWidthPhotonishURL( imageURL, width ) {
 	}
 
 	// make a new query object with keys in a known order
-	parsedURL.query = Object.keys( parsedURL.query )
-		.sort()
-		.reduce( ( memo, key ) => {
-			memo[ key ] = parsedURL.query[ key ];
-			return memo;
-		}, {} );
+	parsedURL.query = Object.keys( parsedURL.query ).sort().reduce( ( memo, key ) => {
+		memo[ key ] = parsedURL.query[ key ];
+		return memo;
+	}, {} );
 
 	return url.format( parsedURL );
 }
@@ -113,10 +105,6 @@ export function domForHtml( html ) {
  * @returns {boolean} - true or false depending on if it is probably an image (has the right extension)
  */
 export function isUrlLikelyAnImage( uri ) {
-	if ( ! uri ) {
-		return false;
-	}
-
 	const withoutQuery = url.parse( uri ).pathname;
 	return some( [ '.jpg', '.jpeg', '.png', '.gif' ], ext => endsWith( withoutQuery, ext ) );
 }
@@ -170,8 +158,6 @@ export function iframeIsWhitelisted( iframe ) {
 		'codepen.io',
 		'www.audiomack.com',
 		'player.theplatform.com',
-		'embed.radiopublic.com',
-		'gfycat.com',
 	];
 	const hostName = iframe.src && url.parse( iframe.src ).hostname;
 	const iframeSrc = hostName && hostName.toLowerCase();
@@ -217,7 +203,7 @@ export function isFeaturedImageInContent( post ) {
 		const indexOfContentImage = findIndex(
 			post.images,
 			img => getPathname( img.src ) === featuredImagePath,
-			1
+			1,
 		); // skip first element in post.images because it is always the featuredImage
 
 		if ( indexOfContentImage > 0 ) {
@@ -249,19 +235,4 @@ export function deduceImageWidthAndHeight( image ) {
 		};
 	}
 	return null;
-}
-
-export const safeLinkRe = /^https?:\/\//;
-
-/**
- * Only accept links that start with http or https. Reject others.
- *
- * @param {String} link the link to check
- * @returns {String|undefined} the safe link or undefined
- */
-export function safeLink( link ) {
-	if ( safeLinkRe.test( link ) ) {
-		return link;
-	}
-	return undefined;
 }

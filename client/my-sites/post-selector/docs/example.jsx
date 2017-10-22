@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
@@ -22,11 +19,11 @@ class PostSelectorExample extends Component {
 
 	toggleTypeLabels = () => {
 		this.setState( {
-			showTypeLabels: ! this.state.showTypeLabels,
+			showTypeLabels: ! this.state.showTypeLabels
 		} );
 	};
 
-	setSelected = post => {
+	setSelected = ( post ) => {
 		this.setState( {
 			selectedPostId: post.ID,
 		} );
@@ -41,8 +38,7 @@ class PostSelectorExample extends Component {
 					<input
 						type="checkbox"
 						checked={ this.state.showTypeLabels }
-						onChange={ this.toggleTypeLabels }
-					/>
+						onChange={ this.toggleTypeLabels } />
 					<span>Show Type Labels</span>
 				</FormLabel>
 				<PostSelector
@@ -59,9 +55,11 @@ class PostSelectorExample extends Component {
 	}
 }
 
-const ConnectedPostSelectorExample = connect( state => ( {
-	primarySiteId: getPrimarySiteId( state ),
-} ) )( PostSelectorExample );
+const ConnectedPostSelectorExample = connect(
+	( state ) => ( {
+		primarySiteId: getPrimarySiteId( state ),
+	} )
+)( PostSelectorExample );
 
 ConnectedPostSelectorExample.displayName = 'PostSelector';
 

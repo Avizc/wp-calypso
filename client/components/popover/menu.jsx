@@ -1,34 +1,29 @@
-/** @format */
 /**
- * External dependencies
- */
-import React from 'react';
-import ReactDom from 'react-dom';
-import PropTypes from 'prop-types';
+* External dependencies
+*/
+const ReactDom = require( 'react-dom' ),
+	React = require( 'react' );
 import { over } from 'lodash';
 
 /**
- * Internal dependencies
- */
-import Popover from 'components/popover';
+* Internal dependencies
+*/
+const Popover = require( 'components/popover' );
 
 const PopoverMenu = React.createClass( {
 	propTypes: {
-		autoPosition: PropTypes.bool,
-		isVisible: PropTypes.bool.isRequired,
-		onClose: PropTypes.func.isRequired,
-		position: PropTypes.string,
-		className: PropTypes.string,
-		rootClassName: PropTypes.string,
-		popoverComponent: PropTypes.func,
-		popoverTitle: PropTypes.string, // used by ReaderPopover
+		autoPosition: React.PropTypes.bool,
+		isVisible: React.PropTypes.bool.isRequired,
+		onClose: React.PropTypes.func.isRequired,
+		position: React.PropTypes.string,
+		className: React.PropTypes.string,
+		rootClassName: React.PropTypes.string
 	},
 
 	getDefaultProps: function() {
 		return {
 			autoPosition: true,
-			position: 'top',
-			popoverComponent: Popover,
+			position: 'top'
 		};
 	},
 
@@ -39,9 +34,9 @@ const PopoverMenu = React.createClass( {
 
 	render: function() {
 		const children = React.Children.map( this.props.children, this._setPropsOnChild, this );
-		const PopoverComponent = this.props.popoverComponent;
+
 		return (
-			<PopoverComponent
+			<Popover
 				isVisible={ this.props.isVisible }
 				context={ this.props.context }
 				autoPosition={ this.props.autoPosition }
@@ -49,19 +44,11 @@ const PopoverMenu = React.createClass( {
 				onClose={ this._onClose }
 				onShow={ this._onShow }
 				className={ this.props.className }
-				rootClassName={ this.props.rootClassName }
-				popoverTitle={ this.props.popoverTitle }
-			>
-				<div
-					ref="menu"
-					role="menu"
-					className="popover__menu"
-					onKeyDown={ this._onKeyDown }
-					tabIndex="-1"
-				>
+				rootClassName={ this.props.rootClassName }>
+				<div ref="menu" role="menu" className="popover__menu" onKeyDown={ this._onKeyDown } tabIndex="-1">
 					{ children }
 				</div>
-			</PopoverComponent>
+			</Popover>
 		);
 	},
 
@@ -78,7 +65,7 @@ const PopoverMenu = React.createClass( {
 		}
 
 		return React.cloneElement( child, {
-			onClick: onClick,
+			onClick: onClick
 		} );
 	},
 
@@ -117,7 +104,8 @@ const PopoverMenu = React.createClass( {
 			return first;
 		}
 
-		const closest = target[ isDownwardMotion ? 'nextSibling' : 'previousSibling' ];
+		const closest = target[ isDownwardMotion
+			? 'nextSibling' : 'previousSibling' ];
 
 		const sibling = closest || last;
 
@@ -166,7 +154,7 @@ const PopoverMenu = React.createClass( {
 		if ( this.props.onClose ) {
 			this.props.onClose( action );
 		}
-	},
+	}
 } );
 
-export default PopoverMenu;
+module.exports = PopoverMenu;

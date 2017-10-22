@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -126,7 +125,7 @@ export const items = createReducer(
 					{ feed_URL: actualFeedUrl },
 					state[ urlKey ],
 					action.payload.follow,
-					newValues
+					newValues,
 				),
 			} );
 		},
@@ -154,7 +153,7 @@ export const items = createReducer(
 					hash[ urlKey ] = newFollow;
 					return hash;
 				},
-				{}
+				{},
 			);
 			return merge( {}, state, keyedNewFollows );
 		},
@@ -181,7 +180,7 @@ export const items = createReducer(
 		},
 		[ SERIALIZE ]: state => pickBy( state, item => item.is_following ),
 	},
-	itemsSchema
+	itemsSchema,
 );
 
 export const itemsCount = createReducer( 0, {

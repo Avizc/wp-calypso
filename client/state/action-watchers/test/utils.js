@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -17,12 +15,15 @@ describe( '#mergeHandlers', () => {
 	const first = { [ action ]: [ inc ] };
 	const second = { [ action ]: [ triple ] };
 
-	test( 'should pass through a single handler', () => {
+	it( 'should pass through a single handler', () => {
 		expect( mergeHandlers( first ) ).to.equal( first );
 	} );
 
-	test( 'should combine lists of handlers for different action types', () => {
-		const merged = mergeHandlers( { INCREMENT: [ inc ] }, { TRIPLE: [ triple ] } );
+	it( 'should combine lists of handlers for different action types', () => {
+		const merged = mergeHandlers(
+			{ INCREMENT: [ inc ] },
+			{ TRIPLE: [ triple ] },
+		);
 
 		expect( merged ).to.eql( {
 			INCREMENT: [ inc ],
@@ -30,7 +31,7 @@ describe( '#mergeHandlers', () => {
 		} );
 	} );
 
-	test( 'should combine lists of handlers for the same action type', () => {
+	it( 'should combine lists of handlers for the same action type', () => {
 		const merged = mergeHandlers( first, second );
 
 		expect( merged[ action ] ).to.eql( [ inc, triple ] );

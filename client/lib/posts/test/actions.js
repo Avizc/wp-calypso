@@ -1,29 +1,41 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
+import { defer, noop } from 'lodash';
 import { expect } from 'chai';
-import { defer } from 'lodash';
 import sinon from 'sinon';
 
 /**
  * Internal dependencies
  */
-import PostActions from '../actions';
-import PostEditStore from '../post-edit-store';
-import Dispatcher from 'dispatcher';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
-jest.mock( 'lib/localforage', () => require( 'lib/localforage/localforage-bypass' ) );
-jest.mock( 'lib/wp', () => require( './mocks/lib/wp' ) );
+describe( 'actions', function() {
+	let Dispatcher, PostActions, PostEditStore, sandbox;
 
-describe( 'actions', () => {
-	let sandbox;
+	useFakeDom();
 
-	beforeAll( () => {
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/wp', {
+			me: () => ( {
+				get: noop
+			} ),
+			site: () => ( {
+				post: () => ( {
+					add: ( query, attributes, callback ) => {
+						callback( null, attributes );
+					}
+				} )
+			} )
+		} );
+	} );
+
+	before( () => {
+		Dispatcher = require( 'dispatcher' );
+		PostEditStore = require( '../post-edit-store' );
+		PostActions = require( '../actions' );
+
 		sandbox = sinon.sandbox.create();
 	} );
 
@@ -31,7 +43,7 @@ describe( 'actions', () => {
 		sandbox.stub( Dispatcher, 'handleServerAction' );
 		sandbox.stub( Dispatcher, 'handleViewAction' );
 		sandbox.stub( PostEditStore, 'get' ).returns( {
-			metadata: [],
+			metadata: []
 		} );
 	} );
 
@@ -39,140 +51,140 @@ describe( 'actions', () => {
 		sandbox.restore();
 	} );
 
-	describe( '#updateMetadata()', () => {
-		test( 'should dispatch a post edit with a new metadata value', () => {
+	describe( '#updateMetadata()', function() {
+		it( 'should dispatch a post edit with a new metadata value', function() {
 			PostActions.updateMetadata( 'foo', 'bar' );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [ { key: 'foo', value: 'bar', operation: 'update' } ],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'foo', value: 'bar', operation: 'update' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 
-		test( 'accepts an object of key value pairs', () => {
+		it( 'accepts an object of key value pairs', function() {
 			PostActions.updateMetadata( {
 				foo: 'bar',
-				baz: 'qux',
+				baz: 'qux'
 			} );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [
-							{ key: 'foo', value: 'bar', operation: 'update' },
-							{ key: 'baz', value: 'qux', operation: 'update' },
-						],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'foo', value: 'bar', operation: 'update' },
+						{ key: 'baz', value: 'qux', operation: 'update' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 
-		test( 'should include metadata already existing on the post object', () => {
+		it( 'should include metadata already existing on the post object', function() {
 			PostEditStore.get.restore();
 			sandbox.stub( PostEditStore, 'get' ).returns( {
-				metadata: [ { key: 'other', value: '1234' } ],
+				metadata: [
+					{ key: 'other', value: '1234' }
+				]
 			} );
 
 			PostActions.updateMetadata( 'foo', 'bar' );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [
-							{ key: 'other', value: '1234' },
-							{ key: 'foo', value: 'bar', operation: 'update' },
-						],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'other', value: '1234' },
+						{ key: 'foo', value: 'bar', operation: 'update' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 
-		test( 'should include metadata edits made previously', () => {
+		it( 'should include metadata edits made previously', function() {
 			PostEditStore.get.restore();
 			sandbox.stub( PostEditStore, 'get' ).returns( {
-				metadata: [ { key: 'other', operation: 'delete' } ],
+				metadata: [
+					{ key: 'other', operation: 'delete' }
+				]
 			} );
 
 			PostActions.updateMetadata( 'foo', 'bar' );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [
-							{ key: 'other', operation: 'delete' },
-							{ key: 'foo', value: 'bar', operation: 'update' },
-						],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'other', operation: 'delete' },
+						{ key: 'foo', value: 'bar', operation: 'update' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 
-		test( 'should not duplicate existing metadata edits', () => {
+		it( 'should not duplicate existing metadata edits', function() {
 			PostEditStore.get.restore();
 			sandbox.stub( PostEditStore, 'get' ).returns( {
 				metadata: [
 					{ key: 'bar', value: 'foo' },
-					{ key: 'foo', value: 'baz', operation: 'delete' },
-				],
+					{ key: 'foo', value: 'baz', operation: 'delete' }
+				]
 			} );
 
 			PostActions.updateMetadata( 'foo', 'bar' );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [
-							{ key: 'bar', value: 'foo' },
-							{ key: 'foo', value: 'bar', operation: 'update' },
-						],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'bar', value: 'foo' },
+						{ key: 'foo', value: 'bar', operation: 'update' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 	} );
 
-	describe( '#deleteMetadata()', () => {
-		test( 'should dispatch a post edit with a deleted metadata', () => {
+	describe( '#deleteMetadata()', function() {
+		it( 'should dispatch a post edit with a deleted metadata', function() {
 			PostEditStore.get.restore();
 			sandbox.stub( PostEditStore, 'get' ).returns( {
-				metadata: [ { key: 'bar', value: 'foo' } ],
+				metadata: [
+					{ key: 'bar', value: 'foo' }
+				]
 			} );
 			PostActions.deleteMetadata( 'foo' );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [ { key: 'bar', value: 'foo' }, { key: 'foo', operation: 'delete' } ],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'bar', value: 'foo' },
+						{ key: 'foo', operation: 'delete' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 
-		test( 'should accept an array of metadata keys to delete', () => {
+		it( 'should accept an array of metadata keys to delete', function() {
 			PostActions.deleteMetadata( [ 'foo', 'bar' ] );
 
-			expect(
-				Dispatcher.handleViewAction.calledWithMatch( {
-					type: 'EDIT_POST',
-					post: {
-						metadata: [ { key: 'foo', operation: 'delete' }, { key: 'bar', operation: 'delete' } ],
-					},
-				} )
-			).to.be.true;
+			expect( Dispatcher.handleViewAction.calledWithMatch( {
+				type: 'EDIT_POST',
+				post: {
+					metadata: [
+						{ key: 'foo', operation: 'delete', },
+						{ key: 'bar', operation: 'delete' }
+					]
+				}
+			} ) ).to.be.true;
 		} );
 	} );
 
-	describe( '#saveEdited()', () => {
-		test( 'should not send a request if the post has no content', done => {
+	describe( '#saveEdited()', function() {
+		it( 'should not send a request if the post has no content', function( done ) {
 			const spy = sandbox.spy();
 			sandbox.stub( PostEditStore, 'hasContent' ).returns( false );
 
@@ -187,7 +199,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should not send a request if there are no changed attributes', done => {
+		it( 'should not send a request if there are no changed attributes', function( done ) {
 			const spy = sandbox.spy();
 			sandbox.stub( PostEditStore, 'hasContent' ).returns( true );
 			sandbox.stub( PostEditStore, 'getChangedAttributes' ).returns( {} );
@@ -203,24 +215,22 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should normalize attributes and call the API', done => {
+		it( 'should normalize attributes and call the API', function( done ) {
 			sandbox.stub( PostEditStore, 'hasContent' ).returns( true );
 
 			const changedAttributes = {
 				ID: 777,
 				site_ID: 123,
 				author: {
-					ID: 3,
+					ID: 3
 				},
 				title: 'OMG Unicorns',
 				terms: {
-					category: [
-						{
-							ID: 7,
-							name: 'ribs',
-						},
-					],
-				},
+					category: [ {
+						ID: 7,
+						name: 'ribs'
+					} ]
+				}
 			};
 			sandbox.stub( PostEditStore, 'getChangedAttributes' ).returns( changedAttributes );
 
@@ -230,14 +240,14 @@ describe( 'actions', () => {
 					site_ID: 123,
 					author: 3,
 					title: 'OMG Unicorns',
-					terms: {},
+					terms: {}
 				};
 
 				expect( Dispatcher.handleViewAction ).to.have.been.calledTwice;
 				expect( Dispatcher.handleServerAction ).to.have.been.calledWithMatch( {
 					error: null,
 					post: normalizedAttributes,
-					type: 'RECEIVE_POST_BEING_EDITED',
+					type: 'RECEIVE_POST_BEING_EDITED'
 				} );
 				expect( error ).to.be.null;
 				expect( data ).to.eql( normalizedAttributes );

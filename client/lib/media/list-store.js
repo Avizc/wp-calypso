@@ -1,18 +1,18 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { assign, isEqual, map, omit } from 'lodash';
+var assign = require( 'lodash/assign' ),
+	omit = require( 'lodash/omit' ),
+	map = require( 'lodash/map' ),
+	isEqual = require( 'lodash/isEqual' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import MediaStore from './store';
-import MediaUtils from './utils';
-import emitter from 'lib/mixins/emitter';
+var Dispatcher = require( 'dispatcher' ),
+	MediaStore = require( './store' ),
+	MediaUtils = require( './utils' ),
+	emitter = require( 'lib/mixins/emitter' );
 
 /**
  * Module variables
@@ -20,7 +20,7 @@ import emitter from 'lib/mixins/emitter';
 const MediaListStore = {
 		_activeQueries: {},
 		DEFAULT_QUERY: Object.freeze( { number: 20 } ),
-		_media: {},
+		_media: {}
 	},
 	DEFAULT_ACTIVE_QUERY = Object.freeze( { isFetchingNextPage: false } ),
 	SAME_QUERY_IGNORE_PARAMS = Object.freeze( [ 'number', 'page_handle' ] );
@@ -54,10 +54,7 @@ function receiveSingle( siteId, item, itemId ) {
 		if ( -1 !== existingIndex ) {
 			MediaListStore._media[ siteId ].splice( existingIndex, 1, item.ID );
 		}
-	} else if (
-		-1 === MediaListStore._media[ siteId ].indexOf( item.ID ) &&
-		MediaListStore.isItemMatchingQuery( siteId, item )
-	) {
+	} else if ( -1 === MediaListStore._media[ siteId ].indexOf( item.ID ) && MediaListStore.isItemMatchingQuery( siteId, item ) ) {
 		MediaListStore._media[ siteId ].push( item.ID );
 	}
 }
@@ -149,22 +146,6 @@ MediaListStore.isItemMatchingQuery = function( siteId, item ) {
 		matches = item.title && -1 !== item.title.toLowerCase().indexOf( query.search.toLowerCase() );
 	}
 
-	if ( query.source === 'google_photos' && matches ) {
-		// On uploading external images, the stores will receive the CREATE_MEDIA_ITEM  event
-		// and will update the list of media including the new one, but we don't want this new media
-		// to be shown in the google photos list - hence the filtering.
-		//
-		// One use case where this happened was:
-		//
-		// - go to site icon settings and open google modal
-		// - select and image and tap continue
-		// - cancel the editing process and you'll be send back to the google modal
-		//
-		// without this change, the new upload would be shown there.
-
-		matches = ! item.external;
-	}
-
 	if ( query.mime_type && matches ) {
 		// Mime type query can contain a fragment, e.g. "image/", so match
 		// item mime type at beginning
@@ -197,28 +178,17 @@ MediaListStore.getNextPageQuery = function( siteId ) {
 		return MediaListStore.DEFAULT_QUERY;
 	}
 
-	return assign(
-		{},
-		MediaListStore.DEFAULT_QUERY,
-		{
-			page_handle: MediaListStore._activeQueries[ siteId ].nextPageHandle,
-		},
-		MediaListStore._activeQueries[ siteId ].query
-	);
+	return assign( {}, MediaListStore.DEFAULT_QUERY, {
+		page_handle: MediaListStore._activeQueries[ siteId ].nextPageHandle
+	}, MediaListStore._activeQueries[ siteId ].query );
 };
 
 MediaListStore.hasNextPage = function( siteId ) {
-	return (
-		! ( siteId in MediaListStore._activeQueries ) ||
-		null !== MediaListStore._activeQueries[ siteId ].nextPageHandle
-	);
+	return ! ( siteId in MediaListStore._activeQueries ) || null !== MediaListStore._activeQueries[ siteId ].nextPageHandle;
 };
 
 MediaListStore.isFetchingNextPage = function( siteId ) {
-	return (
-		siteId in MediaListStore._activeQueries &&
-		MediaListStore._activeQueries[ siteId ].isFetchingNextPage
-	);
+	return siteId in MediaListStore._activeQueries && MediaListStore._activeQueries[ siteId ].isFetchingNextPage;
 };
 
 MediaListStore.dispatchToken = Dispatcher.register( function( payload ) {
@@ -245,7 +215,7 @@ MediaListStore.dispatchToken = Dispatcher.register( function( payload ) {
 			}
 
 			updateActiveQueryStatus( action.siteId, {
-				isFetchingNextPage: true,
+				isFetchingNextPage: true
 			} );
 
 			MediaListStore.emit( 'change' );
@@ -279,14 +249,10 @@ MediaListStore.dispatchToken = Dispatcher.register( function( payload ) {
 
 			updateActiveQueryStatus( action.siteId, {
 				isFetchingNextPage: false,
-				nextPageHandle: getNextPageMetaFromResponse( action.data ),
+				nextPageHandle: getNextPageMetaFromResponse( action.data )
 			} );
 
-			if (
-				action.error ||
-				! action.data ||
-				( action.query && ! isQuerySame( action.siteId, action.query ) )
-			) {
+			if ( action.error || ! action.data || ( action.query && ! isQuerySame( action.siteId, action.query ) ) ) {
 				break;
 			}
 
@@ -311,4 +277,4 @@ MediaListStore.dispatchToken = Dispatcher.register( function( payload ) {
 	}
 } );
 
-export default MediaListStore;
+module.exports = MediaListStore;

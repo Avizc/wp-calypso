@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,26 +10,26 @@ import { getJetpackConnectionStatus } from '../';
 import { items as ITEMS_FIXTURE } from './fixtures/jetpack-connection';
 
 describe( 'getJetpackConnectionStatus()', () => {
-	test( 'should return connection status for a known site', () => {
+	it( 'should return connection status for a known site', () => {
 		const stateIn = {
 				jetpack: {
 					connection: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 12345678;
 		const output = getJetpackConnectionStatus( stateIn, siteId );
 		expect( output ).to.eql( ITEMS_FIXTURE[ siteId ] );
 	} );
 
-	test( 'should return null for an unknown site', () => {
+	it( 'should return null for an unknown site', () => {
 		const stateIn = {
 				jetpack: {
 					connection: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 88888888;
 		const output = getJetpackConnectionStatus( stateIn, siteId );

@@ -1,22 +1,18 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { get, identity, pick } from 'lodash';
-import { localize } from 'i18n-calypso';
-import PropTypes from 'prop-types';
-import React from 'react';
+const React = require( 'react' ),
+	get = require( 'lodash/get' ),
+	pick = require( 'lodash/pick' );
 
 /**
  * Internal dependencies
  */
-import EditorFieldset from 'post-editor/editor-fieldset';
-import FormCheckbox from 'components/forms/form-checkbox';
-import PostActions from 'lib/posts/actions';
-import InfoPopover from 'components/info-popover';
-import { recordEvent, recordStat } from 'lib/posts/stats';
+const EditorFieldset = require( 'post-editor/editor-fieldset' ),
+	FormCheckbox = require( 'components/forms/form-checkbox' ),
+	PostActions = require( 'lib/posts/actions' ),
+	InfoPopover = require( 'components/info-popover' ),
+	stats = require( 'lib/posts/stats' );
 
 function booleanToStatus( bool ) {
 	return bool ? 'open' : 'closed';
@@ -26,18 +22,18 @@ function statusToBoolean( status ) {
 	return 'open' === status;
 }
 
-export const EditorDiscussion = React.createClass( {
+export default React.createClass( {
+	displayName: 'EditorDiscussion',
+
 	propTypes: {
-		isNew: PropTypes.bool,
-		post: PropTypes.object,
-		site: PropTypes.object,
-		translate: PropTypes.func.isRequired,
+		isNew: React.PropTypes.bool,
+		post: React.PropTypes.object,
+		site: React.PropTypes.object
 	},
 
 	getDefaultProps: function() {
 		return {
-			isNew: false,
-			translate: identity,
+			isNew: false
 		};
 	},
 
@@ -54,7 +50,7 @@ export const EditorDiscussion = React.createClass( {
 
 			return {
 				comment_status: isPage ? 'closed' : booleanToStatus( defaultCommentStatus ),
-				ping_status: isPage ? 'closed' : booleanToStatus( defaultPingStatus ),
+				ping_status: isPage ? 'closed' : booleanToStatus( defaultPingStatus )
 			};
 		}
 
@@ -72,23 +68,19 @@ export const EditorDiscussion = React.createClass( {
 
 		// There are other ways to construct these strings, but keeping them exactly as they are displayed in mc/ga aids in discovery via grok
 		if ( 'comment_status' === discussionType ) {
-			statName = event.target.checked
-				? 'advanced_comments_open_enabled'
-				: 'advanced_comments_open_disabled';
+			statName = event.target.checked ? 'advanced_comments_open_enabled' : 'advanced_comments_open_disabled';
 			gaEvent = 'Comment status changed';
 		} else {
-			statName = event.target.checked
-				? 'advanced_pings_open_enabled'
-				: 'advanced_pings_open_disabled';
+			statName = event.target.checked ? 'advanced_pings_open_enabled' : 'advanced_pings_open_disabled';
 			gaEvent = 'Trackback status changed';
 		}
 
-		recordStat( statName );
-		recordEvent( gaEvent, newStatus );
+		stats.recordStat( statName );
+		stats.recordEvent( gaEvent, newStatus );
 
 		// TODO: REDUX - remove flux actions when whole post-editor is reduxified
 		PostActions.edit( {
-			discussion: discussion,
+			discussion: discussion
 		} );
 	},
 
@@ -96,25 +88,17 @@ export const EditorDiscussion = React.createClass( {
 		var discussion = this.getDiscussionSetting();
 
 		return (
-			<EditorFieldset legend={ this.props.translate( 'Discussion' ) }>
+			<EditorFieldset legend={ this.translate( 'Discussion' ) }>
 				<label>
 					<FormCheckbox
 						name="comment_status"
 						checked={ statusToBoolean( discussion.comment_status ) }
 						disabled={ ! this.props.post }
-						onChange={ this.onChange }
-					/>
+						onChange={ this.onChange } />
 					<span>
-						{ this.props.translate( 'Allow comments' ) }
-						<InfoPopover
-							position="top right"
-							className="editor-comment_status__info"
-							gaEventCategory="Editor"
-							popoverName="CommentStatus"
-						>
-							{ this.props.translate(
-								'Provide a comment section to give readers the ability to respond.'
-							) }
+						{ this.translate( 'Allow comments' ) }
+						<InfoPopover position="top right" className="editor-comment_status__info" gaEventCategory="Editor" popoverName="CommentStatus">
+							{ this.translate( 'Provide a comment section to give readers the ability to respond.' ) }
 						</InfoPopover>
 					</span>
 				</label>
@@ -123,13 +107,10 @@ export const EditorDiscussion = React.createClass( {
 						name="ping_status"
 						checked={ statusToBoolean( discussion.ping_status ) }
 						disabled={ ! this.props.post }
-						onChange={ this.onChange }
-					/>
-					<span>{ this.props.translate( 'Allow Pingbacks & Trackbacks' ) }</span>
+						onChange={ this.onChange } />
+					<span>{ this.translate( 'Allow Pingbacks & Trackbacks' ) }</span>
 				</label>
 			</EditorFieldset>
 		);
-	},
+	}
 } );
-
-export default localize( EditorDiscussion );

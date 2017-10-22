@@ -1,23 +1,20 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import LRU from 'lru';
 
 /**
  * Internal Dependencies
  */
 
-let cache = new LRU( 10 );
-let specialCache = {};
+const cache = new LRU( 10 );
+const specialCache = {};
 
 function isSpecialStream( id ) {
-	return /^following|a8c|likes|conversations/.test( id );
+	return /^following|a8c|likes/.test( id );
 }
 
-export default {
+module.exports = {
 	get: function( id ) {
 		if ( isSpecialStream( id ) ) {
 			return specialCache[ id ];
@@ -30,9 +27,5 @@ export default {
 		} else {
 			cache.set( id, store );
 		}
-	},
-	clear: function() {
-		specialCache = {};
-		cache = new LRU( 10 );
-	},
+	}
 };

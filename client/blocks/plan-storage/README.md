@@ -23,7 +23,7 @@ media storage limits are fetched.
 #### Usage:
 
 ```javascript
-import PlanStorageBar from 'blocks/plan-storage/bar';
+import PlanStorageButton from 'blocks/plan-storage/bar';
 import QueryMediaStorage from 'components/data/query-media-storage';
 import { getMediaStorage } from 'state/sites/media-storage/selectors';
 

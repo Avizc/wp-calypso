@@ -1,11 +1,10 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import { toValidId } from '../id-helpers';
 
@@ -27,7 +26,7 @@ describe( 'toValidId', () => {
 
 	testCases.forEach( function( testCase ) {
 		const [ provided, expected ] = testCase;
-		test( `'${ provided }' should yield '${ expected }'`, () => {
+		it( `'${ provided }' should yield '${ expected }'`, () => {
 			expect( toValidId( provided ) ).to.equal( expected );
 		} );
 	} );

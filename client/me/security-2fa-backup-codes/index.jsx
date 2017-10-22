@@ -1,27 +1,24 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import { localize } from 'i18n-calypso';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:me:security:2fa-backup-codes' );
+var React = require( 'react' ),
+	debug = require( 'debug' )( 'calypso:me:security:2fa-backup-codes' );
 
 /**
  * Internal dependencies
  */
-import Security2faBackupCodesPrompt from 'me/security-2fa-backup-codes-prompt';
-import SectionHeader from 'components/section-header';
-import Button from 'components/button';
-import Card from 'components/card';
-import eventRecorder from 'me/event-recorder';
-import twoStepAuthorization from 'lib/two-step-authorization';
-import Security2faBackupCodesList from 'me/security-2fa-backup-codes-list';
+var Security2faBackupCodesPrompt = require( 'me/security-2fa-backup-codes-prompt' ),
+	SectionHeader = require( 'components/section-header' ),
+	Button = require( 'components/button' ),
+	Card = require( 'components/card' ),
+	eventRecorder = require( 'me/event-recorder' ),
+	twoStepAuthorization = require( 'lib/two-step-authorization' ),
+	Security2faBackupCodesList = require( 'me/security-2fa-backup-codes-list' );
+
 import Notice from 'components/notice';
 
-const Security2faBackupCodes = React.createClass( {
+module.exports = React.createClass( {
+
 	displayName: 'Security2faBackupCodes',
 
 	mixins: [ eventRecorder ],
@@ -42,7 +39,7 @@ const Security2faBackupCodes = React.createClass( {
 			verified: printed,
 			showPrompt: ! printed,
 			backupCodes: [],
-			generatingCodes: false,
+			generatingCodes: false
 		};
 	},
 
@@ -50,7 +47,7 @@ const Security2faBackupCodes = React.createClass( {
 		this.setState( {
 			generatingCodes: true,
 			verified: false,
-			showPrompt: true,
+			showPrompt: true
 		} );
 
 		twoStepAuthorization.backupCodes( this.onRequestComplete );
@@ -59,16 +56,14 @@ const Security2faBackupCodes = React.createClass( {
 	onRequestComplete: function( error, data ) {
 		if ( error ) {
 			this.setState( {
-				lastError: this.props.translate(
-					'Unable to obtain backup codes.  Please try again later.'
-				),
+				lastError: this.translate( 'Unable to obtain backup codes.  Please try again later.' )
 			} );
 			return;
 		}
 
 		this.setState( {
 			backupCodes: data.codes,
-			generatingCodes: false,
+			generatingCodes: false
 		} );
 	},
 
@@ -83,7 +78,7 @@ const Security2faBackupCodes = React.createClass( {
 		this.setState( {
 			printed: true,
 			verified: true,
-			showPrompt: false,
+			showPrompt: false
 		} );
 	},
 
@@ -93,7 +88,7 @@ const Security2faBackupCodes = React.createClass( {
 				<Notice
 					isCompact
 					status="is-error"
-					text={ this.props.translate( 'Backup codes have not been verified.' ) }
+					text={ this.translate( 'Backup codes have not been verified.' ) }
 				/>
 			);
 		}
@@ -102,7 +97,7 @@ const Security2faBackupCodes = React.createClass( {
 			return (
 				<Notice
 					isCompact
-					text={ this.props.translate(
+					text={ this.translate(
 						'New backup codes have just been generated, but need to be verified.'
 					) }
 				/>
@@ -113,7 +108,7 @@ const Security2faBackupCodes = React.createClass( {
 			<Notice
 				isCompact
 				status="is-success"
-				text={ this.props.translate( 'Backup codes have been verified' ) }
+				text={ this.translate( 'Backup codes have been verified' ) }
 			/>
 		);
 	},
@@ -133,16 +128,20 @@ const Security2faBackupCodes = React.createClass( {
 		return (
 			<div>
 				<p>
-					{ this.props.translate(
-						'Backup codes let you access your account if your phone is ' +
+					{
+						this.translate(
+							'Backup codes let you access your account if your phone is ' +
 							'lost, stolen, or if you run it through the washing ' +
-							"machine and the bag of rice trick doesn't work."
-					) }
+							'machine and the bag of rice trick doesn\'t work.'
+						)
+					}
 				</p>
 
 				{ this.renderStatus() }
 
-				{ this.state.showPrompt && <Security2faBackupCodesPrompt onSuccess={ this.onVerified } /> }
+				{ this.state.showPrompt &&
+					<Security2faBackupCodesPrompt onSuccess={ this.onVerified } />
+				}
 			</div>
 		);
 	},
@@ -150,25 +149,23 @@ const Security2faBackupCodes = React.createClass( {
 	render: function() {
 		return (
 			<div className="security-2fa-backup-codes">
-				<SectionHeader label={ this.props.translate( 'Backup Codes' ) }>
+				<SectionHeader label={ this.translate( 'Backup Codes' ) }>
 					<Button
 						compact
 						disabled={ this.state.generatingCodes || !! this.state.backupCodes.length }
 						onClick={ this.recordClickEvent( 'Generate New Backup Codes Button', this.onGenerate ) }
 					>
-						{ this.props.translate( 'Generate New Backup Codes' ) }
+						{ this.translate( 'Generate New Backup Codes' ) }
 					</Button>
 				</SectionHeader>
 				<Card>
-					{ this.state.generatingCodes || this.state.backupCodes.length ? (
-						this.renderList()
-					) : (
-						this.renderPrompt()
-					) }
+					{
+						this.state.generatingCodes || this.state.backupCodes.length
+						? this.renderList()
+						: this.renderPrompt()
+					}
 				</Card>
 			</div>
 		);
-	},
+	}
 } );
-
-export default localize( Security2faBackupCodes );

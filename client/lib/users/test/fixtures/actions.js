@@ -1,53 +1,47 @@
-/**
- * Internal dependencies
- *
- * @format
- */
+const site = require( './site' ),
+	usersData = require( './users' ),
+	moreUsersData = require( './more-users' ),
+	deletedUserData = require( './deleted-user' ),
+	updatedUserData = require( './updated-single-user' ),
+	singleUserData = require( './single-user' ),
+	pollingUsersData = require( './polling-users' );
 
-import site from './site';
-import usersData from './users';
-import moreUsersData from './more-users';
-import deletedUserData from './deleted-user';
-import updatedUserData from './updated-single-user';
-import singleUserData from './single-user';
-import pollingUsersData from './polling-users';
-
-export default {
+module.exports = {
 	fetched: {
 		type: 'RECEIVE_USERS',
 		fetchOptions: {
 			siteId: site.ID,
-			offset: 0,
+			offset: 0
 		},
 		data: usersData,
-		error: null,
+		error: null
 	},
 
 	fetchMoreUsers: {
 		type: 'RECEIVE_USERS',
 		fetchOptions: {
 			siteId: site.ID,
-			offset: 5,
+			offset: 5
 		},
 		data: moreUsersData,
-		error: null,
+		error: null
 	},
 
 	fetchAgainUserDeleted: {
 		type: 'RECEIVE_USERS',
 		fetchOptions: {
 			siteId: site.ID,
-			offset: 0,
+			offset: 0
 		},
 		data: deletedUserData,
-		error: null,
+		error: null
 	},
 
 	updateSingleUser: {
 		type: 'UPDATE_SITE_USER',
 		siteId: site.ID,
 		user: updatedUserData,
-		data: updatedUserData,
+		data: updatedUserData
 	},
 
 	deleteUser: {
@@ -62,7 +56,7 @@ export default {
 		action: 'DELETE_SITE_USER',
 		siteId: site.ID,
 		user: usersData.users[ 0 ],
-		error: true,
+		error: true
 	},
 
 	deleteUserSuccess: {
@@ -70,23 +64,23 @@ export default {
 		action: 'DELETE_SITE_USER',
 		siteId: site.ID,
 		user: usersData.users[ 0 ],
-		data: { success: true },
+		data: { success: true }
 	},
 
 	updateUserError: {
 		type: 'RECEIVE_UPDATE_SITE_USER_FAILURE',
 		siteId: site.ID,
 		user: usersData.users[ 0 ],
-		error: true,
+		error: true
 	},
 
 	receiveSingleUser: {
 		type: 'RECEIVE_SINGLE_USER',
 		fetchOptions: {
-			siteId: site.ID,
+			siteId: site.ID
 		},
 		user: singleUserData,
-		error: null,
+		error: null
 	},
 
 	receiveUpdatedUsers: {
@@ -94,9 +88,9 @@ export default {
 		fetchOptions: {
 			siteId: site.ID,
 			offset: 0,
-			number: 7,
+			number: 7
 		},
 		data: pollingUsersData,
-		error: null,
-	},
+		error: null
+	}
 };

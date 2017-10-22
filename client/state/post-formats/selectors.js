@@ -1,13 +1,11 @@
 /**
  * Returns true if currently requesting post formats for the specified site ID, or
  * false otherwise.
- * 
  *
- * @format
- * @param {Number}  siteId Site ID
+ * @param  {Object}  state  Global state tree
+ * @param  {Number}  siteId Site ID
  * @return {Boolean}        Whether post formats are being requested
  */
-
 export function isRequestingPostFormats( state, siteId ) {
 	return !! state.postFormats.requesting[ siteId ];
 }

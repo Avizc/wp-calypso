@@ -1,18 +1,15 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import ReactDom from 'react-dom';
-import React from 'react';
+var ReactDom = require( 'react-dom' ),
+	React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import AcceptDialog from './dialog';
+var AcceptDialog = require( './dialog' );
 
-export default function( message, callback, confirmButtonText, cancelButtonText, options ) {
+module.exports = function( message, callback, confirmButtonText, cancelButtonText ) {
 	var wrapper = document.createElement( 'div' );
 	document.body.appendChild( wrapper );
 
@@ -34,8 +31,7 @@ export default function( message, callback, confirmButtonText, cancelButtonText,
 			onClose: onClose,
 			confirmButtonText: confirmButtonText,
 			cancelButtonText: cancelButtonText,
-			options,
 		} ),
 		wrapper
 	);
-}
+};

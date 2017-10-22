@@ -1,12 +1,9 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' ),
+	classNames = require( 'classnames' );
 
 /**
  * Internal Dependencies
@@ -17,39 +14,49 @@ import { preload } from 'sections-preload';
 /**
  * Main
  */
-class NavItem extends PureComponent {
-	static propTypes = {
-		itemType: PropTypes.string,
-		path: PropTypes.string,
-		selected: PropTypes.bool,
-		tabIndex: PropTypes.number,
-		onClick: PropTypes.func,
-		isExternalLink: PropTypes.bool,
-		disabled: PropTypes.bool,
-		count: PropTypes.oneOfType( [ PropTypes.number, PropTypes.bool ] ),
-		className: PropTypes.string,
-		preloadSectionName: PropTypes.string,
-	};
+var NavItem = React.createClass( {
 
-	_preloaded = false;
+	mixins: [ PureRenderMixin ],
 
-	preload = () => {
+	propTypes: {
+		itemType: React.PropTypes.string,
+		path: React.PropTypes.string,
+		selected: React.PropTypes.bool,
+		tabIndex: React.PropTypes.number,
+		onClick: React.PropTypes.func,
+		isExternalLink: React.PropTypes.bool,
+		disabled: React.PropTypes.bool,
+		count: React.PropTypes.oneOfType( [
+			React.PropTypes.number,
+			React.PropTypes.bool,
+		] ),
+		className: React.PropTypes.string,
+		preloadSectionName: React.PropTypes.string
+	},
+
+	_preloaded: false,
+
+	preload() {
 		if ( ! this._preloaded && this.props.preloadSectionName ) {
 			this._preloaded = true;
 			preload( this.props.preloadSectionName );
 		}
-	};
+	},
 
-	render() {
-		const itemClassPrefix = this.props.itemType ? this.props.itemType : 'tab';
-		const itemClasses = {
-			'is-selected': this.props.selected,
-			'is-external': this.props.isExternalLink,
-		};
+	render: function() {
+		var itemClassPrefix = this.props.itemType
+			? this.props.itemType
+			: 'tab',
+
+			itemClassName, target, onClick,
+
+			itemClasses = {
+				'is-selected': this.props.selected,
+				'is-external': this.props.isExternalLink
+			};
+
 		itemClasses[ 'section-nav-' + itemClassPrefix ] = true;
-		const itemClassName = classNames( this.props.className, itemClasses );
-
-		let target, onClick;
+		itemClassName = classNames( this.props.className, itemClasses );
 
 		if ( this.props.isExternalLink ) {
 			target = '_blank';
@@ -71,16 +78,18 @@ class NavItem extends PureComponent {
 					aria-selected={ this.props.selected }
 					disabled={ this.props.disabled }
 					role="menuitem"
-					rel={ this.props.isExternalLink ? 'external' : null }
-				>
+					rel={ this.props.isExternalLink ? 'external' : null }>
 					<span className={ 'section-nav-' + itemClassPrefix + '__text' }>
 						{ this.props.children }
-						{ 'number' === typeof this.props.count && <Count count={ this.props.count } /> }
+						{
+							'number' === typeof this.props.count &&
+							<Count count={ this.props.count } />
+						}
 					</span>
 				</a>
 			</li>
 		);
 	}
-}
+} );
 
-export default NavItem;
+module.exports = NavItem;

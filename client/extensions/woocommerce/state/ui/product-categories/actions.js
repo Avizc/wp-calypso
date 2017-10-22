@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { uniqueId } from 'lodash';
 
 /**
@@ -52,3 +49,4 @@ export function clearProductCategoryEdits( siteId ) {
 		siteId,
 	};
 }
+

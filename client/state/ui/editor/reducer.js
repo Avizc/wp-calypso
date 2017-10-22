@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { EDITOR_START, POST_SAVE_SUCCESS } from 'state/action-types';
 import { combineReducers } from 'state/utils';
 import imageEditor from './image-editor/reducer';
@@ -35,5 +32,5 @@ export default combineReducers( {
 	imageEditor,
 	videoEditor,
 	lastDraft,
-	contactForm,
+	contactForm
 } );

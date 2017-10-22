@@ -1,81 +1,49 @@
-/** @format */
 /**
  * External dependencies
  */
-import debugFactory from 'debug';
-import { get, includes, reduce } from 'lodash';
-import { translate } from 'i18n-calypso';
+import { pick } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import fromApi from './from-api';
-import { ACTIVITY_LOG_REQUEST } from 'state/action-types';
-import { activityLogUpdate } from 'state/activity-log/actions';
 import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 import { http } from 'state/data-layer/wpcom-http/actions';
-import { errorNotice } from 'state/notices/actions';
-
-/**
- * Module constants
- */
-const debug = debugFactory( 'calypso:data-layer:activity' );
-const CALYPSO_TO_API_PARAMS = {
-	dateEnd: 'date_end',
-	dateStart: 'date_start',
-};
-const KNOWN_API_PARAMS = [ 'action', 'date_end', 'date_start', 'group', 'name', 'number' ];
+import { ACTIVITY_LOG_REQUEST } from 'state/action-types';
+import {
+	activityLogError,
+	activityLogUpdate,
+} from 'state/activity-log/actions';
 
 export const handleActivityLogRequest = ( { dispatch }, action ) => {
-	const { siteId } = action;
-
-	const query = reduce(
-		action.params,
-		( acc, value, param ) => {
-			const paramToStore = get( CALYPSO_TO_API_PARAMS, param, param );
-
-			if ( includes( KNOWN_API_PARAMS, paramToStore ) ) {
-				return {
-					...acc,
-					[ paramToStore ]: value,
-				};
-			}
-
-			return acc;
+	dispatch( http( {
+		apiVersion: '1',
+		method: 'GET',
+		path: `/sites/${ action.siteId }/activity`,
+		query: {
+			number: 1000,
+			...action.params,
 		},
-		{}
-	);
-
-	debug( 'Handling activity request', query );
-
-	// Clear current logs, this will allow loading placeholders to appear
-	dispatch( activityLogUpdate( siteId, undefined ) );
-
-	dispatch(
-		http(
-			{
-				apiNamespace: 'wpcom/v2',
-				method: 'GET',
-				path: `/sites/${ siteId }/activity`,
-				query,
-			},
-			action
-		)
-	);
+	}, action ) );
 };
 
-export const receiveActivityLog = ( { dispatch }, action, data ) => {
-	dispatch( activityLogUpdate( action.siteId, data, data.totalItems, action.params ) );
+// FIXME: Implement fromApi
+const fromApi = ( { activities } ) => activities;
+
+export const receiveActivityLog = ( { dispatch }, { siteId }, next, data ) => {
+	dispatch( activityLogUpdate( siteId, fromApi( data ) ) );
 };
 
-export const receiveActivityLogError = ( { dispatch } ) => {
-	dispatch( errorNotice( translate( 'Error receiving activity for site.' ) ) );
+export const receiveActivityLogError = ( { dispatch }, { siteId }, next, error ) => {
+	dispatch( activityLogError(
+		siteId,
+		pick( error, [ 'error', 'status', 'message' ]
+	) ) );
 };
 
 export default {
-	[ ACTIVITY_LOG_REQUEST ]: [
-		dispatchRequest( handleActivityLogRequest, receiveActivityLog, receiveActivityLogError, {
-			fromApi,
-		} ),
-	],
+	[ ACTIVITY_LOG_REQUEST ]: [ dispatchRequest(
+		handleActivityLogRequest,
+		receiveActivityLog,
+		receiveActivityLogError
+	) ],
 };

@@ -1,21 +1,17 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import { set } from 'lodash';
 import { spy, match } from 'sinon';
+import { set } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import {
-	actionAppendProductVariations,
-	handleProductCategoryEdit,
-	makeProductActionList,
-} from '../';
+import { actionAppendProductVariations, handleProductCategoryEdit, makeProductActionList, } from '../';
 import { actionListStepFailure } from 'woocommerce/state/action-list/actions';
+import { editProduct, editProductAttribute, editProductRemoveCategory } from 'woocommerce/state/ui/products/actions';
+import { editProductCategory } from 'woocommerce/state/ui/product-categories/actions';
 import {
 	WOOCOMMERCE_PRODUCT_CREATE,
 	WOOCOMMERCE_PRODUCT_UPDATE,
@@ -24,26 +20,24 @@ import {
 	WOOCOMMERCE_PRODUCT_VARIATION_DELETE,
 	WOOCOMMERCE_PRODUCT_CATEGORY_CREATE,
 } from 'woocommerce/state/action-types';
-import { editProductCategory } from 'woocommerce/state/ui/product-categories/actions';
-import {
-	editProduct,
-	editProductAttribute,
-	editProductRemoveCategory,
-} from 'woocommerce/state/ui/products/actions';
 
 describe( 'handlers', () => {
 	describe( '#actionAppendProductVariations', () => {
 		const newProduct = {
 			id: { index: 0 },
 			name: 'New Product',
-			attributes: [ { name: 'Color', options: [ 'Black' ], variation: true } ],
+			attributes: [
+				{ name: 'Color', options: [ 'Black' ], variation: true },
+			],
 		};
 
 		const existingProduct = {
 			id: 202,
 			name: 'Existing product',
 			type: 'variable',
-			attributes: [ { name: 'Color', options: [ 'Black' ], variation: true } ],
+			attributes: [
+				{ name: 'Color', options: [ 'Black' ], variation: true },
+			],
 		};
 
 		const variationBlack = {
@@ -65,14 +59,14 @@ describe( 'handlers', () => {
 						123: {
 							productVariations: {
 								202: existingProductAttributes,
-							},
-						},
+							}
+						}
 					},
-				},
-			},
+				}
+			}
 		};
 
-		test( 'should append product variations to an editProduct action', () => {
+		it( 'should append product variations to an editProduct action', () => {
 			const store = {
 				getState: () => rootState,
 			};
@@ -83,7 +77,7 @@ describe( 'handlers', () => {
 			expect( action.productVariations ).to.equal( existingProductAttributes );
 		} );
 
-		test( 'should append product variations to an editProductAttribute action', () => {
+		it( 'should append product variations to an editProductAttribute action', () => {
 			const store = {
 				getState: () => rootState,
 			};
@@ -99,7 +93,7 @@ describe( 'handlers', () => {
 			expect( action.productVariations ).to.equal( existingProductAttributes );
 		} );
 
-		test( 'should, for a newly created product edit, send undefined for the list of product variations', () => {
+		it( 'should, for a newly created product edit, send undefined for the list of product variations', () => {
 			const store = {
 				getState: () => rootState,
 			};
@@ -128,28 +122,28 @@ describe( 'handlers', () => {
 							123: {
 								edits: {
 									creates: [ newCategory1 ],
-								},
-							},
+								}
+							}
 						},
 						products: {
 							123: {
 								edits: {
 									creates: [ newProduct ],
-								},
-							},
+								}
+							}
 						},
 					},
 					sites: {
 						123: {
 							products: [ newProduct ],
 							productCategories: [ existingCategory ],
-						},
+						}
 					},
-				},
-			},
+				}
+			}
 		};
 
-		test( 'should do nothing if an existing category is updated.', () => {
+		it( 'should do nothing if an existing category is updated.', () => {
 			const store = {
 				dispatch: spy(),
 				getState: () => rootState,
@@ -162,7 +156,7 @@ describe( 'handlers', () => {
 			expect( store.dispatch ).to.not.have.been.called;
 		} );
 
-		test( 'should add placeholder id to action for a create.', () => {
+		it( 'should add placeholder id to action for a create.', () => {
 			const store = {
 				dispatch: spy(),
 				getState: () => rootState,
@@ -177,7 +171,7 @@ describe( 'handlers', () => {
 			expect( store.dispatch ).to.not.have.been.called;
 		} );
 
-		test( 'should remove created category from a product that has it', () => {
+		it( 'should remove created category from a product that has it', () => {
 			const store = {
 				dispatch: spy(),
 				getState: () => rootState,
@@ -193,23 +187,17 @@ describe( 'handlers', () => {
 	} );
 
 	describe( '#makeProductActionList', () => {
-		const variationBlackNew = {
-			id: { index: 5 },
-			attributes: [ { name: 'Color', options: 'Black' } ],
-			regular_price: '5.99',
-		};
-		const variationBlackExisting = {
-			id: 202,
-			attributes: [ { name: 'Color', options: 'Black' } ],
-			regular_price: '5.99',
-		};
+		const variationBlackNew = { id: { index: 5 }, attributes: [ { name: 'Color', options: 'Black' } ], regular_price: '5.99' };
+		const variationBlackExisting = { id: 202, attributes: [ { name: 'Color', options: 'Black' } ], regular_price: '5.99' };
 		const variationBlackEdit = { id: 202, regular_price: '6.99' };
 
 		const existingVariableProduct = {
 			id: 42,
 			name: 'Product #1',
 			type: 'variable',
-			attributes: [ { name: 'Color', options: [ 'Black' ], variation: true } ],
+			attributes: [
+				{ name: 'Color', options: [ 'Black' ], variation: true },
+			],
 		};
 
 		let rootState;
@@ -221,37 +209,45 @@ describe( 'handlers', () => {
 						ui: {
 							products: {
 								123: {
-									edits: {},
-									variations: {
-										edits: [],
+									edits: {
 									},
+									variations: {
+										edits: [
+										]
+									}
 								},
 							},
 						},
 						sites: {
 							123: {
 								products: {
-									products: [ existingVariableProduct ],
+									products: [
+										existingVariableProduct,
+									]
 								},
 								productVariations: {
-									42: [ variationBlackExisting ],
+									42: [
+										variationBlackExisting,
+									]
 								},
-							},
+							}
 						},
-					},
-				},
+					}
+				}
 			};
 		} );
 
-		test( 'should return null when there are no edits', () => {
+		it( 'should return null when there are no edits', () => {
 			expect( makeProductActionList( null, 123, undefined ) ).to.equal.null;
 		} );
 
-		test( 'should return a single product create request', () => {
+		it( 'should return a single product create request', () => {
 			const product1 = { id: { index: 0 }, name: 'Product #1' };
 
 			const edits = {
-				creates: [ product1 ],
+				creates: [
+					product1,
+				]
 			};
 
 			const actionList = makeProductActionList( rootState, 123, edits, [] );
@@ -260,22 +256,23 @@ describe( 'handlers', () => {
 			const dispatch = spy();
 			actionList.nextSteps[ 0 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_CREATE,
-					siteId: 123,
-					product: product1,
-					failureAction: actionListStepFailure( actionList ),
-				} ).and( match.has( 'successAction' ) )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_CREATE,
+				siteId: 123,
+				product: product1,
+				failureAction: actionListStepFailure( actionList ),
+			} ).and( match.has( 'successAction' ) ) );
 		} );
 
-		test( 'should return multiple product create requests', () => {
+		it( 'should return multiple product create requests', () => {
 			const product1 = { id: { index: 0 }, name: 'Product #1' };
 			const product2 = { id: { index: 1 }, name: 'Product #2' };
 
 			const edits = {
-				creates: [ product1, product2 ],
+				creates: [
+					product1,
+					product2,
+				]
 			};
 
 			const actionList = makeProductActionList( rootState, 123, edits, [] );
@@ -285,37 +282,35 @@ describe( 'handlers', () => {
 			actionList.nextSteps[ 0 ].onStep( dispatch, actionList );
 			actionList.nextSteps[ 1 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_CREATE,
-					siteId: 123,
-					product: product1,
-					failureAction: actionListStepFailure( actionList ),
-				} ).and( match.has( 'successAction' ) )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_CREATE,
+				siteId: 123,
+				product: product1,
+				failureAction: actionListStepFailure( actionList ),
+			} ).and( match.has( 'successAction' ) ) );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_CREATE,
-					siteId: 123,
-					product: product2,
-					failureAction: actionListStepFailure( actionList ),
-				} ).and( match.has( 'successAction' ) )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_CREATE,
+				siteId: 123,
+				product: product2,
+				failureAction: actionListStepFailure( actionList ),
+			} ).and( match.has( 'successAction' ) ) );
 		} );
 
-		test( 'should create an action list with success/failure actions', () => {
+		it( 'should create an action list with success/failure actions', () => {
 			const product1 = { id: { index: 0 }, name: 'Product #1' };
 
 			const edits = {
-				creates: [ product1 ],
+				creates: [
+					product1,
+				]
 			};
 
 			const successAction = { type: '%%SUCCESS%%' };
-			const onSuccess = dispatch => dispatch( successAction );
+			const onSuccess = ( dispatch ) => dispatch( successAction );
 
 			const failureAction = { type: '%%FAILURE%%' };
-			const onFailure = dispatch => dispatch( failureAction );
+			const onFailure = ( dispatch ) => dispatch( failureAction );
 
 			const actionList = makeProductActionList( rootState, 123, edits, [], onSuccess, onFailure );
 
@@ -327,37 +322,26 @@ describe( 'handlers', () => {
 			expect( dispatch ).to.have.been.calledWith( failureAction );
 		} );
 
-		test( 'should create only new categories referenced by the products', () => {
-			const category1 = {
-				id: { placeholder: 'productCategory_1' },
-				name: 'Category 1',
-				slug: 'category-1',
-			};
-			const category2 = {
-				id: { placeholder: 'productCategory_2' },
-				name: 'Unused Category',
-				slug: 'unused-category',
-			};
-			const product1 = {
-				id: { index: 0 },
-				name: 'Product #1',
-				categories: [ { id: category1.id } ],
-			};
+		it( 'should create only new categories referenced by the products', () => {
+			const category1 = { id: { placeholder: 'productCategory_1' }, name: 'Category 1', slug: 'category-1' };
+			const category2 = { id: { placeholder: 'productCategory_2' }, name: 'Unused Category', slug: 'unused-category' };
+			const product1 = { id: { index: 0 }, name: 'Product #1', categories: [ { id: category1.id } ] };
 
 			const productEdits = {
-				creates: [ product1 ],
+				creates: [
+					product1,
+				],
 			};
 
 			const productCategoryEdits = {
-				creates: [ category1, category2 ],
+				creates: [
+					category1,
+					category2,
+				],
 			};
 
 			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'edits' ], productEdits );
-			set(
-				rootState.extensions.woocommerce,
-				[ 'ui', 'productCategories', 123, 'edits' ],
-				productCategoryEdits
-			);
+			set( rootState.extensions.woocommerce, [ 'ui', 'productCategories', 123, 'edits' ], productCategoryEdits );
 
 			const actionList = makeProductActionList( rootState, 123, productEdits, [] );
 			expect( actionList.nextSteps.length ).to.equal( 2 );
@@ -375,43 +359,39 @@ describe( 'handlers', () => {
 			// Create the product
 			actionList.nextSteps[ 1 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_CATEGORY_CREATE,
-					siteId: 123,
-					category: category1,
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_CATEGORY_CREATE,
+				siteId: 123,
+				category: category1,
+			} ) );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_CREATE,
-					siteId: 123,
-					product: { ...product1, categories: [ { id: 66 } ] },
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_CREATE,
+				siteId: 123,
+				product: { ...product1, categories: [ { id: 66 } ] },
+			} ) );
 		} );
 
-		test( 'should create variations for a new product', () => {
+		it( 'should create variations for a new product', () => {
 			const product1 = { id: { placeholder: 0 }, name: 'Product #1', type: 'variable' };
 
 			const productEdits = {
-				creates: [ product1 ],
+				creates: [
+					product1,
+				],
 			};
 
 			const variationEdits = [
 				{
 					productId: { placeholder: 0 },
-					creates: [ variationBlackNew ],
-				},
+					creates: [
+						variationBlackNew,
+					],
+				}
 			];
 
 			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'edits' ], productEdits );
-			set(
-				rootState.extensions.woocommerce,
-				[ 'ui', 'products', 123, 'variations', 'edits' ],
-				variationEdits
-			);
+			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'variations', 'edits' ], variationEdits );
 
 			const actionList = makeProductActionList( rootState, 123, productEdits, variationEdits );
 
@@ -422,13 +402,11 @@ describe( 'handlers', () => {
 			// Create the product.
 			actionList.nextSteps[ 0 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_CREATE,
-					siteId: 123,
-					product: product1,
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_CREATE,
+				siteId: 123,
+				product: product1,
+			} ) );
 
 			// Add the mapping
 			actionList.productIdMapping = {
@@ -438,30 +416,26 @@ describe( 'handlers', () => {
 			// Create the variation.
 			actionList.nextSteps[ 1 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_VARIATION_CREATE,
-					siteId: 123,
-					productId: 42,
-					variation: variationBlackNew,
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_VARIATION_CREATE,
+				siteId: 123,
+				productId: 42,
+				variation: variationBlackNew,
+			} ) );
 		} );
 
-		test( 'should create variations for an existing product', () => {
+		it( 'should create variations for an existing product', () => {
 			const productEdits = rootState.extensions.woocommerce.ui.products[ 123 ].edits;
 			const variationEdits = [
 				{
 					productId: 42,
-					creates: [ variationBlackNew ],
-				},
+					creates: [
+						variationBlackNew,
+					],
+				}
 			];
 
-			set(
-				rootState.extensions.woocommerce,
-				[ 'ui', 'products', 123, 'variations', 'edits' ],
-				variationEdits
-			);
+			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'variations', 'edits' ], variationEdits );
 
 			const actionList = makeProductActionList( rootState, 123, productEdits, variationEdits );
 
@@ -472,30 +446,26 @@ describe( 'handlers', () => {
 			// Create the variation.
 			actionList.nextSteps[ 0 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_VARIATION_CREATE,
-					siteId: 123,
-					productId: 42,
-					variation: variationBlackNew,
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_VARIATION_CREATE,
+				siteId: 123,
+				productId: 42,
+				variation: variationBlackNew,
+			} ) );
 		} );
 
-		test( 'should update a variation for an existing product', () => {
+		it( 'should update a variation for an existing product', () => {
 			const productEdits = rootState.extensions.woocommerce.ui.products[ 123 ].edits;
 			const variationEdits = [
 				{
 					productId: 42,
-					updates: [ variationBlackEdit ],
+					updates: [
+						variationBlackEdit,
+					],
 				},
 			];
 
-			set(
-				rootState.extensions.woocommerce,
-				[ 'ui', 'products', 123, 'variations', 'edits' ],
-				variationEdits
-			);
+			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'variations', 'edits' ], variationEdits );
 
 			const actionList = makeProductActionList( rootState, 123, productEdits, variationEdits );
 
@@ -506,34 +476,32 @@ describe( 'handlers', () => {
 			// Create the variation.
 			actionList.nextSteps[ 0 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_VARIATION_UPDATE,
-					siteId: 123,
-					productId: 42,
-					variation: variationBlackEdit,
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_VARIATION_UPDATE,
+				siteId: 123,
+				productId: 42,
+				variation: variationBlackEdit,
+			} ) );
 		} );
 
-		test( 'should delete variations.', () => {
+		it( 'should delete variations.', () => {
 			const productEdits = {
-				updates: [ { id: 42, attributes: [] } ],
+				updates: [
+					{ id: 42, attributes: [] },
+				],
 			};
 
 			const variationEdits = [
 				{
 					productId: 42,
-					deletes: [ variationBlackExisting.id ],
+					deletes: [
+						variationBlackExisting.id,
+					],
 				},
 			];
 
 			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'edits' ], productEdits );
-			set(
-				rootState.extensions.woocommerce,
-				[ 'ui', 'products', 123, 'variations', 'edits' ],
-				variationEdits
-			);
+			set( rootState.extensions.woocommerce, [ 'ui', 'products', 123, 'variations', 'edits' ], variationEdits );
 
 			const actionList = makeProductActionList( rootState, 123, productEdits, variationEdits );
 
@@ -544,25 +512,21 @@ describe( 'handlers', () => {
 			// Update the product.
 			actionList.nextSteps[ 0 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_UPDATE,
-					siteId: 123,
-					product: { id: 42, attributes: [] },
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_UPDATE,
+				siteId: 123,
+				product: { id: 42, attributes: [] },
+			} ) );
 
 			// Delete the variation.
 			actionList.nextSteps[ 1 ].onStep( dispatch, actionList );
 
-			expect( dispatch ).to.have.been.calledWith(
-				match( {
-					type: WOOCOMMERCE_PRODUCT_VARIATION_DELETE,
-					siteId: 123,
-					productId: 42,
-					variationId: 202,
-				} )
-			);
+			expect( dispatch ).to.have.been.calledWith( match( {
+				type: WOOCOMMERCE_PRODUCT_VARIATION_DELETE,
+				siteId: 123,
+				productId: 42,
+				variationId: 202,
+			} ) );
 		} );
 	} );
 } );

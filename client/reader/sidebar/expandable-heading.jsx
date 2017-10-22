@@ -1,30 +1,29 @@
-/** @format */
 /**
  * External dependencies
  */
-import Gridicon from 'gridicons';
-import { noop } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
+import noop from 'lodash/noop';
+import Gridicon from 'gridicons';
 
 /**
  * Internal dependencies
  */
-import Count from 'components/count';
 import SidebarHeading from 'layout/sidebar/heading';
+import Count from 'components/count';
 
-const ExpandableSidebarHeading = ( { title, count, onClick } ) => (
+const ExpandableSidebarHeading = ( { title, count, onClick } ) =>
 	<SidebarHeading onClick={ onClick }>
 		<Gridicon icon="chevron-down" />
-		<span>{ title }</span>
+		<span>
+			{ title }
+		</span>
 		<Count count={ count } />
-	</SidebarHeading>
-);
+	</SidebarHeading>;
 
 ExpandableSidebarHeading.propTypes = {
-	title: PropTypes.string.isRequired,
-	count: PropTypes.number,
-	onClick: PropTypes.func,
+	title: React.PropTypes.string.isRequired,
+	count: React.PropTypes.number,
+	onClick: React.PropTypes.func,
 };
 
 ExpandableSidebarHeading.defaultProps = {

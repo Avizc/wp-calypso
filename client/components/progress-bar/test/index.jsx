@@ -1,71 +1,63 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import { expect } from 'chai';
-import { shallow } from 'enzyme';
 import React from 'react';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import { shallow } from 'enzyme';
+import { expect } from 'chai';
 
 /**
  * Internal dependencies
  */
 import ProgressBar from '../';
 
-describe( 'ProgressBar', () => {
-	test( 'should show the title', () => {
+describe( 'ProgressBar', function() {
+	useFakeDom();
+
+	it( 'should show the title', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } title="foo" /> );
 
 		expect( progressBar.find( '.progress-bar__progress' ).contains( 'foo' ) );
 	} );
 
-	test( 'should add is-pulsing class when isPulsing property is true', () => {
+	it( 'should add is-pulsing class when isPulsing property is true', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } isPulsing={ true } /> );
 
 		expect( progressBar.hasClass( 'is-pulsing' ) );
 	} );
 
-	test( 'should not add is-pulsing class when isPulsing property is false', () => {
+	it( 'should not add is-pulsing class when isPulsing property is false', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } isPulsing={ false } /> );
 
 		expect( ! progressBar.hasClass( 'is-pulsing' ) );
 	} );
 
-	test( 'should add is-compact class when compact property is true', () => {
+	it( 'should add is-compact class when compact property is true', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } compact={ true } /> );
 
 		expect( progressBar.hasClass( 'is-compact' ) );
 	} );
 
-	test( 'should not add is-compact class when compact property is false', () => {
+	it( 'should not add is-compact class when compact property is false', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } compact={ false } /> );
 
 		expect( ! progressBar.hasClass( 'is-compact' ) );
 	} );
 
-	test( 'should properly calculate the width percentage', () => {
+	it( 'should properly calculate the width percentage', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } total={ 40 } /> );
 
-		expect( progressBar.find( '.progress-bar__progress' ).props().style.width ).to.be.equal(
-			'50%'
-		);
+		expect( progressBar.find( '.progress-bar__progress' ).props().style.width ).to.be.equal( '50%' );
 	} );
 
-	test( 'should have the color provided by the color property', () => {
+	it( 'should have the color provided by the color property', function() {
 		const progressBar = shallow( <ProgressBar value={ 20 } color="red" /> );
 
-		expect(
-			progressBar.find( '.progress-bar__progress' ).props().style.backgroundColor
-		).to.be.equal( 'red' );
+		expect( progressBar.find( '.progress-bar__progress' ).props().style.backgroundColor ).to.be.equal( 'red' );
 	} );
 
-	test( 'should not be able to be more than 100% complete', () => {
-		const progressBar = shallow( <ProgressBar value={ 240 } /> );
-		expect( progressBar.find( '.progress-bar__progress' ).props().style.width ).to.be.equal(
-			'100%'
-		);
+	it( 'should not be able to be more than 100% complete', () => {
+		const progressBar = shallow( <ProgressBar value={ 240 }/> );
+		expect( progressBar.find( '.progress-bar__progress' ).props().style.width ).to.be.equal( '100%' );
 	} );
 } );

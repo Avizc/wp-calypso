@@ -1,14 +1,12 @@
 /**
  * Loads the notifications client into Calypso and
  * connects the messaging and interactive elements
- * 
+ *
  *  - messages through iframe
  *  - keyboard hotkeys
  *  - window/pane scrolling
  *  - service worker
- * 
  *
- * @format
  * @module notifications
  */
 
@@ -19,17 +17,21 @@ import React, { Component } from 'react';
 import classNames from 'classnames';
 import page from 'page';
 import wpcom from 'lib/wp';
-import 'config';
-import { connect } from 'react-redux';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import analytics from 'lib/analytics';
 import config from 'config';
-import { recordTracksEvent } from 'state/analytics/actions';
+import userLib from 'lib/user';
+
 import NotificationsPanel, { refreshNotes } from 'notifications-panel';
-import getCurrentLocaleSlug from 'state/selectors/get-current-locale-slug';
+
+/**
+ * Module variables
+ */
+const user = userLib();
 
 /**
  * Returns whether or not the browser session
@@ -63,14 +65,8 @@ export class Notifications extends Component {
 			document.addEventListener( 'visibilitychange', this.handleVisibilityChange );
 		}
 
-		if (
-			'serviceWorker' in window.navigator &&
-			'addEventListener' in window.navigator.serviceWorker
-		) {
-			window.navigator.serviceWorker.addEventListener(
-				'message',
-				this.receiveServiceWorkerMessage
-			);
+		if ( 'serviceWorker' in window.navigator && 'addEventListener' in window.navigator.serviceWorker ) {
+			window.navigator.serviceWorker.addEventListener( 'message', this.receiveServiceWorkerMessage );
 			this.postServiceWorkerMessage( { action: 'sendQueuedMessages' } );
 		}
 	}
@@ -84,14 +80,8 @@ export class Notifications extends Component {
 			document.removeEventListener( 'visibilitychange', this.handleVisibilityChange );
 		}
 
-		if (
-			'serviceWorker' in window.navigator &&
-			'removeEventListener' in window.navigator.serviceWorker
-		) {
-			window.navigator.serviceWorker.removeEventListener(
-				'message',
-				this.receiveServiceWorkerMessage
-			);
+		if ( 'serviceWorker' in window.navigator && 'removeEventListener' in window.navigator.serviceWorker ) {
+			window.navigator.serviceWorker.removeEventListener( 'message', this.receiveServiceWorkerMessage );
 		}
 	}
 
@@ -142,7 +132,7 @@ export class Notifications extends Component {
 			case 'trackClick':
 				analytics.tracks.recordEvent( 'calypso_web_push_notification_clicked', {
 					push_notification_note_id: event.data.notification.note_id,
-					push_notification_type: event.data.notification.type,
+					push_notification_type: event.data.notification.type
 				} );
 
 				return;
@@ -155,64 +145,21 @@ export class Notifications extends Component {
 		}
 
 		window.navigator.serviceWorker.ready.then(
-			registration => 'active' in registration && registration.active.postMessage( message )
+			registration => ( 'active' in registration ) && registration.active.postMessage( message )
 		);
 	};
 
 	render() {
-		const localeSlug = this.props.currentLocaleSlug || config( 'i18n_default_locale_slug' );
+		const localeSlug = get( user.get(), 'localeSlug', config( 'i18n_default_locale_slug' ) );
 
 		const customMiddleware = {
 			APP_RENDER_NOTES: [ ( store, { newNoteCount } ) => this.props.setIndicator( newNoteCount ) ],
 			OPEN_LINK: [ ( store, { href } ) => window.open( href, '_blank' ) ],
-			OPEN_POST: [
-				( store, { siteId, postId, href } ) => {
-					if ( config.isEnabled( 'notifications/link-to-reader' ) ) {
-						this.props.checkToggle();
-						this.props.recordTracksEvent( 'calypso_notifications_open_post', {
-							site_id: siteId,
-							post_id: postId,
-						} );
-						page( `/read/blogs/${ siteId }/posts/${ postId }` );
-					} else {
-						window.open( href, '_blank' );
-					}
-				},
-			],
-			OPEN_COMMENT: [
-				( store, { siteId, postId, href, commentId } ) => {
-					if ( config.isEnabled( 'notifications/link-to-reader' ) ) {
-						this.props.checkToggle();
-						this.props.recordTracksEvent( 'calypso_notifications_open_comment', {
-							site_id: siteId,
-							post_id: postId,
-							comment_id: commentId,
-						} );
-						page( `/read/blogs/${ siteId }/posts/${ postId }#comment-${ commentId }` );
-					} else {
-						window.open( href, '_blank' );
-					}
-				},
-			],
-			OPEN_SITE: [
-				( store, { siteId, href } ) => {
-					if ( config.isEnabled( 'notifications/link-to-reader' ) ) {
-						this.props.checkToggle();
-						this.props.recordTracksEvent( 'calypso_notifications_open_site', {
-							site_id: siteId,
-						} );
-						page( `/read/blogs/${ siteId }` );
-					} else {
-						window.open( href, '_blank' );
-					}
-				},
-			],
-			VIEW_SETTINGS: [
-				() => {
-					this.props.checkToggle();
-					page( '/me/notifications' );
-				},
-			],
+			OPEN_POST: [ ( store, { href } ) => window.open( href, '_blank' ) ],
+			VIEW_SETTINGS: [ () => {
+				this.props.checkToggle();
+				page( '/me/notifications' );
+			} ],
 		};
 
 		return (
@@ -235,9 +182,4 @@ export class Notifications extends Component {
 	}
 }
 
-export default connect(
-	state => ( {
-		currentLocaleSlug: getCurrentLocaleSlug( state ),
-	} ),
-	{ recordTracksEvent }
-)( Notifications );
+export default Notifications;

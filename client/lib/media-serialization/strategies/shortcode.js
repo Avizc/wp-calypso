@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { deserialize as _recurse } from '../';
 
 /**

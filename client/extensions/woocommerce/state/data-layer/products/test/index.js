@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,17 +7,23 @@ import { spy, match } from 'sinon';
 /**
  * Internal dependencies
  */
-import { handleProductCreate, handleProductUpdate, handleProductRequest } from '../';
-import { WOOCOMMERCE_API_REQUEST } from 'woocommerce/state/action-types';
 import {
 	createProduct,
 	updateProduct,
-	fetchProduct,
+	fetchProduct
 } from 'woocommerce/state/sites/products/actions';
+import {
+	handleProductCreate,
+	handleProductUpdate,
+	handleProductRequest,
+} from '../';
+import {
+	WOOCOMMERCE_API_REQUEST,
+} from 'woocommerce/state/action-types';
 
 describe( 'handlers', () => {
 	describe( '#handleProductCreate', () => {
-		test( 'should dispatch a post action', () => {
+		it( 'should dispatch a post action', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -42,7 +46,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -76,7 +80,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra properties', () => {
+		it( 'should dispatch a success function with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -114,7 +118,7 @@ describe( 'handlers', () => {
 	} );
 
 	describe( '#handleProductUpdate', () => {
-		test( 'should dispatch a put action', () => {
+		it( 'should dispatch a put action', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -137,7 +141,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -171,7 +175,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra properties', () => {
+		it( 'should dispatch a success function with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -209,7 +213,7 @@ describe( 'handlers', () => {
 	} );
 
 	describe( '#handleProductRequest', () => {
-		test( 'should dispatch a get action', () => {
+		it( 'should dispatch a get action', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -230,7 +234,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success action with extra properties', () => {
+		it( 'should dispatch a success action with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -262,7 +266,7 @@ describe( 'handlers', () => {
 			);
 		} );
 
-		test( 'should dispatch a success function with extra properties', () => {
+		it( 'should dispatch a success function with extra properties', () => {
 			const store = {
 				dispatch: spy(),
 			};
@@ -297,3 +301,4 @@ describe( 'handlers', () => {
 		} );
 	} );
 } );
+

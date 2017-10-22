@@ -1,59 +1,34 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
+import wpcom from 'lib/wp';
+import { ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST } from 'state/action-types';
 import {
-	ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST,
-	ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST_SUCCESS,
-	ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST_ERROR,
-} from 'state/action-types';
+	requestResetPasswordSuccess,
+	requestResetPasswordError,
+} from 'state/account-recovery/reset/actions';
 
-import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
-import { http } from 'state/data-layer/wpcom-http/actions';
-
-export const resetPassword = ( { dispatch }, action ) => {
+export const handleResetPasswordRequest = ( { dispatch }, action ) => {
 	const {
 		userData, // userData can be either { user } or { firstname, lastname, url }
 		method,
 		key,
-		password,
+		password
 	} = action;
 
-	dispatch(
-		http(
-			{
-				method: 'POST',
-				apiNamespace: 'wpcom/v2',
-				path: '/account-recovery/reset',
-				body: {
-					...userData,
-					method,
-					key,
-					password,
-				},
-			},
-			action
-		)
-	);
-};
-
-export const handleError = ( { dispatch }, action, rawError ) => {
-	dispatch( {
-		type: ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST_ERROR,
-		error: rawError.message,
-	} );
-};
-
-export const handleSuccess = ( { dispatch } ) => {
-	dispatch( {
-		type: ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST_SUCCESS,
-	} );
+	wpcom.req.post( {
+		body: {
+			...userData,
+			method,
+			key,
+			password,
+		},
+		apiNamespace: 'wpcom/v2',
+		path: '/account-recovery/reset'
+	} ).then( () => dispatch( requestResetPasswordSuccess() ) )
+	.catch( ( error ) => dispatch( requestResetPasswordError( error ) ) );
 };
 
 export default {
-	[ ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST ]: [
-		dispatchRequest( resetPassword, handleSuccess, handleError ),
-	],
+	[ ACCOUNT_RECOVERY_RESET_PASSWORD_REQUEST ]: [ handleResetPasswordRequest ],
 };

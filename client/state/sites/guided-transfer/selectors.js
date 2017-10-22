@@ -1,5 +1,8 @@
-/** @format */
-import { find, matches, some } from 'lodash';
+import {
+	find,
+	matches,
+	some,
+} from 'lodash';
 
 export function getGuidedTransferError( state, siteId ) {
 	return state.sites.guidedTransfer.error[ siteId ];
@@ -15,7 +18,8 @@ export function isGuidedTransferInProgress( state, siteId ) {
 		return false;
 	}
 
-	return status.upgrade_purchased && status.host_details_entered;
+	return status.upgrade_purchased &&
+		status.host_details_entered;
 }
 
 /**
@@ -32,7 +36,8 @@ export function isGuidedTransferAwaitingPurchase( state, siteId ) {
 		return false;
 	}
 
-	return ! status.upgrade_purchased && status.host_details_entered;
+	return ( ! status.upgrade_purchased ) &&
+		status.host_details_entered;
 }
 
 export function getGuidedTransferIssues( state, siteId ) {

@@ -1,52 +1,47 @@
 /**
- * External dependencies
- *
- * @format
- */
-
-import React, { PureComponent } from 'react';
+* External dependencies
+*/
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' );
 
 /**
  * Internal dependencies
  */
-import Button from 'components/button';
-import SectionHeader from 'components/section-header';
-import { translate } from 'i18n-calypso';
+var SectionHeader = require( 'components/section-header' ),
+	Button = require( 'components/button' );
 
-class SectionHeaderExample extends PureComponent {
-	static displayName = 'SectionHeader';
+var Cards = React.createClass( {
+	displayName: 'SectionHeader',
 
-	render() {
+	mixins: [ PureRenderMixin ],
+
+	render: function() {
 		return (
 			<div>
-				<SectionHeader label={ translate( 'Team' ) } count={ 10 }>
+				<SectionHeader label={ this.translate( 'Team' ) } count={ 10 }>
 					<Button compact primary>
-						{ translate( 'Primary Action' ) }
+						{ this.translate( 'Primary Action' ) }
 					</Button>
-					<Button compact>{ translate( 'Manage' ) }</Button>
+					<Button compact>
+						{ this.translate( 'Manage' ) }
+					</Button>
 					<Button
 						compact
 						onClick={ function() {
-							alert( translate( 'Clicked add button' ) );
+							alert( 'Clicked add button' );
 						} }
 					>
-						{ translate( 'Add' ) }
+						{ this.translate( 'Add' ) }
 					</Button>
 				</SectionHeader>
 
-				<h3>{ translate( 'Clickable SectionHeader' ) }</h3>
+				<h3>Clickable SectionHeader</h3>
 
-				<SectionHeader
-					label={ translate( 'Team' ) }
-					count={ 10 }
-					href="/devdocs/design/section-header"
-				/>
-
-				<h3>{ translate( 'Empty SectionHeader' ) }</h3>
-				<SectionHeader />
+				<SectionHeader label={ this.translate( 'Team' ) } count={ 10 } href="/devdocs/design/section-header">
+				</SectionHeader>
 			</div>
 		);
 	}
-}
+} );
 
-export default SectionHeaderExample;
+module.exports = Cards;

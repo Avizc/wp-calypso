@@ -1,4 +1,3 @@
-/** @format */
 
 export const BEFORE_SUBMIT = 'before-submit';
 export const INPUT_VALIDATION = 'input-validation';

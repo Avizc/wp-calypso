@@ -1,12 +1,8 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import page from 'page';
 import { localize } from 'i18n-calypso';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 /**
@@ -48,13 +44,13 @@ const user = userFactory();
 
 const ConfirmCancelDomain = React.createClass( {
 	propTypes: {
-		hasLoadedUserPurchasesFromServer: PropTypes.bool.isRequired,
-		isDomainOnlySite: PropTypes.bool,
-		purchaseId: PropTypes.number.isRequired,
-		receiveDeletedSite: PropTypes.func.isRequired,
-		selectedPurchase: PropTypes.object,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.object ] ),
-		setAllSitesSelected: PropTypes.func.isRequired,
+		hasLoadedUserPurchasesFromServer: React.PropTypes.bool.isRequired,
+		isDomainOnlySite: React.PropTypes.bool,
+		purchaseId: React.PropTypes.number.isRequired,
+		receiveDeletedSite: React.PropTypes.func.isRequired,
+		selectedPurchase: React.PropTypes.object,
+		selectedSite: React.PropTypes.oneOfType( [ React.PropTypes.bool, React.PropTypes.object ] ),
+		setAllSitesSelected: React.PropTypes.func.isRequired,
 	},
 
 	getInitialState() {
@@ -107,8 +103,7 @@ const ConfirmCancelDomain = React.createClass( {
 	onSubmit( event ) {
 		event.preventDefault();
 
-		const purchase = getPurchase( this.props ),
-			purchaseName = getDomainName( purchase );
+		const purchase = getPurchase( this.props ), purchaseName = getDomainName( purchase );
 
 		const data = {
 			domain_cancel_reason: this.state.selectedReason.value,
@@ -189,13 +184,14 @@ const ConfirmCancelDomain = React.createClass( {
 
 		return (
 			<div className="confirm-cancel-domain__help-message">
-				<p>{ selectedReason.helpMessage }</p>
-				{ selectedReason.showTextarea && (
+				<p>
+					{ selectedReason.helpMessage }
+				</p>
+				{ selectedReason.showTextarea &&
 					<FormTextarea
 						className="confirm-cancel-domain__reason-details"
 						onChange={ this.onMessageChange }
-					/>
-				) }
+					/> }
 			</div>
 		);
 	},
@@ -237,8 +233,7 @@ const ConfirmCancelDomain = React.createClass( {
 			);
 		}
 
-		const selectedReason = this.state.selectedReason,
-			confirmed = this.state.confirmed;
+		const selectedReason = this.state.selectedReason, confirmed = this.state.confirmed;
 
 		if ( selectedReason && 'misspelled' === selectedReason.value ) {
 			return (
@@ -275,7 +270,9 @@ const ConfirmCancelDomain = React.createClass( {
 
 		return (
 			<Main className="confirm-cancel-domain">
-				<HeaderCake onClick={ this.goToCancelPurchase }>{ titles.confirmCancelDomain }</HeaderCake>
+				<HeaderCake onClick={ this.goToCancelPurchase }>
+					{ titles.confirmCancelDomain }
+				</HeaderCake>
 				<Card>
 					<FormSectionHeading className="is-primary">
 						{ this.props.translate( 'Canceling %(domain)s', { args: { domain } } ) }
@@ -291,11 +288,9 @@ const ConfirmCancelDomain = React.createClass( {
 						className="confirm-cancel-domain__reasons-dropdown"
 						key="confirm-cancel-domain__reasons-dropdown"
 						selectedText={
-							selectedReason ? (
-								selectedReason.label
-							) : (
-								this.props.translate( 'Please let us know why you wish to cancel.' )
-							)
+							selectedReason
+								? selectedReason.label
+								: this.props.translate( 'Please let us know why you wish to cancel.' )
 						}
 						options={ cancellationReasons }
 						onSelect={ this.onReasonChange }

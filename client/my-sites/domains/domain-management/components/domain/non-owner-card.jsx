@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
+import React from 'react' ;
 
 /**
  * Internal dependencies
@@ -20,17 +17,14 @@ const NonOwnerCard = ( { domains, selectedDomainName, translate } ) => {
 		<Notice
 			status="is-warning"
 			showDismiss={ false }
-			text={ translate(
-				'These settings can be changed by the user {{strong}}%(owner)s{{/strong}}.',
-				{
-					components: {
-						strong: <strong />,
-					},
-					args: {
-						owner: domain.owner,
-					},
+			text={ translate( 'These settings can be changed by the user {{strong}}%(owner)s{{/strong}}.', {
+				components: {
+					strong: <strong />
+				},
+				args: {
+					owner: domain.owner
 				}
-			) }
+			} ) }
 		/>
 	);
 };

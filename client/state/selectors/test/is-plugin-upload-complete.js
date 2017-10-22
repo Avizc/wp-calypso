@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -13,19 +11,19 @@ import { isPluginUploadComplete } from 'state/selectors';
 const siteId = 77203074;
 
 describe( 'isPluginUploadComplete', () => {
-	test( 'should return false by default', () => {
+	it( 'should return false by default', () => {
 		const state = {
 			plugins: {
 				upload: {
 					inProgress: {},
 					uploadedPluginId: {},
-				},
-			},
+				}
+			}
 		};
 		expect( isPluginUploadComplete( state, siteId ) ).to.be.false;
 	} );
 
-	test( 'should return false if no plugin id available', () => {
+	it( 'should return false if no plugin id available', () => {
 		const state = {
 			plugins: {
 				upload: {
@@ -33,13 +31,13 @@ describe( 'isPluginUploadComplete', () => {
 						[ siteId ]: false,
 					},
 					uploadedPluginId: {},
-				},
-			},
+				}
+			}
 		};
 		expect( isPluginUploadComplete( state, siteId ) ).to.be.false;
 	} );
 
-	test( 'should return false if upload still in progress', () => {
+	it( 'should return false if upload still in progress', () => {
 		const state = {
 			plugins: {
 				upload: {
@@ -49,13 +47,13 @@ describe( 'isPluginUploadComplete', () => {
 					uploadedPluginId: {
 						[ siteId ]: 'hello-dolly',
 					},
-				},
-			},
+				}
+			}
 		};
 		expect( isPluginUploadComplete( state, siteId ) ).to.be.false;
 	} );
 
-	test( 'should return true if upload not in progress and plugin id present', () => {
+	it( 'should return true if upload not in progress and plugin id present', () => {
 		const state = {
 			plugins: {
 				upload: {
@@ -65,8 +63,8 @@ describe( 'isPluginUploadComplete', () => {
 					uploadedPluginId: {
 						[ siteId ]: 'hello-dolly',
 					},
-				},
-			},
+				}
+			}
 		};
 		expect( isPluginUploadComplete( state, siteId ) ).to.be.true;
 	} );

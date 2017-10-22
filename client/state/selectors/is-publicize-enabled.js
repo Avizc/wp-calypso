@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { isJetpackModuleActive, getSiteOption } from 'state/sites/selectors';
 import { postTypeSupports } from 'state/post-types/selectors';
 
@@ -17,9 +14,7 @@ import { postTypeSupports } from 'state/post-types/selectors';
  * @return {Boolean} True when enabled
  */
 export default function isPublicizeEnabled( state, siteId, postType ) {
-	return (
-		true !== getSiteOption( state, siteId, 'publicize_permanently_disabled' ) &&
+	return true !== getSiteOption( state, siteId, 'publicize_permanently_disabled' ) &&
 		false !== isJetpackModuleActive( state, siteId, 'publicize' ) &&
-		postTypeSupports( state, siteId, postType, 'publicize' )
-	);
+		postTypeSupports( state, siteId, postType, 'publicize' );
 }

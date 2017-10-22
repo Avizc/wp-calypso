@@ -1,18 +1,13 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:help-search:store' );
+var debug = require( 'debug' )( 'calypso:help-search:store' );
 
 /**
  * Internal dependencies
  */
-import { createReducerStore } from 'lib/store';
-import { action as ActionTypes } from './constants';
+var createReducerStore = require( 'lib/store' ).createReducerStore,
+	ActionTypes = require( './constants' ).action;
 
 /**
  * Module variables
@@ -39,4 +34,4 @@ HelpSearchStore.getHelpLinks = function() {
 	return HelpSearchStore.get();
 };
 
-export default HelpSearchStore;
+module.exports = HelpSearchStore;

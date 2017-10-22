@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import {
 	SITE_DOMAINS_RECEIVE,
 	SITE_DOMAINS_REQUEST,
@@ -28,13 +25,12 @@ export const DOMAIN_PRIMARY = {
 	canSetAsPrimary: true,
 	currentUserCanManage: true,
 	domain: 'retronevergiveup.me',
-	domainLockingAvailable: true,
 	pointsToWpcom: true,
 	expired: false,
 	expiry: '2017-03-09T00:00:00+00:00',
 	expirySoon: false,
 	googleAppsSubscription: {
-		status: 'no_subscription',
+		status: 'no_subscription'
 	},
 	hasPrivacyProtection: false,
 	privacyAvailable: false,
@@ -56,8 +52,7 @@ export const DOMAIN_PRIMARY = {
 	subscriptionId: SUBSCRIPTION_ID_FIRST,
 	type: 'MAPPED',
 	transferLockOnWhoisUpdateOptional: true,
-	whoisUpdateUnmodifiableFields: [],
-	isWPCOMDomain: false,
+	isWPCOMDomain: false
 };
 
 // testing not-primary-domain
@@ -68,13 +63,12 @@ export const DOMAIN_NOT_PRIMARY = {
 	canSetAsPrimary: true,
 	currentUserCanManage: true,
 	domain: 'retronevergiveup.wordpress.me',
-	domainLockingAvailable: true,
 	pointsToWpcom: true,
 	expired: false,
 	expiry: null,
 	expirySoon: false,
 	googleAppsSubscription: {
-		status: 'no_subscription',
+		status: 'no_subscription'
 	},
 	hasPrivacyProtection: false,
 	privacyAvailable: false,
@@ -96,13 +90,11 @@ export const DOMAIN_NOT_PRIMARY = {
 	subscriptionId: SUBSCRIPTION_ID_SECOND,
 	type: 'WPCOM',
 	transferLockOnWhoisUpdateOptional: false,
-	whoisUpdateUnmodifiableFields: [ 'first_name', 'last_name' ],
-	isWPCOMDomain: true,
+	isWPCOMDomain: true
 };
 
 // WP REST-API error response
-export const ERROR_MESSAGE_RESPONSE =
-	'There was a problem fetching site domains. Please try again later or contact support.';
+export const ERROR_MESSAGE_RESPONSE = 'There was a problem fetching site domains. Please try again later or contact support.';
 
 export const REST_API_SITE_DOMAIN_FIRST = {
 	auto_renewal_date: '2017-02-07T00:00:00+00:00',
@@ -110,13 +102,12 @@ export const REST_API_SITE_DOMAIN_FIRST = {
 	blog_id: SITE_ID_FIRST,
 	can_set_as_primary: true,
 	domain: 'retronevergiveup.me',
-	domain_locking_available: true,
 	points_to_wpcom: true,
 	expired: false,
 	expiry: '2017-03-09T00:00:00+00:00',
 	expiry_soon: false,
 	google_apps_subscription: {
-		status: 'no_subscription',
+		status: 'no_subscription'
 	},
 	has_private_registration: false,
 	privacyAvailable: false,
@@ -138,8 +129,7 @@ export const REST_API_SITE_DOMAIN_FIRST = {
 	subscription_id: SUBSCRIPTION_ID_FIRST,
 	type: 'mapping',
 	transfer_lock_on_whois_update_optional: true,
-	whois_update_unmodifiable_fields: [],
-	wpcom_domain: false,
+	wpcom_domain: false
 };
 
 export const REST_API_SITE_DOMAIN_SECOND = {
@@ -148,13 +138,12 @@ export const REST_API_SITE_DOMAIN_SECOND = {
 	blog_id: SITE_ID_SECOND,
 	can_set_as_primary: true,
 	domain: 'retronevergiveup.wordpress.me',
-	domain_locking_available: true,
 	points_to_wpcom: true,
 	expired: false,
 	expiry: false,
 	expiry_soon: false,
 	google_apps_subscription: {
-		status: 'no_subscription',
+		status: 'no_subscription'
 	},
 	has_private_registration: false,
 	privacyAvailable: false,
@@ -174,52 +163,55 @@ export const REST_API_SITE_DOMAIN_SECOND = {
 	registration_date: '',
 	subscription_id: SUBSCRIPTION_ID_SECOND,
 	type: 'wpcom',
-	whois_update_unmodifiable_fields: [ 'first_name', 'last_name' ],
-	wpcom_domain: true,
+	wpcom_domain: true
 };
 
 // WP RESP-API response
 export const REST_API_RESPONSE = {
 	headers: {
 		'Content-Type': 'application/json',
-		Date: new Date().toGMTString(),
+		Date: new Date().toGMTString()
 	},
-	domains: [ REST_API_SITE_DOMAIN_FIRST ],
+	domains: [ REST_API_SITE_DOMAIN_FIRST ]
 };
 
 // WP RESP-API response
 export const REST_API_ERROR_RESPONSE = {
 	error: 'authorization_required',
-	message: 'User or Token does not have access to specified site.',
+	message: 'User or Token does not have access to specified site.'
 };
 
 // first testing-site domains
-export const SITE_FIRST_DOMAINS = [ createSiteDomainObject( REST_API_SITE_DOMAIN_FIRST ) ];
+export const SITE_FIRST_DOMAINS = [
+	createSiteDomainObject( REST_API_SITE_DOMAIN_FIRST )
+];
 
 // second testing-site domains
-export const SITE_SECOND_DOMAINS = [ createSiteDomainObject( REST_API_SITE_DOMAIN_SECOND ) ];
+export const SITE_SECOND_DOMAINS = [
+	createSiteDomainObject( REST_API_SITE_DOMAIN_SECOND )
+];
 
 // actions
 export const ACTION_SITE_DOMAIN_RECEIVE = {
 	type: SITE_DOMAINS_RECEIVE,
 	siteId: SITE_ID_FIRST,
-	domains: SITE_FIRST_DOMAINS,
+	domains: SITE_FIRST_DOMAINS
 };
 
 export const ACTION_SITE_DOMAIN_REQUEST = {
 	type: SITE_DOMAINS_REQUEST,
-	siteId: SITE_ID_FIRST,
+	siteId: SITE_ID_FIRST
 };
 
 export const ACTION_SITE_DOMAIN_REQUEST_SUCCESS = {
 	type: SITE_DOMAINS_REQUEST_SUCCESS,
-	siteId: SITE_ID_FIRST,
+	siteId: SITE_ID_FIRST
 };
 
 export const ACTION_SITE_DOMAIN_REQUEST_FAILURE = {
 	type: SITE_DOMAINS_REQUEST_FAILURE,
 	siteId: SITE_ID_FIRST,
-	error: ERROR_MESSAGE_RESPONSE,
+	error: ERROR_MESSAGE_RESPONSE
 };
 
 /**
@@ -235,14 +227,14 @@ export const getStateInstance = () => {
 			domains: {
 				items: {
 					[ SITE_ID_FIRST ]: SITE_FIRST_DOMAINS,
-					[ SITE_ID_SECOND ]: SITE_SECOND_DOMAINS,
+					[ SITE_ID_SECOND ]: SITE_SECOND_DOMAINS
 				},
 
 				requesting: {
 					[ SITE_ID_FIRST ]: false,
-					[ SITE_ID_SECOND ]: true,
-				},
-			},
-		},
+					[ SITE_ID_SECOND ]: true
+				}
+			}
+		}
 	};
 };

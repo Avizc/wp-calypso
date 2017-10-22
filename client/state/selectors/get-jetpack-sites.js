@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import createSelector from 'lib/create-selector';
 import { getSites } from 'state/selectors';
 import { isJetpackSite } from 'state/sites/selectors';
@@ -15,6 +12,6 @@ import { isJetpackSite } from 'state/sites/selectors';
  * @return {Array}        Array of Jetpack Sites objects
  */
 export default createSelector(
-	state => getSites( state ).filter( site => isJetpackSite( state, site.ID ) ),
-	state => [ state.sites.items, state.currentUser.capabilities ]
+	( state ) => getSites( state ).filter( site => isJetpackSite( state, site.ID ) ),
+	( state ) => state.sites.items
 );

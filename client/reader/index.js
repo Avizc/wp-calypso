@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -51,7 +50,7 @@ export default function() {
 			prettyRedirects,
 			sidebar,
 			feedDiscovery,
-			feedListing
+			feedListing,
 		);
 
 		// Blog stream

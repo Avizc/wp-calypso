@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { find, size, map } from 'lodash';
 import { localize } from 'i18n-calypso';
@@ -65,12 +61,10 @@ class EditorPageTemplates extends Component {
 
 	getTemplates() {
 		const { translate, templates } = this.props;
-		return [
-			{
-				label: translate( 'Default Template' ),
-				file: '',
-			},
-		].concat( templates || [] );
+		return [ {
+			label: translate( 'Default Template' ),
+			file: ''
+		} ].concat( templates || [] );
 	}
 
 	render() {
@@ -97,8 +91,7 @@ class EditorPageTemplates extends Component {
 									<DropdownItem
 										key={ file }
 										selected={ file === template }
-										onClick={ () => this.selectTemplate( file ) }
-									>
+										onClick={ () => this.selectTemplate( file ) }>
 										{ label }
 									</DropdownItem>
 								) ) }
@@ -112,7 +105,7 @@ class EditorPageTemplates extends Component {
 }
 
 export default connect(
-	state => {
+	( state ) => {
 		const siteId = getSelectedSiteId( state );
 		const postId = getEditorPostId( state );
 		const postType = getEditedPostValue( state, siteId, postId, 'type' );

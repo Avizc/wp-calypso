@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import ReactDom from 'react-dom';
-import PropTypes from 'prop-types';
 import React from 'react';
 import debugFactory from 'debug';
 import { omit } from 'lodash';
@@ -20,11 +16,17 @@ export default React.createClass( {
 	displayName: 'ResizableIframe',
 
 	propTypes: {
-		src: PropTypes.string,
-		width: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
-		height: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
-		onLoad: PropTypes.func,
-		onResize: PropTypes.func,
+		src: React.PropTypes.string,
+		width: React.PropTypes.oneOfType( [
+			React.PropTypes.string,
+			React.PropTypes.number
+		] ),
+		height: React.PropTypes.oneOfType( [
+			React.PropTypes.string,
+			React.PropTypes.number
+		] ),
+		onLoad: React.PropTypes.func,
+		onResize: React.PropTypes.func
 	},
 
 	getInitialState: function() {
@@ -34,7 +36,7 @@ export default React.createClass( {
 	getDefaultProps: function() {
 		return {
 			onLoad: noop,
-			onResize: noop,
+			onResize: noop
 		};
 	},
 
@@ -136,7 +138,7 @@ export default React.createClass( {
 
 		// Attempt to parse the message data as JSON if passed as string
 		let data = event.data || {};
-		if ( typeof data === 'string' ) {
+		if ( 'string' === typeof data ) {
 			try {
 				data = JSON.parse( data );
 			} catch ( e ) {} // eslint-disable-line no-empty
@@ -173,8 +175,7 @@ export default React.createClass( {
 				{ ...omit( this.props, omitProps ) }
 				onLoad={ this.onLoad }
 				width={ this.props.width || this.state.width }
-				height={ this.props.height || this.state.height }
-			/>
+				height={ this.props.height || this.state.height } />
 		);
-	},
+	}
 } );

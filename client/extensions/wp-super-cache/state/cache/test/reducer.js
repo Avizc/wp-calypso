@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,6 +7,7 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
+import { useSandbox } from 'test/helpers/use-sinon';
 import {
 	WP_SUPER_CACHE_DELETE_CACHE,
 	WP_SUPER_CACHE_DELETE_CACHE_FAILURE,
@@ -20,15 +19,17 @@ import {
 	WP_SUPER_CACHE_TEST_CACHE_FAILURE,
 	WP_SUPER_CACHE_TEST_CACHE_SUCCESS,
 } from '../../action-types';
+import {
+	SERIALIZE,
+	DESERIALIZE,
+} from 'state/action-types';
 import reducer from '../reducer';
-import { SERIALIZE, DESERIALIZE } from 'state/action-types';
-import { useSandbox } from 'test/helpers/use-sinon';
 
 describe( 'reducer', () => {
 	const primarySiteId = 123456;
 	const secondarySiteId = 456789;
 
-	useSandbox( sandbox => {
+	useSandbox( ( sandbox ) => {
 		sandbox.stub( console, 'warn' );
 	} );
 
@@ -38,17 +39,17 @@ describe( 'reducer', () => {
 				[ primarySiteId ]: {
 					deleting: true,
 					status: 'pending',
-				},
-			},
+				}
+			}
 		} );
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = reducer( undefined, {} );
 
 			expect( state.deleteStatus ).to.eql( {} );
 		} );
 
-		test( 'should set request to true if request in progress', () => {
+		it( 'should set request to true if request in progress', () => {
 			const state = reducer( undefined, {
 				type: WP_SUPER_CACHE_DELETE_CACHE,
 				siteId: primarySiteId,
@@ -58,11 +59,11 @@ describe( 'reducer', () => {
 				[ primarySiteId ]: {
 					deleting: true,
 					status: 'pending',
-				},
+				}
 			} );
 		} );
 
-		test( 'should accumulate requesting values', () => {
+		it( 'should accumulate requesting values', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_DELETE_CACHE,
 				siteId: secondarySiteId,
@@ -76,11 +77,11 @@ describe( 'reducer', () => {
 				[ secondarySiteId ]: {
 					deleting: true,
 					status: 'pending',
-				},
+				}
 			} );
 		} );
 
-		test( 'should set request to false if request finishes successfully', () => {
+		it( 'should set request to false if request finishes successfully', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_DELETE_CACHE_SUCCESS,
 				siteId: primarySiteId,
@@ -90,11 +91,11 @@ describe( 'reducer', () => {
 				[ primarySiteId ]: {
 					deleting: false,
 					status: 'success',
-				},
+				}
 			} );
 		} );
 
-		test( 'should set request to false if request finishes with failure', () => {
+		it( 'should set request to false if request finishes with failure', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_DELETE_CACHE_FAILURE,
 				siteId: primarySiteId,
@@ -104,11 +105,11 @@ describe( 'reducer', () => {
 				[ primarySiteId ]: {
 					deleting: false,
 					status: 'error',
-				},
+				}
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = reducer( previousState, {
 				type: SERIALIZE,
 			} );
@@ -116,7 +117,7 @@ describe( 'reducer', () => {
 			expect( state.deleteStatus ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = reducer( previousState, {
 				type: DESERIALIZE,
 			} );
@@ -129,16 +130,16 @@ describe( 'reducer', () => {
 		const previousState = deepFreeze( {
 			testing: {
 				[ primarySiteId ]: true,
-			},
+			}
 		} );
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = reducer( undefined, {} );
 
 			expect( state.testing ).to.eql( {} );
 		} );
 
-		test( 'should set testing value to true if request in progress', () => {
+		it( 'should set testing value to true if request in progress', () => {
 			const state = reducer( undefined, {
 				type: WP_SUPER_CACHE_TEST_CACHE,
 				siteId: primarySiteId,
@@ -149,7 +150,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate testing values', () => {
+		it( 'should accumulate testing values', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_TEST_CACHE,
 				siteId: secondarySiteId,
@@ -161,7 +162,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set testing value to false if request finishes successfully', () => {
+		it( 'should set testing value to false if request finishes successfully', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_TEST_CACHE_SUCCESS,
 				siteId: primarySiteId,
@@ -172,7 +173,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set testing value to false if request finishes with failure', () => {
+		it( 'should set testing value to false if request finishes with failure', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_TEST_CACHE_FAILURE,
 				siteId: primarySiteId,
@@ -183,7 +184,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = reducer( previousState, {
 				type: SERIALIZE,
 			} );
@@ -191,7 +192,7 @@ describe( 'reducer', () => {
 			expect( state.testing ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = reducer( previousState, {
 				type: DESERIALIZE,
 			} );
@@ -204,16 +205,16 @@ describe( 'reducer', () => {
 		const previousState = deepFreeze( {
 			preloading: {
 				[ primarySiteId ]: true,
-			},
+			}
 		} );
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = reducer( undefined, {} );
 
 			expect( state.preloading ).to.eql( {} );
 		} );
 
-		test( 'should set preloading value to true if request in progress', () => {
+		it( 'should set preloading value to true if request in progress', () => {
 			const state = reducer( undefined, {
 				type: WP_SUPER_CACHE_PRELOAD_CACHE,
 				siteId: primarySiteId,
@@ -224,7 +225,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate preloading values', () => {
+		it( 'should accumulate preloading values', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_PRELOAD_CACHE,
 				siteId: secondarySiteId,
@@ -236,7 +237,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set preloading value to false if request finishes successfully', () => {
+		it( 'should set preloading value to false if request finishes successfully', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_PRELOAD_CACHE_SUCCESS,
 				siteId: primarySiteId,
@@ -247,7 +248,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should set preloading value to false if request finishes with failure', () => {
+		it( 'should set preloading value to false if request finishes with failure', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_PRELOAD_CACHE_FAILURE,
 				siteId: primarySiteId,
@@ -258,7 +259,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = reducer( previousState, {
 				type: SERIALIZE,
 			} );
@@ -266,7 +267,7 @@ describe( 'reducer', () => {
 			expect( state.preloading ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = reducer( previousState, {
 				type: DESERIALIZE,
 			} );
@@ -280,29 +281,29 @@ describe( 'reducer', () => {
 			attempts: {
 				first: {
 					status: 'OK',
-				},
-			},
+				}
+			}
 		};
 		const secondaryResults = {
 			attempts: {
 				second: {
 					status: 'FAILED',
-				},
-			},
+				}
+			}
 		};
 		const previousState = deepFreeze( {
 			items: {
 				[ primarySiteId ]: primaryResults,
-			},
+			}
 		} );
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = reducer( undefined, {} );
 
 			expect( state.items ).to.eql( {} );
 		} );
 
-		test( 'should index cache test results by site ID', () => {
+		it( 'should index cache test results by site ID', () => {
 			const state = reducer( undefined, {
 				type: WP_SUPER_CACHE_TEST_CACHE_SUCCESS,
 				siteId: primarySiteId,
@@ -314,7 +315,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate cache test results', () => {
+		it( 'should accumulate cache test results', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_TEST_CACHE_SUCCESS,
 				siteId: secondarySiteId,
@@ -327,7 +328,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should override previous cache test results of same site ID', () => {
+		it( 'should override previous cache test results of same site ID', () => {
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_TEST_CACHE_SUCCESS,
 				siteId: primarySiteId,
@@ -339,7 +340,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate new cache test results and overwrite existing ones for the same site ID', () => {
+		it( 'should accumulate new cache test results and overwrite existing ones for the same site ID', () => {
 			const newResults = {
 				attempts: {
 					first: {
@@ -347,8 +348,8 @@ describe( 'reducer', () => {
 					},
 					second: {
 						status: 'FAILED',
-					},
-				},
+					}
+				}
 			};
 			const state = reducer( previousState, {
 				type: WP_SUPER_CACHE_TEST_CACHE_SUCCESS,
@@ -361,7 +362,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = reducer( previousState, {
 				type: SERIALIZE,
 			} );
@@ -369,7 +370,7 @@ describe( 'reducer', () => {
 			expect( state.items ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = reducer( previousState, {
 				type: DESERIALIZE,
 			} );

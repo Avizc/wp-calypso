@@ -1,8 +1,7 @@
-/** @format */
 /**
  * External dependencies
  */
-import { omitBy } from 'lodash';
+import omitBy from 'lodash/omitBy';
 
 /**
  * Internal dependencies
@@ -20,7 +19,8 @@ import { DEFAULT_TERM_QUERY } from './constants';
  */
 function isDefaultOrNullQueryValue( value, key ) {
 	return (
-		null == value || DEFAULT_TERM_QUERY[ key ] === value // Double-equals null checks undefined, null
+		null == value || // Double-equals null checks undefined, null
+		DEFAULT_TERM_QUERY[ key ] === value
 	);
 }
 

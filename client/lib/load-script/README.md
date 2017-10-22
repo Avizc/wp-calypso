@@ -5,8 +5,8 @@ This utility function allows us to use a standardized method of loading remote s
 
 ### Usage
 ```js
-import { loadScript, loadjQueryDependentScript } from 'lib/load-script';
-loadScript( REMOTE_SCRIPT_URL, function( error ) {
+loadScript = require( 'lib/load-script' );
+loadScript.loadScript( REMOTE_SCRIPT_URL, function( error ) {
 	if ( error ) {
 		debug( 'Script ' + error.src + ' failed to load.' );
 		return;
@@ -15,7 +15,7 @@ loadScript( REMOTE_SCRIPT_URL, function( error ) {
 } );
 
 // if we need jQuery, this function will load it (if it's not loaded already)
-loadjQueryDependentScript( REMOTE_SCRIPT_URL, function( error ) {
+loadScript.loadjQueryDependentScript( REMOTE_SCRIPT_URL, function( error ) {
 	if ( error ) {
 		debug( 'Script ' + error.src + ' failed to load.' );
 		return;

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,39 +10,39 @@ import { isJetpackSiteConnected } from '../';
 import { items as ITEMS_FIXTURE } from './fixtures/jetpack-connection';
 
 describe( 'isJetpackSiteConnected()', () => {
-	test( 'should return true if the site is connected', () => {
+	it( 'should return true if the site is connected', () => {
 		const stateIn = {
 				jetpack: {
 					connection: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 87654321;
 		const output = isJetpackSiteConnected( stateIn, siteId );
 		expect( output ).to.be.true;
 	} );
 
-	test( 'should return false if the site is not connected', () => {
+	it( 'should return false if the site is not connected', () => {
 		const stateIn = {
 				jetpack: {
 					connection: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 12345678;
 		const output = isJetpackSiteConnected( stateIn, siteId );
 		expect( output ).to.be.false;
 	} );
 
-	test( 'should return null if the site is not known yet', () => {
+	it( 'should return null if the site is not known yet', () => {
 		const stateIn = {
 				jetpack: {
 					connection: {
-						items: ITEMS_FIXTURE,
-					},
-				},
+						items: ITEMS_FIXTURE
+					}
+				}
 			},
 			siteId = 88888888;
 		const output = isJetpackSiteConnected( stateIn, siteId );

@@ -1,10 +1,18 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { every, get, includes, map, mapKeys, omit, omitBy, some, split, startsWith } from 'lodash';
+import startsWith from 'lodash/startsWith';
+import {
+	every,
+	get,
+	includes,
+	map,
+	mapKeys,
+	omit,
+	omitBy,
+	some,
+	split
+} from 'lodash';
 
 /**
  * Internal dependencies
@@ -52,25 +60,27 @@ export function normalizeJetpackTheme( theme = {} ) {
 		...omit( theme, 'tags' ),
 		taxonomies: {
 			// Map slugs only since JP sites give us no names
-			theme_feature: map( theme.tags, slug => ( { slug } ) ),
-		},
+			theme_feature: map( theme.tags, slug => ( { slug } ) )
+		}
 	};
 }
 
-/**
- * Normalizes a theme obtained from the WordPress.com REST API
- *
- * @param  {Object} theme  Theme object
- * @return {Object}        Normalized theme object
- */
+ /**
+  * Normalizes a theme obtained from the WordPress.com REST API
+  *
+  * @param  {Object} theme  Theme object
+  * @return {Object}        Normalized theme object
+  */
 export function normalizeWpcomTheme( theme ) {
 	const attributesMap = {
 		description_long: 'descriptionLong',
 		support_documentation: 'supportDocumentation',
-		download_uri: 'download',
+		download_uri: 'download'
 	};
 
-	return mapKeys( theme, ( value, key ) => get( attributesMap, key, key ) );
+	return mapKeys( theme, ( value, key ) => (
+		get( attributesMap, key, key )
+	) );
 }
 
 /**
@@ -84,12 +94,12 @@ export function normalizeWporgTheme( theme ) {
 		slug: 'id',
 		preview_url: 'demo_uri',
 		screenshot_url: 'screenshot',
-		download_link: 'download',
+		download_link: 'download'
 	};
 
-	const normalizedTheme = mapKeys( omit( theme, [ 'sections', 'author' ] ), ( value, key ) =>
+	const normalizedTheme = mapKeys( omit( theme, [ 'sections', 'author' ] ), ( value, key ) => (
 		get( attributesMap, key, key )
-	);
+	) );
 
 	const description = get( theme, [ 'sections', 'description' ] );
 	if ( description ) {
@@ -107,9 +117,9 @@ export function normalizeWporgTheme( theme ) {
 
 	return {
 		...omit( normalizedTheme, 'tags' ),
-		taxonomies: {
-			theme_feature: map( normalizedTheme.tags, ( name, slug ) => ( { name, slug } ) ),
-		},
+		taxonomies: { theme_feature: map( normalizedTheme.tags,
+			( name, slug ) => ( { name, slug } )
+		) }
 	};
 }
 
@@ -223,22 +233,17 @@ export function isThemeMatchingQuery( query, theme ) {
 
 				const search = value.toLowerCase();
 
-				const foundInTaxonomies = some(
-					SEARCH_TAXONOMIES,
-					taxonomy =>
-						theme.taxonomies &&
-						some(
-							theme.taxonomies[ 'theme_' + taxonomy ],
-							( { name } ) => name && includes( name.toLowerCase(), search )
-						)
-				);
+				const foundInTaxonomies = some( SEARCH_TAXONOMIES, ( taxonomy ) => (
+					theme.taxonomies && some( theme.taxonomies[ 'theme_' + taxonomy ], ( { name } ) => (
+						name && includes( name.toLowerCase(), search )
+					) )
+				) );
 
-				return (
-					foundInTaxonomies ||
-					( ( theme.id && includes( theme.id.toLowerCase(), search ) ) ||
-						( theme.name && includes( theme.name.toLowerCase(), search ) ) ||
-						( theme.author && includes( theme.author.toLowerCase(), search ) ) ||
-						( theme.descriptionLong && includes( theme.descriptionLong.toLowerCase(), search ) ) )
+				return foundInTaxonomies || (
+					( theme.id && includes( theme.id.toLowerCase(), search ) ) ||
+					( theme.name && includes( theme.name.toLowerCase(), search ) ) ||
+					( theme.author && includes( theme.author.toLowerCase(), search ) ) ||
+					( theme.descriptionLong && includes( theme.descriptionLong.toLowerCase(), search ) )
 				);
 
 			case 'filter':
@@ -249,7 +254,11 @@ export function isThemeMatchingQuery( query, theme ) {
 				// TODO: Change filters object shape to be more like post's terms, i.e.
 				// { color: 'blue,red', feature: 'post-slider' }
 				const filters = value.split( ',' );
-				return every( filters, f => some( theme.taxonomies, terms => some( terms, { slug: f } ) ) );
+				return every( filters, ( f ) => (
+					some( theme.taxonomies, ( terms ) => (
+						some( terms, { slug: f } )
+					) )
+				) );
 		}
 
 		return true;

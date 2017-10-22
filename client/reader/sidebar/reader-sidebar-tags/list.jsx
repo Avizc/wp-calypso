@@ -1,24 +1,23 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
-import { localize } from 'i18n-calypso';
-import { identity, map } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import map from 'lodash/map';
+import { localize } from 'i18n-calypso';
+import { identity } from 'lodash';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import ReaderSidebarTagsListItem from './list-item';
 
 export class ReaderSidebarTagsList extends Component {
 	static propTypes = {
-		tags: PropTypes.array,
-		onUnfollow: PropTypes.func.isRequired,
-		path: PropTypes.string.isRequired,
-		currentTag: PropTypes.string,
-		translate: PropTypes.func,
+		tags: React.PropTypes.array,
+		onUnfollow: React.PropTypes.func.isRequired,
+		path: React.PropTypes.string.isRequired,
+		currentTag: React.PropTypes.string,
+		translate: React.PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -50,7 +49,11 @@ export class ReaderSidebarTagsList extends Component {
 			);
 		}
 
-		return <div>{ this.renderItems() }</div>;
+		return (
+			<div>
+				{ this.renderItems() }
+			</div>
+		);
 	}
 }
 

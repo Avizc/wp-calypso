@@ -1,11 +1,7 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import page from 'page';
@@ -17,11 +13,15 @@ import Button from 'components/button';
 import FormFieldset from 'components/forms/form-fieldset';
 import FormLabel from 'components/forms/form-label';
 import FormSettingExplanation from 'components/forms/form-setting-explanation';
-import { isMonthly } from 'lib/plans/constants';
-import { getYearlyPlanByMonthly } from 'lib/plans';
+import { isMonthly, getYearlyPlanByMonthly } from 'lib/plans/constants';
 import { planItem } from 'lib/cart-values/cart-items';
 import { addItem } from 'lib/upgrades/actions';
-import { isExpired, isExpiring, isRenewing, showCreditCardExpiringWarning } from 'lib/purchases';
+import {
+	isExpired,
+	isExpiring,
+	isRenewing,
+	showCreditCardExpiringWarning,
+} from 'lib/purchases';
 import { recordTracksEvent } from 'state/analytics/actions';
 
 class PlanBillingPeriod extends Component {
@@ -80,7 +80,9 @@ class PlanBillingPeriod extends Component {
 
 		if ( ! isMonthly( purchase.productSlug ) ) {
 			return (
-				<FormSettingExplanation>{ this.renderYearlyBillingInformation() }</FormSettingExplanation>
+				<FormSettingExplanation>
+					{ this.renderYearlyBillingInformation() }
+				</FormSettingExplanation>
 			);
 		}
 
@@ -92,7 +94,11 @@ class PlanBillingPeriod extends Component {
 		return (
 			<FormSettingExplanation>
 				{ translate( 'Billed monthly' ) }
-				<Button onClick={ this.handleMonthlyToYearlyButtonClick } primary compact>
+				<Button
+					onClick={ this.handleMonthlyToYearlyButtonClick }
+					primary
+					compact
+				>
 					{ translate( 'Upgrade to yearly billing' ) }
 				</Button>
 			</FormSettingExplanation>
@@ -104,7 +110,9 @@ class PlanBillingPeriod extends Component {
 
 		return (
 			<FormFieldset>
-				<FormLabel htmlFor="plan-billing-period">{ translate( 'Billing period' ) }</FormLabel>
+				<FormLabel htmlFor="plan-billing-period">
+					{ translate( 'Billing period' ) }
+				</FormLabel>
 
 				{ this.renderBillingPeriod() }
 			</FormFieldset>
@@ -112,6 +120,9 @@ class PlanBillingPeriod extends Component {
 	}
 }
 
-export default connect( null, {
-	recordTracksEvent,
-} )( localize( PlanBillingPeriod ) );
+export default connect(
+	null,
+	{
+		recordTracksEvent
+	}
+)( localize( PlanBillingPeriod ) );

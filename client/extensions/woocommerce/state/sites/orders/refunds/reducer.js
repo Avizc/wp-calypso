@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { combineReducers } from 'state/utils';
 import {
 	WOOCOMMERCE_ORDER_REFUND_CREATE,
@@ -25,14 +22,12 @@ export function isSaving( state = {}, action ) {
 		case WOOCOMMERCE_ORDER_REFUND_CREATE:
 		case WOOCOMMERCE_ORDER_REFUND_CREATE_SUCCESS:
 		case WOOCOMMERCE_ORDER_REFUND_CREATE_FAILURE:
-			return Object.assign( {}, state, {
-				[ action.orderId ]: WOOCOMMERCE_ORDER_REFUND_CREATE === action.type,
-			} );
+			return Object.assign( {}, state, { [ action.orderId ]: WOOCOMMERCE_ORDER_REFUND_CREATE === action.type } );
 		default:
 			return state;
 	}
 }
 
 export default combineReducers( {
-	isSaving,
+	isSaving
 } );

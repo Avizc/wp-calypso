@@ -1,12 +1,9 @@
 /**
  * Internal dependencies
- *
- * @format
  */
+var analytics = require( 'lib/analytics' );
 
-import analytics from 'lib/analytics';
-
-export default {
+module.exports = {
 	recordEvent: function( eventAction ) {
 		analytics.ga.recordEvent( 'Me', eventAction );
 	},
@@ -64,5 +61,5 @@ export default {
 				callback( event );
 			}
 		};
-	},
+	}
 };

@@ -1,19 +1,18 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 import { spy } from 'sinon';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import { requestRecommendedSites, receiveRecommendedSitesResponse, fromApi } from '../';
-import { http } from 'state/data-layer/wpcom-http/actions';
 import {
 	requestRecommendedSites as requestRecommendedSitesAction,
 	receiveRecommendedSites,
 } from 'state/reader/recommended-sites/actions';
+import { http } from 'state/data-layer/wpcom-http/actions';
 
 const algorithm = 'chicken-recs/es1';
 const seed = 42;
@@ -46,7 +45,7 @@ const response = {
 
 describe( 'recommended sites', () => {
 	describe( '#requestRecommendedSites', () => {
-		test( 'should dispatch an http request and call through next', () => {
+		it( 'should dispatch an http request and call through next', () => {
 			const dispatch = spy();
 			const action = requestRecommendedSitesAction( { seed } );
 			requestRecommendedSites( { dispatch }, action );
@@ -58,35 +57,35 @@ describe( 'recommended sites', () => {
 					apiVersion: '1.2',
 					onSuccess: action,
 					onFailure: action,
-				} )
+				} ),
 			);
 		} );
 	} );
 
 	describe( '#receiveRecommendedSites', () => {
-		test( 'should dispatch action with sites if successful', () => {
+		it( 'should dispatch action with sites if successful', () => {
 			const dispatch = spy();
 			const action = requestRecommendedSitesAction( { seed } );
 
-			receiveRecommendedSitesResponse( { dispatch }, action, response );
+			receiveRecommendedSitesResponse( { dispatch }, action, null, response );
 			expect( dispatch ).calledWith(
 				receiveRecommendedSites( {
 					sites: fromApi( response ),
 					seed,
 					offset: 0,
-				} )
+				} ),
 			);
 		} );
 	} );
 
 	describe( '#fromApi', () => {
-		test( 'should convert to empty sites if given bad input', () => {
+		it( 'should convert to empty sites if given bad input', () => {
 			expect( fromApi( null ) ).eql( [] );
 			expect( fromApi( undefined ) ).eql( [] );
 			expect( fromApi( new Error( 'this is an error' ) ) ).eql( [] );
 		} );
 
-		test( 'should extract only what we care about from the api response. and decode entities', () => {
+		it( 'should extract only what we care about from the api response. and decode entities', () => {
 			const expected = [
 				{
 					algorithm,

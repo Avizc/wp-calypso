@@ -1,11 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React, { Component } from 'react';
-import { get } from 'lodash';
+import { get } from 'lodash/object';
 import { connect } from 'react-redux';
 
 /**
@@ -16,7 +13,9 @@ import {
 	getPostTypeFieldOptions,
 	getPostTypeFieldValue,
 } from 'state/site-settings/exporter/selectors';
-import { setPostTypeFieldValue } from 'state/site-settings/exporter/actions';
+import {
+	setPostTypeFieldValue,
+} from 'state/site-settings/exporter/actions';
 import { localize } from 'i18n-calypso';
 
 class Select extends Component {
@@ -30,42 +29,35 @@ class Select extends Component {
 	}
 
 	render() {
-		const { isEnabled, isError, postType, shouldShowPlaceholders, value, fieldName } = this.props;
-
-		const fieldsForPostType = get(
-			{
-				post: [ 'author', 'status', 'start_date', 'end_date', 'category' ],
-				page: [ 'author', 'status', 'start_date', 'end_date' ],
-			},
+		const {
+			isEnabled,
+			isError,
 			postType,
-			[]
-		);
-
-		const label = get(
-			{
-				author: this.props.translate( 'Author…' ),
-				status: this.props.translate( 'Status…' ),
-				start_date: this.props.translate( 'Start Date…' ),
-				end_date: this.props.translate( 'End Date…' ),
-				category: this.props.translate( 'Category…' ),
-			},
+			shouldShowPlaceholders,
+			value,
 			fieldName,
-			''
-		);
+		} = this.props;
+
+		const fieldsForPostType = get( {
+			post: [ 'author', 'status', 'start_date', 'end_date', 'category' ],
+			page: [ 'author', 'status', 'start_date', 'end_date' ],
+		}, postType, [] );
+
+		const label = get( {
+			author: this.props.translate( 'Author…' ),
+			status: this.props.translate( 'Status…' ),
+			start_date: this.props.translate( 'Start Date…' ),
+			end_date: this.props.translate( 'End Date…' ),
+			category: this.props.translate( 'Category…' ),
+		}, fieldName, '' );
 
 		if ( fieldsForPostType.indexOf( this.props.fieldName ) < 0 ) {
 			return null;
 		}
 
-		const options =
-			this.props.options &&
-			this.props.options.map( ( option, i ) => {
-				return (
-					<option key={ i } value={ option.value }>
-						{ option.label }
-					</option>
-				);
-			} );
+		const options = this.props.options && this.props.options.map( ( option, i ) => {
+			return <option key={ i } value={ option.value }>{ option.label }</option>;
+		} );
 		return (
 			<FormSelect
 				className={ shouldShowPlaceholders ? 'export-card__placeholder-select' : '' }
@@ -98,7 +90,7 @@ const mapDispatchToProps = ( dispatch, ownProps ) => {
 	const { siteId, postType, fieldName } = ownProps;
 
 	return {
-		setValue: value => dispatch( setPostTypeFieldValue( siteId, postType, fieldName, value ) ),
+		setValue: ( value ) => dispatch( setPostTypeFieldValue( siteId, postType, fieldName, value ) )
 	};
 };
 

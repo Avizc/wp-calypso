@@ -1,4 +1,3 @@
-/** @format */
 export const rewindStatusSchema = {
 	type: 'object',
 	patternProperties: {

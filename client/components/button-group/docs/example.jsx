@@ -1,28 +1,25 @@
 /**
- * External dependencies
- *
- * @format
- */
-
-import React from 'react';
-import PureRenderMixin from 'react-pure-render/mixin';
+* External dependencies
+*/
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' );
 
 /**
  * Internal dependencies
  */
-import ButtonGroup from 'components/button-group';
-import Button from 'components/button';
-import Card from 'components/card';
-import Gridicon from 'gridicons';
+var ButtonGroup = require( 'components/button-group' ),
+	Button = require( 'components/button' ),
+	Card = require( 'components/card' ),
+	Gridicon = require( 'gridicons' );
 
-const Buttons = React.createClass( {
+var Buttons = React.createClass( {
 	displayName: 'ButtonGroup',
 
 	mixins: [ PureRenderMixin ],
 
 	getInitialState: function() {
 		return {
-			compact: false,
+			compact: false
 		};
 	},
 
@@ -47,53 +44,33 @@ const Buttons = React.createClass( {
 						<ButtonGroup>
 							<Button compact={ this.state.compact }>Button one</Button>
 							<Button compact={ this.state.compact }>Button two</Button>
-							<Button compact={ this.state.compact } scary>
-								Button Three
-							</Button>
+							<Button compact={ this.state.compact } scary>Button Three</Button>
 						</ButtonGroup>
 					</div>
 					<div className="docs__design-button-group-row">
 						<ButtonGroup>
-							<Button compact={ this.state.compact }>
-								<Gridicon icon="add-image" />
-							</Button>
-							<Button compact={ this.state.compact }>
-								<Gridicon icon="heart" />
-							</Button>
-							<Button compact={ this.state.compact }>
-								<Gridicon icon="briefcase" />
-							</Button>
-							<Button compact={ this.state.compact }>
-								<Gridicon icon="history" />
-							</Button>
+							<Button compact={ this.state.compact }><Gridicon icon="add-image" /></Button>
+							<Button compact={ this.state.compact }><Gridicon icon="heart" /></Button>
+							<Button compact={ this.state.compact }><Gridicon icon="briefcase" /></Button>
+							<Button compact={ this.state.compact }><Gridicon icon="history" /></Button>
 						</ButtonGroup>
 					</div>
 					<div className="docs__design-button-group-row">
 						<ButtonGroup>
-							<Button primary compact={ this.state.compact }>
-								Publish
-							</Button>
-							<Button primary compact={ this.state.compact }>
-								<Gridicon icon="calendar" />
-							</Button>
+							<Button primary compact={ this.state.compact }>Publish</Button>
+							<Button primary compact={ this.state.compact }><Gridicon icon="calendar" /></Button>
 						</ButtonGroup>
 					</div>
 
 					<div className="docs__design-button-group-row">
 						<ButtonGroup busy>
 							<Button compact={ this.state.compact }>Busy</Button>
-							<Button compact={ this.state.compact }>
-								<Gridicon icon="calendar" />
-							</Button>
+							<Button compact={ this.state.compact }><Gridicon icon="calendar" /></Button>
 						</ButtonGroup>
 
 						<ButtonGroup busy primary>
-							<Button primary compact={ this.state.compact }>
-								Primary Busy
-							</Button>
-							<Button primary compact={ this.state.compact }>
-								<Gridicon icon="calendar" />
-							</Button>
+							<Button primary compact={ this.state.compact }>Primary Busy</Button>
+							<Button primary compact={ this.state.compact }><Gridicon icon="calendar" /></Button>
 						</ButtonGroup>
 					</div>
 				</Card>
@@ -102,4 +79,4 @@ const Buttons = React.createClass( {
 	},
 } );
 
-export default Buttons;
+module.exports = Buttons;

@@ -1,8 +1,11 @@
-/** @format */
 /**
  * External dependencies
  */
-import { filter, find, has, includes, sortBy } from 'lodash';
+import filter from 'lodash/filter';
+import includes from 'lodash/includes';
+import sortBy from 'lodash/sortBy';
+import find from 'lodash/find';
+import has from 'lodash/has';
 
 /**
  * Internal dependencies
@@ -44,9 +47,9 @@ export const getSubscribedLists = createSelector(
 				// Is the user subscribed to this list?
 				return includes( state.reader.lists.subscribedLists, item.ID );
 			} ),
-			'slug'
+			'slug',
 		),
-	state => [ state.reader.lists.items, state.reader.lists.subscribedLists ]
+	state => [ state.reader.lists.items, state.reader.lists.subscribedLists ],
 );
 
 /**

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { localize } from 'i18n-calypso';
 import classNames from 'classnames';
 
@@ -33,8 +29,7 @@ class StepWrapper extends Component {
 				stepName={ this.props.stepName }
 				stepSectionName={ this.props.stepSectionName }
 				backUrl={ this.props.backUrl }
-				signupProgress={ this.props.signupProgress }
-			/>
+				signupProgress={ this.props.signupProgress } />
 		);
 	}
 
@@ -46,8 +41,7 @@ class StepWrapper extends Component {
 					goToNextStep={ this.props.goToNextStep }
 					defaultDependencies={ this.props.defaultDependencies }
 					flowName={ this.props.flowName }
-					stepName={ this.props.stepName }
-				/>
+					stepName={ this.props.stepName } />
 			);
 		}
 	}
@@ -88,8 +82,10 @@ class StepWrapper extends Component {
 
 		return (
 			<div className={ classes }>
-				<FormattedHeader headerText={ this.headerText() } subHeaderText={ this.subHeaderText() }>
-					{ headerButton }
+				<FormattedHeader
+					headerText={ this.headerText() }
+					subHeaderText={ this.subHeaderText() }>
+					{ ( headerButton ) }
 				</FormattedHeader>
 
 				<div className="step-wrapper__content is-animated-content">

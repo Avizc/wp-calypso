@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -19,7 +15,7 @@ class QueryShortcode extends Component {
 		siteId: PropTypes.number.isRequired,
 		shortcode: PropTypes.string.isRequired,
 		requestingShortcode: PropTypes.bool,
-		fetchShortcode: PropTypes.func,
+		fetchShortcode: PropTypes.func
 	};
 
 	componentWillMount() {
@@ -47,7 +43,7 @@ class QueryShortcode extends Component {
 
 export default connect(
 	( state, { siteId, shortcode } ) => ( {
-		requestingShortcode: isRequestingShortcode( state, siteId, shortcode ),
+		requestingShortcode: isRequestingShortcode( state, siteId, shortcode )
 	} ),
 	{ fetchShortcode }
 )( QueryShortcode );

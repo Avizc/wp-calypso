@@ -1,5 +1,4 @@
-/** @format */
-export default {
+module.exports = {
 	page: 1,
 	pages: 2,
 	total: 4,
@@ -11,14 +10,14 @@ export default {
 			avatar: 'https://1.gravatar.com/avatar',
 			login: 'test401',
 			label: 'Test Person401',
-			display_name: 'Test Person401',
+			display_name: 'Test Person401'
 		},
 		{
 			ID: 402,
 			avatar: 'https://1.gravatar.com/avatar',
 			login: 'test402',
 			label: 'test402',
-			display_name: 'test402',
-		},
-	],
+			display_name: 'test402'
+		}
+	]
 };

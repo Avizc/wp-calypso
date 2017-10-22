@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -10,13 +8,6 @@ import sinon, { match } from 'sinon';
  * Internal dependencies
  */
 import {
-	siteUpdatesReceiveAction,
-	siteUpdatesRequestAction,
-	siteUpdatesRequestSuccessAction,
-	siteUpdatesRequestFailureAction,
-	updateWordPress,
-} from '../actions';
-import {
 	SITE_UPDATES_RECEIVE,
 	SITE_UPDATES_REQUEST,
 	SITE_UPDATES_REQUEST_SUCCESS,
@@ -25,6 +16,13 @@ import {
 	SITE_WORDPRESS_UPDATE_REQUEST_SUCCESS,
 	SITE_WORDPRESS_UPDATE_REQUEST_FAILURE,
 } from 'state/action-types';
+import {
+	siteUpdatesReceiveAction,
+	siteUpdatesRequestAction,
+	siteUpdatesRequestSuccessAction,
+	siteUpdatesRequestFailureAction,
+	updateWordPress,
+} from '../actions';
 import useNock from 'test/helpers/use-nock';
 
 describe( 'actions', () => {
@@ -36,7 +34,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#siteUpdatesReceiveAction()', () => {
-		test( 'should return a site updates receive action object', () => {
+		it( 'should return a site updates receive action object', () => {
 			const updates = {
 				plugins: 1,
 			};
@@ -51,7 +49,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#siteUpdatesRequestAction()', () => {
-		test( 'should return a site updates request action object', () => {
+		it( 'should return a site updates request action object', () => {
 			const action = siteUpdatesRequestAction( siteId );
 
 			expect( action ).to.eql( {
@@ -62,7 +60,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#siteUpdatesRequestSuccessAction()', () => {
-		test( 'should return a site updates request success action object', () => {
+		it( 'should return a site updates request success action object', () => {
 			const action = siteUpdatesRequestSuccessAction( siteId );
 
 			expect( action ).to.eql( {
@@ -73,7 +71,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#siteUpdatesRequestFailureAction()', () => {
-		test( 'should return a site updates request failure action object', () => {
+		it( 'should return a site updates request failure action object', () => {
 			const error = 'There was an error while getting the update data for this site.';
 			const action = siteUpdatesRequestFailureAction( siteId, error );
 
@@ -86,7 +84,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#updateWordPress()', () => {
-		test( 'should dispatch a site wordpress update request action', () => {
+		it( 'should dispatch a site wordpress update request action', () => {
 			updateWordPress( siteId )( spy );
 
 			expect( spy ).to.have.been.calledWith( {
@@ -96,15 +94,15 @@ describe( 'actions', () => {
 		} );
 
 		describe( '#success', () => {
-			useNock( nock => {
+			useNock( ( nock ) => {
 				nock( 'https://public-api.wordpress.com:443' )
 					.post( '/rest/v1.1/sites/' + siteId + '/core/update' )
 					.reply( 200, {
-						version: 4.7,
+						version: 4.7
 					} );
 			} );
 
-			test( 'should dispatch site wordpress update request success action upon success', () => {
+			it( 'should dispatch site wordpress update request success action upon success', () => {
 				return updateWordPress( siteId )( spy ).then( () => {
 					expect( spy ).to.have.been.calledWith( {
 						type: SITE_WORDPRESS_UPDATE_REQUEST_SUCCESS,
@@ -115,7 +113,7 @@ describe( 'actions', () => {
 		} );
 
 		describe( '#failure', () => {
-			useNock( nock => {
+			useNock( ( nock ) => {
 				nock( 'https://public-api.wordpress.com:443' )
 					.post( '/rest/v1.1/sites/' + siteId + '/core/update' )
 					.reply( 400, {
@@ -124,14 +122,14 @@ describe( 'actions', () => {
 					} );
 			} );
 
-			test( 'should dispatch site wordpress update request failure action upon error', () => {
+			it( 'should dispatch site wordpress update request failure action upon error', () => {
 				return updateWordPress( siteId )( spy ).then( () => {
 					expect( spy ).to.have.been.calledWith( {
 						type: SITE_WORDPRESS_UPDATE_REQUEST_FAILURE,
 						siteId,
 						error: match( {
-							message: 'WordPress is at the latest version.',
-						} ),
+							message: 'WordPress is at the latest version.'
+						} )
 					} );
 				} );
 			} );

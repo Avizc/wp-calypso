@@ -1,17 +1,14 @@
 /**
  * External dependencies
- *
- * @format
  */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import Gridicon from 'gridicons';
-import classNames from 'classnames';
 
 /**
- * Internal dependencies
- */
+* Internal dependencies
+*/
 import Popover from 'components/popover';
+import classNames from 'classnames';
 import analytics from 'lib/analytics';
 
 export default class InfoPopover extends Component {
@@ -19,10 +16,9 @@ export default class InfoPopover extends Component {
 		autoRtl: PropTypes.bool,
 		className: PropTypes.string,
 		gaEventCategory: PropTypes.string,
-		iconSize: PropTypes.number,
 		id: PropTypes.string,
 		ignoreContext: PropTypes.shape( {
-			getDOMNode: PropTypes.func,
+			getDOMNode: PropTypes.func
 		} ),
 		popoverName: PropTypes.string,
 		position: PropTypes.oneOf( [
@@ -40,16 +36,15 @@ export default class InfoPopover extends Component {
 
 	static defaultProps = {
 		autoRtl: true,
-		iconSize: 18,
 		position: 'bottom',
 	};
 
 	state = { showPopover: false };
 
-	handleClick = event => {
+	handleClick = ( event ) => {
 		event.preventDefault();
 		this.setState( { showPopover: ! this.state.showPopover }, this.recordStats );
-	};
+	}
 
 	handleClose = () => this.setState( { showPopover: false }, this.recordStats );
 
@@ -60,7 +55,7 @@ export default class InfoPopover extends Component {
 			const dialogState = this.state.showPopover ? ' Opened' : ' Closed';
 			analytics.ga.recordEvent( gaEventCategory, 'InfoPopover: ' + popoverName + dialogState );
 		}
-	};
+	}
 
 	render() {
 		return (
@@ -70,10 +65,10 @@ export default class InfoPopover extends Component {
 				className={ classNames(
 					'info-popover',
 					{ is_active: this.state.showPopover },
-					this.props.className
-				) }
+					this.props.className )
+				}
 			>
-				<Gridicon icon="info-outline" size={ this.props.iconSize } />
+				<Gridicon icon="info-outline" size={ 18 } />
 				<Popover
 					autoRtl={ this.props.autoRtl }
 					id={ this.props.id }
@@ -82,7 +77,11 @@ export default class InfoPopover extends Component {
 					ignoreContext={ this.props.ignoreContext }
 					position={ this.props.position }
 					onClose={ this.handleClose }
-					className={ classNames( 'popover', 'info-popover__tooltip', this.props.className ) }
+					className={ classNames(
+						'popover',
+						'info-popover__tooltip',
+						this.props.className
+					) }
 					rootClassName={ this.props.rootClassName }
 				>
 					{ this.props.children }

@@ -1,29 +1,25 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import MediaLibrarySelectedStore from 'lib/media/library-selected-store';
-import passToChildren from 'lib/react-pass-to-children';
+var MediaLibrarySelectedStore = require( 'lib/media/library-selected-store' ),
+	passToChildren = require( 'lib/react-pass-to-children' );
 
 function getStateData( siteId ) {
 	return {
-		mediaLibrarySelectedItems: MediaLibrarySelectedStore.getAll( siteId ),
+		mediaLibrarySelectedItems: MediaLibrarySelectedStore.getAll( siteId )
 	};
 }
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaLibrarySelectedData',
 
 	propTypes: {
-		siteId: PropTypes.number.isRequired,
+		siteId: React.PropTypes.number.isRequired
 	},
 
 	getInitialState: function() {
@@ -50,5 +46,5 @@ export default React.createClass( {
 
 	render: function() {
 		return passToChildren( this, this.state );
-	},
+	}
 } );

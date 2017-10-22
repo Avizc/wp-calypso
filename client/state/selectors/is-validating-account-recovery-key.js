@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get } from 'lodash';
 
 /**
@@ -12,4 +9,4 @@ import { get } from 'lodash';
  * @param  {Object} state Global state tree
  * @return {Boolean}      The validation is in progress or not.
  */
-export default state => get( state, 'accountRecovery.reset.validate.isRequesting', false );
+export default ( state ) => get( state, 'accountRecovery.reset.validate.isRequesting', false );

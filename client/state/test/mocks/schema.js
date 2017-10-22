@@ -1,13 +1,12 @@
-/** @format */
 export const testSchema = {
 	type: 'object',
 	patternProperties: {
 		test: {
 			type: 'array',
 			items: {
-				type: 'string',
-			},
-		},
+				type: 'string'
+			}
+		}
 	},
-	additionalProperties: false,
+	additionalProperties: false
 };

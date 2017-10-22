@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
 const SharingServiceExample = ( { image, label, single } ) => (
@@ -20,7 +16,7 @@ const SharingServiceExample = ( { image, label, single } ) => (
 SharingServiceExample.propTypes = {
 	image: PropTypes.shape( {
 		src: PropTypes.string,
-		alt: PropTypes.string,
+		alt: PropTypes.string
 	} ),
 	label: PropTypes.node,
 	single: PropTypes.bool,

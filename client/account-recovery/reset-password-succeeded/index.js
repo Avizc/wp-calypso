@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { localize } from 'i18n-calypso';
 import config from 'config';
@@ -13,7 +10,7 @@ import config from 'config';
  */
 import EmptyContent from 'components/empty-content';
 
-const ResetPasswordSucceeded = props => {
+const ResetPasswordSucceeded = ( props ) => {
 	const { translate } = props;
 
 	return (
@@ -24,7 +21,7 @@ const ResetPasswordSucceeded = props => {
 			action={ translate( 'Log in' ) }
 			actionURL={ config( 'login_url' ) }
 		/>
-	);
+    );
 };
 
 export default localize( ResetPasswordSucceeded );

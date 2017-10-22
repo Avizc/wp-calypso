@@ -1,9 +1,6 @@
 /**
  * Internal Dependencies
- *
- * @format
  */
-
 import config from 'config';
 
 const types = {

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -40,18 +36,18 @@ QueryUserConnection.propTypes = {
 	siteId: PropTypes.number,
 	siteIsOnSitesList: PropTypes.bool,
 	requestingSite: PropTypes.bool,
-	isUserConnected: PropTypes.func,
+	isUserConnected: PropTypes.func
 };
 
 QueryUserConnection.defaultProps = {
 	isUserConnected: () => {},
-	siteIsOnSitesList: false,
+	siteIsOnSitesList: false
 };
 
 export default connect(
 	( state, { siteId } ) => {
 		return {
-			requestingSite: isRequestingSite( state, siteId ),
+			requestingSite: isRequestingSite( state, siteId )
 		};
 	},
 	{ isUserConnected }

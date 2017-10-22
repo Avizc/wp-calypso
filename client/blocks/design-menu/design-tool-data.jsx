@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import debugFactory from 'debug';
@@ -23,14 +19,14 @@ export default function designTool( Component ) {
 	const DesignToolData = React.createClass( {
 		propTypes: {
 			// This is the key for the customizations in the Redux store (under preview)
-			previewDataKey: PropTypes.string.isRequired,
+			previewDataKey: React.PropTypes.string.isRequired,
 			// These are provided by the connect method
-			updateCustomizations: PropTypes.func.isRequired,
-			customizations: PropTypes.object,
-			selectedSiteId: PropTypes.number,
-			selectedSite: PropTypes.object,
-			allPages: PropTypes.array,
-			requestSitePosts: PropTypes.func.isRequired,
+			updateCustomizations: React.PropTypes.func.isRequired,
+			customizations: React.PropTypes.object,
+			selectedSiteId: React.PropTypes.number,
+			selectedSite: React.PropTypes.object,
+			allPages: React.PropTypes.array,
+			requestSitePosts: React.PropTypes.func.isRequired,
 		},
 
 		getDefaultProps() {
@@ -40,16 +36,14 @@ export default function designTool( Component ) {
 		},
 
 		getUpdatedCustomizationsForKey( id, customizations ) {
-			const updatedCustomizations = {
-				[ id ]: Object.assign( {}, this.getCustomizationsForKey( id ), customizations ),
-			};
+			const updatedCustomizations = { [ id ]: Object.assign( {}, this.getCustomizationsForKey( id ), customizations ) };
 			return Object.assign( {}, this.props.customizations, updatedCustomizations );
 		},
 
 		buildOnChangeFor( id ) {
 			return customizations => {
 				const newCustomizations = this.getUpdatedCustomizationsForKey( id, customizations );
-				debug( `changed customizations for "${ id }" to`, newCustomizations );
+				debug( `changed customizations for "${id}" to`, newCustomizations );
 				return this.props.updateCustomizations( this.props.selectedSiteId, newCustomizations );
 			};
 		},
@@ -76,17 +70,13 @@ export default function designTool( Component ) {
 		},
 
 		getChildProps() {
-			return Object.assign(
-				{},
-				this.getDefaultChildProps(),
-				this.getCustomizationsForKey( this.props.previewDataKey )
-			);
+			return Object.assign( {}, this.getDefaultChildProps(), this.getCustomizationsForKey( this.props.previewDataKey ) );
 		},
 
 		render() {
 			const props = this.getChildProps();
 			return <Component { ...props } />;
-		},
+		}
 	} );
 
 	function mapStateToProps( state ) {

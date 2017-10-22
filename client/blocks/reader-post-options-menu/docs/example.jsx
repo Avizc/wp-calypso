@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -11,8 +8,8 @@ import React from 'react';
  */
 import ReaderPostOptionsMenu from 'blocks/reader-post-options-menu';
 
-export default class ReaderPostOptionsMenuExample extends React.Component {
-	static displayName = 'ReaderPostOptionsMenuExample';
+export default React.createClass( {
+	displayName: 'ReaderPostOptionsMenu',
 
 	render() {
 		const post = {
@@ -34,5 +31,5 @@ export default class ReaderPostOptionsMenuExample extends React.Component {
 				</div>
 			</div>
 		);
-	}
-}
+	},
+} );

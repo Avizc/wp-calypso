@@ -1,9 +1,7 @@
+
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -18,8 +16,7 @@ const CalendarButtonExample = () => {
 			primary
 			enableOutsideDays={ false }
 			disabledDays={ [ { before: new Date() } ] }
-			selectedDay={ tomorrow }
-		/>
+			selectedDay={ tomorrow } />
 	);
 };
 

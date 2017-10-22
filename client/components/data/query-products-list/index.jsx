@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -28,9 +24,10 @@ class QueryProductsList extends Component {
 
 QueryProductsList.propTypes = {
 	isFetching: PropTypes.bool,
-	requestProductsList: PropTypes.func,
+	requestProductsList: PropTypes.func
 };
 
-export default connect( state => ( { isFetching: isFetching( state ) } ), { requestProductsList } )(
-	QueryProductsList
-);
+export default connect(
+	state => ( { isFetching: isFetching( state ) } ),
+	{ requestProductsList }
+)( QueryProductsList );

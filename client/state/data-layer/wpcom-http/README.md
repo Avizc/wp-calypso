@@ -121,9 +121,9 @@ You may need to know about the original action which triggered the request when 
 Notice how we can store that information inside of the responder actions just like how we encapsulate date in closures.
 
 ```js
-const missileMiddleware = ( store, action ) => {
+const missileMiddleware = ( store, action, next ) => {
 	if ( FIRE_ZE_MISSILES !== action.type ) {
-		return;
+		return next( action );
 	}
 
 	dispatch( http( {
@@ -140,9 +140,9 @@ Because the information from the request response extends the action through met
 ```js
 import { getProgress } from 'state/data-layer/wpcom-http/utils';
 
-const packageMiddleware = ( store, action ) => {
+const packageMiddleware = ( store, action, next ) => {
 	if ( CREATE_PACKAGE !== action.type ) {
-		return;
+		return next;
 	}
 
 	const progress = getProgress( action );
@@ -188,23 +188,17 @@ import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 dispatchRequest( fetchMenu, addMenuItems, alertFailure );
 
 // create request when no meta present, indicate on success, undo on failure, update on progress
-dispatchRequest( sendRecipe, indicateSuccess, removeRecipe, { onProgress: updateRecipeProgress } );
+dispatchRequest( sendRecipe, indicateSuccess, removeRecipe, updateRecipeProgress );
 ```
 
-### `dispatchRequest()` helper
+### Helpers
 
-Although there's lot of machinery going on here and possibly many things to keep track of, thankfully we have a helper designed to make it all smooth.
-That helper is the `dispatchRequest()` function and it handles all of the networking-related specifics for you so that you can focus on logic designed to issue and respond to network requests.
-At its most basic form it implies three actions we need to provide: a function which generates descriptive HTTP requests; a function which handles successful responses; and a function which handles failing responses.
-Additionally there are other semantics of network requests it can manage.
+Most likely you will want to use the provided helper methods and structure your code into three pieces: a function which generates the descriptive HTTP requests; a function which handles successful responses; and a function which handles failing responses.
+If you are uploading a file you will have a fourth function which handles progress events.
 
- - A function to handle progress events during data uploads
- - A schema to validate the response data and fail invalid formats
- - A way to indicate data "freshness" or how new data must be to fetch it (coming soon!)
-
-Each of these lifecycle functions will take as arguments the Redux store, the associated action, and the data coming from the response.
+Each of these functions will take the normal middleware arguments; additionally the success, failure, and progress functions take an additional argument which is the response data or error respectively.
 Please note that for this example we have included a progress event even though one would not normally exist for liking posts.
-Its inclusion here is meant merely to illustrate how the pieces can fit together.
+Its inclusion her is meant merely to illustrate how the pieces can fit together.
 
 ```js
 // API Middleware, Post Like
@@ -215,7 +209,7 @@ import { QUEUE_REQUEST } from 'state/data-layer/wpcom-http/constants';
 /**
  * @see https://developer.wordpress.com/docs/api/1.1/post/sites/%24site/posts/%24post_ID/likes/new/ API description
  */
-const likePost = ( { dispatch }, action ) => {
+const likePost = ( { dispatch }, action, next ) => {
 	// dispatch intent to issue HTTP request
 	// by not supplying onSuccess, onError, and onProgress
 	// _and_ by supplying the second optional `action`
@@ -233,6 +227,10 @@ const likePost = ( { dispatch }, action ) => {
 		// (not implemented yet)
 		whenOffline: QUEUE_REQUEST,
 	}, action ) );
+	
+	// feed LIKE_POST action along to reducers
+	// and skip additional data-layer middleware
+	next( action );
 }
 
 /**
@@ -240,39 +238,34 @@ const likePost = ( { dispatch }, action ) => {
  *
  * This is the place to map fromAPI to Calypso formats
  */
-const verifyLike = ( { dispatch }, { siteId, postId }, data ) => {
-	if ( ! data.hasOwnProperty( 'i_like' ) ) {
-		// something went wrong, so failover
-		return undoLike( { dispatch }, { siteId, postId }, 'Invalid data' );
-	}
-
+const verifyLike = ( { dispatch }, { siteId, postId }, next, data ) => {
 	// this is a response to data coming in from the data layer,
-	// so skip further data-layer middleware with local
-	dispatch( bypassDataLayer( {
+	// so skip further data-layer middleware with next vs. dispatch
+	next( {
 		type: data.i_like ? LIKE_POST : UNLIKE_POST,
 		siteId,
 		postId,
 		likeCount: data.like_count,
-	} ) );
+	} );
 }
 
 /**
  * Called on failure from the HTTP middleware with `error` parameter
  */
-const undoLike = ( { dispatch }, { siteId, postId }, error ) => {
+const undoLike = ( { dispatch }, { siteId, postId }, next, error ) => {
 	// skip data-layer middleware
-	dispatch( bypassDataLayer( {
+	next( {
 		type: UNLIKE_POST,
 		siteId,
 		postId,
-	} ) );
+	} );
 }
 
 /**
  * Maps progress information from the API into a Calypso-native representation
  */
-const updateProgress = ( store, { siteId, postId }, progress ) => {
-	dispatch( {
+const updateProgress = ( store, { siteId, postId }, next, progress ) => {
+	next( {
 		type: LIKE_POST_PROGRESS,
 		siteId,
 		postId,
@@ -281,51 +274,10 @@ const updateProgress = ( store, { siteId, postId }, progress ) => {
 }
 
 export default {
-	// watch for this action       -> initiate, onSuccess,  onFailure, options: { onProgress }
-	[ LIKE_POST ]: [ dispatchRequest( likePost, verifyLike, undoLike, { onProgress: updateProgress } ) ],
+	// watch for this action       -> initiate, onSuccess,  onFailure, onProgress
+	[ LIKE_POST ]: [ dispatchRequest( likePost, verifyLike, undoLike, updateProgress ) ],
 };
 ```
 
 It's important that perform the mapping stage when handling API request responses to go _from_ the API's native data format _to_ Calypso's native data format.
 These middleware functions are the perfect place to perform this mapping because it will leave API-specific code separated into specific places that are relatively easy to find.
-
-See how ugly that validation is though? We can let the data layer do it for us.
-Let's create a schema for the response.
-The schema doesn't have to match everything in the response.
-It's allowed to be a conformal spec where we can ignore anything beyond what we need.
-
-```js
-// defines the shape and type of data we can recognize
-const likeSchema = {
-	id : "sites-posts-likes-new-response",
-	title : "New Like Response",
-	type : "object",
-	$schema : "http://json-schema.org/draft-04/schema#",
-	properties : {
-		i_like : {
-			 type : "boolean"
-		}
-	},
-	required : [
-		"i_like"
-	]
-};
-
-// change the shape of the data and maybe add more information
-const toLike = ( { i_like } ) => ( {
-	isLiked: i_like,
-	lastLiked: Date.now()
-} );
-
-export default {
-	[ LIKE_POST ]: [ dispatchRequest(
-		likePost, // initiate the request
-		verifyLike, // update the Redux store if need be
-		undoLike, // remove the like if we failed
-		{
-			fromApi: makeParser( likeSchema, {}, toLike ), // validate and convert to internal Calypso object
-			onProgress: updateProgress, // update progress tracking UI
-		}
-	) ]
-}
-```

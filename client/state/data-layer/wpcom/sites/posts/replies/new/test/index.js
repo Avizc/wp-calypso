@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -8,18 +7,18 @@ import { spy } from 'sinon';
 /**
  * Internal dependencies
  */
-import { writePostComment } from '../';
 import * as Utils from 'state/data-layer/wpcom/sites/utils';
+import { writePostComment } from '../';
 
 describe( '#writePostComment()', () => {
 	const action = {
 		type: 'DUMMY',
 		siteId: 2916284,
 		postId: 1010,
-		commentText: 'comment text',
+		commentText: 'comment text'
 	};
 
-	test( 'should dispatch a http request action to the new post replies endpoint', () => {
+	it( 'should dispatch a http request action to the new post replies endpoint', () => {
 		const dispatch = spy();
 		const dispatchNewCommentRequestSpy = spy( Utils, 'dispatchNewCommentRequest' );
 

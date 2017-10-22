@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -39,15 +38,15 @@ class TagEmptyContent extends React.Component {
 					{ this.props.translate( 'Back to Following' ) }
 				</a>
 			),
-			secondaryAction = isDiscoverEnabled() ? (
-				<a
-					className="empty-content__action button"
-					onClick={ this.recordSecondaryAction }
-					href="/discover"
-				>
-					{ this.props.translate( 'Explore Discover' ) }
-				</a>
-			) : null;
+			secondaryAction = isDiscoverEnabled()
+				? <a
+						className="empty-content__action button"
+						onClick={ this.recordSecondaryAction }
+						href="/discover"
+					>
+						{ this.props.translate( 'Explore Discover' ) }
+					</a>
+				: null;
 
 		return (
 			<EmptyContent

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { connect } from 'react-redux';
 
 /**

@@ -1,151 +1,153 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import { identity, noop, find } from 'lodash';
-import classnames from 'classnames';
+var React = require( 'react' );
+import { noop, find } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import FormLabel from 'components/forms/form-label';
-import FormTelInput from 'components/forms/form-tel-input';
-import FormFieldset from 'components/forms/form-fieldset';
-import CountrySelect from 'components/forms/form-country-select';
-import phoneValidation from 'lib/phone-validation';
+var FormLabel = require( 'components/forms/form-label' ),
+	FormTelInput = require( 'components/forms/form-tel-input' ),
+	FormFieldset = require( 'components/forms/form-fieldset' ),
+	CountrySelect = require( 'components/forms/form-country-select' ),
+	classnames = require( 'classnames' ),
+	phoneValidation = require( 'lib/phone-validation' );
 
-const CLEAN_REGEX = /^0|[\s.\-()]+/g;
+var CLEAN_REGEX = /^0|[\s.\-()]+/g;
 
-export class FormPhoneInput extends React.Component {
-	static propTypes = {
-		initialCountryCode: PropTypes.string,
-		initialPhoneNumber: PropTypes.string,
-		countriesList: PropTypes.object.isRequired,
-		isDisabled: PropTypes.bool,
-		countrySelectProps: PropTypes.object,
-		phoneInputProps: PropTypes.object,
-		onChange: PropTypes.func,
-		translate: PropTypes.func,
-	};
+module.exports = React.createClass( {
+	displayName: 'FormPhoneInput',
 
-	static defaultProps = {
-		isDisabled: false,
-		countrySelectProps: {},
-		phoneInputProps: {},
-		onChange: noop,
-		translate: identity,
-	};
+	propTypes: {
+		initialCountryCode: React.PropTypes.string,
+		initialPhoneNumber: React.PropTypes.string,
+		countriesList: React.PropTypes.object.isRequired,
+		isDisabled: React.PropTypes.bool,
+		countrySelectProps: React.PropTypes.object,
+		phoneInputProps: React.PropTypes.object,
+		onChange: React.PropTypes.func
+	},
 
-	state = {
-		countryCode: this.props.initialCountryCode || '',
-		phoneNumber: this.props.initialPhoneNumber || '',
-	};
+	getDefaultProps: function() {
+		return {
+			isDisabled: false,
+			countrySelectProps: {},
+			phoneInputProps: {},
+			onChange: noop
+		};
+	},
 
-	componentWillMount() {
-		this.maybeSetCountryStateFromList();
-	}
+	getInitialState: function() {
+		return {
+			countryCode: this.props.initialCountryCode || '',
+			phoneNumber: this.props.initialPhoneNumber || ''
+		};
+	},
 
-	componentDidUpdate() {
-		this.maybeSetCountryStateFromList();
-	}
+	componentWillMount: function() {
+		this._maybeSetCountryStateFromList();
+	},
 
-	render() {
+	componentDidUpdate: function() {
+		this._maybeSetCountryStateFromList();
+	},
+
+	render: function() {
+		var countryValueLink = {
+				value: this.state.countryCode,
+				requestChange: this._handleCountryChange
+			},
+			phoneValueLink = {
+				value: this.state.phoneNumber,
+				requestChange: this._handlePhoneChange
+			};
+
 		return (
 			<div className={ classnames( this.props.className, 'form-phone-input' ) }>
 				<FormFieldset className="form-fieldset__country">
-					<FormLabel htmlFor="country_code">
-						{ this.props.translate( 'Country Code', {
-							context: 'The country code for the phone for the user.',
-						} ) }
-					</FormLabel>
+					<FormLabel htmlFor="country_code">{ this.translate( 'Country Code', { context: 'The country code for the phone for the user.' } ) }</FormLabel>
 					<CountrySelect
 						{ ...this.props.countrySelectProps }
 						countriesList={ this.props.countriesList }
 						disabled={ this.props.isDisabled }
 						name="country_code"
 						ref="countryCode"
-						value={ this.state.countryCode }
-						onChange={ this.handleCountryChange }
+						valueLink={ countryValueLink }
 					/>
 				</FormFieldset>
 
 				<FormFieldset className="form-fieldset__phone-number">
-					<FormLabel htmlFor="phone_number">{ this.props.translate( 'Phone Number' ) }</FormLabel>
+					<FormLabel htmlFor="phone_number">{ this.translate( 'Phone Number' ) }</FormLabel>
 					<FormTelInput
 						{ ...this.props.phoneInputProps }
 						disabled={ this.props.isDisabled }
 						name="phone_number"
-						value={ this.state.phoneNumber }
-						onChange={ this.handlePhoneChange }
+						valueLink={ phoneValueLink }
 					/>
 				</FormFieldset>
 			</div>
 		);
-	}
+	},
 
-	getCountryData() {
+	_getCountryData: function() {
 		// TODO: move this to country-list or CountrySelect
 		return find( this.props.countriesList.get(), {
-			code: this.state.countryCode,
+			code: this.state.countryCode
 		} );
-	}
+	},
 
-	handleCountryChange = event => {
-		this.setState( { countryCode: event.target.value }, this.triggerOnChange );
-	};
+	_handleCountryChange: function( newValue ) {
+		this.setState( { countryCode: newValue }, this._triggerOnChange );
+	},
 
-	handlePhoneChange = event => {
-		this.setState( { phoneNumber: event.target.value }, this.triggerOnChange );
-	};
+	_handlePhoneChange: function( newValue ) {
+		this.setState( { phoneNumber: newValue }, this._triggerOnChange );
+	},
 
-	triggerOnChange = () => {
+	_triggerOnChange: function() {
 		this.props.onChange( this.getValue() );
-	};
+	},
 
-	cleanNumber( number ) {
+	_cleanNumber: function( number ) {
 		return number.replace( CLEAN_REGEX, '' );
-	}
+	},
 
 	// Set the default state of the country code selector, if not already set
-	maybeSetCountryStateFromList() {
+	_maybeSetCountryStateFromList: function() {
+		var countries;
+
 		if ( this.state.countryCode ) {
 			return;
 		}
 
-		const countries = this.props.countriesList.get();
+		countries = this.props.countriesList.get();
 		if ( ! countries.length ) {
 			return;
 		}
 
 		this.setState( {
-			countryCode: countries[ 0 ].code,
+			countryCode: countries[ 0 ].code
 		} );
-	}
+	},
 
-	validate( number ) {
+	_validate: function( number ) {
 		return phoneValidation( number );
-	}
+	},
 
-	getValue() {
-		const countryData = this.getCountryData(),
-			numberClean = this.cleanNumber( this.state.phoneNumber ),
+	getValue: function() {
+		var countryData = this._getCountryData(),
+			numberClean = this._cleanNumber( this.state.phoneNumber ),
 			countryNumericCode = countryData ? countryData.numeric_code : '',
 			numberFull = countryNumericCode + numberClean,
-			isValid = this.validate( numberFull );
+			isValid = this._validate( numberFull );
 
 		return {
 			isValid: ! isValid.error,
 			validation: isValid,
 			countryData: countryData,
 			phoneNumber: numberClean,
-			phoneNumberFull: numberFull,
+			phoneNumberFull: numberFull
 		};
 	}
-}
-
-export default localize( FormPhoneInput );
+} );

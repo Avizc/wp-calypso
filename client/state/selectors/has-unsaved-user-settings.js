@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get, isEmpty } from 'lodash';
 
 /**

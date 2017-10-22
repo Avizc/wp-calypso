@@ -1,10 +1,8 @@
 /**
- * External dependencies
- *
- * @format
- */
-
+* External dependencies
+*/
 import React from 'react';
+import PureRenderMixin from 'react-pure-render/mixin';
 
 /**
  * Internal dependencies
@@ -12,8 +10,10 @@ import React from 'react';
 import FollowButton from 'blocks/follow-button/button';
 import Card from 'components/card/compact';
 
-export default class FollowButtonExample extends React.PureComponent {
-	static displayName = 'FollowButtonExample';
+export default React.createClass( {
+	displayName: 'FollowButton',
+
+	mixins: [ PureRenderMixin ],
 
 	render() {
 		return (
@@ -33,5 +33,5 @@ export default class FollowButtonExample extends React.PureComponent {
 				</Card>
 			</div>
 		);
-	}
-}
+	},
+} );

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import keyMirror from 'key-mirror';
 
 export const actions = keyMirror( {
@@ -12,5 +9,5 @@ export const actions = keyMirror( {
 	// Request for an SMS auth code has completed
 	RECEIVE_AUTH_CODE_REQUEST: null,
 	// Reset the SMS state
-	RESET_AUTH_CODE_REQUEST: null,
+	RESET_AUTH_CODE_REQUEST: null
 } );

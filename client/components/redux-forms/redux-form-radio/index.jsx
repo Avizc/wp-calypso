@@ -1,26 +1,43 @@
-/** @format */
 /**
  * External dependencies
  */
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { Field } from 'redux-form';
+import { omit } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import FormRadio from 'components/forms/form-radio';
 
-// eslint-disable-next-line no-unused-vars
-const RadioRenderer = ( { input, meta, type, ...props } ) => (
-	<FormRadio { ...input } { ...props } />
-);
+class ReduxFormRadio extends Component {
+	static propTypes = {
+		name: PropTypes.string,
+		value: PropTypes.string,
+	};
 
-const ReduxFormRadio = props => <Field component={ RadioRenderer } type="radio" { ...props } />;
+	renderRadio = defaultValue => ( { input: { name, onChange, value } } ) => {
+		const otherProps = omit( this.props, [ 'name', 'value' ] );
 
-ReduxFormRadio.propTypes = {
-	name: PropTypes.string.isRequired,
-	value: PropTypes.string.isRequired,
-};
+		return (
+			<FormRadio
+				{ ...otherProps }
+				checked={ value === defaultValue }
+				name={ name }
+				onChange={ this.updateRadio( onChange ) }
+				value={ defaultValue } />
+		);
+	}
+
+	updateRadio = onChange => event => onChange( event.target.value );
+
+	render() {
+		return (
+			<Field
+				component={ this.renderRadio( this.props.value ) }
+				name={ this.props.name } />
+		);
+	}
+}
 
 export default ReduxFormRadio;

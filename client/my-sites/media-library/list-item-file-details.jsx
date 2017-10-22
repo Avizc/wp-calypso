@@ -1,29 +1,25 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import Gridicon from 'gridicons';
+var Gridicon = require( 'gridicons' );
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'MediaLibraryListItemFileDetails',
 
 	propTypes: {
-		media: PropTypes.object,
-		scale: PropTypes.number,
-		icon: PropTypes.string,
+		media: React.PropTypes.object,
+		scale: React.PropTypes.number,
+		icon: React.PropTypes.string
 	},
 
 	getDefaultProps: function() {
 		return {
-			icon: 'pages',
+			icon: 'pages'
 		};
 	},
 
@@ -33,20 +29,14 @@ export default React.createClass( {
 				<div className="media-library__list-item-icon">
 					<Gridicon icon={ this.props.icon } />
 				</div>
-				<div
-					className="media-library__list-item-file-name"
-					style={ { fontSize: 12 * ( 1 + this.props.scale ) } }
-				>
+				<div className="media-library__list-item-file-name" style={ { fontSize: 12 * ( 1 + this.props.scale ) } }>
 					{ this.props.media.title }
 				</div>
 				<hr className="media-library__list-item-details-separator" />
-				<div
-					className="media-library__list-item-file-extension"
-					style={ { fontSize: 9 * ( 1 + this.props.scale ) } }
-				>
+				<div className="media-library__list-item-file-extension" style={ { fontSize: 9 * ( 1 + this.props.scale ) } }>
 					{ ( this.props.media.extension || '' ).toUpperCase() }
 				</div>
 			</div>
 		);
-	},
+	}
 } );

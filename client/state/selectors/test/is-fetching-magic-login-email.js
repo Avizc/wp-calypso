@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,12 +9,12 @@ import { expect } from 'chai';
 import { isFetchingMagicLoginEmail } from '../';
 
 describe( 'isFetchingMagicLoginEmail()', () => {
-	test( 'should return false if there is no fetching information yet', () => {
+	it( 'should return false if there is no fetching information yet', () => {
 		const isFetching = isFetchingMagicLoginEmail( undefined );
 		expect( isFetching ).to.be.false;
 	} );
 
-	test( 'should return true if client is requesting an email', () => {
+	it( 'should return true if client is requesting an email', () => {
 		const isFetching = isFetchingMagicLoginEmail( {
 			login: {
 				magicLogin: {
@@ -27,7 +25,7 @@ describe( 'isFetchingMagicLoginEmail()', () => {
 		expect( isFetching ).to.be.true;
 	} );
 
-	test( 'should return false when finished requesting an email', () => {
+	it( 'should return false when finished requesting an email', () => {
 		const isFetching = isFetchingMagicLoginEmail( {
 			login: {
 				magicLogin: {

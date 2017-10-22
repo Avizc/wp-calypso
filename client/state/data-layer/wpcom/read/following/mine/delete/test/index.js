@@ -1,22 +1,21 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 import { spy } from 'sinon';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
-import { requestUnfollow, receiveUnfollow, unfollowError } from '../';
 import { NOTICE_CREATE } from 'state/action-types';
-import { bypassDataLayer } from 'state/data-layer/utils';
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { follow, unfollow } from 'state/reader/follows/actions';
+import { requestUnfollow, receiveUnfollow, unfollowError } from '../';
+import { local } from 'state/data-layer/utils';
 
 describe( 'following/mine/delete', () => {
 	describe( 'requestUnfollow', () => {
-		test( 'should dispatch a http request', () => {
+		it( 'should dispatch a http request', () => {
 			const dispatch = spy();
 			const action = unfollow( 'http://example.com' );
 			const getState = () => ( {
@@ -41,7 +40,7 @@ describe( 'following/mine/delete', () => {
 					},
 					onSuccess: action,
 					onFailure: action,
-				} )
+				} ),
 			);
 
 			expect( dispatch ).to.be.calledWithMatch( { type: NOTICE_CREATE, notice: { status: null } } );
@@ -49,7 +48,17 @@ describe( 'following/mine/delete', () => {
 	} );
 
 	describe( 'receiveUnfollow', () => {
-		test( 'should dispatch an error notice and refollow when subscribed is true', () => {
+		it( 'should next the original action', () => {
+			const dispatch = spy();
+			const action = unfollow( 'http://example.com' );
+			const response = {
+				subscribed: false,
+			};
+			receiveUnfollow( { dispatch }, action, null, response );
+			expect( dispatch ).to.be.calledWith( local( action ) );
+		} );
+
+		it( 'should dispatch an error notice and refollow when subscribed is true', () => {
 			const dispatch = spy();
 			const action = unfollow( 'http://example.com' );
 			const getState = () => ( {
@@ -66,14 +75,14 @@ describe( 'following/mine/delete', () => {
 				subscribed: true,
 			};
 
-			receiveUnfollow( { dispatch, getState }, action, response );
+			receiveUnfollow( { dispatch, getState }, action, null, response );
 			expect( dispatch ).to.be.calledWithMatch( { type: NOTICE_CREATE } );
-			expect( dispatch ).to.be.calledWith( bypassDataLayer( follow( 'http://example.com' ) ) );
+			expect( dispatch ).to.be.calledWith( local( follow( 'http://example.com' ) ) );
 		} );
 	} );
 
 	describe( 'followError', () => {
-		test( 'should dispatch an error notice', () => {
+		it( 'should dispatch an error notice', () => {
 			const dispatch = spy();
 			const action = unfollow( 'http://example.com' );
 			const getState = () => ( {
@@ -89,7 +98,7 @@ describe( 'following/mine/delete', () => {
 
 			unfollowError( { dispatch, getState }, action );
 			expect( dispatch ).to.be.calledWithMatch( { type: NOTICE_CREATE } );
-			expect( dispatch ).to.be.calledWith( bypassDataLayer( follow( 'http://example.com' ) ) );
+			expect( dispatch ).to.be.calledWith( local( follow( 'http://example.com' ) ) );
 		} );
 	} );
 } );

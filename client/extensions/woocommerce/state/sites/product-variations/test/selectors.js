@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,7 +6,9 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { getVariationsForProduct } from '../selectors';
+import {
+	getVariationsForProduct,
+} from '../selectors';
 import productVariations from './fixtures/variations';
 
 const loadedState = {
@@ -16,17 +16,17 @@ const loadedState = {
 		woocommerce: {
 			sites: {
 				123: {
-					products: {},
+					products: { },
 					productVariations,
-				},
-			},
-		},
-	},
+				}
+			}
+		}
+	}
 };
 
 describe( 'selectors', () => {
 	describe( '#getVariationsForProduct', () => {
-		test( 'should give the variations when present.', () => {
+		it( 'should give the variations when present.', () => {
 			const variations15 = getVariationsForProduct( loadedState, 15, 123 );
 
 			expect( variations15 ).to.exist;
@@ -38,7 +38,7 @@ describe( 'selectors', () => {
 			expect( variations15[ 1 ].attributes[ 0 ].option ).to.equal( 'Black' );
 		} );
 
-		test( 'should return undefined if the variations are not present.', () => {
+		it( 'should return undefined if the variations are not present.', () => {
 			const nonexistentId = 282220;
 			expect( getVariationsForProduct( loadedState, nonexistentId, 123 ) ).to.be.undefined;
 		} );

@@ -1,10 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies
@@ -18,7 +15,9 @@ import {
 import { combineReducers } from 'state/utils';
 
 export const settings = ( state = null, { type, settingValues } ) =>
-	USER_SETTINGS_UPDATE === type ? { ...state, ...settingValues } : state;
+	USER_SETTINGS_UPDATE === type
+		? { ...state, ...settingValues }
+		: state;
 
 export const unsavedSettings = ( state = {}, action ) => {
 	switch ( action.type ) {

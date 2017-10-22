@@ -1,4 +1,3 @@
-/** @format */
 export const billingTransactionsSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -27,9 +26,9 @@ export const billingTransactionsSchema = {
 					items: {
 						type: 'array',
 						items: {
-							type: 'object',
-						},
-					},
+							type: 'object'
+						}
+					}
 				},
 			},
 		},
@@ -50,5 +49,5 @@ export const billingTransactionsSchema = {
 				},
 			},
 		},
-	},
+	}
 };

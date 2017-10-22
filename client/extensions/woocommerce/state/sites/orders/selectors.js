@@ -1,57 +1,35 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { get, filter, omit, sumBy } from 'lodash';
+import { get, filter, sumBy } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { getSelectedSiteId } from 'state/ui/selectors';
-import { getSerializedOrdersQuery } from './utils';
 
 /**
  * @param {Object} state Whole Redux state tree
- * @param {Object} [query] Query used to fetch orders. Can contain page, status, etc. If not provided, defaults to first page, all orders.
+ * @param {Number} [page] Page of orders. If not provided, defaults to first page.
  * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
  * @return {boolean} Whether the orders list has been successfully loaded from the server
  */
-export const areOrdersLoaded = ( state, query, siteId = getSelectedSiteId( state ) ) => {
-	const serializedQuery = getSerializedOrdersQuery( query );
-	const isLoading = get( state, [
-		'extensions',
-		'woocommerce',
-		'sites',
-		siteId,
-		'orders',
-		'isQueryLoading',
-		serializedQuery,
-	] );
+export const areOrdersLoaded = ( state, page = 1, siteId = getSelectedSiteId( state ) ) => {
+	const isLoading = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'isQueryLoading', `{page:${ page }}` ] );
 	// Strict check because it could also be undefined.
-	return false === isLoading;
+	return ( false === isLoading );
 };
 
 /**
  * @param {Object} state Whole Redux state tree
- * @param {Object} [query] Query used to fetch orders. Can contain page, status, etc. If not provided, defaults to first page, all orders.
+ * @param {Number} [page] Page of orders. If not provided, defaults to first page.
  * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
  * @return {boolean} Whether the orders list is currently being retrieved from the server
  */
-export const areOrdersLoading = ( state, query = {}, siteId = getSelectedSiteId( state ) ) => {
-	const serializedQuery = getSerializedOrdersQuery( query );
-	const isLoading = get( state, [
-		'extensions',
-		'woocommerce',
-		'sites',
-		siteId,
-		'orders',
-		'isQueryLoading',
-		serializedQuery,
-	] );
+export const areOrdersLoading = ( state, page = 1, siteId = getSelectedSiteId( state ) ) => {
+	const isLoading = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'isQueryLoading', `{page:${ page }}` ] );
 	// Strict check because it could also be undefined.
-	return true === isLoading;
+	return ( true === isLoading );
 };
 
 /**
@@ -61,17 +39,9 @@ export const areOrdersLoading = ( state, query = {}, siteId = getSelectedSiteId(
  * @return {boolean} Whether the orders list has been successfully loaded from the server
  */
 export const isOrderLoaded = ( state, orderId, siteId = getSelectedSiteId( state ) ) => {
-	const isLoading = get( state, [
-		'extensions',
-		'woocommerce',
-		'sites',
-		siteId,
-		'orders',
-		'isLoading',
-		orderId,
-	] );
+	const isLoading = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'isLoading', orderId ] );
 	// Strict check because it could also be undefined.
-	return false === isLoading;
+	return ( false === isLoading );
 };
 
 /**
@@ -81,17 +51,9 @@ export const isOrderLoaded = ( state, orderId, siteId = getSelectedSiteId( state
  * @return {boolean} Whether this order is currently being retrieved from the server
  */
 export const isOrderLoading = ( state, orderId, siteId = getSelectedSiteId( state ) ) => {
-	const isLoading = get( state, [
-		'extensions',
-		'woocommerce',
-		'sites',
-		siteId,
-		'orders',
-		'isLoading',
-		orderId,
-	] );
+	const isLoading = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'isLoading', orderId ] );
 	// Strict check because it could also be undefined.
-	return true === isLoading;
+	return ( true === isLoading );
 };
 
 /**
@@ -101,39 +63,23 @@ export const isOrderLoading = ( state, orderId, siteId = getSelectedSiteId( stat
  * @return {boolean} Whether this order is currently being updated on the server
  */
 export const isOrderUpdating = ( state, orderId, siteId = getSelectedSiteId( state ) ) => {
-	const isUpdating = get( state, [
-		'extensions',
-		'woocommerce',
-		'sites',
-		siteId,
-		'orders',
-		'isUpdating',
-		orderId,
-	] );
+	const isUpdating = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'isUpdating', orderId ] );
 	return !! isUpdating;
 };
 
 /**
  * @param {Object} state Whole Redux state tree
- * @param {Object} [query] Query used to fetch orders. Can contain page, status, etc. If not provided, defaults to first page, all orders.
+ * @param {Number} [page] Page of orders. If not provided, defaults to first page.
  * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
  * @return {array|false} List of orders, or false if there was an error
  */
-export const getOrders = ( state, query = {}, siteId = getSelectedSiteId( state ) ) => {
-	if ( ! areOrdersLoaded( state, query, siteId ) ) {
+export const getOrders = ( state, page = 1, siteId = getSelectedSiteId( state ) ) => {
+	if ( ! areOrdersLoaded( state, page, siteId ) ) {
 		return [];
 	}
-	const serializedQuery = getSerializedOrdersQuery( query );
-	const orders = get(
-		state,
-		[ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'items' ],
-		{}
-	);
-	const orderIdsOnPage = get(
-		state,
-		[ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'queries', serializedQuery ],
-		[]
-	);
+
+	const orders = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'items' ], {} );
+	const orderIdsOnPage = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'queries', `{page:${ page }}` ], [] );
 	if ( orderIdsOnPage.length ) {
 		return orderIdsOnPage.map( id => orders[ id ] );
 	}
@@ -147,26 +93,16 @@ export const getOrders = ( state, query = {}, siteId = getSelectedSiteId( state 
  * @return {Object|Null} The requested order object, or null if not available
  */
 export const getOrder = ( state, orderId, siteId = getSelectedSiteId( state ) ) => {
-	return get(
-		state,
-		[ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'items', orderId ],
-		null
-	);
+	return get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'items', orderId ], null );
 };
 
 /**
  * @param {Object} state Whole Redux state tree
- * @param {Object} [query] Query used to fetch orders. Can contain page, status, etc. If not provided, defaults to first page, all orders.
  * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
- * @return {Number} Total number of orders available on a site, or 0 if not loaded yet.
+ * @return {Number} Total number of pages of orders available on a site, or 1 if not loaded yet.
  */
-export const getTotalOrders = ( state, query = {}, siteId = getSelectedSiteId( state ) ) => {
-	const serializedQuery = getSerializedOrdersQuery( omit( query, 'page' ) );
-	return get(
-		state,
-		[ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'total', serializedQuery ],
-		0
-	);
+export const getTotalOrdersPages = ( state, siteId = getSelectedSiteId( state ) ) => {
+	return get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'totalPages' ], 1 );
 };
 
 /**
@@ -181,28 +117,10 @@ export const getNewOrders = ( state, siteId = getSelectedSiteId( state ) ) => {
 		return [];
 	}
 
-	const orders = get(
-		state,
-		[ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'items' ],
-		{}
-	);
+	const orders = get( state, [ 'extensions', 'woocommerce', 'sites', siteId, 'orders', 'items' ], {} );
 	return filter( orders, function( order ) {
 		const { status } = order;
 		return 'pending' === status || 'processing' === status || 'on-hold' === status;
-	} );
-};
-
-/**
- * @param {Object} state Whole Redux state tree
- * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
- * @return {array} List of new orders without PayPal Pending Orders.
- */
-export const getNewOrdersWithoutPayPalPending = ( state, siteId = getSelectedSiteId( state ) ) => {
-	const orders = getNewOrders( state, siteId );
-
-	return filter( orders, function( order ) {
-		const { status, payment_method } = order;
-		return ! ( 'pending' === status && 'paypal' === payment_method );
 	} );
 };
 
@@ -213,18 +131,5 @@ export const getNewOrdersWithoutPayPalPending = ( state, siteId = getSelectedSit
  */
 export const getNewOrdersRevenue = ( state, siteId = getSelectedSiteId( state ) ) => {
 	const orders = getNewOrders( state, siteId );
-	return sumBy( orders, order => parseFloat( order.total ) );
-};
-
-/**
- * @param {Object} state Whole Redux state tree
- * @param {Number} [siteId] Site ID to check. If not provided, the Site ID selected in the UI will be used
- * @return {Number} Total from all new orders without PayPal Pending Orders.
- */
-export const getNewOrdersWithoutPayPalPendingRevenue = (
-	state,
-	siteId = getSelectedSiteId( state )
-) => {
-	const orders = getNewOrdersWithoutPayPalPending( state, siteId );
 	return sumBy( orders, order => parseFloat( order.total ) );
 };

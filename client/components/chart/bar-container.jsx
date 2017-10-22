@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 
 /**
@@ -19,43 +15,39 @@ import userModule from 'lib/user';
  */
 const user = userModule();
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'ModuleChartBarContainer',
 
 	propTypes: {
-		isTouch: PropTypes.bool,
-		data: PropTypes.array,
-		yAxisMax: PropTypes.number,
-		width: PropTypes.number,
-		barClick: PropTypes.func,
+		isTouch: React.PropTypes.bool,
+		data: React.PropTypes.array,
+		yAxisMax: React.PropTypes.number,
+		width: React.PropTypes.number,
+		barClick: React.PropTypes.func
 	},
 
 	buildBars: function( max ) {
 		const numberBars = this.props.data.length,
 			width = this.props.chartWidth,
-			barWidth = width / numberBars;
+			barWidth = ( width / numberBars );
 		let tooltipPosition = user.isRTL() ? 'bottom left' : 'bottom right';
 
 		const bars = this.props.data.map( function( item, index ) {
 			const barOffset = barWidth * ( index + 1 );
 
-			if ( barOffset + 230 > width && barOffset + barWidth - 230 > 0 ) {
+			if ( ( ( barOffset + 230 ) > width ) && ( ( ( barOffset + barWidth ) - 230 ) > 0 ) ) {
 				tooltipPosition = user.isRTL() ? 'bottom right' : 'bottom left';
 			}
 
-			return (
-				<Bar
-					index={ index }
-					key={ index }
-					isTouch={ this.props.isTouch }
-					tooltipPosition={ tooltipPosition }
-					className={ item.className }
-					clickHandler={ this.props.barClick }
-					data={ item }
-					max={ max }
-					count={ numberBars }
-				/>
-			);
+			return <Bar index={ index }
+						key={ index }
+						isTouch={ this.props.isTouch }
+						tooltipPosition={ tooltipPosition }
+						className={ item.className }
+						clickHandler={ this.props.barClick }
+						data={ item }
+						max={ max }
+						count={ numberBars } />;
 		}, this );
 
 		return bars;
@@ -64,9 +56,11 @@ export default React.createClass( {
 	render: function() {
 		return (
 			<div>
-				<div className="chart__bars">{ this.buildBars( this.props.yAxisMax ) }</div>
+				<div className="chart__bars">
+					{ this.buildBars( this.props.yAxisMax ) }
+				</div>
 				<XAxis data={ this.props.data } labelWidth={ 42 } />
 			</div>
 		);
-	},
+	}
 } );

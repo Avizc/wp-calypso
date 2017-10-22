@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import wpcom from 'lib/wp';
 import {
 	THEME_SETUP_TOGGLE_DIALOG,
@@ -18,15 +15,12 @@ export function toggleDialog() {
 }
 
 export function runThemeSetup( siteId ) {
-	return dispatch => {
+	return ( dispatch ) => {
 		dispatch( {
 			type: THEME_SETUP_REQUEST,
 		} );
 
-		return wpcom
-			.undocumented()
-			.site( siteId )
-			.runThemeSetup()
+		return wpcom.undocumented().site( siteId ).runThemeSetup()
 			.then( response => {
 				dispatch( {
 					type: THEME_SETUP_RESULT,

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
-import { localize } from 'i18n-calypso';
 import PureRenderMixin from 'react-pure-render/mixin';
 
 /**
@@ -17,44 +13,42 @@ import Card from 'components/card';
 /**
  * Date Picker Demo
  */
-const InputChronoExample = localize(
-	React.createClass( {
-		mixins: [ PureRenderMixin ],
+export default React.createClass( {
+	displayName: 'InputChrono',
 
-		getInitialState() {
-			return {
-				date: this.props.moment(),
-			};
-		},
+	mixins: [ PureRenderMixin ],
 
-		componentWillMount() {
-			var self = this;
-			this.interval = setInterval( function() {
-				var date = self.props.moment( self.state.date );
-				date.hours( date.hours() + 1 );
-				self.setState( { date: date } );
-			}, 1000 );
-		},
+	getInitialState() {
+		return {
+			date: this.moment()
+		};
+	},
 
-		componentWillUnmount() {
-			clearInterval( this.interval );
-		},
+	componentWillMount() {
+		var self = this;
+		this.interval = setInterval( function() {
+			var date = self.moment( self.state.date );
+			date.hours( date.hours() + 1 );
+			self.setState( { date: date } );
+		}, 1000 );
+	},
 
-		onSet( date ) {
-			console.log( `date: %s`, date.toDate() );
-			this.setState( { date: date } );
-		},
+	componentWillUnmount() {
+		clearInterval( this.interval );
+	},
 
-		render() {
-			return (
-				<Card style={ { width: '300px', margin: 0 } }>
-					<InputChrono value={ this.state.date.calendar() } onSet={ this.onSet } />
-				</Card>
-			);
-		},
-	} )
-);
+	onSet( date ) {
+		console.log( `date: %s`, date.toDate() );
+		this.setState( { date: date } );
+	},
 
-InputChronoExample.displayName = 'InputChrono';
-
-export default InputChronoExample;
+	render() {
+		return (
+			<Card style={ { width: '300px', margin: 0 } }>
+				<InputChrono
+					value={ this.state.date.calendar() }
+					onSet={ this.onSet }/>
+			</Card>
+		);
+	}
+} );

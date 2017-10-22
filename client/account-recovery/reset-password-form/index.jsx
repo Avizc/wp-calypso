@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -18,7 +14,11 @@ import FormFieldset from 'components/forms/form-fieldset';
 import FormLegend from 'components/forms/form-legend';
 import ResetOptionSet from './reset-option-set';
 import ErrorMessage from 'account-recovery/components/account-recovery-error-message';
-import { setResetMethod, requestReset } from 'state/account-recovery/reset/actions';
+
+import {
+	setResetMethod,
+	requestReset,
+} from 'state/account-recovery/reset/actions';
 
 import {
 	getAccountRecoveryResetUserData,
@@ -44,27 +44,29 @@ export class ResetPasswordFormComponent extends Component {
 		};
 	}
 
-	submitForm = event => {
+	submitForm = ( event ) => {
 		this.props.requestReset( this.props.userData, this.state.selectedMethod );
 		event.preventDefault();
 	};
 
-	onResetOptionChanged = event => {
+	onResetOptionChanged = ( event ) => {
 		this.setState( { selectedMethod: event.currentTarget.value } );
 	};
 
-	getOptionDisplayStrings = optionName => {
+	getOptionDisplayStrings = ( optionName ) => {
 		const { translate } = this.props;
 
 		switch ( optionName ) {
 			case 'primary':
 				return {
-					email: translate( 'Email a reset link to {{strong}}your main email address{{/strong}}.', {
-						components: { strong: <strong /> },
-					} ),
-					sms: translate( 'Send a reset code to {{strong}}your main phone{{/strong}}.', {
-						components: { strong: <strong /> },
-					} ),
+					email: translate(
+						'Email a reset link to {{strong}}your main email address{{/strong}}.',
+						{ components: { strong: <strong /> } }
+					),
+					sms: translate(
+						'Send a reset code to {{strong}}your main phone{{/strong}}.',
+						{ components: { strong: <strong /> } }
+					),
 				};
 			case 'secondary':
 				return {
@@ -72,9 +74,10 @@ export class ResetPasswordFormComponent extends Component {
 						'Email a reset link to {{strong}}your recovery email address{{/strong}}.',
 						{ components: { strong: <strong /> } }
 					),
-					sms: translate( 'Send a reset code to {{strong}}your recovery phone{{/strong}}.', {
-						components: { strong: <strong /> },
-					} ),
+					sms: translate(
+						'Send a reset code to {{strong}}your recovery phone{{/strong}}.',
+						{ components: { strong: <strong /> } }
+					),
 				};
 			default:
 				return {};
@@ -82,7 +85,12 @@ export class ResetPasswordFormComponent extends Component {
 	};
 
 	render() {
-		const { resetOptions, isRequesting, requestError, translate } = this.props;
+		const {
+			resetOptions,
+			isRequesting,
+			requestError,
+			translate,
+		} = this.props;
 
 		const { selectedMethod } = this.state;
 
@@ -90,11 +98,13 @@ export class ResetPasswordFormComponent extends Component {
 
 		return (
 			<Card>
-				<h2 className="reset-password-form__title">{ translate( 'Reset your password' ) }</h2>
+				<h2 className="reset-password-form__title">
+					{ translate( 'Reset your password' ) }
+				</h2>
 				<p>
 					{ translate(
 						'To reset your password and recover access to your account, ' +
-							'select one of these options and follow the instructions.'
+						'select one of these options and follow the instructions.'
 					) }
 				</p>
 				<form onSubmit={ this.submitForm }>
@@ -120,8 +130,7 @@ export class ResetPasswordFormComponent extends Component {
 						className="reset-password-form__submit-button"
 						type="submit"
 						disabled={ ! isPrimaryButtonEnabled }
-						primary
-					>
+						primary>
 						{ translate( 'Continue' ) }
 					</Button>
 				</form>
@@ -131,7 +140,7 @@ export class ResetPasswordFormComponent extends Component {
 }
 
 export default connect(
-	state => ( {
+	( state ) => ( {
 		resetOptions: getAccountRecoveryResetOptions( state ),
 		userData: getAccountRecoveryResetUserData( state ),
 		requestError: getAccountRecoveryResetRequestError( state ),

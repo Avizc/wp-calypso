@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -14,17 +9,17 @@ import React from 'react';
 import MediaActions from 'lib/media/actions';
 import FormTextInput from 'components/forms/form-text-input';
 
-const EditorMediaModalGalleryCaption = React.createClass( {
+export default React.createClass( {
 	displayName: 'EditorMediaModalGalleryCaption',
 
 	propTypes: {
 		siteId: PropTypes.number,
-		item: PropTypes.object,
+		item: PropTypes.object
 	},
 
 	getInitialState() {
 		return {
-			caption: null,
+			caption: null
 		};
 	},
 
@@ -40,7 +35,7 @@ const EditorMediaModalGalleryCaption = React.createClass( {
 
 	setCaption( event ) {
 		this.setState( {
-			caption: event.target.value,
+			caption: event.target.value
 		} );
 	},
 
@@ -63,14 +58,11 @@ const EditorMediaModalGalleryCaption = React.createClass( {
 		return (
 			<FormTextInput
 				value={ this.getValue() }
-				placeholder={ this.props.translate( 'Caption this image…' ) }
+				placeholder={ this.translate( 'Caption this image…' ) }
 				onChange={ this.setCaption }
 				onBlur={ this.saveCaption }
-				onMouseDown={ event => event.stopPropagation() }
-				className="editor-media-modal-gallery__caption"
-			/>
+				onMouseDown={ ( event ) => event.stopPropagation() }
+				className="editor-media-modal-gallery__caption" />
 		);
-	},
+	}
 } );
-
-export default localize( EditorMediaModalGalleryCaption );

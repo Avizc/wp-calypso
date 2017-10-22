@@ -1,4 +1,3 @@
-/** @format */
 export const domainWhoisSchema = {
 	type: 'object',
 	additionalProperties: true,
@@ -13,5 +12,5 @@ export const domainWhoisSchema = {
 		state: { type: 'string' },
 		postal_code: { type: 'string' },
 		country_code: { type: 'string' },
-	},
+	}
 };

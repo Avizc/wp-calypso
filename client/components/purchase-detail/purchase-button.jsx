@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -20,7 +16,7 @@ const PurchaseButton = ( {
 	target,
 	rel,
 	text,
-	primary = true,
+	primary = true
 } ) => {
 	return (
 		<Button
@@ -45,7 +41,7 @@ PurchaseButton.propTypes = {
 	target: PropTypes.string,
 	rel: PropTypes.string,
 	text: PropTypes.string,
-	primary: PropTypes.bool,
+	primary: PropTypes.bool
 };
 
 export default PurchaseButton;

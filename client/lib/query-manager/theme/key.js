@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -19,7 +18,10 @@ import { DEFAULT_THEME_QUERY } from './constants';
  * @return {Boolean}       Whether key value matches default query or is null
  */
 function isDefaultOrNullQueryValue( value, key ) {
-	return value === undefined || value === null || DEFAULT_THEME_QUERY[ key ] === value;
+	return (
+		value === undefined || value === null ||
+		DEFAULT_THEME_QUERY[ key ] === value
+	);
 }
 
 /**

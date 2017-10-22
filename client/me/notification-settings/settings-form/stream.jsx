@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { PropTypes, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import classNames from 'classnames';
@@ -20,14 +16,20 @@ import StreamOptions from './stream-options';
 
 class NotificationSettingsFormStream extends PureComponent {
 	static propTypes = {
-		blogId: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ).isRequired,
-		stream: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
-		settingKeys: PropTypes.arrayOf( PropTypes.string ).isRequired,
+		blogId: PropTypes.oneOfType( [
+			PropTypes.string,
+			PropTypes.number
+		] ).isRequired,
+		stream: PropTypes.oneOfType( [
+			PropTypes.string,
+			PropTypes.number
+		] ),
+		settingKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
 		settings: PropTypes.oneOfType( [
 			PropTypes.instanceOf( Immutable.List ),
-			PropTypes.instanceOf( Immutable.Map ),
+			PropTypes.instanceOf( Immutable.Map )
 		] ).isRequired,
-		onToggle: PropTypes.func.isRequired,
+		onToggle: PropTypes.func.isRequired
 	};
 
 	state = { selectedDeviceId: null };
@@ -43,8 +45,7 @@ class NotificationSettingsFormStream extends PureComponent {
 		return { stream, settings };
 	};
 
-	onChangeDevices = event =>
-		this.setState( { selectedDeviceId: parseInt( event.target.value, 10 ) } );
+	onChangeDevices = event => this.setState( { selectedDeviceId: parseInt( event.target.value, 10 ) } );
 
 	render() {
 		const { stream, settings } = this.getStreamSettings();
@@ -53,24 +54,20 @@ class NotificationSettingsFormStream extends PureComponent {
 			<div className={ classNames( 'notification-settings-form-stream', this.props.className ) }>
 				{ ( () => {
 					if ( this.props.devices ) {
-						return (
-							<DeviceSelector
-								devices={ this.props.devices }
-								selectedDeviceId={ stream }
-								onChange={ this.onChangeDevices }
-							/>
-						);
+						return <DeviceSelector
+							devices={ this.props.devices }
+							selectedDeviceId={ stream }
+							onChange={ this.onChangeDevices } />;
 					}
 
-					return <StreamHeader stream={ this.props.stream } />;
+					return ( <StreamHeader stream={ this.props.stream } /> );
 				} )() }
 				<StreamOptions
 					blogId={ this.props.blogId }
 					stream={ stream }
 					settingKeys={ this.props.settingKeys }
 					settings={ settings }
-					onToggle={ this.props.onToggle }
-				/>
+					onToggle={ this.props.onToggle } />
 			</div>
 		);
 	}

@@ -1,18 +1,13 @@
-/** @format */
 /**
  * External dependencies
  */
-import { expect } from 'chai';
 import sinon from 'sinon';
+import { expect } from 'chai';
 
 /**
  * Internal dependencies
  */
-import {
-	receiveGuidedTransferStatus,
-	requestGuidedTransferStatus,
-	saveHostDetails,
-} from '../actions';
+import useNock from 'test/helpers/use-nock';
 import {
 	GUIDED_TRANSFER_HOST_DETAILS_SAVE,
 	GUIDED_TRANSFER_HOST_DETAILS_SAVE_FAILURE,
@@ -22,7 +17,11 @@ import {
 	GUIDED_TRANSFER_STATUS_REQUEST_FAILURE,
 	GUIDED_TRANSFER_STATUS_REQUEST_SUCCESS,
 } from 'state/action-types';
-import useNock from 'test/helpers/use-nock';
+import {
+	receiveGuidedTransferStatus,
+	requestGuidedTransferStatus,
+	saveHostDetails,
+} from '../actions';
 
 describe( 'actions', () => {
 	const spy = sinon.spy();
@@ -48,7 +47,7 @@ describe( 'actions', () => {
 	const sampleSiteIdFail = 77203199;
 
 	describe( '#receiveGuidedTransferStatus()', () => {
-		test( 'should return an action object', () => {
+		it( 'should return an action object', () => {
 			const action = receiveGuidedTransferStatus( sampleSiteId, sampleStatus );
 
 			expect( action ).to.eql( {
@@ -60,7 +59,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#requestGuidedTransferStatus()', () => {
-		useNock( nock => {
+		useNock( ( nock ) => {
 			nock( 'https://public-api.wordpress.com:443' )
 				.persist()
 				.get( `/wpcom/v2/sites/${ sampleSiteId }/transfer` )
@@ -72,16 +71,16 @@ describe( 'actions', () => {
 				} );
 		} );
 
-		test( 'should dispatch fetch action when thunk triggered', () => {
+		it( 'should dispatch fetch action when thunk triggered', () => {
 			requestGuidedTransferStatus( sampleSiteId )( spy );
 
 			expect( spy ).to.have.been.calledWith( {
 				type: GUIDED_TRANSFER_STATUS_REQUEST,
-				siteId: sampleSiteId,
+				siteId: sampleSiteId
 			} );
 		} );
 
-		test( 'should dispatch success action when request completes', () => {
+		it( 'should dispatch success action when request completes', () => {
 			return requestGuidedTransferStatus( sampleSiteId )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: GUIDED_TRANSFER_STATUS_REQUEST_SUCCESS,
@@ -90,7 +89,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch receive action when request completes', () => {
+		it( 'should dispatch receive action when request completes', () => {
 			return requestGuidedTransferStatus( sampleSiteId )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: GUIDED_TRANSFER_STATUS_RECEIVE,
@@ -100,19 +99,19 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch fail action when request fails', () => {
+		it( 'should dispatch fail action when request fails', () => {
 			return requestGuidedTransferStatus( sampleSiteIdFail )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: GUIDED_TRANSFER_STATUS_REQUEST_FAILURE,
 					siteId: sampleSiteIdFail,
-					error: sinon.match( { message: 'A server error occurred' } ),
+					error: sinon.match( { message: 'A server error occurred' } )
 				} );
 			} );
 		} );
 	} );
 
 	describe( '#saveHostDetails()', () => {
-		useNock( nock => {
+		useNock( ( nock ) => {
 			nock( 'https://public-api.wordpress.com:443' )
 				.persist()
 				.post( `/wpcom/v2/sites/${ sampleSiteId }/transfer` )
@@ -126,16 +125,16 @@ describe( 'actions', () => {
 				} );
 		} );
 
-		test( 'should dispatch save action when thunk triggered', () => {
+		it( 'should dispatch save action when thunk triggered', () => {
 			saveHostDetails( sampleSiteId )( spy );
 
 			expect( spy ).to.have.been.calledWith( {
 				type: GUIDED_TRANSFER_HOST_DETAILS_SAVE,
-				siteId: sampleSiteId,
+				siteId: sampleSiteId
 			} );
 		} );
 
-		test( 'should dispatch success action when request completes', () => {
+		it( 'should dispatch success action when request completes', () => {
 			return saveHostDetails( sampleSiteIdSave )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: GUIDED_TRANSFER_HOST_DETAILS_SAVE_SUCCESS,
@@ -144,7 +143,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch receive action for updated status when request completes', () => {
+		it( 'should dispatch receive action for updated status when request completes', () => {
 			return saveHostDetails( sampleSiteIdSave )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: GUIDED_TRANSFER_STATUS_RECEIVE,
@@ -154,12 +153,12 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch fail action when request fails', () => {
+		it( 'should dispatch fail action when request fails', () => {
 			return saveHostDetails( sampleSiteIdFail )( spy ).then( () => {
 				expect( spy ).to.have.been.calledWith( {
 					type: GUIDED_TRANSFER_HOST_DETAILS_SAVE_FAILURE,
 					siteId: sampleSiteIdFail,
-					error: sinon.match( { message: 'A server error occurred' } ),
+					error: sinon.match( { message: 'A server error occurred' } )
 				} );
 			} );
 		} );

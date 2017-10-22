@@ -1,42 +1,40 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { PureComponent } from 'react';
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' );
 
 /**
  * Internal dependencies
  */
-import Search from 'components/search';
-import SearchCard from 'components/search-card';
+var Search = require( 'components/search' ),
+	SearchCard = require( 'components/search-card' );
 
 /**
  * Globals
  */
 var noop = () => {};
 
-class SearchDemo extends PureComponent {
-	static displayName = 'Search';
+var SearchDemo = React.createClass( {
+	displayName: 'Search',
 
-	render() {
+	mixins: [ PureRenderMixin ],
+
+	render: function() {
 		return (
 			<div>
 				<Search
 					onSearch={ noop }
-					placeholder="What are you looking for?"
-					inputLabel="What do you seek? This is different on purpose."
+					placeholder="Placeholder text..."
 				/>
 				<h2>Search Card</h2>
 				<SearchCard
 					onSearch={ noop }
-					placeholder="Seek and you shall find"
-					inputLabel="Seek and you shall find"
+					placeholder="Placeholder text..."
 				/>
 			</div>
 		);
 	}
-}
+} );
 
-export default SearchDemo;
+module.exports = SearchDemo;

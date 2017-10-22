@@ -1,14 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Gridicon from 'gridicons';
-import { includes, capitalize } from 'lodash';
+import { includes } from 'lodash';
 import { localize } from 'i18n-calypso';
 import page from 'page';
 
@@ -22,11 +17,7 @@ import {
 	getRequestNotice,
 	getTwoFactorNotificationSent,
 	isTwoFactorEnabled,
-	getSocialAccountIsLinking,
-	getSocialAccountLinkService,
 } from 'state/login/selectors';
-import { getCurrentOAuth2Client } from 'state/ui/oauth2-clients/selectors';
-import { isWooOAuth2Client } from 'lib/oauth2-clients';
 import { recordTracksEvent } from 'state/analytics/actions';
 import VerificationCodeForm from './two-factor-authentication/verification-code-form';
 import WaitingTwoFactorNotificationApproval from './two-factor-authentication/waiting-notification-approval';
@@ -34,25 +25,17 @@ import { login } from 'lib/paths';
 import Notice from 'components/notice';
 import PushNotificationApprovalPoller from './two-factor-authentication/push-notification-approval-poller';
 import userFactory from 'lib/user';
-import SocialConnectPrompt from './social-connect-prompt';
 
 const user = userFactory();
 
 class Login extends Component {
 	static propTypes = {
-		oauth2Client: PropTypes.object,
-		privateSite: PropTypes.bool,
 		recordTracksEvent: PropTypes.func.isRequired,
 		redirectTo: PropTypes.string,
 		requestNotice: PropTypes.object,
 		twoFactorAuthType: PropTypes.string,
 		twoFactorEnabled: PropTypes.bool,
 		twoFactorNotificationSent: PropTypes.string,
-		socialConnect: PropTypes.bool,
-		isLinking: PropTypes.bool,
-		linkingSocialService: PropTypes.string,
-		socialService: PropTypes.string,
-		socialServiceResponse: PropTypes.object,
 	};
 
 	componentDidMount = () => {
@@ -64,7 +47,7 @@ class Login extends Component {
 		window.scrollTo( 0, 0 );
 	};
 
-	componentWillReceiveProps = nextProps => {
+	componentWillReceiveProps = ( nextProps ) => {
 		const hasNotice = this.props.requestNotice !== nextProps.requestNotice;
 		const isNewPage = this.props.twoFactorAuthType !== nextProps.twoFactorAuthType;
 
@@ -73,40 +56,15 @@ class Login extends Component {
 		}
 	};
 
-	handleValidLogin = () => {
-		if ( this.props.twoFactorEnabled ) {
-			page(
-				login( {
-					isNative: true,
-					// If no notification is sent, the user is using the authenticator for 2FA by default
-					twoFactorAuthType: this.props.twoFactorNotificationSent.replace(
-						'none',
-						'authenticator'
-					),
-				} )
-			);
-		} else if ( this.props.isLinking ) {
-			page(
-				login( {
-					isNative: true,
-					socialConnect: true,
-				} )
-			);
-		} else {
+	handleValidUsernamePassword = () => {
+		if ( ! this.props.twoFactorEnabled ) {
 			this.rebootAfterLogin();
-		}
-	};
-
-	handleValid2FACode = () => {
-		if ( this.props.isLinking ) {
-			page(
-				login( {
-					isNative: true,
-					socialConnect: true,
-				} )
-			);
 		} else {
-			this.rebootAfterLogin();
+			page( login( {
+				isNative: true,
+				// If no notification is sent, the user is using the authenticator for 2FA by default
+				twoFactorAuthType: this.props.twoFactorNotificationSent.replace( 'none', 'authenticator' )
+			} ) );
 		}
 	};
 
@@ -114,8 +72,7 @@ class Login extends Component {
 		const { redirectTo } = this.props;
 
 		this.props.recordTracksEvent( 'calypso_login_success', {
-			two_factor_enabled: this.props.twoFactorEnabled,
-			social_service_connected: this.props.socialConnect,
+			two_factor_enabled: this.props.twoFactorEnabled
 		} );
 
 		// Redirects to / if no redirect url is available
@@ -128,72 +85,6 @@ class Login extends Component {
 
 		window.location.href = url;
 	};
-
-	renderHeader() {
-		const {
-			oauth2Client,
-			privateSite,
-			socialConnect,
-			translate,
-			twoStepNonce,
-			linkingSocialService,
-		} = this.props;
-
-		let headerText = translate( 'Log in to your account.' ),
-			preHeader = null,
-			postHeader = null;
-
-		if ( twoStepNonce ) {
-			headerText = translate( 'Two-Step Authentication' );
-		} else if ( socialConnect ) {
-			headerText = translate( 'Connect your %(service)s account.', {
-				args: {
-					service: capitalize( linkingSocialService ),
-				},
-			} );
-		} else if ( privateSite ) {
-			headerText = translate( 'This is a private WordPress.com site.' );
-		} else if ( oauth2Client ) {
-			headerText = translate( 'Howdy! Log in to %(clientTitle)s with your WordPress.com account.', {
-				args: {
-					clientTitle: oauth2Client.title,
-				},
-				comment:
-					"'clientTitle' is the name of the app that uses WordPress.com authentication (e.g. 'Akismet' or 'VaultPress')",
-			} );
-
-			if ( isWooOAuth2Client( oauth2Client ) ) {
-				preHeader = <Gridicon icon="my-sites" size={ 72 } />;
-				postHeader = (
-					<p>
-						{ translate(
-							'WooCommerce.com now uses WordPress.com Accounts.{{br/}}{{a}}Learn more about the benefits{{/a}}',
-							{
-								components: {
-									a: (
-										<a
-											href="https://woocommerce.com/2017/01/woocommerce-requires-wordpress-account/"
-											target="_blank"
-											rel="noopener noreferrer"
-										/>
-									),
-									br: <br />,
-								},
-							}
-						) }
-					</p>
-				);
-			}
-		}
-
-		return (
-			<div className="login__form-header-wrapper">
-				{ preHeader }
-				<div className="login__form-header">{ headerText }</div>
-				{ postHeader }
-			</div>
-		);
-	}
 
 	renderNotice() {
 		const { requestNotice } = this.props;
@@ -211,13 +102,9 @@ class Login extends Component {
 
 	renderContent() {
 		const {
-			privateSite,
 			twoFactorAuthType,
 			twoFactorEnabled,
 			twoFactorNotificationSent,
-			socialConnect,
-			socialService,
-			socialServiceResponse,
 		} = this.props;
 
 		let poller;
@@ -230,9 +117,8 @@ class Login extends Component {
 				<div>
 					{ poller }
 					<VerificationCodeForm
-						onSuccess={ this.handleValid2FACode }
-						twoFactorAuthType={ twoFactorAuthType }
-					/>
+						onSuccess={ this.rebootAfterLogin }
+						twoFactorAuthType={ twoFactorAuthType } />
 				</div>
 			);
 		}
@@ -246,24 +132,23 @@ class Login extends Component {
 			);
 		}
 
-		if ( socialConnect ) {
-			return <SocialConnectPrompt onSuccess={ this.handleValidLogin } />;
-		}
-
 		return (
-			<LoginForm
-				onSuccess={ this.handleValidLogin }
-				privateSite={ privateSite }
-				socialService={ socialService }
-				socialServiceResponse={ socialServiceResponse }
-			/>
+			<LoginForm onSuccess={ this.handleValidUsernamePassword } />
 		);
 	}
 
 	render() {
+		const { translate, twoFactorEnabled, twoFactorAuthType } = this.props;
+
 		return (
 			<div>
-				{ this.renderHeader() }
+				<div className="login__form-header">
+					{
+						twoFactorEnabled && twoFactorAuthType
+							? translate( 'Two-Step Authentication.' )
+							: translate( 'Log in to your account.' )
+					}
+				</div>
 
 				<ErrorNotice />
 
@@ -276,16 +161,12 @@ class Login extends Component {
 }
 
 export default connect(
-	state => ( {
+	( state ) => ( {
 		redirectTo: getRedirectTo( state ),
 		requestNotice: getRequestNotice( state ),
 		twoFactorEnabled: isTwoFactorEnabled( state ),
 		twoFactorNotificationSent: getTwoFactorNotificationSent( state ),
-		oauth2Client: getCurrentOAuth2Client( state ),
-		isLinking: getSocialAccountIsLinking( state ),
-		linkingSocialService: getSocialAccountLinkService( state ),
-	} ),
-	{
+	} ), {
 		recordTracksEvent,
 	}
 )( localize( Login ) );

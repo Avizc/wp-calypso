@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -36,17 +34,17 @@ describe( 'getReaderAliasedFollowFeedUrl()', () => {
 		},
 	};
 
-	test( 'should return passed in url if it cannot find anything', () => {
+	it( 'should return passed in url if it cannot find anything', () => {
 		const feedUrl = getReaderAliasedFollowFeedUrl( state, 'http://croissant.happy' );
 		expect( feedUrl ).eql( 'http://croissant.happy' );
 	} );
 
-	test( 'should return exact match when it exists in state', () => {
+	it( 'should return exact match when it exists in state', () => {
 		const feedUrl = getReaderAliasedFollowFeedUrl( state, site1UrlKey );
 		expect( feedUrl ).eql( site1UrlKey );
 	} );
 
-	test( 'should utilize aliases within follow object to figure out a feed_url', () => {
+	it( 'should utilize aliases within follow object to figure out a feed_url', () => {
 		const feedUrl1 = getReaderAliasedFollowFeedUrl( state, site1Aliases[ 0 ] );
 		expect( feedUrl1 ).eql( site1UrlKey );
 
@@ -54,7 +52,7 @@ describe( 'getReaderAliasedFollowFeedUrl()', () => {
 		expect( feedUrl2 ).eql( site1UrlKey );
 	} );
 
-	test( 'should try to guess basic rss/feed extensions', () => {
+	it( 'should try to guess basic rss/feed extensions', () => {
 		const feedUrlA = getReaderAliasedFollowFeedUrl( state, 'siteA' );
 		const feedUrlB = getReaderAliasedFollowFeedUrl( state, 'siteB' );
 		const feedUrlC = getReaderAliasedFollowFeedUrl( state, 'siteC' );

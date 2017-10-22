@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import createSelector from 'lib/create-selector';
 
 function getGoogleAppsUsersState( state ) {
@@ -11,7 +8,7 @@ function getGoogleAppsUsersState( state ) {
 }
 
 function createGoogleAppsUsersSelector( fn ) {
-	return createSelector( fn, state => [ getGoogleAppsUsersState( state ) ] );
+	return createSelector( fn, ( state ) => [ getGoogleAppsUsersState( state ) ] );
 }
 
 /**
@@ -20,8 +17,8 @@ function createGoogleAppsUsersSelector( fn ) {
  * @param {string} domainName
  * @returns {[]} Filtered users
  */
-export const getByDomain = createGoogleAppsUsersSelector( ( state, domainName ) =>
-	getGoogleAppsUsersState( state ).items.filter( item => item.domain === domainName )
+export const getByDomain = createGoogleAppsUsersSelector(
+	( state, domainName ) => getGoogleAppsUsersState( state ).items.filter( item => item.domain === domainName )
 );
 
 /**
@@ -30,8 +27,8 @@ export const getByDomain = createGoogleAppsUsersSelector( ( state, domainName ) 
  * @param {number} A site ID
  * @returns {[]} Filtered users
  */
-export const getBySite = createGoogleAppsUsersSelector( ( state, siteId ) =>
-	getGoogleAppsUsersState( state ).items.filter( item => item.site_id === siteId )
+export const getBySite = createGoogleAppsUsersSelector(
+	( state, siteId ) => getGoogleAppsUsersState( state ).items.filter( item => item.site_id === siteId )
 );
 
 /**

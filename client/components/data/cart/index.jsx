@@ -1,33 +1,30 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import StoreConnection from 'components/data/store-connection';
-import CartStore from 'lib/cart/store';
+var StoreConnection = require( 'components/data/store-connection' ),
+	CartStore = require( 'lib/cart/store' );
 
 var stores = [ CartStore ];
 
 function getStateFromStores() {
 	return {
-		cart: CartStore.get(),
+		cart: CartStore.get()
 	};
 }
 
-const CartData = React.createClass( {
+var CartData = React.createClass( {
 	render: function() {
 		return (
 			<StoreConnection stores={ stores } getStateFromStores={ getStateFromStores }>
 				{ this.props.children }
 			</StoreConnection>
 		);
-	},
+	}
 } );
 
-export default CartData;
+module.exports = CartData;

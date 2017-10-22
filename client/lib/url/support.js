@@ -1,4 +1,3 @@
-/** @format */
 const root = 'https://support.wordpress.com';
 
 export default {
@@ -43,7 +42,7 @@ export default {
 	IMPORT: `${ root }/import`,
 	INSTAGRAM_WIDGET: `${ root }/instagram/instagram-widget`,
 	JETPACK_SUPPORT: 'https://jetpack.com/support/',
-	JETPACK_CONTACT_SUPPORT: 'https://jetpack.com/contact-support/?rel=support',
+	JETPACK_CONTACT_SUPPORT: 'https://jetpack.com/contact-support/',
 	JETPACK_SERVICE_VAULTPRESS: 'https://help.vaultpress.com/',
 	JETPACK_SERVICE_AKISMET: 'https://akismet.com/support/',
 	JETPACK_SERVICE_POLLDADDY: 'https://support.polldaddy.com/',
@@ -76,6 +75,5 @@ export default {
 	UPDATE_NAMESERVERS: `${ root }/domains/domain-management/#update-nameservers`,
 	USERS: `${ root }/category/users`,
 	USER_ROLES: `${ root }/user-roles`,
-	VIDEOS: `${ root }/videos`,
-	WPCC: `${ root }/wpcc-faq`,
+	VIDEOS: `${ root }/videos`
 };

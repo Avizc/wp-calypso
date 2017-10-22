@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
@@ -24,21 +20,21 @@ import {
 	recordAddDomainButtonClickInMapDomain,
 	recordFormSubmitInMapDomain,
 	recordInputFocusInMapDomain,
-	recordGoButtonClickInMapDomain,
+	recordGoButtonClickInMapDomain
 } from 'state/domains/actions';
 import Notice from 'components/notice';
 
 class MapDomainStep extends React.Component {
 	static propTypes = {
-		products: PropTypes.object.isRequired,
-		cart: PropTypes.object,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ),
-		initialQuery: PropTypes.string,
-		analyticsSection: PropTypes.string.isRequired,
-		domainsWithPlansOnly: PropTypes.bool.isRequired,
-		onRegisterDomain: PropTypes.func.isRequired,
-		onMapDomain: PropTypes.func.isRequired,
-		onSave: PropTypes.func,
+		products: React.PropTypes.object.isRequired,
+		cart: React.PropTypes.object,
+		selectedSite: React.PropTypes.oneOfType( [ React.PropTypes.object, React.PropTypes.bool ] ),
+		initialQuery: React.PropTypes.string,
+		analyticsSection: React.PropTypes.string.isRequired,
+		domainsWithPlansOnly: React.PropTypes.bool.isRequired,
+		onRegisterDomain: React.PropTypes.func.isRequired,
+		onMapDomain: React.PropTypes.func.isRequired,
+		onSave: React.PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -49,13 +45,19 @@ class MapDomainStep extends React.Component {
 
 	getDefaultState() {
 		return {
-			searchQuery: this.props.initialQuery,
+			searchQuery: this.props.initialQuery
 		};
 	}
 
 	componentWillMount() {
 		if ( this.props.initialState ) {
-			this.setState( Object.assign( {}, this.props.initialState, this.getDefaultState() ) );
+			this.setState(
+				Object.assign(
+					{},
+					this.props.initialState,
+					this.getDefaultState()
+				)
+			);
 		}
 	}
 
@@ -77,22 +79,20 @@ class MapDomainStep extends React.Component {
 
 	render() {
 		const suggestion = this.props.products.domain_map
-			? {
-					cost: this.props.products.domain_map.cost_display,
-					product_slug: this.props.products.domain_map.product_slug,
-				}
-			: { cost: null, product_slug: '' };
+				? { cost: this.props.products.domain_map.cost_display, product_slug: this.props.products.domain_map.product_slug }
+				: { cost: null, product_slug: '' };
 		const { translate } = this.props;
 
 		return (
 			<div className="map-domain-step">
 				{ this.notice() }
 				<form className="map-domain-step__form card" onSubmit={ this.handleFormSubmit }>
+
 					<div className="map-domain-step__domain-description">
 						<p>
-							{ translate( "Map this domain to use it as your site's address.", {
+							{ translate( 'Map this domain to use it as your site\'s address.', {
 								context: 'Upgrades: Description in domain registration',
-								comment: "Explains how you could use a new domain name for your site's address.",
+								comment: "Explains how you could use a new domain name for your site's address."
 							} ) }
 						</p>
 					</div>
@@ -104,8 +104,7 @@ class MapDomainStep extends React.Component {
 							this.props.cart,
 							suggestion
 						) }
-						price={ suggestion.cost }
-					/>
+						price={ suggestion.cost } />
 
 					<div className="map-domain-step__add-domain" role="group">
 						<input
@@ -116,14 +115,11 @@ class MapDomainStep extends React.Component {
 							onBlur={ this.save }
 							onChange={ this.setSearchQuery }
 							onClick={ this.recordInputFocus }
-							autoFocus
-						/>
-						<button
-							className="map-domain-step__go button is-primary"
-							onClick={ this.recordGoButtonClick }
-						>
+							autoFocus />
+						<button className="map-domain-step__go button is-primary"
+								onClick={ this.recordGoButtonClick }>
 							{ translate( 'Add', {
-								context: 'Upgrades: Label for mapping an existing domain',
+								context: 'Upgrades: Label for mapping an existing domain'
 							} ) }
 						</button>
 					</div>
@@ -142,10 +138,15 @@ class MapDomainStep extends React.Component {
 
 		return (
 			<div className="domain-search-results__domain-availability is-mapping-suggestion">
-				<Notice status="is-success" showDismiss={ false }>
-					{ this.props.translate( '%(domain)s is available!', {
-						args: { domain: suggestion.domain_name },
-					} ) }
+				<Notice
+					status="is-success"
+					showDismiss={ false }>
+					{
+						this.props.translate(
+							'%(domain)s is available!',
+							{ args: { domain: suggestion.domain_name } }
+						)
+					}
 				</Notice>
 				<DomainRegistrationSuggestion
 					suggestion={ suggestion }
@@ -153,17 +154,13 @@ class MapDomainStep extends React.Component {
 					domainsWithPlansOnly={ this.props.domainsWithPlansOnly }
 					key={ suggestion.domain_name }
 					cart={ this.props.cart }
-					onButtonClick={ this.registerSuggestedDomain }
-				/>
+					onButtonClick={ this.registerSuggestedDomain } />
 			</div>
 		);
 	}
 
 	registerSuggestedDomain = () => {
-		this.props.recordAddDomainButtonClickInMapDomain(
-			this.state.suggestion.domain_name,
-			this.props.analyticsSection
-		);
+		this.props.recordAddDomainButtonClickInMapDomain( this.state.suggestion.domain_name, this.props.analyticsSection );
 
 		return this.props.onRegisterDomain( this.state.suggestion );
 	};
@@ -173,17 +170,14 @@ class MapDomainStep extends React.Component {
 	};
 
 	recordGoButtonClick = () => {
-		this.props.recordGoButtonClickInMapDomain(
-			this.state.searchQuery,
-			this.props.analyticsSection
-		);
+		this.props.recordGoButtonClickInMapDomain( this.state.searchQuery, this.props.analyticsSection );
 	};
 
-	setSearchQuery = event => {
+	setSearchQuery = ( event ) => {
 		this.setState( { searchQuery: event.target.value } );
 	};
 
-	handleFormSubmit = event => {
+	handleFormSubmit = ( event ) => {
 		event.preventDefault();
 
 		const domain = getFixedDomainSearch( this.state.searchQuery );
@@ -213,12 +207,12 @@ class MapDomainStep extends React.Component {
 
 export default connect(
 	state => ( {
-		currentUser: getCurrentUser( state ),
+		currentUser: getCurrentUser( state )
 	} ),
 	{
 		recordAddDomainButtonClickInMapDomain,
 		recordFormSubmitInMapDomain,
 		recordInputFocusInMapDomain,
-		recordGoButtonClickInMapDomain,
+		recordGoButtonClickInMapDomain
 	}
 )( localize( MapDomainStep ) );

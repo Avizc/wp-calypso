@@ -73,9 +73,8 @@ button {
 			color: lighten( $gray, 30% );
 		}
 		.gridicon {
-			top: 5px;
+			top: 4px;
 			margin-top: -8px;
-			margin-right: 4px;
 		}
 		// Make the left margin of the small plus icon visually less huge
 		.gridicons-plus-small {
@@ -122,8 +121,7 @@ button {
 		color: $white;
 	}
 	&[disabled],
-	&:disabled,
-	&.disabled {
+	&:disabled {
 		color: lighten( $gray, 30% );
 		background: $white;
 		border-color: lighten( $gray, 30% );

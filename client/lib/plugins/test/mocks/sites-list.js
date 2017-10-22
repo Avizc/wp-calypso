@@ -1,10 +1,8 @@
 /**
  * Needed for store test
- *
- * @format
  */
 
-export default function() {
+module.exports = function() {
 	return {
 		getSite: function() {
 			return {};
@@ -14,6 +12,6 @@ export default function() {
 		},
 		getNetworkSites: function() {
 			return [];
-		},
+		}
 	};
-}
+};

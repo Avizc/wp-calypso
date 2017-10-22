@@ -1,14 +1,12 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDom from 'react-dom';
 import { connect } from 'react-redux';
 import { translate } from 'i18n-calypso';
 import classNames from 'classnames';
-import { get, startsWith } from 'lodash';
+import { get } from 'lodash';
 
 /**
  * Internal Dependencies
@@ -69,14 +67,12 @@ import * as FeedStreamStoreActions from 'lib/feed-stream-store/actions';
 import { getLastStore } from 'reader/controller-helper';
 import { showSelectedPost } from 'reader/utils';
 import Emojify from 'components/emojify';
-import config from 'config';
 
 export class FullPostView extends React.Component {
 	static propTypes = {
-		post: PropTypes.object.isRequired,
-		onClose: PropTypes.func.isRequired,
-		referralPost: PropTypes.object,
-		referralStream: PropTypes.string,
+		post: React.PropTypes.object.isRequired,
+		onClose: React.PropTypes.func.isRequired,
+		referralPost: React.PropTypes.object,
 	};
 
 	hasScrolledToCommentAnchor = false;
@@ -167,7 +163,7 @@ export class FullPostView extends React.Component {
 		recordTrackForPost(
 			liked ? 'calypso_reader_article_liked' : 'calypso_reader_article_unliked',
 			this.props.post,
-			{ context: 'full-post', event_source: 'keyboard' }
+			{ context: 'full-post', event_source: 'keyboard' },
 		);
 	};
 
@@ -191,14 +187,6 @@ export class FullPostView extends React.Component {
 		}
 	};
 
-	/**
-	 * @returns {number} - the commentId in the url of the form #comment-${id}
-	 */
-	getCommentIdFromUrl = () =>
-		startsWith( window.location.hash, '#comment-' )
-			? +window.location.hash.split( '-' )[ 1 ]
-			: undefined;
-
 	// Scroll to the top of the comments section.
 	scrollToComments = () => {
 		if ( ! this.props.post ) {
@@ -210,7 +198,6 @@ export class FullPostView extends React.Component {
 		if ( this._scrolling ) {
 			return;
 		}
-
 		this._scrolling = true;
 		setTimeout( () => {
 			const commentsNode = ReactDom.findDOMNode( this.refs.commentsWrapper );
@@ -245,14 +232,7 @@ export class FullPostView extends React.Component {
 		}
 
 		if ( ! this.hasLoaded && post && post._state !== 'pending' ) {
-			recordTrackForPost(
-				'calypso_reader_article_opened',
-				post,
-				{},
-				{
-					pathnameOverride: this.props.referralStream,
-				}
-			);
+			recordTrackForPost( 'calypso_reader_article_opened', post );
 			this.hasLoaded = true;
 		}
 	};
@@ -295,7 +275,7 @@ export class FullPostView extends React.Component {
 				components: {
 					wpLink: <a href="/" className="reader-related-card-v2__link" />,
 				},
-			}
+			},
 		);
 
 		if ( post.site_ID ) {
@@ -307,22 +287,19 @@ export class FullPostView extends React.Component {
 
 		const externalHref = isDiscoverPost( referralPost ) ? referralPost.URL : post.URL;
 		const isLoading = ! post || post._state === 'pending' || post._state === 'minimal';
-		const startingCommentId = this.getCommentIdFromUrl();
-		const commentCount = get( post, 'discussion.comment_count' );
 
 		/*eslint-disable react/no-danger */
 		/*eslint-disable react/jsx-no-target-blank */
 		return (
 			<ReaderMain className={ classNames( classes ) }>
-				{ ! post || post._state === 'pending' ? (
-					<DocumentHead title={ translate( 'Loading' ) } />
-				) : (
-					<DocumentHead title={ `${ post.title } ‹ ${ siteName } ‹ Reader` } />
-				) }
+				{ ! post || post._state === 'pending'
+					? <DocumentHead title={ translate( 'Loading' ) } />
+					: <DocumentHead title={ `${ post.title } ‹ ${ siteName } ‹ Reader` } /> }
 				{ post && post.feed_ID && <QueryReaderFeed feedId={ +post.feed_ID } /> }
 				{ post &&
-				! post.is_external &&
-				post.site_ID && <QueryReaderSite siteId={ +post.site_ID } /> }
+					! post.is_external &&
+					post.site_ID &&
+					<QueryReaderSite siteId={ +post.site_ID } /> }
 				<ReaderFullPostBack onBackClick={ this.handleBack } />
 				<div className="reader-full-post__visit-site-container">
 					<ExternalLink
@@ -340,7 +317,7 @@ export class FullPostView extends React.Component {
 					<div className="reader-full-post__sidebar">
 						{ isLoading && <AuthorCompactProfile author={ null } /> }
 						{ ! isLoading &&
-						post.author && (
+							post.author &&
 							<AuthorCompactProfile
 								author={ post.author }
 								siteIcon={ get( site, 'icon.img' ) }
@@ -352,59 +329,54 @@ export class FullPostView extends React.Component {
 								feedId={ +post.feed_ID }
 								siteId={ +post.site_ID }
 								post={ post }
-							/>
-						) }
-						{ shouldShowComments( post ) && (
+							/> }
+						{ shouldShowComments( post ) &&
 							<CommentButton
 								key="comment-button"
-								commentCount={ commentCount }
+								commentCount={ post.discussion.comment_count }
 								onClick={ this.handleCommentClick }
 								tagName="div"
-							/>
-						) }
-						{ shouldShowLikes( post ) && (
+							/> }
+						{ shouldShowLikes( post ) &&
 							<LikeButton
 								siteId={ +post.site_ID }
 								postId={ +post.ID }
 								fullPost={ true }
 								tagName="div"
-							/>
-						) }
+							/> }
 					</div>
 					<Emojify>
 						<article className="reader-full-post__story" ref="article">
 							<ReaderFullPostHeader post={ post } referralPost={ referralPost } />
 
 							{ post.featured_image &&
-							! isFeaturedImageInContent( post ) && <FeaturedImage src={ post.featured_image } /> }
+								! isFeaturedImageInContent( post ) &&
+								<FeaturedImage src={ post.featured_image } /> }
 							{ isLoading && <ReaderFullPostContentPlaceholder /> }
-							{ post.use_excerpt ? (
-								<PostExcerpt content={ post.better_excerpt ? post.better_excerpt : post.excerpt } />
-							) : (
-								<EmbedContainer>
-									<AutoDirection>
-										<div
-											className="reader-full-post__story-content"
-											dangerouslySetInnerHTML={ { __html: post.content } }
-										/>
-									</AutoDirection>
-								</EmbedContainer>
-							) }
+							{ post.use_excerpt
+								? <PostExcerpt
+										content={ post.better_excerpt ? post.better_excerpt : post.excerpt }
+									/>
+								: <EmbedContainer>
+										<AutoDirection>
+											<div
+												className="reader-full-post__story-content"
+												dangerouslySetInnerHTML={ { __html: post.content } }
+											/>
+										</AutoDirection>
+									</EmbedContainer> }
 
 							{ post.use_excerpt &&
-							! isDiscoverPost( post ) && (
-								<PostExcerptLink siteName={ siteName } postUrl={ post.URL } />
-							) }
-							{ isDiscoverSitePick( post ) && (
+								! isDiscoverPost( post ) &&
+								<PostExcerptLink siteName={ siteName } postUrl={ post.URL } /> }
+							{ isDiscoverSitePick( post ) &&
 								<DiscoverSiteAttribution
 									attribution={ post.discover_metadata.attribution }
 									siteUrl={ getSiteUrl( post ) }
 									followUrl={ getSourceFollowUrl( post ) }
-								/>
-							) }
-							{ isDailyPostChallengeOrPrompt( post ) && (
-								<DailyPostButton post={ post } site={ site } />
-							) }
+								/> }
+							{ isDailyPostChallengeOrPrompt( post ) &&
+								<DailyPostButton post={ post } site={ site } tagName="span" /> }
 
 							<ReaderPostActions
 								post={ post }
@@ -413,7 +385,7 @@ export class FullPostView extends React.Component {
 								fullPost={ true }
 							/>
 
-							{ showRelatedPosts && (
+							{ showRelatedPosts &&
 								<RelatedPostsFromSameSite
 									siteId={ +post.site_ID }
 									postId={ +post.ID }
@@ -435,25 +407,21 @@ export class FullPostView extends React.Component {
 									className="is-same-site"
 									/* eslint-enable wpcalypso/jsx-classname-namespace */
 									onPostClick={ this.handleRelatedPostFromSameSiteClicked }
-								/>
-							) }
+								/> }
 
 							<div className="reader-full-post__comments-wrapper" ref="commentsWrapper">
-								{ shouldShowComments( post ) ? (
-									<Comments
-										showNestingReplyArrow={ config.isEnabled( 'reader/nesting-arrow' ) }
-										ref="commentsList"
-										post={ post }
-										initialSize={ startingCommentId ? commentCount : 10 }
-										pageSize={ 25 }
-										startingCommentId={ startingCommentId }
-										commentCount={ commentCount }
-										maxDepth={ 1 }
-									/>
-								) : null }
+								{ shouldShowComments( post )
+									? <Comments
+											ref="commentsList"
+											post={ post }
+											initialSize={ 10 }
+											pageSize={ 25 }
+											onCommentsUpdate={ this.checkForCommentAnchor }
+										/>
+									: null }
 							</div>
 
-							{ showRelatedPosts && (
+							{ showRelatedPosts &&
 								<RelatedPostsFromOtherSites
 									siteId={ +post.site_ID }
 									postId={ +post.ID }
@@ -462,8 +430,7 @@ export class FullPostView extends React.Component {
 									className="is-other-site"
 									/* eslint-enable wpcalypso/jsx-classname-namespace */
 									onPostClick={ this.handleRelatedPostFromOtherSiteClicked }
-								/>
-							) }
+								/> }
 						</article>
 					</Emojify>
 				</div>
@@ -487,7 +454,7 @@ const ConnectedFullPostView = connect(
 
 		return props;
 	},
-	{ setSection }
+	{ setSection },
 )( FullPostView );
 
 /**
@@ -501,11 +468,11 @@ export default class FullPostFluxContainer extends React.Component {
 	}
 
 	static propTypes = {
-		blogId: PropTypes.string,
-		postId: PropTypes.string.isRequired,
-		onClose: PropTypes.func.isRequired,
-		onPostNotFound: PropTypes.func.isRequired,
-		referral: PropTypes.object,
+		blogId: React.PropTypes.string,
+		postId: React.PropTypes.string.isRequired,
+		onClose: React.PropTypes.func.isRequired,
+		onPostNotFound: React.PropTypes.func.isRequired,
+		referral: React.PropTypes.object,
 	};
 
 	getStateFromStores( props = this.props ) {
@@ -551,13 +518,12 @@ export default class FullPostFluxContainer extends React.Component {
 	}
 
 	render() {
-		return this.state.post ? (
-			<ConnectedFullPostView
-				onClose={ this.props.onClose }
-				post={ this.state.post }
-				referralPost={ this.state.referralPost }
-				referralStream={ this.props.referralStream }
-			/>
-		) : null;
+		return this.state.post
+			? <ConnectedFullPostView
+					onClose={ this.props.onClose }
+					post={ this.state.post }
+					referralPost={ this.state.referralPost }
+				/>
+			: null;
 	}
 }

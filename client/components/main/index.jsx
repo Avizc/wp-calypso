@@ -1,15 +1,16 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import classNames from 'classnames';
 
-export default function Main( { className, children, wideLayout = false } ) {
+export default function Main( {
+	className,
+	children,
+	wideLayout = false
+} ) {
 	const classes = classNames( className, 'main', {
-		'is-wide-layout': wideLayout,
+		'is-wide-layout': wideLayout
 	} );
 
 	return (

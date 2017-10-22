@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -8,34 +6,39 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
-import { productsDeleteSuccess, productsRequest, productsRequestSuccess } from '../list-reducer';
+import {
+	productsDeleteSuccess,
+	productsRequest,
+	productsRequestSuccess,
+} from '../list-reducer';
+
 import {
 	WOOCOMMERCE_PRODUCTS_DELETE_SUCCESS,
 	WOOCOMMERCE_PRODUCTS_REQUEST,
 	WOOCOMMERCE_PRODUCTS_REQUEST_SUCCESS,
 } from 'woocommerce/state/action-types';
 
-import product from 'woocommerce/state/sites/products/test/fixtures/product';
 import products from 'woocommerce/state/sites/products/test/fixtures/products';
+import product from 'woocommerce/state/sites/products/test/fixtures/product';
 
 describe( 'reducer', () => {
 	describe( 'productsRequest', () => {
-		test( 'should store the requested page', () => {
+		it( 'should store the requested page', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_REQUEST,
 				siteId: 123,
-				params: { page: 3 },
+				page: 3,
 			};
 			const newState = productsRequest( undefined, action );
 			expect( newState.requestedPage ).to.eql( 3 );
 		} );
 	} );
 	describe( 'productsRequestSuccess', () => {
-		test( 'should store the current page', () => {
+		it( 'should store the current page', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_REQUEST_SUCCESS,
 				siteId: 123,
-				params: { page: 2 },
+				page: 2,
 				totalPages: 3,
 				totalProducts: 30,
 				products,
@@ -43,11 +46,11 @@ describe( 'reducer', () => {
 			const newState = productsRequestSuccess( undefined, action );
 			expect( newState.currentPage ).to.eql( 2 );
 		} );
-		test( 'should store product ids for the current page', () => {
+		it( 'should store product ids for the current page', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_REQUEST_SUCCESS,
 				siteId: 123,
-				params: { page: 2 },
+				page: 2,
 				totalPages: 3,
 				totalProducts: 30,
 				products,
@@ -57,7 +60,7 @@ describe( 'reducer', () => {
 		} );
 	} );
 	describe( 'productsDeleteSuccess', () => {
-		test( 'should remove the product from the products list', () => {
+		it( 'should remove the product from the products list', () => {
 			const action = {
 				type: WOOCOMMERCE_PRODUCTS_DELETE_SUCCESS,
 				siteId: 123,

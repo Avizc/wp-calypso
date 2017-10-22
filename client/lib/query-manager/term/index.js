@@ -1,8 +1,7 @@
-/** @format */
 /**
  * External dependencies
  */
-import { includes } from 'lodash';
+import includes from 'lodash/includes';
 
 /**
  * Internal dependencies
@@ -15,9 +14,6 @@ import { DEFAULT_TERM_QUERY } from './constants';
  * TermQueryManager manages terms which can be queried and change over time
  */
 export default class TermQueryManager extends PaginatedQueryManager {
-	static QueryKey = TermQueryKey;
-	static DefaultQuery = DEFAULT_TERM_QUERY;
-
 	/**
 	 * Returns true if the term matches the given query, or false otherwise.
 	 *
@@ -25,7 +21,7 @@ export default class TermQueryManager extends PaginatedQueryManager {
 	 * @param  {Object}  term  Item to consider
 	 * @return {Boolean}       Whether term matches query
 	 */
-	static matches( query, term ) {
+	matches( query, term ) {
 		if ( ! query.search ) {
 			return true;
 		}
@@ -47,7 +43,7 @@ export default class TermQueryManager extends PaginatedQueryManager {
 	 * @return {Number}       0 if equal, less than 0 if termA is first,
 	 *                        greater than 0 if termB is first.
 	 */
-	static compare( query, termA, termB ) {
+	compare( query, termA, termB ) {
 		let order;
 
 		switch ( query.order_by ) {
@@ -68,3 +64,7 @@ export default class TermQueryManager extends PaginatedQueryManager {
 		return order || 0;
 	}
 }
+
+TermQueryManager.QueryKey = TermQueryKey;
+
+TermQueryManager.DEFAULT_QUERY = DEFAULT_TERM_QUERY;

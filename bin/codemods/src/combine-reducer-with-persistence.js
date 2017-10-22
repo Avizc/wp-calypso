@@ -5,8 +5,6 @@
  import { combineReducers } from 'state/utils';
  */
 
-const config = require( './config' );
-
 module.exports = function ( file, api ) {
 	// alias the jscodeshift API
 	const j = api.jscodeshift;
@@ -54,5 +52,5 @@ module.exports = function ( file, api ) {
 	firstInternalImport.insertAfter( combineReducersImport );
 
 	// print
-	return root.toSource( config.recastOptions );
+	return root.toSource( { quote: 'single' } );
 };

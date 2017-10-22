@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes, Component } from 'react';
 import { partial } from 'lodash';
 import Gridicon from 'gridicons';
 
@@ -18,7 +14,11 @@ import SelectDropdown from 'components/select-dropdown';
 import DropdownItem from 'components/select-dropdown/item';
 import ClipboardButtonInput from 'components/clipboard-button-input';
 
-const possibleDevices = [ 'computer', 'tablet', 'phone' ];
+const possibleDevices = [
+	'computer',
+	'tablet',
+	'phone'
+];
 
 class PreviewToolbar extends Component {
 	static propTypes = {
@@ -49,7 +49,7 @@ class PreviewToolbar extends Component {
 	};
 
 	static defaultProps = {
-		showSEO: true,
+		showSEO: true
 	};
 
 	constructor( props ) {
@@ -59,7 +59,7 @@ class PreviewToolbar extends Component {
 			computer: { title: props.translate( 'Desktop' ), icon: 'computer' },
 			tablet: { title: props.translate( 'Tablet' ), icon: 'tablet' },
 			phone: { title: props.translate( 'Phone' ), icon: 'phone' },
-			seo: { title: props.translate( 'Search & Social' ), icon: 'globe' },
+			seo: { title: props.translate( 'Search & Social' ), icon: 'globe' }
 		};
 	}
 
@@ -79,7 +79,7 @@ class PreviewToolbar extends Component {
 			showEdit,
 			showExternal,
 			showSEO,
-			translate,
+			translate
 		} = this.props;
 
 		const selectedDevice = this.devices[ currentDevice ];
@@ -87,7 +87,7 @@ class PreviewToolbar extends Component {
 
 		return (
 			<div className="web-preview__toolbar">
-				{ showClose && (
+				{ showClose &&
 					<Button
 						borderless
 						aria-label={ translate( 'Close preview' ) }
@@ -97,14 +97,13 @@ class PreviewToolbar extends Component {
 					>
 						<Gridicon icon={ isModalWindow ? 'cross' : 'arrow-left' } />
 					</Button>
-				) }
-				{ showDeviceSwitcher && (
+				}
+				{ showDeviceSwitcher &&
 					<SelectDropdown
 						compact
 						className="web-preview__device-switcher"
 						selectedText={ selectedDevice.title }
 						selectedIcon={ <Gridicon size={ 18 } icon={ selectedDevice.icon } /> }
-						ref={ this.setDropdown }
 					>
 						{ devicesToShow.map( device => (
 							<DropdownItem
@@ -117,21 +116,25 @@ class PreviewToolbar extends Component {
 							</DropdownItem>
 						) ) }
 					</SelectDropdown>
-				) }
-				{ showUrl && (
+				}
+				{ showUrl &&
 					<ClipboardButtonInput
 						className="web-preview__url-clipboard-input"
 						value={ externalUrl || previewUrl }
-						hideHttp
 					/>
-				) }
+				}
 				<div className="web-preview__toolbar-actions">
-					{ showEdit && (
-						<Button borderless className="web-preview__edit" href={ editUrl } onClick={ onEdit }>
+					{ showEdit &&
+						<Button
+							borderless
+							className="web-preview__edit"
+							href={ editUrl }
+							onClick={ onEdit }
+						>
 							<Gridicon icon="pencil" /> { translate( 'Edit' ) }
 						</Button>
-					) }
-					{ showExternal && (
+					}
+					{ showExternal &&
 						<Button
 							borderless
 							className="web-preview__external"
@@ -141,8 +144,10 @@ class PreviewToolbar extends Component {
 						>
 							<Gridicon icon="external" />
 						</Button>
-					) }
-					<div className="web-preview__toolbar-tray">{ this.props.children }</div>
+					}
+					<div className="web-preview__toolbar-tray">
+						{ this.props.children }
+					</div>
 				</div>
 			</div>
 		);

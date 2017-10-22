@@ -1,59 +1,31 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import async from 'async';
-import cookie from 'cookie';
+import noop from 'lodash/noop';
+import some from 'lodash/some';
+import assign from 'lodash/assign';
 import debugFactory from 'debug';
-import { assign, clone, cloneDeep, noop, some } from 'lodash';
+const debug = debugFactory( 'calypso:analytics:ad-tracking' );
+import { clone, cloneDeep } from 'lodash';
+import cookie from 'cookie';
 import { v4 as uuid } from 'uuid';
 
 /**
  * Internal dependencies
  */
+import loadScript from 'lib/load-script';
 import config from 'config';
 import productsValues from 'lib/products-values';
 import userModule from 'lib/user';
-import { loadScript } from 'lib/load-script';
-import { shouldSkipAds } from 'lib/analytics/utils';
+import { doNotTrack, isPiiUrl } from 'lib/analytics/utils';
 
 /**
  * Module variables
  */
-const debug = debugFactory( 'calypso:analytics:ad-tracking' );
 const user = userModule();
 let hasStartedFetchingScripts = false,
 	hasFinishedFetchingScripts = false;
-
-// Enable/disable ad-tracking
-// These should not be put in the json config as they must not differ across environments
-const isFloodlightEnabled = true;
-const isAdwordsEnabled = true;
-const isFacebookEnabled = true;
-const isBingEnabled = true;
-const isYahooEnabled = true;
-const isCriteoEnabled = true;
-const isQuantcastEnabled = true;
-const isTwitterEnabled = true;
-const isAolEnabled = true;
-const isLinkedinEnabled = true;
-const isYandexEnabled = true;
-const isOutbrainEnabled = true;
-const isAtlasEnabled = false;
-const isPandoraEnabled = false;
-const isQuoraEnabled = false;
-const isMediaWallahEnabled = false;
-
-// Retargeting events are fired once every `retargetingPeriod` seconds.
-const retargetingPeriod = 60 * 60 * 24;
-
-// Last time the retarget() function effectively fired (Unix time in seconds).
-let lastRetargetTime = 0;
-
-// Last time the recordPageViewInFloodlight() function effectively fired (Unix time in seconds).
-let lastFloodlightPageViewTime = 0;
 
 /**
  * Constants
@@ -63,24 +35,19 @@ const FACEBOOK_TRACKING_SCRIPT_URL = 'https://connect.facebook.net/en_US/fbevent
 	GOOGLE_TRACKING_SCRIPT_URL = 'https://www.googleadservices.com/pagead/conversion_async.js',
 	BING_TRACKING_SCRIPT_URL = 'https://bat.bing.com/bat.js',
 	CRITEO_TRACKING_SCRIPT_URL = 'https://static.criteo.net/js/ld/ld.js',
-	ADWORDS_CONVERSION_ID = config( 'google_adwords_conversion_id' ),
-	ADWORDS_CONVERSION_ID_JETPACK = config( 'google_adwords_conversion_id_jetpack' ),
-	ONE_BY_AOL_CONVERSION_PIXEL_URL =
-		'https://secure.ace-tag.advertising.com/action/type=132958/bins=1/rich=0/Mnum=1516/',
-	ONE_BY_AOL_AUDIENCE_BUILDING_PIXEL_URL =
-		'https://secure.leadback.advertising.com/adcedge/lb' +
+	GOOGLE_CONVERSION_ID = config( 'google_adwords_conversion_id' ),
+	GOOGLE_CONVERSION_ID_JETPACK = config( 'google_adwords_conversion_id_jetpack' ),
+	ONE_BY_AOL_CONVERSION_PIXEL_URL = 'https://secure.ace-tag.advertising.com/action/type=132958/bins=1/rich=0/Mnum=1516/',
+	ONE_BY_AOL_AUDIENCE_BUILDING_PIXEL_URL = 'https://secure.leadback.advertising.com/adcedge/lb' +
 		'?site=695501&betr=sslbet_1472760417=[+]ssprlb_1472760417[720]|sslbet_1472760452=[+]ssprlb_1472760452[8760]',
-	PANDORA_CONVERSION_PIXEL_URL =
-		'https://data.adxcel-ec2.com/pixel/' +
+	PANDORA_CONVERSION_PIXEL_URL = 'https://data.adxcel-ec2.com/pixel/' +
 		'?ad_log=referer&action=purchase&pixid=7efc5994-458b-494f-94b3-31862eee9e26',
 	YAHOO_TRACKING_SCRIPT_URL = 'https://s.yimg.com/wi/ytc.js',
 	TWITTER_TRACKING_SCRIPT_URL = 'https://static.ads-twitter.com/uwt.js',
 	DCM_FLOODLIGHT_IFRAME_URL = 'https://6355556.fls.doubleclick.net/activityi',
 	LINKED_IN_SCRIPT_URL = 'https://snap.licdn.com/li.lms-analytics/insight.min.js',
-	MEDIA_WALLAH_SCRIPT_URL = 'https://d3ir0rz7vxwgq5.cloudfront.net/mwData.min.js',
-	QUORA_SCRIPT_URL = 'https://a.quora.com/qevents.js',
-	YANDEX_SCRIPT_URL = 'https://mc.yandex.ru/metrika/watch.js',
-	OUTBRAIN_SCRIPT_URL = 'https://amplify.outbrain.com/cp/obtp.js',
+	MEDIA_WALLAH_URL = 'https://d3ir0rz7vxwgq5.cloudfront.net/mwData.min.js',
+	QUORA_URL = 'https://a.quora.com/qevents.js',
 	TRACKING_IDS = {
 		bingInit: '4074038',
 		facebookInit: '823166884443641',
@@ -94,12 +61,13 @@ const FACEBOOK_TRACKING_SCRIPT_URL = 'https://connect.facebook.net/en_US/fbevent
 		twitterPixelId: 'nvzbs',
 		dcmFloodlightAdvertiserId: '6355556',
 		linkedInPartnerId: '36622',
-		quoraPixelId: '420845cb70e444938cf0728887a74ca1',
-		outbrainAdvId: '00f0f5287433c2851cc0cb917c7ff0465e',
+		quoraPixelId: '420845cb70e444938cf0728887a74ca1'
 	},
+
 	// This name is something we created to store a session id for DCM Floodlight session tracking
 	DCM_FLOODLIGHT_SESSION_COOKIE_NAME = 'dcmsid',
 	DCM_FLOODLIGHT_SESSION_LENGTH_IN_SECONDS = 1800,
+
 	// For converting other currencies into USD for tracking purposes
 	EXCHANGE_RATES = {
 		USD: 1,
@@ -108,51 +76,39 @@ const FACEBOOK_TRACKING_SCRIPT_URL = 'https://connect.facebook.net/en_US/fbevent
 		AUD: 1.35,
 		CAD: 1.35,
 		GBP: 0.75,
-		BRL: 2.55,
+		BRL: 2.55
 	};
 
 /**
  * Globals
  */
-
-// Facebook
-if ( isFacebookEnabled && ! window.fbq ) {
+if ( ! window.fbq ) {
 	setUpFacebookGlobal();
 }
 
-// Bing
-if ( isBingEnabled && ! window.uetq ) {
-	window.uetq = [];
+if ( ! window.uetq ) {
+	window.uetq = []; // Bing global
 }
 
-// Criteo
-if ( isCriteoEnabled && ! window.criteo_q ) {
+if ( ! window.criteo_q ) {
 	window.criteo_q = [];
 }
 
-// Quantcast
-if ( isQuantcastEnabled && ! window._qevents ) {
+// Quantcast Asynchronous Tag
+if ( ! window._qevents ) {
 	window._qevents = [];
 }
 
-// Twitter
-if ( isTwitterEnabled && ! window.twq ) {
+if ( ! window.twq ) {
 	setUpTwitterGlobal();
 }
 
-// Linkedin
-if ( isLinkedinEnabled && ! window._linkedin_data_partner_id ) {
+if ( ! window._linkedin_data_partner_id ) {
 	window._linkedin_data_partner_id = TRACKING_IDS.linkedInPartnerId;
 }
 
-// Quora
-if ( isQuoraEnabled && ! window.qp ) {
+if ( ! window.qp ) {
 	setupQuoraGlobal();
-}
-
-// Outbrain
-if ( isOutbrainEnabled ) {
-	setupOutbrainGlobal();
 }
 
 /**
@@ -166,7 +122,7 @@ function initMediaWallah() {
 		account_id: 1015,
 		customer_id: 1012,
 		tag_action: 'visit',
-		timeout: 100, // in milliseconds
+		timeout: 100 // in milliseconds
 	};
 
 	window.setBrowserAttributeData();
@@ -182,9 +138,7 @@ function initMediaWallah() {
 		}
 	};
 
-	window.addEventListener
-		? window.addEventListener( 'load', init, false )
-		: window.attachEvent( 'onload', init );
+	window.addEventListener ? window.addEventListener( 'load', init, false ) : window.attachEvent( 'onload', init );
 }
 
 /**
@@ -192,11 +146,9 @@ function initMediaWallah() {
  * This is a rework of the obfuscated tracking code provided by Quora.
  */
 function setupQuoraGlobal() {
-	const quoraPixel = ( window.qp = function() {
-		quoraPixel.qp
-			? quoraPixel.qp.apply( quoraPixel, arguments )
-			: quoraPixel.queue.push( arguments );
-	} );
+	const quoraPixel = window.qp = function() {
+		quoraPixel.qp ? quoraPixel.qp.apply( quoraPixel, arguments ) : quoraPixel.queue.push( arguments );
+	};
 	quoraPixel.queue = [];
 }
 
@@ -205,13 +157,13 @@ function setupQuoraGlobal() {
  * More info here: https://www.facebook.com/business/help/952192354843755
  */
 function setUpFacebookGlobal() {
-	const facebookEvents = ( window.fbq = function() {
+	const facebookEvents = window.fbq = function() {
 		if ( facebookEvents.callMethod ) {
 			facebookEvents.callMethod.apply( facebookEvents, arguments );
 		} else {
 			facebookEvents.queue.push( arguments );
 		}
-	} );
+	};
 
 	if ( ! window._fbq ) {
 		window._fbq = facebookEvents;
@@ -228,139 +180,71 @@ function setUpFacebookGlobal() {
  * More info here: https://github.com/Automattic/wp-calypso/pull/10235
  */
 function setUpTwitterGlobal() {
-	const twq = ( window.twq = function() {
+	const twq = window.twq = function() {
 		twq.exe ? twq.exe.apply( twq, arguments ) : twq.queue.push( arguments );
-	} );
+	};
 	twq.version = '1.1';
 	twq.queue = [];
-}
-
-function setupOutbrainGlobal() {
-	const api = ( window.obApi = function() {
-		api.dispatch ? api.dispatch.apply( api, arguments ) : api.queue.push( arguments );
-	} );
-	api.version = '1.0';
-	api.loaded = true;
-	api.marketerId = TRACKING_IDS.outbrainAdvId;
-	api.queue = [];
 }
 
 function loadTrackingScripts( callback ) {
 	hasStartedFetchingScripts = true;
 
-	const scripts = [];
-
-	if ( isFacebookEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( FACEBOOK_TRACKING_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isAdwordsEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( GOOGLE_TRACKING_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isBingEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( BING_TRACKING_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isCriteoEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( CRITEO_TRACKING_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isQuantcastEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( quantcastAsynchronousTagURL(), onComplete );
-		} );
-	}
-
-	if ( isYahooEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( YAHOO_TRACKING_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isTwitterEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( TWITTER_TRACKING_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isLinkedinEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( LINKED_IN_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isMediaWallahEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( MEDIA_WALLAH_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isQuoraEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( QUORA_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isYandexEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( YANDEX_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	if ( isOutbrainEnabled ) {
-		scripts.push( function( onComplete ) {
-			loadScript( OUTBRAIN_SCRIPT_URL, onComplete );
-		} );
-	}
-
-	async.series( scripts, function( errors ) {
+	async.parallel( [
+		function( onComplete ) {
+			loadScript.loadScript( FACEBOOK_TRACKING_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( GOOGLE_TRACKING_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( BING_TRACKING_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( CRITEO_TRACKING_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( quantcastAsynchronousTagURL(), onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( YAHOO_TRACKING_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( TWITTER_TRACKING_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( LINKED_IN_SCRIPT_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( MEDIA_WALLAH_URL, onComplete );
+		},
+		function( onComplete ) {
+			loadScript.loadScript( QUORA_URL, onComplete );
+		}
+	], function( errors ) {
 		if ( ! some( errors ) ) {
-			// init Facebook
-			if ( isFacebookEnabled ) {
-				window.fbq( 'init', TRACKING_IDS.facebookInit );
-			}
+			// init Facebook's tracking global
+			window.fbq( 'init', TRACKING_IDS.facebookInit );
 
-			// init Bing
-			if ( isBingEnabled ) {
-				const bingConfig = {
-					ti: TRACKING_IDS.bingInit,
-					q: window.uetq,
-				};
+			// init Bing's tracking global
+			const bingConfig = {
+				ti: TRACKING_IDS.bingInit,
+				q: window.uetq
+			};
 
-				if ( typeof UET !== 'undefined' ) {
-					// bing's script creates the UET global for us
-					window.uetq = new UET( bingConfig ); // eslint-disable-line
-					window.uetq.push( 'pageLoad' );
-				}
-			}
+			// init Twitter's tracking global
+			window.twq( 'init', TRACKING_IDS.twitterPixelId );
 
-			// init Twitter
-			if ( isTwitterEnabled ) {
-				window.twq( 'init', TRACKING_IDS.twitterPixelId );
-			}
+			// init Media Wallah tracking
+			initMediaWallah();
 
-			// init Media Wallah
-			if ( isMediaWallahEnabled ) {
-				initMediaWallah();
-			}
+			// init Quora tracking
+			window.qp( 'init', TRACKING_IDS.quoraPixelId );
 
-			// init Quora
-			if ( isQuoraEnabled ) {
-				window.qp( 'init', TRACKING_IDS.quoraPixelId );
-			}
-
-			// init Yandex counter
-			if ( isYandexEnabled ) {
-				window.yaCounter45268389 = new window.Ya.Metrika( { id: 45268389 } );
+			if ( typeof UET !== 'undefined' ) {
+				// bing's script creates the UET global for us
+				window.uetq = new UET( bingConfig ); // eslint-disable-line
+				window.uetq.push( 'pageLoad' );
 			}
 
 			hasFinishedFetchingScripts = true;
@@ -368,7 +252,6 @@ function loadTrackingScripts( callback ) {
 			if ( typeof callback === 'function' ) {
 				callback();
 			}
-			debug( 'Scripts loaded successfully' );
 		} else {
 			debug( 'Some scripts failed to load: ', errors );
 		}
@@ -384,10 +267,10 @@ function loadTrackingScripts( callback ) {
  * 2. `Do Not Track` is enabled
  * 3. `document.location.href` may contain personally identifiable information
  *
- * @returns {Boolean} Is ad tracking is allowed?
+ * @returns {Boolean}
  */
 function isAdTrackingAllowed() {
-	return config.isEnabled( 'ad-tracking' ) && ! shouldSkipAds();
+	return config.isEnabled( 'ad-tracking' ) && ! doNotTrack() && ! isPiiUrl();
 }
 
 /**
@@ -411,61 +294,33 @@ function retarget() {
 		return;
 	}
 
-	const nowTimestamp = Date.now() / 1000;
-	if ( nowTimestamp < lastRetargetTime + retargetingPeriod ) {
-		return;
-	}
-	lastRetargetTime = nowTimestamp;
-
 	debug( 'Retargeting' );
 
 	// Facebook
-	if ( isFacebookEnabled ) {
-		window.fbq( 'track', 'PageView' );
-	}
+	window.fbq( 'track', 'PageView' );
 
 	// Twitter
-	if ( isTwitterEnabled ) {
-		window.twq( 'track', 'PageView' );
-	}
+	window.twq( 'track', 'PageView' );
 
 	// AdWords
-	if ( isAdwordsEnabled ) {
-		if ( window.google_trackConversion ) {
-			window.google_trackConversion( {
-				google_conversion_id: ADWORDS_CONVERSION_ID,
-				google_remarketing_only: true,
-			} );
-		}
-	}
-
-	// Quantcast
-	if ( isQuantcastEnabled ) {
-		window._qevents.push( {
-			qacct: TRACKING_IDS.quantcast,
-			event: 'refresh',
+	if ( window.google_trackConversion ) {
+		window.google_trackConversion( {
+			google_conversion_id: GOOGLE_CONVERSION_ID,
+			google_remarketing_only: true
 		} );
 	}
 
+	// Quantcast
+	window._qevents.push( {
+		qacct: TRACKING_IDS.quantcast,
+		event: 'refresh'
+	} );
+
 	// One by AOL
-	if ( isAolEnabled ) {
-		new Image().src = ONE_BY_AOL_AUDIENCE_BUILDING_PIXEL_URL;
-	}
+	new Image().src = ONE_BY_AOL_AUDIENCE_BUILDING_PIXEL_URL;
 
 	// Quora
-	if ( isQuoraEnabled ) {
-		window.qp( 'track', 'ViewContent' );
-	}
-
-	// Yandex
-	if ( isYandexEnabled ) {
-		window.yaCounter45268389.hit( document.location.href );
-	}
-
-	// Outbrain
-	if ( isOutbrainEnabled ) {
-		window.obApi( 'track', 'PAGE_VIEW' );
-	}
+	window.qp( 'track', 'ViewContent' );
 }
 
 /**
@@ -476,7 +331,11 @@ function retarget() {
  * @returns {void}
  */
 function trackCustomFacebookConversionEvent( name, properties ) {
-	window.fbw && window.fbq( 'trackCustom', name, properties );
+	window.fbw && window.fbq(
+		'trackCustom',
+		name,
+		properties
+	);
 }
 
 /**
@@ -486,12 +345,11 @@ function trackCustomFacebookConversionEvent( name, properties ) {
  * @returns {void}
  */
 function trackCustomAdWordsRemarketingEvent( properties ) {
-	window.google_trackConversion &&
-		window.google_trackConversion( {
-			google_conversion_id: ADWORDS_CONVERSION_ID,
-			google_custom_params: properties,
-			google_remarketing_only: true,
-		} );
+	window.google_trackConversion && window.google_trackConversion( {
+		google_conversion_id: GOOGLE_CONVERSION_ID,
+		google_custom_params: properties,
+		google_remarketing_only: true
+	} );
 }
 
 /**
@@ -502,9 +360,7 @@ function retargetViewPlans() {
 		return;
 	}
 
-	if ( isCriteoEnabled ) {
-		recordPlansViewInCriteo();
-	}
+	recordPlansViewInCriteo();
 }
 
 /**
@@ -524,18 +380,18 @@ function recordAddToCart( cartItem ) {
 
 	debug( 'Recorded that this item was added to the cart', cartItem );
 
-	if ( isFacebookEnabled ) {
-		window.fbq( 'track', 'AddToCart', {
+	window.fbq(
+		'track',
+		'AddToCart',
+		{
 			product_slug: cartItem.product_slug,
-			free_trial: Boolean( cartItem.free_trial ),
-		} );
-	}
+			free_trial: Boolean( cartItem.free_trial )
+		}
+	);
 
-	if ( isCriteoEnabled ) {
-		recordInCriteo( 'viewItem', {
-			item: cartItem.product_id,
-		} );
-	}
+	recordInCriteo( 'viewItem', {
+		item: cartItem.product_id
+	} );
 }
 
 /**
@@ -544,9 +400,7 @@ function recordAddToCart( cartItem ) {
  * @param {Object} cart - cart as `CartValue` object
  */
 function recordViewCheckout( cart ) {
-	if ( isCriteoEnabled ) {
-		recordViewCheckoutInCriteo( cart );
-	}
+	recordViewCheckoutInCriteo( cart );
 }
 
 /**
@@ -560,9 +414,6 @@ function recordOrder( cart, orderId ) {
 	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
-
-	// load the ecommerce plugin
-	window.ga( 'require', 'ecommerce' );
 
 	// Purchase tracking happens in one of three ways:
 
@@ -583,17 +434,9 @@ function recordOrder( cart, orderId ) {
 	window.ga( 'ecommerce:send' );
 
 	// 3. Fire a single tracking event without any details about what was purchased
-	if ( isAolEnabled ) {
-		new Image().src = ONE_BY_AOL_CONVERSION_PIXEL_URL;
-	}
-
-	if ( isPandoraEnabled ) {
-		new Image().src = PANDORA_CONVERSION_PIXEL_URL;
-	}
-
-	if ( isQuoraEnabled ) {
-		window.qp( 'track', 'Generic' );
-	}
+	new Image().src = ONE_BY_AOL_CONVERSION_PIXEL_URL;
+	new Image().src = PANDORA_CONVERSION_PIXEL_URL;
+	window.qp( 'track', 'Generic' );
 }
 
 /**
@@ -620,123 +463,109 @@ function recordProduct( product, orderId ) {
 		debug( 'Recording purchase', product );
 	}
 
-	const currentUser = user.get();
-	const userId = currentUser ? currentUser.ID : 0;
+	const currentUser = user.get(),
+		userId = currentUser ? currentUser.ID : 0,
+		costUSD = costToUSD( product.cost, product.currency );
 
 	try {
-		// Google Analytics
-		window.ga( 'ecommerce:addItem', {
-			id: orderId,
-			name: product.product_slug,
-			price: product.cost,
-			currency: product.currency,
-		} );
-
-		// Google AdWords
-		if ( isAdwordsEnabled ) {
-			if ( window.google_trackConversion ) {
-				window.google_trackConversion( {
-					google_conversion_id: isJetpackPlan
-						? ADWORDS_CONVERSION_ID_JETPACK
-						: ADWORDS_CONVERSION_ID,
-					google_conversion_label: isJetpackPlan
-						? TRACKING_IDS.googleConversionLabelJetpack
-						: TRACKING_IDS.googleConversionLabel,
-					google_conversion_value: product.cost,
-					google_conversion_currency: product.currency,
-					google_custom_params: {
-						product_slug: product.product_slug,
-						user_id: userId,
-						order_id: orderId,
-					},
-					google_remarketing_only: false,
-				} );
-			}
-		}
-
 		// Facebook
-		if ( isFacebookEnabled ) {
-			window.fbq( 'track', 'Purchase', {
+		window.fbq(
+			'track',
+			'Purchase',
+			{
 				currency: product.currency,
 				product_slug: product.product_slug,
 				value: product.cost,
 				user_id: userId,
-				order_id: orderId,
-			} );
-		}
+				order_id: orderId
+			}
+		);
 
 		// Twitter
-		if ( isTwitterEnabled ) {
-			window.twq( 'track', 'Purchase', {
+		window.twq(
+			'track',
+			'Purchase',
+			{
 				value: product.cost.toString(),
 				currency: product.currency,
 				content_name: product.product_name,
 				content_type: 'product',
 				content_ids: [ product.product_slug ],
 				num_items: product.volume,
-				order_id: orderId,
+				order_id: orderId
+			}
+		);
+
+		// Bing
+		if ( isSupportedCurrency( product.currency ) ) {
+			const bingParams = {
+				ec: 'purchase',
+				gv: costUSD
+			};
+			if ( isJetpackPlan ) {
+				// `el` must be included only for jetpack plans
+				bingParams.el = 'jetpack';
+			}
+			window.uetq.push( bingParams );
+		}
+
+		// Google AdWords
+		if ( window.google_trackConversion ) {
+			window.google_trackConversion( {
+				google_conversion_id: isJetpackPlan
+					? GOOGLE_CONVERSION_ID_JETPACK
+					: GOOGLE_CONVERSION_ID,
+				google_conversion_label: isJetpackPlan
+					? TRACKING_IDS.googleConversionLabelJetpack
+					: TRACKING_IDS.googleConversionLabel,
+				google_conversion_value: product.cost,
+				google_conversion_currency: product.currency,
+				google_custom_params: {
+					product_slug: product.product_slug,
+					user_id: userId,
+					order_id: orderId
+				},
+				google_remarketing_only: false
 			} );
 		}
 
-		// Yandex Goal
-		if ( isYandexEnabled ) {
-			window.yaCounter45268389.reachGoal( 'ProductPurchase', {
-				order_id: orderId,
-				product_slug: product.product_slug,
-				order_price: product.cost,
-				currency: product.currency,
-			} );
-		}
+		// Google Analytics
+		window.ga( 'ecommerce:addItem', {
+			id: orderId,
+			name: product.product_slug,
+			price: product.cost,
+			currency: product.currency
+		} );
 
 		if ( isSupportedCurrency( product.currency ) ) {
-			const costUSD = costToUSD( product.cost, product.currency );
-
-			// Bing
-			if ( isBingEnabled ) {
-				const bingParams = {
-					ec: 'purchase',
-					gv: costUSD,
-				};
-				if ( isJetpackPlan ) {
-					// `el` must be included only for jetpack plans
-					bingParams.el = 'jetpack';
-				}
-				window.uetq.push( bingParams );
-			}
-
 			// Quantcast
-			if ( isQuantcastEnabled ) {
-				// Note that all properties have to be strings or they won't get tracked
-				window._qevents.push( {
-					qacct: TRACKING_IDS.quantcast,
-					labels: '_fp.event.Purchase Confirmation,_fp.pcat.' + product.product_slug,
-					orderid: orderId.toString(),
-					revenue: costUSD.toString(),
-					event: 'refresh',
-				} );
-			}
+			// Note that all properties have to be strings or they won't get tracked
+			window._qevents.push( {
+				qacct: TRACKING_IDS.quantcast,
+				labels: '_fp.event.Purchase Confirmation,_fp.pcat.' + product.product_slug,
+				orderid: orderId.toString(),
+				revenue: costUSD.toString(),
+				event: 'refresh'
+			} );
 
 			// Yahoo
-			if ( isYahooEnabled ) {
-				// Like the Quantcast tracking above, the price has to be passed as a string
-				// See: https://developer.yahoo.com/gemini/guide/dottags/installing-tags/
-				/*global YAHOO*/
-				YAHOO.ywa.I13N.fireBeacon( [
-					{
-						projectId: TRACKING_IDS.yahooProjectId,
-						properties: {
-							pixelId: TRACKING_IDS.yahooPixelId,
-							qstrings: {
-								et: 'custom',
-								ec: 'wordpress.com',
-								ea: 'purchase',
-								el: product.product_slug,
-								gv: costUSD.toString(),
-							},
-						},
-					},
-				] );
-			}
+			// Like the Quantcast tracking above, the price has to be passed as a string
+			// See: https://developer.yahoo.com/gemini/guide/dottags/installing-tags/
+
+			/*global YAHOO*/
+			YAHOO.ywa.I13N.fireBeacon( [ {
+				projectId: TRACKING_IDS.yahooProjectId,
+				properties: {
+					pixelId: TRACKING_IDS.yahooPixelId,
+					qstrings: {
+						et: 'custom',
+						ec: 'wordpress.com',
+						ea: 'purchase',
+						el: product.product_slug,
+						gv: costUSD.toString()
+					}
+				}
+			} ] );
 		}
 	} catch ( err ) {
 		debug( 'Unable to save purchase tracking data', err );
@@ -752,7 +581,7 @@ function recordProduct( product, orderId ) {
  * @param {Number} orderId - the order id
  */
 function recordOrderInAtlas( cart, orderId ) {
-	if ( ! isAdTrackingAllowed() || ! isAtlasEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -765,25 +594,17 @@ function recordOrderInAtlas( cart, orderId ) {
 		revenue: cart.total_cost,
 		currency_code: cart.currency,
 		user_id: currentUser ? currentUser.ID : 0,
-		order_id: orderId,
+		order_id: orderId
 	};
 
-	const urlParams = Object.keys( params )
-		.map( function( key ) {
-			return encodeURIComponent( key ) + '=' + encodeURIComponent( params[ key ] );
-		} )
-		.join( '&' );
+	const urlParams = Object.keys( params ).map( function( key ) {
+		return encodeURIComponent( key ) + '=' + encodeURIComponent( params[ key ] );
+	} ).join( '&' );
 
-	const urlWithParams =
-		ATLAS_TRACKING_SCRIPT_URL +
-		';m=' +
-		TRACKING_IDS.atlasUniveralTagId +
-		';cache=' +
-		Math.random() +
-		'?' +
-		urlParams;
+	const urlWithParams = ATLAS_TRACKING_SCRIPT_URL + ';m=' + TRACKING_IDS.atlasUniveralTagId +
+		';cache=' + Math.random() + '?' + urlParams;
 
-	loadScript( urlWithParams );
+	loadScript.loadScript( urlWithParams );
 }
 
 /**
@@ -794,7 +615,7 @@ function recordOrderInAtlas( cart, orderId ) {
  * @returns {void}
  */
 function recordOrderInFloodlight( cart, orderId ) {
-	if ( ! isAdTrackingAllowed() || ! isFloodlightEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -807,7 +628,7 @@ function recordOrderInFloodlight( cart, orderId ) {
 		cost: cart.total_cost,
 		u2: cart.products.map( product => product.product_name ).join( ', ' ),
 		u3: cart.currency,
-		ord: orderId,
+		ord: orderId
 	};
 
 	recordParamsInFloodlight( params );
@@ -819,7 +640,7 @@ function recordOrderInFloodlight( cart, orderId ) {
  * @returns {void}
  */
 function recordAliasInFloodlight() {
-	if ( ! isAdTrackingAllowed() || ! isFloodlightEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -827,7 +648,7 @@ function recordAliasInFloodlight() {
 
 	const params = {
 		type: 'wordp0',
-		cat: 'alias0',
+		cat: 'alias0'
 	};
 
 	recordParamsInFloodlight( params );
@@ -839,7 +660,7 @@ function recordAliasInFloodlight() {
  * @returns {void}
  */
 function recordSignupStartInFloodlight() {
-	if ( ! isAdTrackingAllowed() || ! isFloodlightEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -847,7 +668,7 @@ function recordSignupStartInFloodlight() {
 
 	const params = {
 		type: 'wordp0',
-		cat: 'pre-p0',
+		cat: 'pre-p0'
 	};
 
 	recordParamsInFloodlight( params );
@@ -859,7 +680,7 @@ function recordSignupStartInFloodlight() {
  * @returns {void}
  */
 function recordSignupCompletionInFloodlight() {
-	if ( ! isAdTrackingAllowed() || ! isFloodlightEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -867,7 +688,7 @@ function recordSignupCompletionInFloodlight() {
 
 	const params = {
 		type: 'wordp0',
-		cat: 'signu0',
+		cat: 'signu0'
 	};
 
 	recordParamsInFloodlight( params );
@@ -880,15 +701,9 @@ function recordSignupCompletionInFloodlight() {
  * @returns {void}
  */
 function recordPageViewInFloodlight( urlPath ) {
-	if ( ! isAdTrackingAllowed() || ! isFloodlightEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
-
-	const nowTimestamp = Date.now() / 1000;
-	if ( nowTimestamp < lastFloodlightPageViewTime + retargetingPeriod ) {
-		return;
-	}
-	lastFloodlightPageViewTime = nowTimestamp;
 
 	const sessionId = floodlightSessionId();
 
@@ -896,7 +711,7 @@ function recordPageViewInFloodlight( urlPath ) {
 
 	// Set or bump the cookie's expiration date to maintain the session
 	document.cookie = cookie.serialize( DCM_FLOODLIGHT_SESSION_COOKIE_NAME, sessionId, {
-		maxAge: DCM_FLOODLIGHT_SESSION_LENGTH_IN_SECONDS,
+		maxAge: DCM_FLOODLIGHT_SESSION_LENGTH_IN_SECONDS
 	} );
 
 	recordParamsInFloodlight( {
@@ -904,14 +719,14 @@ function recordPageViewInFloodlight( urlPath ) {
 		cat: 'wpvisit',
 		u6: urlPath,
 		u7: sessionId,
-		ord: sessionId,
+		ord: sessionId
 	} );
 
 	recordParamsInFloodlight( {
 		type: 'wordp0',
 		cat: 'wppv',
 		u6: urlPath,
-		u7: sessionId,
+		u7: sessionId
 	} );
 }
 
@@ -973,7 +788,7 @@ function tracksAnonymousUserId() {
  * @returns {void}
  */
 function recordParamsInFloodlight( params ) {
-	if ( ! isAdTrackingAllowed() || ! isFloodlightEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -985,25 +800,16 @@ function recordParamsInFloodlight( params ) {
 
 	// The ord is only set for purchases; the rest of the time it should be a random string
 	if ( params.ord === undefined ) {
-		// From the docs:
-		// "For unique user tags, use a constant value."
-		// TODO: Should we use a constant value if it's a unique user? How do we determine a unique user?
 		params.ord = floodlightCacheBuster();
-
-		// From the docs:
-		// "Unique user tags also require a random number as the value of the num= parameter."
-		params.num = floodlightCacheBuster();
 	}
 
 	debug( 'recordParamsInFloodlight:', params );
 
 	// Note that we're not generating a URL with traditional query arguments
 	// Instead, each parameter is separated by a semicolon
-	const urlParams = Object.keys( params )
-		.map( function( key ) {
-			return encodeURIComponent( key ) + '=' + encodeURIComponent( params[ key ] );
-		} )
-		.join( ';' );
+	const urlParams = Object.keys( params ).map( function( key ) {
+		return encodeURIComponent( key ) + '=' + encodeURIComponent( params[ key ] );
+	} ).join( ';' );
 
 	// The implementation guidance includes the question mark at the end of the URL
 	const urlWithParams = DCM_FLOODLIGHT_IFRAME_URL + ';' + urlParams + '?';
@@ -1035,14 +841,14 @@ function floodlightCacheBuster() {
  * @returns {void}
  */
 function recordOrderInCriteo( cart, orderId ) {
-	if ( ! isAdTrackingAllowed() || ! isCriteoEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
 	recordInCriteo( 'trackTransaction', {
 		id: orderId,
 		currency: cart.currency,
-		item: cartToCriteoItems( cart ),
+		item: cartToCriteoItems( cart )
 	} );
 }
 
@@ -1053,14 +859,14 @@ function recordOrderInCriteo( cart, orderId ) {
  * @returns {void}
  */
 function recordViewCheckoutInCriteo( cart ) {
-	if ( ! isAdTrackingAllowed() || ! isCriteoEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
 	// Note that unlike `recordOrderInCriteo` above, this doesn't include the order id
 	recordInCriteo( 'viewBasket', {
 		currency: cart.currency,
-		item: cartToCriteoItems( cart ),
+		item: cartToCriteoItems( cart )
 	} );
 }
 
@@ -1075,7 +881,7 @@ function cartToCriteoItems( cart ) {
 		return {
 			id: product.product_id,
 			price: product.cost,
-			quantity: product.volume,
+			quantity: product.volume
 		};
 	} );
 }
@@ -1084,12 +890,12 @@ function cartToCriteoItems( cart ) {
  * Records in Criteo that the visitor viewed the plans page
  */
 function recordPlansViewInCriteo() {
-	if ( ! isAdTrackingAllowed() || ! isCriteoEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
 	recordInCriteo( 'viewItem', {
-		item: '1',
+		item: '1'
 	} );
 }
 
@@ -1102,7 +908,7 @@ function recordPlansViewInCriteo() {
  * @returns {void}
  */
 function recordInCriteo( eventName, eventProps ) {
-	if ( ! isAdTrackingAllowed() || ! isCriteoEnabled ) {
+	if ( ! isAdTrackingAllowed() ) {
 		return;
 	}
 
@@ -1166,7 +972,7 @@ function recordOrderInGoogleAnalytics( cart, orderId ) {
 		id: orderId,
 		affiliation: 'WordPress.com',
 		revenue: cart.total_cost,
-		currency: cart.currency,
+		currency: cart.currency
 	} );
 }
 
@@ -1178,8 +984,7 @@ function recordOrderInGoogleAnalytics( cart, orderId ) {
  * @returns {String} The URL
  */
 function quantcastAsynchronousTagURL() {
-	const protocolAndSubdomain =
-		document.location.protocol === 'https:' ? 'https://secure' : 'http://edge';
+	const protocolAndSubdomain = document.location.protocol === 'https:' ? 'https://secure' : 'http://edge';
 
 	return protocolAndSubdomain + '.quantserve.com/quant.js';
 }
@@ -1229,7 +1034,7 @@ function recordSignupCompletion() {
 	recordSignupCompletionInFloodlight();
 }
 
-export default {
+module.exports = {
 	retarget: function( context, next ) {
 		const nextFunction = typeof next === 'function' ? next : noop;
 

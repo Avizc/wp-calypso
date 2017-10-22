@@ -1,10 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import Gridicon from 'gridicons';
 
@@ -14,15 +10,13 @@ import Gridicon from 'gridicons';
 var noop = () => {};
 
 export default React.createClass( {
-	displayName: 'PostScheduleHeaderControls',
-
 	propTypes: {
-		onYearChange: PropTypes.func,
+		onYearChange: React.PropTypes.func
 	},
 
 	getDefaultProps() {
 		return {
-			onYearChange: noop,
+			onYearChange: noop
 		};
 	},
 
@@ -48,5 +42,5 @@ export default React.createClass( {
 				</button>
 			</div>
 		);
-	},
+	}
 } );

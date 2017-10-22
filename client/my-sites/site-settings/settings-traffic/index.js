@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import page from 'page';
 
 /**
@@ -13,7 +10,7 @@ import controller from './controller';
 import mySitesController from 'my-sites/controller';
 import settingsController from 'my-sites/site-settings/settings-controller';
 
-const redirectToTrafficSection = context => {
+const redirectToTrafficSection = ( context ) => {
 	page.redirect( '/settings/traffic/' + ( context.params.site_id || '' ) );
 };
 

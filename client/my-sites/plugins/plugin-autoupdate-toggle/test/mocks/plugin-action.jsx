@@ -1,15 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
+var React = require( 'react' );
 
-import React from 'react';
-
-export default React.createClass( {
-	displayName: 'MockPluginAction',
-
+module.exports = React.createClass( {
 	render: function() {
-		return <div className="plugin-action" onClick={ this.props.action } />;
-	},
+		return <div className="plugin-action" onClick={ this.props.action }></div>;
+	}
 } );

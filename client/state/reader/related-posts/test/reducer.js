@@ -1,11 +1,10 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import { items, queuedRequests } from '../reducer';
 import {
@@ -16,7 +15,7 @@ import {
 } from 'state/action-types';
 
 describe( 'items', () => {
-	test( 'should store the posts by global_ID', () => {
+	it( 'should store the posts by global_ID', () => {
 		expect(
 			items(
 				{},
@@ -27,14 +26,14 @@ describe( 'items', () => {
 						postId: 1,
 						posts: [ { global_ID: 2 }, { global_ID: 3 }, { global_ID: 4 } ],
 					},
-				}
-			)
+				},
+			),
 		).to.deep.equal( {
 			'1-1-all': [ 2, 3, 4 ],
 		} );
 	} );
 
-	test( 'should overwrite existing posts', () => {
+	it( 'should overwrite existing posts', () => {
 		expect(
 			items(
 				{
@@ -47,8 +46,8 @@ describe( 'items', () => {
 						postId: 1,
 						posts: [ { global_ID: 3 }, { global_ID: 4 }, { global_ID: 9 } ],
 					},
-				}
-			)
+				},
+			),
 		).to.deep.equal( {
 			'1-1-all': [ 3, 4, 9 ],
 		} );
@@ -56,7 +55,7 @@ describe( 'items', () => {
 } );
 
 describe( 'queuedRequests', () => {
-	test( 'request should set the flag', () => {
+	it( 'request should set the flag', () => {
 		expect(
 			queuedRequests(
 				{},
@@ -66,14 +65,14 @@ describe( 'queuedRequests', () => {
 						siteId: 1,
 						postId: 1,
 					},
-				}
-			)
+				},
+			),
 		).to.deep.equal( {
 			'1-1-all': true,
 		} );
 	} );
 
-	test( 'request success should unset the flag', () => {
+	it( 'request success should unset the flag', () => {
 		expect(
 			queuedRequests(
 				{
@@ -85,14 +84,14 @@ describe( 'queuedRequests', () => {
 						siteId: 1,
 						postId: 1,
 					},
-				}
-			)
+				},
+			),
 		).to.deep.equal( {
 			'1-1-all': false,
 		} );
 	} );
 
-	test( 'request should set the flag', () => {
+	it( 'request should set the flag', () => {
 		expect(
 			queuedRequests(
 				{},
@@ -102,8 +101,8 @@ describe( 'queuedRequests', () => {
 						siteId: 1,
 						postId: 1,
 					},
-				}
-			)
+				},
+			),
 		).to.deep.equal( {
 			'1-1-all': false,
 		} );

@@ -1,9 +1,6 @@
 /**
  * Externals dependencies
- *
- * @format
  */
-
 import { mapValues } from 'lodash';
 
 /**

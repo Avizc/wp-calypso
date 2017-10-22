@@ -1,4 +1,3 @@
-/** @format */
 /**
 * External dependencies
 */
@@ -17,13 +16,15 @@ import { getSite } from 'state/sites/selectors';
 const SiteExample = ( { site } ) => (
 	<Card style={ { padding: 0 } }>
 		<Site site={ site } />
-		<Site compact site={ site } homeLink={ true } />
+		<Site compact site={ site } />
 	</Card>
 );
 
-const ConnectedSiteExample = connect( state => ( {
-	site: getSite( state, get( getCurrentUser( state ), 'primary_blog', null ) ),
-} ) )( SiteExample );
+const ConnectedSiteExample = connect(
+	( state ) => ( {
+		site: getSite( state, get( getCurrentUser( state ), 'primary_blog', null ) ),
+	} )
+)( SiteExample );
 
 ConnectedSiteExample.displayName = 'Site';
 

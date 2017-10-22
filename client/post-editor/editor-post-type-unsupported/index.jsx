@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { includes } from 'lodash';
+import includes from 'lodash/includes';
 
 /**
  * Internal dependencies
@@ -33,14 +29,7 @@ import Dialog from 'components/dialog';
  */
 const CONFIGURABLE_TYPES = [ 'jetpack-portfolio', 'jetpack-testimonial' ];
 
-function EditorPostTypeUnsupported( {
-	translate,
-	types,
-	type,
-	typeObject,
-	writePostPath,
-	siteSlug,
-} ) {
+function EditorPostTypeUnsupported( { translate, types, type, typeObject, writePostPath, siteSlug } ) {
 	// Don't display if:
 	//  1. Types don't exist (haven't yet been loaded for site)
 	//  2. The type value has been unset from the edited post (navigating away)
@@ -50,7 +39,9 @@ function EditorPostTypeUnsupported( {
 	}
 
 	const buttons = [
-		<Button href={ `/posts/${ siteSlug }` }>{ translate( 'Back to My Sites' ) }</Button>,
+		<Button href={ `/posts/${ siteSlug }` }>
+			{ translate( 'Back to My Sites' ) }
+		</Button>
 	];
 
 	const isConfigurableType = includes( CONFIGURABLE_TYPES, type );
@@ -60,15 +51,11 @@ function EditorPostTypeUnsupported( {
 		// direct user to enable them through their site settings)
 		switch ( type ) {
 			case 'jetpack-portfolio':
-				helpText = translate(
-					'Portfolios are not enabled. Open your site settings to activate them.'
-				);
+				helpText = translate( 'Portfolios are not enabled. Open your site settings to activate them.' );
 				break;
 
 			case 'jetpack-testimonial':
-				helpText = translate(
-					'Testimonials are not enabled. Open your site settings to activate them.'
-				);
+				helpText = translate( 'Testimonials are not enabled. Open your site settings to activate them.' );
 				break;
 		}
 
@@ -80,9 +67,7 @@ function EditorPostTypeUnsupported( {
 	} else {
 		// In all other cases, the path contains a non-existent and unknown
 		// post type, so fall back to a generic error message.
-		helpText = translate(
-			'To use this post type, please check that your theme and site support it.'
-		);
+		helpText = translate( 'To use this post type, please check that your theme and site support it.' );
 
 		buttons.push(
 			<Button href={ writePostPath } primary>
@@ -92,18 +77,18 @@ function EditorPostTypeUnsupported( {
 	}
 
 	return (
-		<Dialog isVisible buttons={ buttons } className="editor-post-type-unsupported">
+		<Dialog
+			isVisible
+			buttons={ buttons }
+			className="editor-post-type-unsupported">
 			<h1>{ translate( 'This post type is not supported' ) }</h1>
 			<p>{ helpText }</p>
 			<p>
-				{ translate(
-					'For more information, visit our {{supportLink}}support page on custom content types{{/supportLink}}.',
-					{
-						components: {
-							supportLink: <a href="https://support.wordpress.com/custom-post-types/" />,
-						},
+				{ translate( 'For more information, visit our {{supportLink}}support page on custom content types{{/supportLink}}.', {
+					components: {
+						supportLink: <a href="https://support.wordpress.com/custom-post-types/" />
 					}
-				) }
+				} ) }
 			</p>
 		</Dialog>
 	);
@@ -115,10 +100,10 @@ EditorPostTypeUnsupported.propTypes = {
 	type: PropTypes.string,
 	typeObject: PropTypes.object,
 	writePostPath: PropTypes.string,
-	siteSlug: PropTypes.string,
+	siteSlug: PropTypes.string
 };
 
-export default connect( state => {
+export default connect( ( state ) => {
 	const siteId = getSelectedSiteId( state );
 	const type = getEditedPostValue( state, siteId, getEditorPostId( state ), 'type' );
 
@@ -127,6 +112,6 @@ export default connect( state => {
 		types: getPostTypes( state, siteId ),
 		typeObject: getPostType( state, siteId, type ),
 		writePostPath: getEditorNewPostPath( state, siteId ),
-		siteSlug: getSiteSlug( state, siteId ),
+		siteSlug: getSiteSlug( state, siteId )
 	};
 } )( localize( EditorPostTypeUnsupported ) );

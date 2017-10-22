@@ -1,43 +1,48 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
 import { noop } from 'lodash';
 import React from 'react';
+import { shallow } from 'enzyme';
 
 /**
  * Internal dependencies
  */
 import { AspectRatios } from 'state/ui/editor/image-editor/constants';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 import { useSandbox } from 'test/helpers/use-sinon';
 
-jest.mock( 'event', () => require( 'component-event' ), { virtual: true } );
-jest.mock( 'lib/oauth-token', () => ( {
-	getToken: () => 'bearerToken',
-} ) );
-jest.mock( 'lib/user', () => () => {} );
-
-describe( 'EditGravatar', () => {
-	let EditGravatar, FilePicker, Gravatar, ImageEditor, VerifyEmailDialog, DropZone, sandbox;
+describe( 'EditGravatar', function() {
+	let EditGravatar,
+		FilePicker,
+		Gravatar,
+		ImageEditor,
+		VerifyEmailDialog,
+		DropZone,
+		sandbox;
 	const user = {
-		email_verified: false,
+		email_verified: false
 	};
 
+	useFakeDom();
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/oauth-token', {
+			getToken: () => 'bearerToken'
+		} );
+		mockery.registerSubstitute( 'event', 'component-event' );
+		mockery.registerSubstitute( 'matches-selector', 'component-matches-selector' );
+	} );
 	useSandbox( newSandbox => {
 		sandbox = newSandbox;
 		global.URL = {
 			revokeObjectURL: sandbox.stub(),
-			createObjectURL: sandbox.stub(),
+			createObjectURL: sandbox.stub()
 		};
 	} );
 
-	beforeAll( function() {
+	before( function() {
 		EditGravatar = require( 'blocks/edit-gravatar' ).EditGravatar;
 		FilePicker = require( 'components/file-picker' );
 		Gravatar = require( 'components/gravatar' ).default;
@@ -47,42 +52,57 @@ describe( 'EditGravatar', () => {
 	} );
 
 	describe( 'component rendering', () => {
-		test( 'displays a Gravatar', () => {
-			const wrapper = shallow( <EditGravatar translate={ noop } user={ user } /> );
+		it( 'displays a Gravatar', () => {
+			const wrapper = shallow(
+				<EditGravatar
+					translate={ noop }
+					user={ user }
+				/>
+			);
 			expect( wrapper.find( Gravatar ).length ).to.equal( 1 );
 		} );
 
-		test( 'contains a file picker that accepts images', () => {
-			const wrapper = shallow( <EditGravatar translate={ noop } user={ user } /> );
+		it( 'contains a file picker that accepts images', () => {
+			const wrapper = shallow(
+				<EditGravatar
+					translate={ noop }
+					user={ user }
+				/>
+			);
 			const filePicker = wrapper.find( FilePicker );
 			expect( filePicker.length ).to.equal( 1 );
 			expect( filePicker.prop( 'accept' ) ).to.equal( 'image/*' );
 		} );
 
-		test( 'does not display the image editor by default', () => {
-			const wrapper = shallow( <EditGravatar translate={ noop } user={ user } /> );
+		it( 'does not display the image editor by default', () => {
+			const wrapper = shallow(
+				<EditGravatar
+					translate={ noop }
+					user={ user }
+				/>
+			);
 			expect( wrapper.find( ImageEditor ).length ).to.equal( 0 );
 		} );
 
 		describe( 'drag and drop', () => {
-			test( 'does not contain a drop zone for unverified users', () => {
+			it( 'does not contain a drop zone for unverified users', () => {
 				const wrapper = shallow(
 					<EditGravatar
 						translate={ noop }
 						user={ {
-							email_verified: false,
+							email_verified: false
 						} }
 					/>
 				);
 				expect( wrapper.find( DropZone ) ).to.have.length( 0 );
 			} );
 
-			test( 'contains a drop zone for verified users', () => {
+			it( 'contains a drop zone for verified users', () => {
 				const wrapper = shallow(
 					<EditGravatar
 						translate={ noop }
 						user={ {
-							email_verified: true,
+							email_verified: true
 						} }
 					/>
 				);
@@ -93,15 +113,17 @@ describe( 'EditGravatar', () => {
 
 	describe( 'getting a file from user', () => {
 		describe( 'accepted file type', () => {
-			test( 'displays the image editor with square allowed aspect ratio', () => {
+			it( 'displays the image editor with square allowed aspect ratio', () => {
 				const wrapper = shallow(
-					<EditGravatar translate={ noop } user={ user } recordReceiveImageEvent={ noop } />
+					<EditGravatar
+						translate={ noop }
+						user={ user }
+						recordReceiveImageEvent={ noop }
+					/>
 				);
-				const files = [
-					{
-						name: 'filename.png',
-					},
-				];
+				const files = [ {
+					name: 'filename.png'
+				} ];
 
 				wrapper.instance().onReceiveFile( files );
 
@@ -114,7 +136,7 @@ describe( 'EditGravatar', () => {
 		} );
 
 		describe( 'bad file type', () => {
-			test( 'does not display editor, and calls error action creator', () => {
+			it( 'does not display editor, and calls error action creator', () => {
 				const receiveGravatarImageFailedSpy = sandbox.spy();
 				const wrapper = shallow(
 					<EditGravatar
@@ -124,11 +146,9 @@ describe( 'EditGravatar', () => {
 						recordReceiveImageEvent={ noop }
 					/>
 				);
-				const files = [
-					{
-						name: 'filename.tiff',
-					},
-				];
+				const files = [ {
+					name: 'filename.tiff'
+				} ];
 
 				wrapper.instance().onReceiveFile( files );
 
@@ -140,15 +160,13 @@ describe( 'EditGravatar', () => {
 
 	describe( 'after editing image', () => {
 		const imageEditorProps = {
-			resetAllImageEditorState: noop,
+			resetAllImageEditorState: noop
 		};
-		const files = [
-			{
-				name: 'filename.png',
-			},
-		];
+		const files = [ {
+			name: 'filename.png'
+		} ];
 
-		test( 'given no error, hides image editor and calls upload gravatar action creator', () => {
+		it( 'given no error, hides image editor and calls upload gravatar action creator', () => {
 			const receiveGravatarImageFailedSpy = sandbox.spy();
 			const uploadGravatarSpy = sandbox.spy();
 			const wrapper = shallow(
@@ -170,7 +188,7 @@ describe( 'EditGravatar', () => {
 			expect( receiveGravatarImageFailedSpy.callCount ).to.equal( 0 );
 		} );
 
-		test( 'given an error, hides image editor and calls error notice action creator', () => {
+		it( 'given an error, hides image editor and calls error notice action creator', () => {
 			const error = new Error();
 			const receiveGravatarImageFailedSpy = sandbox.spy();
 			const uploadGravatarSpy = sandbox.spy();
@@ -195,9 +213,13 @@ describe( 'EditGravatar', () => {
 	} );
 
 	describe( 'unverified user', () => {
-		test( 'shows email verification dialog when clicked', () => {
+		it( 'shows email verification dialog when clicked', () => {
 			const wrapper = shallow(
-				<EditGravatar translate={ noop } user={ user } recordClickButtonEvent={ noop } />
+				<EditGravatar
+					translate={ noop }
+					user={ user }
+					recordClickButtonEvent={ noop }
+				/>
 			);
 			// Enzyme requires simulate() to be called directly on the element with the click handler
 			const clickableWrapper = wrapper.find( '.edit-gravatar > div' ).first();

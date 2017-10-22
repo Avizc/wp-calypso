@@ -1,18 +1,17 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import validator from 'is-my-json-valid';
 import { merge, flow, partialRight, reduce, isEqual, omit } from 'lodash';
 import { combineReducers as combine } from 'redux'; // eslint-disable-line wpcalypso/import-no-redux-combine-reducers
-import LRU from 'lru-cache';
 
 /**
  * Internal dependencies
  */
-import { DESERIALIZE, SERIALIZE } from './action-types';
+import {
+	DESERIALIZE,
+	SERIALIZE,
+} from './action-types';
 import warn from 'lib/warn';
 
 export function isValidStateWithSchema( state, schema ) {
@@ -79,21 +78,15 @@ export function isValidStateWithSchema( state, schema ) {
 export const keyedReducer = ( keyName, reducer ) => {
 	// some keys are invalid
 	if ( 'string' !== typeof keyName ) {
-		throw new TypeError(
-			`Key name passed into ``keyedReducer`` must be a string but I detected a ${ typeof keyName }`
-		);
+		throw new TypeError( `Key name passed into ``keyedReducer`` must be a string but I detected a ${ typeof keyName }` );
 	}
 
 	if ( ! keyName.length ) {
-		throw new TypeError(
-			'Key name passed into `keyedReducer` must have a non-zero length but I detected an empty string'
-		);
+		throw new TypeError( 'Key name passed into `keyedReducer` must have a non-zero length but I detected an empty string' );
 	}
 
 	if ( 'function' !== typeof reducer ) {
-		throw new TypeError(
-			`Reducer passed into ``keyedReducer`` must be a function but I detected a ${ typeof reducer }`
-		);
+		throw new TypeError( `Reducer passed into ``keyedReducer`` must be a function but I detected a ${ typeof reducer }` );
 	}
 
 	return ( state = {}, action ) => {
@@ -126,7 +119,9 @@ export const keyedReducer = ( keyName, reducer ) => {
 		// remove key from state if setting to undefined or back to initial state
 		// if it didn't exist anyway, then do nothing.
 		if ( undefined === newItemState || isEqual( newItemState, initialState ) ) {
-			return state.hasOwnProperty( itemKey ) ? omit( state, itemKey ) : state;
+			return state.hasOwnProperty( itemKey )
+				? omit( state, itemKey )
+				: state;
 		}
 
 		// otherwise immutably update the super-state
@@ -150,7 +145,7 @@ export function extendAction( action, data ) {
 		return merge( {}, action, data );
 	}
 
-	return dispatch => {
+	return ( dispatch ) => {
 		const newDispatch = flow( partialRight( extendAction, data ), dispatch );
 		return action( newDispatch );
 	};
@@ -176,8 +171,8 @@ export function createReducer( initialState = null, customHandlers = {}, schema 
 	let defaultHandlers;
 	if ( schema ) {
 		defaultHandlers = {
-			[ SERIALIZE ]: state => state,
-			[ DESERIALIZE ]: state => {
+			[ SERIALIZE ]: ( state ) => state,
+			[ DESERIALIZE ]: ( state ) => {
 				if ( isValidStateWithSchema( state, schema ) ) {
 					return state;
 				}
@@ -185,18 +180,18 @@ export function createReducer( initialState = null, customHandlers = {}, schema 
 				warn( 'state validation failed - check schema used for:', customHandlers );
 
 				return initialState;
-			},
+			}
 		};
 	} else {
 		defaultHandlers = {
 			[ SERIALIZE ]: () => initialState,
-			[ DESERIALIZE ]: () => initialState,
+			[ DESERIALIZE ]: () => initialState
 		};
 	}
 
 	const handlers = {
 		...defaultHandlers,
-		...customHandlers,
+		...customHandlers
 	};
 
 	// When custom serialization behavior is provided, we assume that it may
@@ -220,10 +215,8 @@ export function createReducer( initialState = null, customHandlers = {}, schema 
 		const { type } = action;
 
 		if ( 'production' !== process.env.NODE_ENV && 'type' in action && ! type ) {
-			throw new TypeError(
-				'Reducer called with undefined type.' +
-					' Verify that the action type is defined in state/action-types.js'
-			);
+			throw new TypeError( 'Reducer called with undefined type.' +
+				' Verify that the action type is defined in state/action-types.js' );
 		}
 
 		if ( handlers.hasOwnProperty( type ) ) {
@@ -376,17 +369,10 @@ export const withSchemaValidation = ( schema, reducer ) => {
  * @returns {function} - Returns the combined reducer function
  */
 export function combineReducers( reducers ) {
-	const validatedReducers = reduce(
-		reducers,
-		( validated, next, key ) => {
-			const { schema, hasCustomPersistence } = next;
-			return {
-				...validated,
-				[ key ]: hasCustomPersistence ? next : withSchemaValidation( schema, next ),
-			};
-		},
-		{}
-	);
+	const validatedReducers = reduce( reducers, ( validated, next, key ) => {
+		const { schema, hasCustomPersistence } = next;
+		return { ...validated, [ key ]: hasCustomPersistence ? next : withSchemaValidation( schema, next ) };
+	}, {} );
 	const combined = combine( validatedReducers );
 	combined.hasCustomPersistence = true;
 	return combined;
@@ -422,68 +408,4 @@ export const withoutPersistence = reducer => ( state, action ) => {
 	}
 
 	return reducer( state, action );
-};
-
-/**
- * Creates a caching action creator
- *
- * @example Here's a caching action creator:
- * export const fetchOAuth2ClientData = cachingActionCreatorFactory(
- *	clientId => wpcom.undocumented().oauth2ClientId( clientId ),
- *	dispatch => clientId => dispatch( { type: OAUTH2_CLIENT_DATA_REQUEST, clientId, } ),
- *	dispatch => wpcomResponse => dispatch( { type: OAUTH2_CLIENT_DATA_REQUEST_SUCCESS, data: wpcomResponse } ),
- *	dispatch => wpcomError => {
- *		const error = {
- *			message: wpcomError.message,
- *			code: wpcomError.error,
- *		};
- *
- *		dispatch( {
- *			type: OAUTH2_CLIENT_DATA_REQUEST_FAILURE,
- *			error,
- *		} );
- *
- *		return Promise.reject( error );
- *	},
- *);
- *
- * @param {Function} worker a worker function that returns the promise ( param1, param2, ... ) => Promise
- * @param {Function} loadingActionCreator an action creator for before the work is performed of the following signature:
- * 					dispatch => ( param1, param2, ... ) => dispatch( ... ),
- * @param {Function} successActionCreator an action creator for the success case of the work performed of the following signature:
- * 					dispatch => ( param1, param2, ... ) => dispatch( ... ),
- * @param {Function} failureActionCreator an action creator for the failure case of the work performed of the following signature:
- * 					dispatch => ( param1, param2, ... ) => dispatch( ... ),
- * @param {Function} parametersHashFunction a hash function for params, default is just array's join
- * @param {Object} cacheOptions options that passed to LRU cache constructor
- *
- * @return {Function} a function that can be used as an action creator of the following signature:
- * 					( param1, param2, ... ) => dispatch => Promise
- */
-export const cachingActionCreatorFactory = (
-	worker,
-	loadingActionCreator,
-	successActionCreator,
-	failureActionCreator,
-	parametersHashFunction = params => params.join( '' ),
-	cacheOptions = {
-		// those are passed to LRU ctor directly
-		max: 100,
-		maxAge: 2 * 60 * 60, // 2 hours
-	}
-) => {
-	const cache = new LRU( cacheOptions );
-
-	return ( ...params ) => dispatch => {
-		loadingActionCreator( dispatch )( ...params );
-
-		const cacheKey = parametersHashFunction( params );
-		const cachedValue = cache.get( cacheKey );
-		const resultPromise = cachedValue ? Promise.resolve( cachedValue ) : worker( ...params );
-
-		return resultPromise.then( result => {
-			cache.set( cacheKey, result );
-			return successActionCreator( dispatch )( result );
-		}, failureActionCreator( dispatch ) ); // we don't cache failures
-	};
 };

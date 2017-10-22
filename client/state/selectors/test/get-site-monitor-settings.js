@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -18,29 +16,29 @@ describe( 'getSiteMonitorSettings()', () => {
 		wp_note_notifications: true,
 	};
 
-	test( 'should return monitor settings for a known site', () => {
+	it( 'should return monitor settings for a known site', () => {
 		const state = {
 			sites: {
 				monitor: {
 					items: {
 						[ siteId ]: settings,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		const output = getSiteMonitorSettings( state, siteId );
 		expect( output ).to.eql( settings );
 	} );
 
-	test( 'should return null for an unknown site', () => {
+	it( 'should return null for an unknown site', () => {
 		const state = {
 			sites: {
 				monitor: {
 					items: {
 						77203074: settings,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		const output = getSiteMonitorSettings( state, siteId );
 		expect( output ).to.be.null;

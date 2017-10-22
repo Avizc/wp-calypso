@@ -1,31 +1,50 @@
-/** @format */
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import store from 'store';
 
 /**
  * Internal dependencies
  */
-import {
-	deleteOldTicket,
-	GUEST_TICKET_LOCALFORAGE_KEY,
-	injectGuestSandboxTicketHandler,
-} from '../guest-sandbox-ticket';
+import useMockery from 'test/helpers/use-mockery';
 
-jest.mock( 'store', () => require( './mocks/store' ) );
+let deleteOldTicket, GUEST_TICKET_LOCALFORAGE_KEY, injectGuestSandboxTicketHandler;
+
+let storeData = {};
+const store = {
+	get( key ) {
+		return storeData[ key ];
+	},
+
+	set( key, value ) {
+		storeData[ key ] = value;
+	},
+
+	remove( key ) {
+		delete storeData[ key ];
+	}
+};
 
 describe( 'guest-sandbox-ticket', () => {
+	useMockery( ( mockery ) => {
+		mockery.registerMock( 'store', store );
+
+		const guestSandboxTicket = require( '../guest-sandbox-ticket' );
+
+		deleteOldTicket = guestSandboxTicket.deleteOldTicket;
+		GUEST_TICKET_LOCALFORAGE_KEY = guestSandboxTicket.GUEST_TICKET_LOCALFORAGE_KEY;
+		injectGuestSandboxTicketHandler = guestSandboxTicket.injectGuestSandboxTicketHandler;
+	} );
+
 	beforeEach( () => {
-		store.clear();
+		storeData = {};
 	} );
 
 	describe( '#deleteOldTicket', () => {
-		test( 'should remove tickets older than two hours', () => {
+		it( 'should remove tickets older than two hours', () => {
 			store.set( GUEST_TICKET_LOCALFORAGE_KEY, {
 				value: 'foo',
-				createdDate: Date.now() - 1000 * 60 * 60 * 3, // three hours in the past
+				createdDate: Date.now() - 1000 * 60 * 60 * 3 // three hours in the past
 			} );
 
 			deleteOldTicket();
@@ -33,10 +52,10 @@ describe( 'guest-sandbox-ticket', () => {
 			expect( store.get( GUEST_TICKET_LOCALFORAGE_KEY ) ).to.be.undefined;
 		} );
 
-		test( 'should not remove tickets younger than two hours', () => {
+		it( 'should not remove tickets younger than two hours', () => {
 			const ticket = {
 				value: 'foo',
-				createdDate: Date.now() - 1000 * 60 * 60 * 1, // one hour in the past
+				createdDate: Date.now() - 1000 * 60 * 60 * 1 // one hour in the past
 			};
 
 			store.set( GUEST_TICKET_LOCALFORAGE_KEY, ticket );
@@ -48,10 +67,10 @@ describe( 'guest-sandbox-ticket', () => {
 	} );
 
 	describe( '#injectGuestSandboxTicketHandler', () => {
-		test( 'should update `wpcom` to add the ticket param if present', done => {
+		it( 'should update `wpcom` to add the ticket param if present', ( done ) => {
 			const ticket = {
 				value: 'foo',
-				createdDate: Date.now() - 1000 * 60 * 60 * 1, // one hour in the past
+				createdDate: Date.now() - 1000 * 60 * 60 * 1 // one hour in the past
 			};
 
 			store.set( GUEST_TICKET_LOCALFORAGE_KEY, ticket );
@@ -60,7 +79,7 @@ describe( 'guest-sandbox-ticket', () => {
 				request( params ) {
 					expect( params.query ).to.equal( 'search=whatever&store_sandbox_ticket=foo' );
 					done();
-				},
+				}
 			};
 
 			injectGuestSandboxTicketHandler( wpcom );
@@ -68,12 +87,12 @@ describe( 'guest-sandbox-ticket', () => {
 			expect( wpcom.request( { query: 'search=whatever' } ) );
 		} );
 
-		test( 'should not add ticket param if it is not present', done => {
+		it( 'should not add ticket param if it is not present', ( done ) => {
 			const wpcom = {
 				request( params ) {
 					expect( params.query ).to.equal( 'search=whatever' );
 					done();
-				},
+				}
 			};
 
 			injectGuestSandboxTicketHandler( wpcom );

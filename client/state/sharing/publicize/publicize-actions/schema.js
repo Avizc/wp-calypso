@@ -1,5 +1,4 @@
-/** @format */
-export const publicizeActionsSchema = {
+export const publicizeActionSchema = {
 	type: 'object',
 	patternProperties: {
 		'^\\d+$': {
@@ -13,7 +12,7 @@ export const publicizeActionsSchema = {
 				result: { type: 'object' },
 				url: { type: 'string' },
 				status: { type: 'string' },
-			},
-		},
-	},
+			}
+		}
+	}
 };

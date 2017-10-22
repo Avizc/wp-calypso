@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import { partial } from 'lodash';
 import React from 'react';
 

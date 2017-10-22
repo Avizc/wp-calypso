@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -23,10 +19,9 @@ class QueryReaderList extends Component {
 	}
 
 	componentWillReceiveProps( nextProps ) {
-		if (
-			nextProps.isRequestingList ||
-			( this.props.owner === nextProps.owner && this.props.slug === nextProps.slug )
-		) {
+		if ( nextProps.isRequestingList || (
+				this.props.owner === nextProps.owner &&
+				this.props.slug === nextProps.slug ) ) {
 			return;
 		}
 
@@ -42,26 +37,23 @@ QueryReaderList.propTypes = {
 	owner: PropTypes.string,
 	slug: PropTypes.string,
 	isRequestingList: PropTypes.bool,
-	requestList: PropTypes.func,
+	requestList: PropTypes.func
 };
 
 QueryReaderList.defaultProps = {
-	requestList: () => {},
+	requestList: () => {}
 };
 
 export default connect(
 	( state, ownProps ) => {
 		const { owner, slug } = ownProps;
 		return {
-			isRequestingList: isRequestingList( state, owner, slug ),
+			isRequestingList: isRequestingList( state, owner, slug )
 		};
 	},
-	dispatch => {
-		return bindActionCreators(
-			{
-				requestList,
-			},
-			dispatch
-		);
+	( dispatch ) => {
+		return bindActionCreators( {
+			requestList
+		}, dispatch );
 	}
 )( QueryReaderList );

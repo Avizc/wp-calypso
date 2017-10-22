@@ -1,22 +1,18 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import { localize } from 'i18n-calypso';
-import classNames from 'classnames';
+var React = require( 'react' ),
+	classNames = require( 'classnames' );
 
 /**
  * Internal dependencies
  */
-import Dialog from 'components/dialog';
-import config from 'config';
-import KeyboardShortcuts from 'lib/keyboard-shortcuts';
-import KeyBindings from 'lib/keyboard-shortcuts/key-bindings';
+var Dialog = require( 'components/dialog' ),
+	config = require( 'config' ),
+	KeyboardShortcuts = require( 'lib/keyboard-shortcuts' ),
+	KeyBindings = require( 'lib/keyboard-shortcuts/key-bindings' );
 
-const KeyboardShortcutsMenu = React.createClass( {
+module.exports = React.createClass({
 	displayName: 'KeyboardShortcutsMenu',
 
 	componentDidMount: function() {
@@ -31,7 +27,7 @@ const KeyboardShortcutsMenu = React.createClass( {
 
 	getInitialState: function() {
 		return {
-			showDialog: false,
+			showDialog: false
 		};
 	},
 
@@ -52,36 +48,38 @@ const KeyboardShortcutsMenu = React.createClass( {
 		var allShortcuts = KeyBindings.get(),
 			shortcutsByCategory = [
 				{
-					name: this.props.translate( 'List Navigation' ),
+					name: this.translate( 'List Navigation' ),
 					shortcuts: allShortcuts.listNavigation,
 					className: 'keyboard-shortcuts__list-navigation',
-					disabled: true,
+					disabled: true
 				},
 				{
-					name: this.props.translate( 'Site Navigation' ),
+					name: this.translate( 'Site Navigation' ),
 					shortcuts: allShortcuts.siteNavigation,
-					className: 'keyboard-shortcuts__site-navigation',
+					className: 'keyboard-shortcuts__site-navigation'
 				},
 				{
-					name: this.props.translate( 'Reader' ),
+					name: this.translate( 'Reader' ),
 					shortcuts: allShortcuts.reader,
 					className: 'keyboard-shortcuts__reader',
-					disabled: true,
+					disabled: true
 				},
 				{
-					name: this.props.translate( 'Blog Posts and Pages' ),
+					name: this.translate( 'Blog Posts and Pages' ),
 					shortcuts: allShortcuts.blogPostsAndPages,
 					className: 'keyboard-shortcuts__blog-posts-and-pages',
-					disabled: true,
-				},
+					disabled: true
+				}
 			];
 
 		if ( config.isEnabled( 'devdocs' ) ) {
-			shortcutsByCategory = shortcutsByCategory.concat( {
-				name: this.props.translate( 'Developer' ),
-				shortcuts: allShortcuts.developer,
-				className: 'keyboard-shortcuts__developer',
-			} );
+			shortcutsByCategory = shortcutsByCategory.concat(
+				{
+					name: this.translate( 'Developer' ),
+					shortcuts: allShortcuts.developer,
+					className: 'keyboard-shortcuts__developer'
+				}
+			);
 		}
 
 		return shortcutsByCategory.map( function( category ) {
@@ -105,12 +103,8 @@ const KeyboardShortcutsMenu = React.createClass( {
 		return shortcuts.map( function( shortcut ) {
 			// process the list of keys in this shortcut into individual elements
 			var keys = shortcut.description.keys.map( function( key, index ) {
-				return (
-					<div className="keyboard-shortcuts__key" key={ shortcut.eventName + index }>
-						{ key }
-					</div>
-				);
-			} );
+				return ( <div className="keyboard-shortcuts__key" key={ shortcut.eventName + index } >{ key }</div> );
+			});
 
 			return (
 				<li key={ shortcut.eventName }>
@@ -123,18 +117,10 @@ const KeyboardShortcutsMenu = React.createClass( {
 
 	render: function() {
 		return (
-			<Dialog
-				additionalClassNames="keyboard-shortcuts"
-				isVisible={ this.state.showDialog }
-				onClose={ this.closeDialog }
-			>
-				<h1 className="keyboard-shortcuts__title">
-					{ this.props.translate( 'Keyboard Shortcuts' ) }
-				</h1>
+			<Dialog additionalClassNames="keyboard-shortcuts" isVisible={ this.state.showDialog } onClose={ this.closeDialog }>
+				<h1 className="keyboard-shortcuts__title">{ this.translate( 'Keyboard Shortcuts' ) }</h1>
 				<ul className="keyboard-shortcuts__categories">{ this.getShortcutsByCategory() }</ul>
 			</Dialog>
 		);
-	},
-} );
-
-export default localize( KeyboardShortcutsMenu );
+	}
+});

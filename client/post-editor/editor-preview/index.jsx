@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import url from 'url';
 import classNames from 'classnames';
@@ -16,21 +12,21 @@ import { localize } from 'i18n-calypso';
 import { omitUrlParams } from 'lib/url';
 import WebPreview from 'components/web-preview';
 import WebPreviewContent from 'components/web-preview/content';
-import { isEnabled } from 'config';
 
 const EditorPreview = React.createClass( {
+
 	_hasTouch: false,
 
 	propTypes: {
-		showPreview: PropTypes.bool,
-		isSaving: PropTypes.bool,
-		isLoading: PropTypes.bool,
-		isFullScreen: PropTypes.bool,
-		previewUrl: PropTypes.string,
-		editUrl: PropTypes.string,
-		onClose: PropTypes.func,
-		postId: PropTypes.number,
-		revision: PropTypes.number,
+		showPreview: React.PropTypes.bool,
+		isSaving: React.PropTypes.bool,
+		isLoading: React.PropTypes.bool,
+		isFullScreen: React.PropTypes.bool,
+		previewUrl: React.PropTypes.string,
+		editUrl: React.PropTypes.string,
+		onClose: React.PropTypes.func,
+		postId: React.PropTypes.number,
+		revision: React.PropTypes.number,
 	},
 
 	getInitialState() {
@@ -44,13 +40,11 @@ const EditorPreview = React.createClass( {
 			this.setState( { iframeUrl: 'about:blank' } );
 		}
 
-		if (
-			this.props.previewUrl &&
-			( this.didFinishSaving( prevProps ) ||
-				this.didLoad( prevProps ) ||
-				this.didShowSavedPreviewViaTouch( prevProps ) ||
-				this.didShowOrHideFullPreview( prevProps ) )
-		) {
+		if ( this.props.previewUrl && (
+			this.didFinishSaving( prevProps ) ||
+			this.didLoad( prevProps ) ||
+			this.didShowSavedPreviewViaTouch( prevProps )
+		) ) {
 			this.setState( { iframeUrl: this.getIframePreviewUrl() } );
 		}
 	},
@@ -77,24 +71,11 @@ const EditorPreview = React.createClass( {
 
 	didShowSavedPreviewViaTouch( prevProps ) {
 		// Find state change where preview is shown and we're not saving or loading
-		return (
-			this._hasTouch &&
+		return this._hasTouch &&
 			! prevProps.showPreview &&
 			this.props.showPreview &&
 			! this.props.isSaving &&
-			! this.props.isLoading
-		);
-	},
-
-	didShowOrHideFullPreview( prevProps ) {
-		// Force a URL update (hash change) when the preview is shown or
-		// hidden, but only if we are currently showing the actual preview URL
-		// and not 'about:blank'.
-		return (
-			isEnabled( 'post-editor/preview-scroll-to-content' ) &&
-			this.state.iframeUrl !== 'about:blank' &&
-			prevProps.showPreview !== this.props.showPreview
-		);
+			! this.props.isLoading;
 	},
 
 	getIframePreviewUrl() {
@@ -102,19 +83,6 @@ const EditorPreview = React.createClass( {
 		parsed.query.preview = 'true';
 		parsed.query.iframe = 'true';
 		parsed.query.revision = String( this.props.revision );
-		// Scroll to the main post content.
-		if ( this.props.postId && isEnabled( 'post-editor/preview-scroll-to-content' ) ) {
-			// Vary the URL hash based on whether the preview is shown.  When
-			// the preview is hidden then re-shown, we want to be sure to
-			// scroll to the content section again even if the preview has not
-			// reloaded in the meantime, which is most easily accomplished by
-			// changing the URL hash.  This does not cause a page reload.
-			if ( this.props.showPreview ) {
-				parsed.hash = 'post-' + this.props.postId;
-			} else {
-				parsed.hash = '__preview-hidden';
-			}
-		}
 		delete parsed.search;
 		return url.format( parsed );
 	},
@@ -131,35 +99,35 @@ const EditorPreview = React.createClass( {
 
 		return (
 			<div className={ className }>
-				{ isFullScreen ? (
-					<WebPreviewContent
-						showPreview={ this.props.showPreview }
-						showEdit={ true }
-						showExternal={ true }
-						showUrl={ true }
-						defaultViewportDevice={ this.props.defaultViewportDevice }
-						onClose={ this.props.onClose }
-						onEdit={ this.props.onEdit }
-						previewUrl={ this.state.iframeUrl }
-						editUrl={ this.props.editUrl }
-						externalUrl={ this.cleanExternalUrl( this.props.externalUrl ) }
-						loadingMessage={ this.props.translate(
-							"{{strong}}One moment, please.{{/strong}} We're loading your preview.",
-							{ components: { strong: <strong /> } }
-						) }
-					/>
-				) : (
-					<WebPreview
-						showPreview={ this.props.showPreview }
-						defaultViewportDevice={ this.props.defaultViewportDevice }
-						onClose={ this.props.onClose }
-						previewUrl={ this.state.iframeUrl }
-						externalUrl={ this.cleanExternalUrl( this.props.externalUrl ) }
-					/>
-				) }
+				{ isFullScreen
+					? <WebPreviewContent
+							showPreview={ this.props.showPreview }
+							showEdit={ true }
+							showExternal={ true }
+							showUrl={ true }
+							defaultViewportDevice={ this.props.defaultViewportDevice }
+							onClose={ this.props.onClose }
+							onEdit={ this.props.onEdit }
+							previewUrl={ this.state.iframeUrl }
+							editUrl={ this.props.editUrl }
+							externalUrl={ this.cleanExternalUrl( this.props.externalUrl ) }
+							loadingMessage={
+								this.props.translate( '{{strong}}One moment please…{{/strong}} loading your new post.',
+									{ components: { strong: <strong /> } }
+								)
+							}
+						/>
+					: <WebPreview
+							showPreview={ this.props.showPreview }
+							defaultViewportDevice={ this.props.defaultViewportDevice }
+							onClose={ this.props.onClose }
+							previewUrl={ this.state.iframeUrl }
+							externalUrl={ this.cleanExternalUrl( this.props.externalUrl ) }
+						/>
+				}
 			</div>
 		);
-	},
+	}
 } );
 
-export default localize( EditorPreview );
+module.exports = localize( EditorPreview );

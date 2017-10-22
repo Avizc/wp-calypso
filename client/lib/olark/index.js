@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import debugModule from 'debug';
 import config from 'config';
 import i18n from 'i18n-calypso';
@@ -37,9 +34,10 @@ const wpcomUndocumented = wpcom.undocumented();
  * This is necessary here to capture events that occur in the Olark
  * module before the React tree gets drawn.
  */
-import 'lib/olark-store';
+require( 'lib/olark-store' );
 
 const olark = {
+
 	apiId: 1,
 
 	eligibilityKey: 'SupportChat',
@@ -56,8 +54,8 @@ const olark = {
 		debug( 'Initializing Olark Live Chat' );
 
 		this.getOlarkConfiguration()
-			.then( configuration => this.configureOlark( configuration, dispatch ) )
-			.catch( error => this.handleError( error ) );
+			.then( ( configuration ) => this.configureOlark( configuration, dispatch ) )
+			.catch( ( error ) => this.handleError( error ) );
 	},
 
 	handleError: function( error ) {
@@ -95,14 +93,14 @@ const olark = {
 				'api.chat.onBeginConversation',
 				'api.chat.onMessageToVisitor',
 				'api.chat.onMessageToOperator',
-				'api.chat.onCommandFromOperator',
+				'api.chat.onCommandFromOperator'
 			],
 			olarkExpandedEvents = [
 				'api.box.onShow',
 				'api.box.onExpand',
 				'api.box.onHide',
 				'api.box.onShrink',
-				'api.chat.onMessageToVisitor',
+				'api.chat.onMessageToVisitor'
 			],
 			updateFormattingEvents = [
 				'api.chat.onReady',
@@ -110,7 +108,7 @@ const olark = {
 				'api.chat.onMessageToVisitor',
 				'api.chat.onMessageToOperator',
 				'api.chat.onCommandFromOperator',
-				'api.chat.onOfflineMessageToOperator',
+				'api.chat.onOfflineMessageToOperator'
 			];
 
 		olarkEvents.initialize();
@@ -124,29 +122,21 @@ const olark = {
 
 		olarkExpandedEvents.forEach( this.hookExpansionEventToStoreSync.bind( this ) );
 
-		updateDetailsEvents.forEach( eventName =>
-			olarkEvents.on( eventName, olarkActions.updateDetails )
-		);
+		updateDetailsEvents.forEach( eventName => olarkEvents.on( eventName, olarkActions.updateDetails ) );
 
-		updateFormattingEvents.forEach( eventName =>
-			olarkEvents.on( eventName, () => {
-				// Using setTimeout here so that we can call updateOlarkFormatting on the next tick, after the event has fired and all event handlers are processed.
-				setTimeout(
-					() => this.updateOlarkFormatting( userData.display_name, userData.avatar_URL ),
-					0
-				);
-			} )
-		);
+		updateFormattingEvents.forEach( eventName => olarkEvents.on( eventName, () => {
+			// Using setTimeout here so that we can call updateOlarkFormatting on the next tick, after the event has fired and all event handlers are processed.
+			setTimeout( () => this.updateOlarkFormatting( userData.display_name, userData.avatar_URL ), 0 );
+		} ) );
 
 		debug( 'Olark code loaded, beginning configuration' );
 
-		olarkEvents.on( 'api.chat.onCommandFromOperator', event => {
+		olarkEvents.on( 'api.chat.onCommandFromOperator', ( event ) => {
 			if ( event.command.name === 'end' ) {
-				olarkActions.sendNotificationToVisitor(
-					i18n.translate( "Your live chat has ended. We'll send a transcript to %(email)s.", {
-						args: { email: userData.email },
-					} )
-				);
+				olarkActions.sendNotificationToVisitor( i18n.translate(
+					"Your live chat has ended. We'll send a transcript to %(email)s.",
+					{ args: { email: userData.email } }
+				) );
 			}
 		} );
 
@@ -157,12 +147,11 @@ const olark = {
 
 	updateOlarkGroupAndEligibility() {
 		this.getOlarkConfiguration()
-			.then( configuration => {
-				const isUserEligible =
-					'undefined' === typeof configuration.isUserEligible ? true : configuration.isUserEligible;
+			.then( ( configuration ) => {
+				const isUserEligible = ( 'undefined' === typeof configuration.isUserEligible ) ? true : configuration.isUserEligible;
 				olarkActions.setUserEligibility( isUserEligible );
 			} )
-			.catch( error => this.handleError( error ) );
+			.catch( ( error ) => this.handleError( error ) );
 	},
 
 	syncStoreWithExpandedState() {
@@ -180,11 +169,8 @@ const olark = {
 
 	setOlarkOptions( userData, wpcomOlarkConfig = {} ) {
 		const group = wpcomOlarkConfig.group || config( 'olark' ).business_group_id;
-		const isUserEligible =
-			'undefined' === typeof wpcomOlarkConfig.isUserEligible
-				? true
-				: wpcomOlarkConfig.isUserEligible;
-		const visitorNickname = wpcomOlarkConfig.nickname || userData.username + ' | ' + this.userType;
+		const isUserEligible = ( 'undefined' === typeof wpcomOlarkConfig.isUserEligible ) ? true : wpcomOlarkConfig.isUserEligible;
+		const visitorNickname = wpcomOlarkConfig.nickname || ( userData.username + ' | ' + this.userType );
 
 		debug( 'Nickname: ' + visitorNickname );
 		debug( 'Group: ' + group );
@@ -198,24 +184,14 @@ const olark = {
 	},
 
 	updateOlarkFormatting( username, avatarURL ) {
-		var allNameNodes = document.querySelectorAll(
-				'.hbl_pal_local_fg, .hbl_pal_remote_fg:not(.habla_conversation_notification_nickname)'
-			),
+		var allNameNodes = document.querySelectorAll( '.hbl_pal_local_fg, .hbl_pal_remote_fg:not(.habla_conversation_notification_nickname)' ),
 			olarkAvatars = document.querySelectorAll( '.olrk_avatar' ),
 			olarkAvatarMap = {},
 			defaultAvatarURL = '//gravatar.com/avatar?s=32&d=identicon&r=PG',
 			translatedStaffLabel = i18n.translate( 'staff' ),
-			personClassName,
-			previousPersonClassName,
-			gravatar,
-			staffLabel,
-			avatarNodeIndex,
-			avatarNode,
-			staffNameNode,
-			nameNodeContent,
-			nameNodeIndex,
-			nameNode,
-			isUserResponse;
+			personClassName, previousPersonClassName, gravatar, staffLabel,
+			avatarNodeIndex, avatarNode, staffNameNode, nameNodeContent,
+			nameNodeIndex, nameNode, isUserResponse;
 
 		// Generate a mapping for avatar to staff members
 		for ( avatarNodeIndex = 0; avatarNodeIndex < olarkAvatars.length; avatarNodeIndex++ ) {
@@ -226,9 +202,7 @@ const olark = {
 				continue;
 			}
 
-			olarkAvatarMap[
-				staffNameNode.originalTextContent || staffNameNode.textContent
-			] = avatarNode.getAttribute( 'src' );
+			olarkAvatarMap[ staffNameNode.originalTextContent || staffNameNode.textContent ] = avatarNode.getAttribute( 'src' );
 		}
 
 		for ( nameNodeIndex = 0; nameNodeIndex < allNameNodes.length; nameNodeIndex++ ) {
@@ -275,10 +249,10 @@ const olark = {
 			}
 
 			previousPersonClassName = personClassName;
-		}
+		};
 	},
 };
 
 emitter( olark );
 
-export default olark;
+module.exports = olark;

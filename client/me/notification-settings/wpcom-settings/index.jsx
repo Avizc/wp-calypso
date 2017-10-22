@@ -1,13 +1,9 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -21,11 +17,7 @@ import Card from 'components/card';
 import FormSectionHeading from 'components/forms/form-section-heading';
 import ActionButtons from '../settings-form/actions';
 import store from 'lib/notification-settings-store';
-import {
-	fetchSettings,
-	toggleWPcomEmailSetting,
-	saveSettings,
-} from 'lib/notification-settings-store/actions';
+import { fetchSettings, toggleWPcomEmailSetting, saveSettings } from 'lib/notification-settings-store/actions';
 import { successNotice, errorNotice } from 'state/notices/actions';
 import EmailCategory from './email-category';
 
@@ -38,7 +30,7 @@ const options = {
 	community: 'community',
 	promotion: 'promotion',
 	news: 'news',
-	digest: 'digest',
+	digest: 'digest'
 };
 
 const WPCOMNotifications = React.createClass( {
@@ -46,7 +38,7 @@ const WPCOMNotifications = React.createClass( {
 
 	getInitialState() {
 		return {
-			settings: null,
+			settings: null
 		};
 	},
 
@@ -63,13 +55,11 @@ const WPCOMNotifications = React.createClass( {
 		const state = store.getStateFor( 'wpcom' );
 
 		if ( state.error ) {
-			this.props.errorNotice(
-				this.props.translate( 'There was a problem saving your changes. Please, try again.' )
-			);
+			this.props.errorNotice( this.translate( 'There was a problem saving your changes. Please, try again.' ) );
 		}
 
 		if ( state.status === 'success' ) {
-			this.props.successNotice( this.props.translate( 'Settings saved successfully!' ) );
+			this.props.successNotice( this.translate( 'Settings saved successfully!' ) );
 		}
 
 		this.setState( state );
@@ -87,68 +77,62 @@ const WPCOMNotifications = React.createClass( {
 		return (
 			<div>
 				<p>
-					{ this.props.translate(
-						"We'll always send important emails regarding your account, security, " +
-							'privacy, and purchase transactions, but you can get some helpful extras, too.'
+					{ this.translate(
+						'We\'ll always send important emails regarding your account, security, ' +
+						'privacy, and purchase transactions, but you can get some helpful extras, too.'
 					) }
 				</p>
 
 				<EmailCategory
 					name={ options.marketing }
 					isEnabled={ this.state.settings.get( options.marketing ) }
-					title={ this.props.translate( 'Suggestions' ) }
-					description={ this.props.translate( 'Tips for getting the most out of WordPress.com.' ) }
+					title={ this.translate( 'Suggestions' ) }
+					description={ this.translate( 'Tips for getting the most out of WordPress.com.' ) }
 				/>
 
 				<EmailCategory
 					name={ options.research }
 					isEnabled={ this.state.settings.get( options.research ) }
-					title={ this.props.translate( 'Research' ) }
-					description={ this.props.translate(
-						'Opportunities to participate in WordPress.com research and surveys.'
-					) }
+					title={ this.translate( 'Research' ) }
+					description={ this.translate( 'Opportunities to participate in WordPress.com research & surveys.' ) }
 				/>
 
 				<EmailCategory
-					name={ options.community }
-					isEnabled={ this.state.settings.get( options.community ) }
-					title={ this.props.translate( 'Community' ) }
-					description={ this.props.translate(
-						'Information on WordPress.com courses and events (online and in-person).'
-					) }
+					name={ options.community } isEnabled={ this.state.settings.get( options.community ) }
+					title={ this.translate( 'Community' ) }
+					description={ this.translate( 'Information on WordPress.com courses and events (online & in-person).' ) }
 				/>
 
 				<EmailCategory
-					name={ options.promotion }
-					isEnabled={ this.state.settings.get( options.promotion ) }
-					title={ this.props.translate( 'Promotions' ) }
-					description={ this.props.translate( 'Promotions and deals on upgrades.' ) }
+					name={ options.promotion } isEnabled={ this.state.settings.get( options.promotion ) }
+					title={ this.translate( 'Promotions' ) }
+					description={ this.translate( 'Promotions and deals on upgrades.' ) }
 				/>
 
 				<EmailCategory
-					name={ options.news }
-					isEnabled={ this.state.settings.get( options.news ) }
-					title={ this.props.translate( 'News' ) }
-					description={ this.props.translate( 'WordPress.com news and announcements.' ) }
+					name={ options.news } isEnabled={ this.state.settings.get( options.news ) }
+					title={ this.translate( 'News' ) }
+					description={ this.translate( 'WordPress.com news and announcements.' ) }
 				/>
 
 				<EmailCategory
-					name={ options.digest }
-					isEnabled={ this.state.settings.get( options.digest ) }
-					title={ this.props.translate( 'Digests' ) }
-					description={ this.props.translate(
-						'Popular content from the blogs you follow, and reports on ' +
-							'your own site and its performance.'
-					) }
+					name={ options.digest } isEnabled={ this.state.settings.get( options.digest ) }
+					title={ this.translate( 'Digests' ) }
+					description={ this.translate( 'Reading & writing digests, tailored for you.' ) }
 				/>
 
-				<ActionButtons onSave={ this.saveSettings } disabled={ ! this.state.hasUnsavedChanges } />
+				<ActionButtons
+					onSave={ this.saveSettings }
+					disabled={ ! this.state.hasUnsavedChanges }
+				/>
 			</div>
 		);
 	},
 
 	renderPlaceholder() {
-		return <p className="notification-settings-wpcom-settings__placeholder">&nbsp;</p>;
+		return (
+			<p className="notification-settings-wpcom-settings__placeholder">&nbsp;</p>
+		);
 	},
 
 	render() {
@@ -161,15 +145,16 @@ const WPCOMNotifications = React.createClass( {
 
 				<Card>
 					<FormSectionHeading>
-						{ this.props.translate( 'Email from WordPress.com' ) }
+						{ this.translate( 'Email from WordPress.com' ) }
 					</FormSectionHeading>
 					{ this.state.settings ? this.renderWpcomPreferences() : this.renderPlaceholder() }
 				</Card>
 			</Main>
 		);
-	},
+	}
 } );
 
-export default connect( null, dispatch =>
-	bindActionCreators( { successNotice, errorNotice }, dispatch )
-)( localize( WPCOMNotifications ) );
+export default connect(
+	null,
+	dispatch => bindActionCreators( { successNotice, errorNotice }, dispatch )
+)( WPCOMNotifications );

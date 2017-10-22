@@ -1,19 +1,16 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { endsWith, omit } from 'lodash';
-import deterministicStringify from 'json-stable-stringify';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:wpcom-followers-store' );
+var debug = require( 'debug' )( 'calypso:wpcom-followers-store' ),
+	omit = require( 'lodash/omit' ),
+	endsWith = require( 'lodash/endsWith' );
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import emitter from 'lib/mixins/emitter';
+var Dispatcher = require( 'dispatcher' ),
+	emitter = require( 'lib/mixins/emitter' ),
+	deterministicStringify = require( 'lib/deterministic-stringify' );
 
 var _fetchingFollowersByNamespace = {}, // store fetching state (boolean)
 	_followersBySite = {}, // store user objects
@@ -34,7 +31,7 @@ var FollowersStore = {
 			fetchingFollowers: _fetchingFollowersByNamespace[ namespace ] || false,
 			followersCurrentPage: _pageByNamespace[ namespace ],
 			numFollowersFetched: _followersFetchedByNamespace[ namespace ],
-			fetchNameSpace: namespace,
+			fetchNameSpace: namespace
 		};
 	},
 
@@ -65,7 +62,7 @@ var FollowersStore = {
 
 	emitChange: function() {
 		this.emit( 'change' );
-	},
+	}
 };
 
 function updateFollower( siteId, id, follower ) {
@@ -78,11 +75,7 @@ function updateFollower( siteId, id, follower ) {
 
 	// TODO: follower = FollowerUtils.normalizeFollower( follower );
 	follower.avatar_URL = follower.avatar;
-	_followersBySite[ siteId ][ id ] = Object.assign(
-		{},
-		_followersBySite[ siteId ][ id ],
-		follower
-	);
+	_followersBySite[ siteId ][ id ] = Object.assign( {}, _followersBySite[ siteId ][ id ], follower );
 }
 
 function updateFollowers( fetchOptions, followers, total ) {
@@ -112,10 +105,7 @@ function getNamespace( fetchOptions ) {
 
 function decrementPaginationData( siteId, followerId ) {
 	Object.keys( _followerIDsByNamespace ).forEach( function( namespace ) {
-		if (
-			endsWith( namespace, 'siteId=' + siteId ) &&
-			_followerIDsByNamespace[ namespace ].has( followerId )
-		) {
+		if ( endsWith( namespace, 'siteId=' + siteId ) && _followerIDsByNamespace[ namespace ].has( followerId ) ) {
 			_totalFollowersByNamespace[ namespace ]--;
 			_followersFetchedByNamespace[ namespace ]--;
 			_pageByNamespace[ namespace ]--;
@@ -125,10 +115,7 @@ function decrementPaginationData( siteId, followerId ) {
 
 function incrementPaginationData( siteId, followerId ) {
 	Object.keys( _followerIDsByNamespace ).forEach( function( namespace ) {
-		if (
-			endsWith( namespace, 'siteId=' + siteId ) &&
-			_followerIDsByNamespace[ namespace ].has( followerId )
-		) {
+		if ( endsWith( namespace, 'siteId=' + siteId ) && _followerIDsByNamespace[ namespace ].has( followerId ) ) {
 			_totalFollowersByNamespace[ namespace ]++;
 			_followersFetchedByNamespace[ namespace ]++;
 			_pageByNamespace[ namespace ]++;
@@ -146,10 +133,7 @@ function removeFollowerFromSite( siteId, followerId ) {
 
 function removeFollowerFromNamespaces( siteId, followerId ) {
 	Object.keys( _followerIDsByNamespace ).forEach( function( namespace ) {
-		if (
-			endsWith( namespace, 'siteId=' + siteId ) &&
-			_followerIDsByNamespace[ namespace ].has( followerId )
-		) {
+		if ( endsWith( namespace, 'siteId=' + siteId ) && _followerIDsByNamespace[ namespace ].has( followerId ) ) {
 			delete _followerIDsByNamespace[ namespace ][ followerId ];
 		}
 	} );
@@ -195,4 +179,4 @@ FollowersStore.dispatchToken = Dispatcher.register( function( payload ) {
 
 emitter( FollowersStore );
 
-export default FollowersStore;
+module.exports = FollowersStore;

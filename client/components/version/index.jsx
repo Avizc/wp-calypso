@@ -1,34 +1,33 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
+import React from 'react';
 import Gridicon from 'gridicons';
 
-class Version extends Component {
-	static displayName = 'Version';
+export default React.createClass( {
 
-	static propTypes = {
-		version: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ).isRequired,
-		icon: PropTypes.string,
-	};
+	displayName: 'Version',
 
-	renderIcon = () => {
-		return this.props.icon ? <Gridicon icon={ this.props.icon } size={ 18 } /> : null;
-	};
+	propTypes: {
+		version: React.PropTypes.oneOfType( [
+			React.PropTypes.string,
+			React.PropTypes.number,
+		] ).isRequired,
+		icon: React.PropTypes.string
+	},
+
+	renderIcon() {
+		return this.props.icon
+			? <Gridicon icon={ this.props.icon } size={ 18 } />
+			: null;
+	},
 
 	render() {
-		return this.props.version ? (
-			<div className="version">
+		return this.props.version
+			? <div className="version">
 				{ this.renderIcon() }
-				{ this.props.translate( 'Version %s', { args: this.props.version } ) }
+				{ this.translate( 'Version %s', { args: this.props.version } ) }
 			</div>
-		) : null;
+			: null;
 	}
-}
-
-export default localize( Version );
+} );

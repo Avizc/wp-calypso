@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { forIn, keys, mapValues } from 'lodash';
 
 /**
@@ -20,16 +17,16 @@ import { getThemeFilters, getThemeFilterTermFromString } from 'state/selectors';
  * @return {Object} table of 'taxonomy:term' to 'term'
  */
 export default createSelector(
-	state => {
+	( state ) => {
 		const result = {};
 		const taxonomies = mapValues( getThemeFilters( state ), keys );
 		forIn( taxonomies, ( terms, taxonomy ) => {
-			terms.forEach( term => {
+			terms.forEach( ( term ) => {
 				const key = `${ taxonomy }:${ term }`;
 				result[ key ] = getThemeFilterTermFromString( state, key );
 			} );
 		} );
 		return result;
 	},
-	state => [ getThemeFilters( state ) ]
+	( state ) => [ getThemeFilters( state ) ]
 );

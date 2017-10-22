@@ -1,16 +1,14 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * Internal dependencies
  */
-import TreeConvert from '../index';
 import { menusFlat, menuBadParent } from './fixtures';
+import TreeConvert from '../index';
 
 describe( 'TreeConvert', () => {
 	let converter, menu;
@@ -21,26 +19,26 @@ describe( 'TreeConvert', () => {
 	} );
 
 	describe( 'treeify', () => {
-		test( 'should turn a flat parent/child structure into a tree', () => {
+		it( 'should turn a flat parent/child structure into a tree', () => {
 			const treeified = converter.treeify( menu.items );
 
 			expect( treeified ).to.have.length( 3 );
 			expect( treeified[ 2 ].items ).to.be.instanceOf( Array );
 		} );
 
-		test( 'should order sibling items by their "order" property', () => {
+		it( 'should order sibling items by their "order" property', () => {
 			const treeified = converter.treeify( menu.items );
 
 			expect( treeified[ 1 ].items[ 0 ] ).to.have.property( 'name', 'Socks' );
 		} );
 
-		test( 'should remove the "order" property from items, since order will be implicit', () => {
+		it( 'should remove the "order" property from items, since order will be implicit', () => {
 			const treeified = converter.treeify( menu.items );
 
 			expect( treeified[ 1 ].items[ 0 ] ).not.to.have.property( 'order' );
 		} );
 
-		test( 'should handle bad parent data, falling back to parent 0', () => {
+		it( 'should handle bad parent data, falling back to parent 0', () => {
 			const badMenu = cloneDeep( menuBadParent ),
 				treeified = converter.treeify( badMenu.items );
 
@@ -51,21 +49,21 @@ describe( 'TreeConvert', () => {
 	} );
 
 	describe( 'untreeify', () => {
-		test( 'should turn a tree into a parent child list', () => {
+		it( 'should turn a tree into a parent child list', () => {
 			const treeified = converter.treeify( menu.items ),
 				list = converter.untreeify( treeified );
 
 			expect( list ).to.have.length( 9 );
 		} );
 
-		test( 'should add the "order" property to items', () => {
+		it( 'should add the "order" property to items', () => {
 			const treeified = converter.treeify( menu.items ),
 				list = converter.untreeify( treeified );
 
 			expect( list[ 0 ] ).to.have.property( 'order' );
 		} );
 
-		test( 'should not modify the original object', () => {
+		it( 'should not modify the original object', () => {
 			const treeified = converter.treeify( menu.items );
 			expect( treeified[ 1 ] ).to.have.property( 'items' );
 

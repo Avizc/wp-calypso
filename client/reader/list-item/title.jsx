@@ -1,9 +1,8 @@
-/** @format */
 /**
  * External dependencies
  */
 import React from 'react';
-import { noop } from 'lodash';
+import noop from 'lodash/noop';
 
 class ListItemTitle extends React.PureComponent {
 	static defaultProps = { onClick: noop };

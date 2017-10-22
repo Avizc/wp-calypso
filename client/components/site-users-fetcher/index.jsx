@@ -1,36 +1,37 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { includes, isEqual, omit, partition } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:site-users-fetcher' );
+var React = require( 'react' ),
+	debug = require( 'debug' )( 'calypso:site-users-fetcher' ),
+	omit = require( 'lodash/omit' ),
+	isEqual = require( 'lodash/isEqual' ),
+	includes = require( 'lodash/includes' ),
+	partition = require( 'lodash/partition' );
 
 /**
  * Internal dependencies
  */
-import UsersStore from 'lib/users/store';
-import UsersActions from 'lib/users/actions';
-import pollers from 'lib/data-poller';
+var UsersStore = require( 'lib/users/store' ),
+	UsersActions = require( 'lib/users/actions' ),
+	pollers = require( 'lib/data-poller' );
 
 /**
  * Module variables
  */
 var defaultOptions = {
 	number: 100,
-	offset: 0,
+	offset: 0
 };
 
-export default React.createClass( {
+module.exports = React.createClass( {
 	displayName: 'SiteUsersFetcher',
 
 	propTypes: {
-		fetchOptions: PropTypes.object.isRequired,
-		exclude: PropTypes.oneOfType( [ PropTypes.arrayOf( PropTypes.number ), PropTypes.func ] ),
+		fetchOptions: React.PropTypes.object.isRequired,
+		exclude: React.PropTypes.oneOfType( [
+			React.PropTypes.arrayOf( React.PropTypes.number ),
+			React.PropTypes.func
+		] )
 	},
 
 	getInitialState: function() {
@@ -91,22 +92,19 @@ export default React.createClass( {
 			// Partition will return an array of two arrays.
 			// users[0] will be a list of the users that were not excluded.
 			// users[1] will be a list of the excluded users.
-			users = partition(
-				users,
-				function( user ) {
-					if ( 'function' === typeof this.props.exclude ) {
-						return ! this.props.exclude( user );
-					}
+			users = partition( users, function( user ) {
+				if ( 'function' === typeof this.props.exclude ) {
+					return ! this.props.exclude( user );
+				}
 
-					return ! includes( this.props.exclude, user.ID );
-				}.bind( this )
-			);
+				return ! includes( this.props.exclude, user.ID );
+			}.bind( this ) );
 		}
 
 		return Object.assign( {}, paginationData, {
 			users: this.props.exclude ? users[ 0 ] : users,
 			fetchOptions: fetchOptions,
-			excludedUsers: this.props.exclude ? users[ 1 ] : [],
+			excludedUsers: this.props.exclude ? users[ 1 ] : []
 		} );
 	},
 
@@ -128,5 +126,5 @@ export default React.createClass( {
 			}
 			UsersActions.fetchUsers( fetchOptions );
 		}, 0 );
-	},
+	}
 } );

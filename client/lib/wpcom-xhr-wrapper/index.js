@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import xhr from 'wpcom-xhr-request';
 import debugModule from 'debug';
 

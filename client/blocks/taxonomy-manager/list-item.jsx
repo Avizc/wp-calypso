@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import page from 'page';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { localize } from 'i18n-calypso';
@@ -22,9 +17,10 @@ import EllipsisMenu from 'components/ellipsis-menu';
 import PopoverMenuItem from 'components/popover/menu-item';
 import PopoverMenuSeparator from 'components/popover/menu-separator';
 import Tooltip from 'components/tooltip';
+import WithPreviewProps from 'components/web-preview/with-preview-props';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getSiteSettings } from 'state/site-settings/selectors';
-import { getSite } from 'state/sites/selectors';
+import { getSite, isJetpackSite } from 'state/sites/selectors';
 import { decodeEntities } from 'lib/formatting';
 import { deleteTerm } from 'state/terms/actions';
 import { saveSiteSettings } from 'state/site-settings/actions';
@@ -42,6 +38,7 @@ class TaxonomyManagerListItem extends Component {
 		translate: PropTypes.func,
 		siteUrl: PropTypes.string,
 		slug: PropTypes.string,
+		isJetpack: PropTypes.bool,
 		isPreviewable: PropTypes.bool,
 		recordGoogleEvent: PropTypes.func,
 		bumpStat: PropTypes.func,
@@ -53,21 +50,13 @@ class TaxonomyManagerListItem extends Component {
 
 	state = {
 		showDeleteDialog: false,
-		showTooltip: false,
+		showTooltip: false
 	};
 
 	deleteItem = () => {
 		this.setState( {
-			showDeleteDialog: true,
+			showDeleteDialog: true
 		} );
-	};
-
-	viewPosts = () => {
-		const { siteSlug, taxonomy: rawTaxonomy, term } = this.props;
-		const taxonomy = rawTaxonomy === 'post_tag' ? 'tag' : rawTaxonomy;
-
-		this.props.recordGoogleEvent( 'Taxonomy Manager', `View ${ rawTaxonomy }` );
-		page( `/posts/${ siteSlug }?${ taxonomy }=${ term.slug }` );
 	};
 
 	closeDeleteDialog = action => {
@@ -78,7 +67,7 @@ class TaxonomyManagerListItem extends Component {
 			this.props.deleteTerm( siteId, taxonomy, term.ID, term.slug );
 		}
 		this.setState( {
-			showDeleteDialog: false,
+			showDeleteDialog: false
 		} );
 	};
 
@@ -105,13 +94,17 @@ class TaxonomyManagerListItem extends Component {
 		const { term, translate } = this.props;
 		const name = this.getName();
 		const postCount = get( term, 'post_count', 0 );
-		return translate( "%(postCount)d '%(name)s' post", "%(postCount)d '%(name)s' posts", {
-			count: postCount,
-			args: {
-				postCount,
-				name,
-			},
-		} );
+		return translate(
+			'%(postCount)d \'%(name)s\' post',
+			'%(postCount)d \'%(name)s\' posts',
+			{
+				count: postCount,
+				args: {
+					postCount,
+					name
+				}
+			}
+		);
 	};
 
 	showTooltip = () => {
@@ -128,11 +121,10 @@ class TaxonomyManagerListItem extends Component {
 	};
 
 	render() {
-		const { canSetAsDefault, isDefault, onClick, term, translate } = this.props;
+		const { canSetAsDefault, isDefault, onClick, term, translate, isJetpack } = this.props;
 		const name = this.getName();
-		const hasPosts = get( term, 'post_count', 0 ) > 0;
 		const className = classNames( 'taxonomy-manager__item', {
-			'is-default': isDefault,
+			'is-default': isDefault
 		} );
 		const deleteDialogButtons = [
 			{ action: 'cancel', label: translate( 'Cancel' ) },
@@ -146,20 +138,18 @@ class TaxonomyManagerListItem extends Component {
 				</span>
 				<span className="taxonomy-manager__label" onClick={ onClick }>
 					<span>{ name }</span>
-					{ isDefault && (
-						<span className="taxonomy-manager__default-label">
+					{ isDefault &&
+					<span className="taxonomy-manager__default-label">
 							{ translate( 'default', { context: 'label for terms marked as default' } ) }
 						</span>
-					) }
+					}
 				</span>
-				{ ! isUndefined( term.post_count ) && (
-					<Count
-						ref="count"
-						count={ term.post_count }
-						onMouseEnter={ this.showTooltip }
-						onMouseLeave={ this.hideTooltip }
-					/>
-				) }
+				{ ! isUndefined( term.post_count ) && <Count
+					ref="count"
+					count={ term.post_count }
+					onMouseEnter={ this.showTooltip }
+					onMouseLeave={ this.hideTooltip }
+				/> }
 				<Tooltip
 					context={ this.refs && this.refs.count }
 					isVisible={ this.state.showTooltip }
@@ -172,34 +162,37 @@ class TaxonomyManagerListItem extends Component {
 						<Gridicon icon="pencil" size={ 18 } />
 						{ translate( 'Edit' ) }
 					</PopoverMenuItem>
-					{ ( ! canSetAsDefault || ! isDefault ) && (
+					{ ( ! canSetAsDefault || ! isDefault ) &&
 						<PopoverMenuItem onClick={ this.deleteItem } icon="trash">
 							{ translate( 'Delete' ) }
 						</PopoverMenuItem>
-					) }
-					{ hasPosts && (
-						<PopoverMenuItem onClick={ this.viewPosts } icon="visible">
-							{ translate( 'View Posts' ) }
-						</PopoverMenuItem>
-					) }
+					}
+					{ ! isJetpack &&
+						<WithPreviewProps
+								url={ this.getTaxonomyLink() }
+								isPreviewable={ this.props.isPreviewable }>
+							{ ( props ) =>
+								<PopoverMenuItem { ...props }
+										icon={ this.props.isPreviewable
+											? 'visible' : 'external' }>
+									{ translate( 'View Posts' ) }
+								</PopoverMenuItem>
+							}
+						</WithPreviewProps>
+					}
 					{ canSetAsDefault && ! isDefault && <PopoverMenuSeparator /> }
-					{ canSetAsDefault &&
-					! isDefault && (
+					{ canSetAsDefault && ! isDefault &&
 						<PopoverMenuItem onClick={ this.setAsDefault } icon="checkmark-circle">
 							{ translate( 'Set as default' ) }
 						</PopoverMenuItem>
-					) }
+					}
 				</EllipsisMenu>
 				<Dialog
 					isVisible={ this.state.showDeleteDialog }
 					buttons={ deleteDialogButtons }
 					onClose={ this.closeDeleteDialog }
 				>
-					<p>
-						{ translate( "Are you sure you want to permanently delete '%(name)s'?", {
-							args: { name },
-						} ) }
-					</p>
+					<p>{ translate( 'Are you sure you want to permanently delete \'%(name)s\'?', { args: { name } } ) }</p>
 				</Dialog>
 			</div>
 		);
@@ -214,15 +207,14 @@ export default connect(
 		const canSetAsDefault = taxonomy === 'category';
 		const isDefault = canSetAsDefault && get( siteSettings, [ 'default_category' ] ) === term.ID;
 		const isPreviewable = get( site, 'is_previewable' );
-		const siteSlug = get( site, 'slug' );
 		const siteUrl = get( site, 'URL' );
 
 		return {
 			canSetAsDefault,
 			isDefault,
+			isJetpack: isJetpackSite( state, siteId ),
 			isPreviewable,
 			siteId,
-			siteSlug,
 			siteUrl,
 		};
 	},

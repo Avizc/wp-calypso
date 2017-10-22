@@ -1,22 +1,20 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
  * Internal dependencies
  */
 import analytics from 'lib/analytics';
+import titlecase from 'to-title-case';
 import { getSiteFragment, sectionify } from 'lib/route';
 import { renderWithReduxStore } from 'lib/react-helpers';
 import Settings from '../components/settings';
 
-export const renderTab = component => context => {
+export const renderTab = ( component ) => ( context ) => {
 	const siteId = getSiteFragment( context.path );
-	const zoneId = parseInt( context.params.zone, 10 ) || 0;
+	const { zone = '' } = context.params;
 
 	let baseAnalyticsPath = sectionify( context.path );
 
@@ -24,24 +22,20 @@ export const renderTab = component => context => {
 		baseAnalyticsPath += '/:site';
 	}
 
-	if ( zoneId ) {
-		baseAnalyticsPath += '/:zone';
-	}
-
 	let analyticsPageTitle = 'WP Zone Manager';
 
-	if ( zoneId ) {
-		analyticsPageTitle += ' > Edit zone';
-	}
-
-	if ( baseAnalyticsPath.match( /.*\/new\/:site$/ ) ) {
+	if ( zone.length ) {
+		analyticsPageTitle += ` > ${ titlecase( zone ) }`;
+	} else {
 		analyticsPageTitle += ' > New Zone';
 	}
 
 	analytics.pageView.record( baseAnalyticsPath, analyticsPageTitle );
 
 	renderWithReduxStore(
-		<Settings>{ React.createElement( component, { zoneId } ) }</Settings>,
+		<Settings tab={ zone }>
+			{ React.createElement( component ) }
+		</Settings>,
 		document.getElementById( 'primary' ),
 		context.store
 	);

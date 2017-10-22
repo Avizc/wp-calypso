@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,17 +10,17 @@ import { getNetworkSites } from '../';
 import { userState } from './fixtures/user-state';
 
 describe( 'getNetworkSites()', () => {
-	test( 'should return null if no sites exist in state', () => {
+	it( 'should return null if no sites exist in state', () => {
 		const state = {
 			...userState,
 			sites: {
-				items: {},
-			},
+				items: {}
+			}
 		};
 		expect( getNetworkSites( state, 1 ) ).to.be.null;
 	} );
 
-	test( 'should return null if main site is not found', () => {
+	it( 'should return null if main site is not found', () => {
 		const state = {
 			...userState,
 			sites: {
@@ -33,16 +31,16 @@ describe( 'getNetworkSites()', () => {
 						jetpack: true,
 						options: {
 							unmapped_url: 'https://example.wordpress.com',
-							main_network_site: 'https://example.wordpress.com',
-						},
+							main_network_site: 'https://example.wordpress.com'
+						}
 					},
-				},
-			},
+				}
+			}
 		};
 		expect( getNetworkSites( state, 2 ) ).to.be.null;
 	} );
 
-	test( 'should return null if site is not a main site', () => {
+	it( 'should return null if site is not a main site', () => {
 		const state = {
 			...userState,
 			sites: {
@@ -52,14 +50,14 @@ describe( 'getNetworkSites()', () => {
 						name: 'WordPress.com Example Blog',
 						URL: 'https://example.com',
 						jetpack: true,
-					},
-				},
-			},
+					}
+				}
+			}
 		};
 		expect( getNetworkSites( state, 1 ) ).to.be.null;
 	} );
 
-	test( 'should return an empty array if no secondary sites exist', () => {
+	it( 'should return an empty array if no secondary sites exist', () => {
 		const state = {
 			...userState,
 			sites: {
@@ -72,16 +70,16 @@ describe( 'getNetworkSites()', () => {
 						is_multisite: true,
 						options: {
 							unmapped_url: 'https://example.com',
-							main_network_site: 'https://example.com',
-						},
-					},
-				},
-			},
+							main_network_site: 'https://example.com'
+						}
+					}
+				}
+			}
 		};
 		expect( getNetworkSites( state, 1 ) ).to.be.an( 'array' ).that.is.empty;
 	} );
 
-	test( 'should return an array with secondary sites if they exist', () => {
+	it( 'should return an array with secondary sites if they exist', () => {
 		const state = {
 			...userState,
 			sites: {
@@ -92,8 +90,8 @@ describe( 'getNetworkSites()', () => {
 						jetpack: true,
 						options: {
 							unmapped_url: 'https://example.wordpress.com',
-							main_network_site: 'https://example.wordpress.com',
-						},
+							main_network_site: 'https://example.wordpress.com'
+						}
 					},
 					2: {
 						ID: 2,
@@ -101,8 +99,8 @@ describe( 'getNetworkSites()', () => {
 						jetpack: true,
 						options: {
 							unmapped_url: 'https://secondary.wordpress.com',
-							main_network_site: 'https://example.wordpress.com',
-						},
+							main_network_site: 'https://example.wordpress.com'
+						}
 					},
 					3: {
 						ID: 3,
@@ -110,14 +108,15 @@ describe( 'getNetworkSites()', () => {
 						jetpack: true,
 						options: {
 							unmapped_url: 'https://secondary3.wordpress.com',
-							main_network_site: 'https://example.wordpress.com',
-						},
-					},
-				},
-			},
+							main_network_site: 'https://example.wordpress.com'
+						}
+					}
+				}
+			}
 		};
 		const networkSites = getNetworkSites( state, 1 );
 		expect( networkSites[ 0 ].ID ).to.eql( 2 );
 		expect( networkSites[ 1 ].ID ).to.eql( 3 );
 	} );
 } );
+

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -17,7 +13,7 @@ import { isWpcomTheme, isWporgTheme } from 'state/themes/selectors';
 const QueryCanonicalTheme = ( { siteId, themeId, isWpcom, isWporg } ) => (
 	<div>
 		<QueryTheme themeId={ themeId } siteId="wpcom" />
-		{ ! isWpcom && <QueryTheme themeId={ themeId } siteId="wporg" /> }
+    { ! isWpcom && <QueryTheme themeId={ themeId } siteId="wporg" /> }
 		{ ! isWpcom && ! isWporg && siteId && <QueryTheme themeId={ themeId } siteId={ siteId } /> }
 	</div>
 );
@@ -25,12 +21,14 @@ const QueryCanonicalTheme = ( { siteId, themeId, isWpcom, isWporg } ) => (
 QueryCanonicalTheme.propTypes = {
 	siteId: PropTypes.number,
 	themeId: PropTypes.string.isRequired,
-	// Connected propTypes
+  // Connected propTypes
 	isWpcom: PropTypes.bool.isRequired,
-	isWporg: PropTypes.bool.isRequired,
+	isWporg: PropTypes.bool.isRequired
 };
 
-export default connect( ( state, { themeId } ) => ( {
-	isWpcom: isWpcomTheme( state, themeId ),
-	isWporg: isWporgTheme( state, themeId ),
-} ) )( QueryCanonicalTheme );
+export default connect(
+	( state, { themeId } ) => ( {
+		isWpcom: isWpcomTheme( state, themeId ),
+		isWporg: isWporgTheme( state, themeId )
+	} )
+)( QueryCanonicalTheme );

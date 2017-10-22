@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import { forEach, get } from 'lodash';
 
 /**

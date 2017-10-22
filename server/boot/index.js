@@ -1,32 +1,31 @@
 /**
  * Module dependencies
  */
-const path = require( 'path' ),
+var path = require( 'path' ),
 	build = require( 'build' ),
 	config = require( 'config' ),
-	chalk = require( 'chalk' ),
 	express = require( 'express' ),
-	cookieParser = require( 'cookie-parser' ),
-	userAgent = require( 'express-useragent' ),
 	morgan = require( 'morgan' ),
 	pages = require( 'pages' );
 
 /**
  * Returns the server HTTP request handler "app".
- * @returns {object} The express app
+ *
  * @api public
  */
 function setup() {
-	const app = express();
+
+	var app = express(),
+		assets,
+		devdocs,
+		api,
+		bundler;
 
 	// for nginx
 	app.enable( 'trust proxy' );
 
 	// template engine
 	app.set( 'view engine', 'jade' );
-
-	app.use( cookieParser() );
-	app.use( userAgent.express() );
 
 	if ( 'development' === config( 'env' ) ) {
 		// use legacy CSS rebuild system if css-hot-reload is disabled
@@ -35,28 +34,15 @@ function setup() {
 			app.use( build() );
 		}
 
-		require( 'bundler' )( app );
+		bundler = require( 'bundler' );
+		bundler( app );
 
 		// setup logger
 		app.use( morgan( 'dev' ) );
-
-		if ( config.isEnabled( 'wpcom-user-bootstrap' ) ) {
-			if ( config( 'wordpress_logged_in_cookie' ) ) {
-				const username = config( 'wordpress_logged_in_cookie' ).split( '%7C' )[ 0 ];
-				console.info( chalk.cyan( '\nYour logged in cookie set to user: ' + username ) );
-
-				app.use( function( req, res, next ) {
-					if ( ! req.cookies.wordpress_logged_in ) {
-						req.cookies.wordpress_logged_in = config( 'wordpress_logged_in_cookie' );
-					}
-					next();
-				} );
-			} else {
-				console.info( chalk.red( '\nYou need to set `wordpress_logged_in_cookie` in secrets.json' +
-					' for wpcom-user-bootstrap to work in development.' ) );
-			}
-		}
 	} else {
+		assets = require( 'bundler/assets' );
+		assets( app );
+
 		// setup logger
 		app.use( morgan( 'combined' ) );
 	}
@@ -65,16 +51,7 @@ function setup() {
 	app.use( '/calypso', express.static( path.resolve( __dirname, '..', '..', 'public' ) ) );
 
 	// service-worker needs to be served from root to avoid scope issues
-	app.use( '/service-worker.js',
-		express.static( path.resolve( __dirname, '..', '..', 'client', 'lib', 'service-worker', 'service-worker.js' ) ) );
-
-	// loaded when we detect stats blockers - see lib/analytics/index.js
-	app.get( '/nostats.js', function( request, response ) {
-		const analytics = require( '../lib/analytics' );
-		analytics.tracks.recordEvent( 'calypso_stats_blocked', {}, request );
-		response.setHeader( 'content-type', 'application/javascript' );
-		response.end( "console.log('Stats are disabled');" );
-	} );
+	app.use( '/service-worker.js', express.static( path.resolve( __dirname, '..', '..', 'client', 'lib', 'service-worker', 'service-worker.js' ) ) );
 
 	// serve files when not in production so that the source maps work correctly
 	if ( 'development' === config( 'env' ) ) {
@@ -83,14 +60,16 @@ function setup() {
 	}
 
 	if ( config.isEnabled( 'devdocs' ) ) {
-		app.use( require( 'devdocs' )() );
+		devdocs = require( 'devdocs' );
+		app.use( devdocs() );
 	}
 
 	if ( config.isEnabled( 'desktop' ) ) {
 		app.use( '/desktop', express.static( path.resolve( __dirname, '..', '..', '..', 'public_desktop' ) ) );
 	}
 
-	app.use( require( 'api' )() );
+	api = require( 'api' );
+	app.use( api() );
 
 	// attach the pages module
 	app.use( pages() );

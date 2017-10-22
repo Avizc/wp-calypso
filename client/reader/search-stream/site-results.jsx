@@ -1,9 +1,7 @@
-/** @format */
 /**
  * External Dependencies
  */
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import 'lodash';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
@@ -75,5 +73,5 @@ export default connect(
 			sort: ownProps.sort,
 		} ),
 	} ),
-	{ requestFeedSearch }
+	{ requestFeedSearch },
 )( localize( withDimensions( SiteResults ) ) );

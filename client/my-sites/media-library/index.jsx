@@ -1,89 +1,73 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import classNames from 'classnames';
-import { isEqual, toArray, some } from 'lodash';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+var React = require( 'react' ),
+	classNames = require( 'classnames' ),
+	isEqual = require( 'lodash/isEqual' );
 
 /**
  * Internal dependencies
  */
-import Content from './content';
-import MediaActions from 'lib/media/actions';
-import MediaLibraryDropZone from './drop-zone';
-import MediaLibrarySelectedStore from 'lib/media/library-selected-store';
-import MediaUtils from 'lib/media/utils';
-import filterToMimePrefix from './filter-to-mime-prefix';
-import FilterBar from './filter-bar';
-import MediaValidationData from 'components/data/media-validation-data';
+var Content = require( './content' ),
+	MediaActions = require( 'lib/media/actions' ),
+	MediaLibraryDropZone = require( './drop-zone' ),
+	MediaLibrarySelectedStore = require( 'lib/media/library-selected-store' ),
+	MediaUtils = require( 'lib/media/utils' ),
+	filterToMimePrefix = require( './filter-to-mime-prefix' ),
+	FilterBar = require( './filter-bar' ).default,
+	MediaValidationData = require( 'components/data/media-validation-data' ),
+	urlSearch = require( 'lib/mixins/url-search' );
 import QueryPreferences from 'components/data/query-preferences';
-import searchUrl from 'lib/search-url';
-import {
-	isKeyringConnectionsFetching,
-	getKeyringConnections,
-} from 'state/sharing/keyring/selectors';
-import { requestKeyringConnections } from 'state/sharing/keyring/actions';
 
-const isConnected = props =>
-	props.source === '' || some( props.connectedServices, item => item.service === props.source );
-const needsKeyring = props =>
-	! props.isRequesting && props.source !== '' && props.connectedServices.length === 0;
+module.exports = React.createClass( {
+	displayName: 'MediaLibrary',
 
-class MediaLibrary extends Component {
-	static propTypes = {
-		className: PropTypes.string,
-		site: PropTypes.object,
-		filter: PropTypes.string,
-		enabledFilters: PropTypes.arrayOf( PropTypes.string ),
-		search: PropTypes.string,
-		source: PropTypes.string,
-		onAddMedia: PropTypes.func,
-		onFilterChange: PropTypes.func,
-		onSourceChange: PropTypes.func,
-		onSearch: PropTypes.func,
-		onScaleChange: PropTypes.func,
-		onEditItem: PropTypes.func,
-		fullScreenDropZone: PropTypes.bool,
-		containerWidth: PropTypes.number,
-		single: PropTypes.bool,
-		scrollable: PropTypes.bool,
-		postId: PropTypes.number,
-	};
+	mixins: [ urlSearch ],
 
-	static defaultProps = {
-		fullScreenDropZone: true,
-		onAddMedia: () => {},
-		onScaleChange: () => {},
-		scrollable: false,
-		source: '',
-	};
+	propTypes: {
+		className: React.PropTypes.string,
+		site: React.PropTypes.object,
+		filter: React.PropTypes.string,
+		enabledFilters: React.PropTypes.arrayOf( React.PropTypes.string ),
+		search: React.PropTypes.string,
+		source: React.PropTypes.string,
+		onAddMedia: React.PropTypes.func,
+		onFilterChange: React.PropTypes.func,
+		onSearch: React.PropTypes.func,
+		onScaleChange: React.PropTypes.func,
+		onEditItem: React.PropTypes.func,
+		fullScreenDropZone: React.PropTypes.bool,
+		containerWidth: React.PropTypes.number,
+		single: React.PropTypes.bool,
+		scrollable: React.PropTypes.bool,
+		postId: React.PropTypes.number,
+	},
 
-	componentWillMount() {
-		if ( needsKeyring( this.props ) ) {
-			// Are we connected to anything yet?
-			this.props.requestKeyringConnections();
-		}
-	}
+	getDefaultProps: function() {
+		return {
+			fullScreenDropZone: true,
+			onAddMedia: () => {},
+			onScaleChange: () => {},
+			scrollable: false,
+			source: '',
+		};
+	},
 
-	componentWillReceiveProps( nextProps ) {
-		if ( needsKeyring( nextProps ) && this.props.source === '' ) {
-			// If we have changed to an external data source then check for a keyring connection
-			this.props.requestKeyringConnections();
-		}
-	}
+	componentDidMount: function() {
+		this.onSearch = this.props.onSearch;
+	},
 
-	doSearch = keywords => {
-		searchUrl( keywords, this.props.search, this.props.onSearch );
-	};
+	componentDidUpdate: function() {
+		this.onSearch = this.props.onSearch;
+	},
 
-	onAddMedia = () => {
-		const selectedItems = MediaLibrarySelectedStore.getAll( this.props.site.ID );
-		let filteredItems = selectedItems;
+	componentWillUnmount: function() {
+		delete this.onSearch;
+	},
+
+	onAddMedia: function() {
+		let selectedItems = MediaLibrarySelectedStore.getAll( this.props.site.ID ),
+			filteredItems = selectedItems;
 
 		if ( ! this.props.site ) {
 			return;
@@ -109,26 +93,22 @@ class MediaLibrary extends Component {
 		}
 
 		this.props.onAddMedia();
-	};
+	},
 
-	filterRequiresUpgrade() {
-		const { filter, site, source } = this.props;
-		if ( source ) {
-			return false;
-		}
-
+	filterRequiresUpgrade: function() {
+		const { filter, site } = this.props;
 		switch ( filter ) {
 			case 'audio':
-				return ! ( ( site && site.options.upgraded_filetypes_enabled ) || site.jetpack );
+				return ! ( site && site.options.upgraded_filetypes_enabled || site.jetpack );
 
 			case 'videos':
-				return ! ( ( site && site.options.videopress_enabled ) || site.jetpack );
+				return ! ( site && site.options.videopress_enabled || site.jetpack );
 		}
 
 		return false;
-	}
+	},
 
-	renderDropZone() {
+	renderDropZone: function() {
 		if ( this.props.source !== '' ) {
 			return null;
 		}
@@ -138,13 +118,12 @@ class MediaLibrary extends Component {
 				site={ this.props.site }
 				filter={ this.props.filter }
 				fullScreen={ this.props.fullScreenDropZone }
-				onAddMedia={ this.onAddMedia }
-			/>
+				onAddMedia={ this.onAddMedia } />
 		);
-	}
+	},
 
-	render() {
-		let content;
+	render: function() {
+		var classes, content;
 
 		content = (
 			<Content
@@ -153,32 +132,31 @@ class MediaLibrary extends Component {
 				filterRequiresUpgrade={ this.filterRequiresUpgrade() }
 				search={ this.props.search }
 				source={ this.props.source }
-				isConnected={ isConnected( this.props ) }
 				containerWidth={ this.props.containerWidth }
 				single={ this.props.single }
 				scrollable={ this.props.scrollable }
 				onAddMedia={ this.onAddMedia }
 				onAddAndEditImage={ this.props.onAddAndEditImage }
 				onMediaScaleChange={ this.props.onScaleChange }
-				onSourceChange={ this.props.onSourceChange }
 				selectedItems={ this.props.mediaLibrarySelectedItems }
 				onDeleteItem={ this.props.onDeleteItem }
 				onEditItem={ this.props.onEditItem }
 				onViewDetails={ this.props.onViewDetails }
-				postId={ this.props.postId }
-			/>
+				postId={ this.props.postId } />
 		);
 
 		if ( this.props.site ) {
 			content = (
-				<MediaValidationData siteId={ this.props.site.ID }>{ content }</MediaValidationData>
+				<MediaValidationData siteId={ this.props.site.ID }>
+					{ content }
+				</MediaValidationData>
 			);
 		}
 
-		const classes = classNames(
+		classes = classNames(
 			'media-library',
 			{ 'is-single': this.props.single },
-			this.props.className
+			this.props.className,
 		);
 
 		return (
@@ -192,26 +170,11 @@ class MediaLibrary extends Component {
 					enabledFilters={ this.props.enabledFilters }
 					search={ this.props.search }
 					onFilterChange={ this.props.onFilterChange }
-					onSourceChange={ this.props.onSourceChange }
 					source={ this.props.source }
 					onSearch={ this.doSearch }
-					isConnected={ isConnected( this.props ) }
-					post={ !! this.props.postId }
-				/>
+					post={ !! this.props.postId } />
 				{ content }
 			</div>
 		);
 	}
-}
-
-export default connect(
-	state => ( {
-		connectedServices: toArray( getKeyringConnections( state ) ).filter(
-			item => item.type === 'other' && item.status === 'ok'
-		),
-		isRequesting: isKeyringConnectionsFetching( state ),
-	} ),
-	{
-		requestKeyringConnections,
-	}
-)( MediaLibrary );
+} );

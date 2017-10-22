@@ -1,17 +1,17 @@
-/** @format */
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
+
 import { requestFeedSearch, SORT_BY_LAST_UPDATED } from '../actions';
 import queryKey from '../query-key';
 
 describe( 'query-key', () => {
-	test( 'should generate the expected query keys', () => {
+	it( 'should generate the expected query keys', () => {
 		[
 			[ requestFeedSearch( { query: 'one' } ), 'one-X-relevance' ],
 			[ requestFeedSearch( { query: 'one', offset: 10 } ), 'one-X-relevance' ],

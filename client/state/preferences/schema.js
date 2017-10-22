@@ -1,18 +1,17 @@
-/** @format */
 export const remoteValuesSchema = {
 	type: [ 'null', 'object' ],
 	patternProperties: {
 		'^dismissible-card-.+$': {
-			type: 'boolean',
-		},
+			type: 'boolean'
+		}
 	},
 	properties: {
 		'editor-mode': {
 			type: 'string',
-			enum: [ 'html', 'tinymce' ],
+			'enum': [ 'html', 'tinymce' ]
 		},
 		mediaModalGalleryInstructionsDismissed: {
-			type: 'boolean',
+			type: 'boolean'
 		},
 		firstViewHistory: {
 			type: 'array',
@@ -21,7 +20,7 @@ export const remoteValuesSchema = {
 				properties: {
 					view: { type: 'string' },
 					timestamp: { type: 'number', minimum: 0 },
-					disabled: { type: 'boolean' },
+					disabled: { type: 'boolean' }
 				},
 				required: [ 'view', 'timestamp', 'disabled' ],
 			},
@@ -37,29 +36,25 @@ export const remoteValuesSchema = {
 				},
 				required: [ 'tourName', 'timestamp', 'finished' ],
 				additionalProperties: false,
-			},
+			}
 		},
 		recentSites: {
 			type: 'array',
 			items: {
-				type: 'number',
-			},
+				type: 'number'
+			}
 		},
 		mediaScale: {
 			type: 'number',
 			minimum: 0,
-			maximum: 1,
+			maximum: 1
 		},
 		editorAdvancedVisible: {
-			type: 'boolean',
+			type: 'boolean'
 		},
 		editorConfirmationDisabledSites: {
 			type: 'array',
-			items: { type: 'number' },
+			items: { type: 'number' }
 		},
-		colorScheme: {
-			type: 'string',
-			enum: [ 'default', 'light', 'dark' ],
-		},
-	},
+	}
 };

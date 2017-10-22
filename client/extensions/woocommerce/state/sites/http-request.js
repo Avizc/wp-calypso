@@ -1,87 +1,32 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { http } from 'state/data-layer/wpcom-http/actions';
 
 /**
  * Returns a proper WPCOM_HTTP_REQUEST action (http data layer) for dispatching requests
  * in data-layer handlers.
- * The resulting data will be in the form of `{ data: { API data } }`
  * @param {String} method HTTP Request Method
  * @param {String} path The WC API path to make a request to (after /wc/v#)
  * @param {Number} siteId Site ID to make the request to
  * @param {Object} body HTTP Body for POST and PUT Requests
  * @param {Object} action The original requesting action
- * @param {String} namespace Namespace to be pre-pended to path (e.g. /wc/v3)
  * @return {Object} WPCOM_HTTP_REQUEST Action
  */
-const _request = ( method, path, siteId, body, action, namespace ) => {
+const _request = ( method, path, siteId, body, action ) => {
 	// WPCOM API breaks if query parameters are passed after "?" instead of "&". Hide this hack from the calling code
 	path = path.replace( '?', '&' );
-	path = `${ namespace }/${ path }&_method=${ method }`;
-
-	let requestMethod;
-	let requestQuery;
-	let requestBody;
-
-	// DELETE, PUT, and POST all get passed to the Jetpack API as a POST request
-	switch ( method ) {
-		case 'GET':
-			requestMethod = 'GET';
-			requestQuery = {
-				path,
-				json: true,
-			};
-			requestBody = null;
-			break;
-		case 'DELETE':
-			requestMethod = 'POST';
-			requestQuery = {
-				json: true,
-			};
-			requestBody = {
-				path,
-			};
-			break;
-		default:
-			requestMethod = 'POST';
-			requestQuery = {
-				json: true,
-			};
-			requestBody = {
-				path,
-				body: body && JSON.stringify( body ),
-			};
-	}
-
-	return http(
-		{
-			apiVersion: '1.1',
-			method: requestMethod,
-			path: `/jetpack-blogs/${ siteId }/rest-api/`,
-			query: requestQuery,
-			body: requestBody,
+	path = `/wc/v3/${ path }&_method=${ method }`;
+	return http( {
+		apiVersion: '1.1',
+		method: 'GET' === method ? 'GET' : 'POST',
+		path: `/jetpack-blogs/${ siteId }/rest-api/`,
+		query: {
+			path,
+			json: true,
 		},
-		action
-	);
-};
-
-/**
- * Prepares a request action that will return the body and headers.
- * The resulting data will be in the form of `{ data: { status: <code>, body: { API data }, headers: { API response headers } } }`
- * @param {String} method HTTP Request Method
- * @param {String} path The WC API path to make a request to (after /wc/v#)
- * @param {Number} siteId Site ID to make the request to
- * @param {Object} body HTTP Body for POST and PUT Requests
- * @param {Object} action The original requesting action
- * @param {String} namespace Namespace to be pre-pended to path (e.g. /wc/v3)
- * @return {Object} WPCOM_HTTP_REQUEST Action
- */
-const _requestWithHeaders = ( method, path, siteId, body, action, namespace ) => {
-	return _request( method, path + '&_envelope', siteId, body, action, namespace );
+		body: body && JSON.stringify( body ),
+	}, action );
 };
 
 /**
@@ -89,24 +34,17 @@ const _requestWithHeaders = ( method, path, siteId, body, action, namespace ) =>
  * WooCommerce endpoints without repeating things like /wc/v3.
  * @param {Number} siteId Site ID to make the request to
  * @param {Object} action The original requesting action
- * @param {String} namespace Namespace to be pre-pended to path. Defaults to /wc/v3
  * @return {Object} An object with the properties "get", "post", "put" and "del", which are functions to
  * make an HTTP GET, POST, PUT and DELETE request, respectively.
  */
-export default ( siteId, action, namespace = '/wc/v3' ) => ( {
+export default ( siteId, action ) => ( {
+
 	/**
 	 * Sends a GET request to the API
 	 * @param {String} path REST path to hit, omitting the "blog.url/wp-json/wc/v#/" prefix
-	 * @return {Object} WPCOM_HTTP_REQUEST Action with `data = { API data }`
+	 * @return {Object} WPCOM_HTTP_REQUEST Action
 	 */
-	get: path => _request( 'GET', path, siteId, null, action, namespace ),
-
-	/**
-	 * Sends a GET request to the API that will return with headers
-	 * @param {String} path REST path to hit, omitting the "blog.url/wp-json-/wc/v#/" prefix
-	 * @return {Object} WPCOM_HTTP_REQUEST Action with `data = { status: <code>, body: { API data }, headers: { API response headers } }`
-	 */
-	getWithHeaders: path => _requestWithHeaders( 'GET', path, siteId, null, action, namespace ),
+	get: ( path ) => _request( 'GET', path, siteId, null, action ),
 
 	/**
 	 * Sends a POST request to the API
@@ -114,7 +52,7 @@ export default ( siteId, action, namespace = '/wc/v3' ) => ( {
 	 * @param {Object} body Payload to send
 	 * @return {Object} WPCOM_HTTP_REQUEST Action
 	 */
-	post: ( path, body ) => _request( 'POST', path, siteId, body || {}, action, namespace ),
+	post: ( path, body ) => _request( 'POST', path, siteId, body || {}, action ),
 
 	/**
 	 * Sends a PUT request to the API.
@@ -124,7 +62,7 @@ export default ( siteId, action, namespace = '/wc/v3' ) => ( {
 	 * @param {Object} body Payload to send
 	 * @return {Object} WPCOM_HTTP_REQUEST Action
 	 */
-	put: ( path, body ) => _request( 'PUT', path, siteId, body || {}, action, namespace ),
+	put: ( path, body ) => _request( 'PUT', path, siteId, body || {}, action ),
 
 	/**
 	 * Sends a DELETE request to the API.
@@ -133,5 +71,5 @@ export default ( siteId, action, namespace = '/wc/v3' ) => ( {
 	 * @param {String} path REST path to hit, omitting the "blog.url/wp-json/wc/v#/" prefix
 	 * @return {Object} WPCOM_HTTP_REQUEST Action
 	 */
-	del: path => _request( 'DELETE', path, siteId, null, action, namespace ),
+	del: ( path ) => _request( 'DELETE', path, siteId, null, action ),
 } );

@@ -1,16 +1,12 @@
-/** @format */
-/**
- * External dependencies
- */
 import React from 'react';
+import ReactDOM from 'react-dom';
 import tinymce from 'tinymce/tinymce';
 import { renderToString } from 'react-dom/server';
 import i18n from 'i18n-calypso';
 
-/**
- * Internal dependencies
- */
-import { menuItems, GridiconButton } from './menu-items';
+import Gridicon from 'gridicons';
+
+import menuItems from './menu-items';
 
 const initialize = editor => {
 	menuItems.forEach( item =>
@@ -19,22 +15,22 @@ const initialize = editor => {
 			cmd: item.cmd,
 			onPostRender() {
 				this.innerHtml( renderToString( item.item ) );
-			},
+			}
 		} )
 	);
 
 	editor.addButton( 'wpcom_insert_menu', {
-		type: 'menubutton',
-		title: i18n.translate( 'Add content' ),
+		type: 'splitbutton',
+		title: i18n.translate( 'Insert content' ),
 		classes: 'btn wpcom-insert-menu insert-menu',
+		cmd: menuItems[ 0 ].cmd,
 		menu: menuItems.map( ( { name } ) => editor.menuItems[ name ] ),
 		onPostRender() {
-			const [ insertContentElm ] = this.$el[ 0 ].children;
-
-			insertContentElm.innerHTML = renderToString(
-				<GridiconButton icon="add-outline" label={ i18n.translate( 'Add' ) } />
+			ReactDOM.render(
+				<Gridicon icon="add-outline" />,
+				this.$el[ 0 ].children[ 0 ]
 			);
-		},
+		}
 	} );
 };
 

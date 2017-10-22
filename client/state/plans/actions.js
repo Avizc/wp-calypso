@@ -1,14 +1,11 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import {
 	PLANS_RECEIVE,
 	PLANS_REQUEST,
 	PLANS_REQUEST_SUCCESS,
-	PLANS_REQUEST_FAILURE,
+	PLANS_REQUEST_FAILURE
 } from '../action-types';
 
 /**
@@ -20,7 +17,7 @@ import {
 export const plansReceiveAction = plans => {
 	return {
 		type: PLANS_RECEIVE,
-		plans,
+		plans
 	};
 };
 
@@ -42,7 +39,7 @@ export const plansRequestSuccessAction = () => {
 export const plansRequestFailureAction = error => {
 	return {
 		type: PLANS_REQUEST_FAILURE,
-		error: error,
+		error: error
 	};
 };
 
@@ -52,5 +49,5 @@ export const plansRequestFailureAction = error => {
  * @return {Object} action object
  */
 export const requestPlans = () => ( {
-	type: PLANS_REQUEST,
+	type: PLANS_REQUEST
 } );

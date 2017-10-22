@@ -1,53 +1,47 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import { assert } from 'chai';
+var assert = require( 'chai' ).assert;
 
 /**
  * Internal dependencies
  */
-import actions from './lib/mock-actions';
-import site from './lib/mock-site';
+var actions = require( './lib/mock-actions' ),
+	site = require( './lib/mock-site' ),
+	options = { siteId: site.ID },
+	useFakeDom = require( 'test/helpers/use-fake-dom' );
 
-/**
- * Internal dependencies
- */
-const options = { siteId: site.ID };
-
-describe( 'WPCOM Followers Store', () => {
+describe( 'WPCOM Followers Store', function() {
 	var Dispatcher, FollowersStore;
 
-	beforeEach( () => {
+	useFakeDom();
+
+	beforeEach( function() {
 		Dispatcher = require( 'dispatcher' );
 		FollowersStore = require( 'lib/followers/store' );
 	} );
 
-	test( 'Store should be an object', () => {
+	it( 'Store should be an object', function() {
 		assert.isObject( FollowersStore );
 	} );
 
-	describe( 'Fetch Followers', () => {
-		beforeEach( () => {
+	describe( 'Fetch Followers', function() {
+		beforeEach( function() {
 			Dispatcher.handleServerAction( actions.fetchedFollowers );
 		} );
 
-		test( 'Should update the store on RECEIVE_FOLLOWERS', () => {
+		it( 'Should update the store on RECEIVE_FOLLOWERS', function() {
 			var followers = FollowersStore.getFollowers( options );
 			assert.equal( 2, followers.length );
 		} );
 
-		test( 'The store should return an array of objects when fetching followers', () => {
+		it( 'The store should return an array of objects when fetching followers', function() {
 			var followers = FollowersStore.getFollowers( options );
 			assert.isArray( followers );
 			assert.isObject( followers[ 0 ] );
 		} );
 
-		test( 'Fetching more followers should update the array in the store', () => {
+		it( 'Fetching more followers should update the array in the store', function() {
 			var followers = FollowersStore.getFollowers( options ),
 				followersAgain;
 			assert.equal( followers.length, 2 );
@@ -56,7 +50,7 @@ describe( 'WPCOM Followers Store', () => {
 			assert.equal( followersAgain.length, 4 );
 		} );
 
-		test( 'Pagination data should update when we fetch more followers', () => {
+		it( 'Pagination data should update when we fetch more followers', function() {
 			var pagination = FollowersStore.getPaginationData( options );
 			assert.equal( pagination.totalFollowers, 4 );
 			assert.equal( pagination.numFollowersFetched, 2 );
@@ -68,11 +62,11 @@ describe( 'WPCOM Followers Store', () => {
 		} );
 	} );
 
-	describe( 'Remove follower', () => {
-		beforeEach( () => {
+	describe( 'Remove follower', function() {
+		beforeEach( function() {
 			Dispatcher.handleServerAction( actions.fetchedFollowers );
 		} );
-		test( 'Should remove a single follower.', () => {
+		it( 'Should remove a single follower.', function() {
 			var followers = FollowersStore.getFollowers( options ),
 				followersAgain;
 
@@ -82,7 +76,7 @@ describe( 'WPCOM Followers Store', () => {
 			followersAgain = FollowersStore.getFollowers( options );
 			assert.equal( followersAgain.length, 1 );
 		} );
-		test( 'Should restore a single follower on removal error.', () => {
+		it( 'Should restore a single follower on removal error.', function() {
 			var followers = FollowersStore.getFollowers( options ),
 				followersAfterRemove,
 				followersAfterError;

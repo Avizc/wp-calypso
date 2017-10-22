@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import {
 	AUTOMATED_TRANSFER_STATUS_SET,
 	THEME_TRANSFER_INITIATE_FAILURE,
@@ -34,14 +31,14 @@ export const handlers = {
 		} else if ( 'start' === status ) {
 			pauseFetching();
 		}
-	},
+	}
 };
 
 /**
  * Middleware
  */
 
-export default ( { dispatch, getState } ) => next => action => {
+export default ( { dispatch, getState } ) => ( next ) => ( action ) => {
 	if ( handlers.hasOwnProperty( action.type ) ) {
 		handlers[ action.type ]( dispatch, action, getState );
 	}

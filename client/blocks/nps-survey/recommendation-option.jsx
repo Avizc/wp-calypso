@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 
 class RecommendationOption extends Component {
@@ -18,7 +14,7 @@ class RecommendationOption extends Component {
 		disabled: PropTypes.bool,
 		selected: PropTypes.bool,
 		value: PropTypes.number,
-	};
+	}
 
 	handleChange( event ) {
 		this.props.onChange( parseInt( event.target.value, 10 ) );
@@ -31,8 +27,7 @@ class RecommendationOption extends Component {
 
 		return (
 			<label className={ className }>
-				<input
-					type="radio"
+				<input type="radio"
 					name="nps-survey-recommendation-option"
 					value={ this.props.value }
 					checked={ this.props.selected }

@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -16,9 +15,6 @@ import { DEFAULT_MEDIA_QUERY } from './constants';
  * MediaQueryManager manages media which can be queried and change over time
  */
 export default class MediaQueryManager extends PaginatedQueryManager {
-	static QueryKey = MediaQueryKey;
-	static DefaultQuery = DEFAULT_MEDIA_QUERY;
-
 	/**
 	 * Returns true if the media item matches the given query, or false
 	 * otherwise.
@@ -27,8 +23,8 @@ export default class MediaQueryManager extends PaginatedQueryManager {
 	 * @param  {Object}  media Item to consider
 	 * @return {Boolean}       Whether media item matches query
 	 */
-	static matches( query, media ) {
-		return every( { ...this.DefaultQuery, ...query }, ( value, key ) => {
+	matches( query, media ) {
+		return every( { ...DEFAULT_MEDIA_QUERY, ...query }, ( value, key ) => {
 			switch ( key ) {
 				case 'search':
 					if ( ! value ) {
@@ -43,22 +39,22 @@ export default class MediaQueryManager extends PaginatedQueryManager {
 					}
 
 					// See: https://developer.wordpress.org/reference/functions/wp_post_mime_type_where/
-					return new RegExp(
-						`^${ value
+					return new RegExp( `^${
+						value
 							// Replace wildcard-only, wildcard group, and empty
 							// group with wildcard pattern matching
 							.replace( /(^%|(\/)%?)$/, '$2.+' )
 							// Split subgroup and group to filter
 							.split( '/' )
 							// Remove invalid characters
-							.map( group => group.replace( /[^-*.+a-zA-Z0-9]/g, '' ) )
+							.map( ( group ) => group.replace( /[^-*.+a-zA-Z0-9]/g, '' ) )
 							// If no group, append wildcard match
 							.concat( '.+' )
 							// Take only subgroup and group
 							.slice( 0, 2 )
 							// Finally, merge back into string
-							.join( '/' ) }$`
-					).test( media.mime_type );
+							.join( '/' )
+					}$` ).test( media.mime_type );
 
 				case 'post_ID':
 					// Note that documentation specifies that query value of 0
@@ -88,7 +84,7 @@ export default class MediaQueryManager extends PaginatedQueryManager {
 	 * @return {Number}        0 if equal, less than 0 if mediaA is first,
 	 *                         greater than 0 if mediaB is first.
 	 */
-	static compare( query, mediaA, mediaB ) {
+	compare( query, mediaA, mediaB ) {
 		let order;
 
 		switch ( query.order_by ) {
@@ -113,3 +109,7 @@ export default class MediaQueryManager extends PaginatedQueryManager {
 		return order || 0;
 	}
 }
+
+MediaQueryManager.QueryKey = MediaQueryKey;
+
+MediaQueryManager.DEFAULT_QUERY = DEFAULT_MEDIA_QUERY;

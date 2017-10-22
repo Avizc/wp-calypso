@@ -1,24 +1,18 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import { expect } from 'chai';
-import { mount } from 'enzyme';
-import { filter, map } from 'lodash';
 import React from 'react';
-import sinon from 'sinon';
+import { expect } from 'chai';
+import { filter, map } from 'lodash';
+import { test } from 'sinon';
 
 /**
  * Internal dependencies
  */
+import EmptyComponent from 'test/helpers/react/empty-component';
 import fixtures from './lib/fixtures';
-import TokenFieldWrapper from './lib/token-field-wrapper';
-
-jest.mock( 'components/tooltip', () => require( 'components/empty-component' ) );
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
 /**
  * Module variables
@@ -31,16 +25,16 @@ const keyCodes = {
 	upArrow: 38,
 	rightArrow: 39,
 	downArrow: 40,
-	delete: 46,
-	comma: 188,
+	'delete': 46,
+	comma: 188
 };
 
 const charCodes = {
-	comma: 44,
+	comma: 44
 };
 
-describe( 'TokenField', () => {
-	let wrapper, tokenFieldNode, textInputNode;
+describe( 'TokenField', function() {
+	let wrapper, tokenFieldNode, textInputNode, TokenFieldWrapper, mount;
 
 	function setText( text ) {
 		textInputNode.simulate( 'change', { target: { value: text } } );
@@ -49,13 +43,13 @@ describe( 'TokenField', () => {
 	function sendKeyDown( keyCode, shiftKey ) {
 		tokenFieldNode.simulate( 'keyDown', {
 			keyCode: keyCode,
-			shiftKey: !! shiftKey,
+			shiftKey: ! ! shiftKey
 		} );
 	}
 
 	function sendKeyPress( charCode ) {
 		tokenFieldNode.simulate( 'keyPress', {
-			charCode: charCode,
+			charCode: charCode
 		} );
 	}
 
@@ -103,26 +97,34 @@ describe( 'TokenField', () => {
 		return selectedSuggestions[ 0 ] || null;
 	}
 
-	beforeEach( () => {
+	useFakeDom();
+
+	useMockery( mockery => {
+		mount = require( 'enzyme' ).mount;
+		mockery.registerMock( 'components/tooltip', EmptyComponent );
+		TokenFieldWrapper = require( './lib/token-field-wrapper' );
+	} );
+
+	beforeEach( function() {
 		wrapper = mount( <TokenFieldWrapper /> );
 		tokenFieldNode = wrapper.ref( 'tokenField' );
 		textInputNode = tokenFieldNode.find( '.token-field__input' );
 		textInputNode.simulate( 'focus' );
 	} );
 
-	describe( 'displaying tokens', () => {
-		test( 'should render default tokens', () => {
+	describe( 'displaying tokens', function() {
+		it( 'should render default tokens', function() {
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
 		} );
 
-		test( 'should display tokens with escaped special characters properly', () => {
+		it( 'should display tokens with escaped special characters properly', function() {
 			wrapper.setState( {
-				tokens: fixtures.specialTokens.textEscaped,
+				tokens: fixtures.specialTokens.textEscaped
 			} );
 			expect( getTokensHTML() ).to.deep.equal( fixtures.specialTokens.htmlEscaped );
 		} );
 
-		test( 'should display tokens with special characters properly', () => {
+		it( 'should display tokens with special characters properly', function() {
 			// This test is not as realistic as the previous one: if a WP site
 			// contains tag names with special characters, the API will always
 			// return the tag names already escaped.  However, this is still
@@ -130,165 +132,156 @@ describe( 'TokenField', () => {
 			// dangerous characters in them don't have these characters carried
 			// through unescaped to the HTML.
 			wrapper.setState( {
-				tokens: fixtures.specialTokens.textUnescaped,
+				tokens: fixtures.specialTokens.textUnescaped
 			} );
 			expect( getTokensHTML() ).to.deep.equal( fixtures.specialTokens.htmlUnescaped );
 		} );
 	} );
 
-	describe( 'suggestions', () => {
-		test( 'should render default suggestions', () => {
+	describe( 'suggestions', function() {
+		it( 'should render default suggestions', function() {
 			// limited by maxSuggestions (default 100 so doesn't matter here)
 			expect( getSuggestionsText() ).to.deep.equal( wrapper.state( 'tokenSuggestions' ) );
 		} );
 
-		test( 'should remove already added tags from suggestions', () => {
+		it( 'should remove already added tags from suggestions', function() {
 			wrapper.setState( {
-				tokens: Object.freeze( [ 'of', 'and' ] ),
+				tokens: Object.freeze( [ 'of', 'and' ] )
 			} );
 			expect( getSuggestionsText() ).to.not.include.members( getTokensHTML() );
 		} );
 
-		test( 'should suggest partial matches', () => {
+		it( 'should suggest partial matches', function() {
 			setText( 't' );
 			expect( getSuggestionsText() ).to.deep.equal( fixtures.matchingSuggestions.t );
 		} );
 
-		test( 'suggestions that begin with match are boosted', () => {
+		it( 'suggestions that begin with match are boosted', function() {
 			setText( 's' );
 			expect( getSuggestionsText() ).to.deep.equal( fixtures.matchingSuggestions.s );
 		} );
 
-		test( 'should display suggestions with escaped special characters properly', () => {
+		it( 'should display suggestions with escaped special characters properly', function() {
 			wrapper.setState( {
-				tokenSuggestions: fixtures.specialSuggestions.textEscaped,
+				tokenSuggestions: fixtures.specialSuggestions.textEscaped
 			} );
 			expect( getSuggestionsText() ).to.deep.equal( fixtures.specialSuggestions.htmlEscaped );
 		} );
 
-		test( 'should display suggestions with special characters properly', () => {
+		it( 'should display suggestions with special characters properly', function() {
 			wrapper.setState( {
-				tokenSuggestions: fixtures.specialSuggestions.textUnescaped,
+				tokenSuggestions: fixtures.specialSuggestions.textUnescaped
 			} );
 			expect( getSuggestionsText() ).to.deep.equal( fixtures.specialSuggestions.htmlUnescaped );
 		} );
 
-		test( 'should match against the unescaped values of suggestions with special characters', () => {
+		it( 'should match against the unescaped values of suggestions with special characters', function() {
 			setText( '&' );
 			wrapper.setState( {
-				tokenSuggestions: fixtures.specialSuggestions.textUnescaped,
+				tokenSuggestions: fixtures.specialSuggestions.textUnescaped
 			} );
-			expect( getSuggestionsText() ).to.deep.equal(
-				fixtures.specialSuggestions.matchAmpersandUnescaped
-			);
+			expect( getSuggestionsText() ).to.deep.equal( fixtures.specialSuggestions.matchAmpersandUnescaped );
 		} );
 
-		test( 'should match against the unescaped values of suggestions with special characters (including spaces)', () => {
+		it( 'should match against the unescaped values of suggestions with special characters (including spaces)', function() {
 			setText( 's &' );
 			wrapper.setState( {
-				tokenSuggestions: fixtures.specialSuggestions.textUnescaped,
+				tokenSuggestions: fixtures.specialSuggestions.textUnescaped
 			} );
-			expect( getSuggestionsText() ).to.deep.equal(
-				fixtures.specialSuggestions.matchAmpersandSequence
-			);
+			expect( getSuggestionsText() ).to.deep.equal( fixtures.specialSuggestions.matchAmpersandSequence );
 		} );
 
-		test( 'should not match against the escaped values of suggestions with special characters', () => {
+		it( 'should not match against the escaped values of suggestions with special characters', function() {
 			setText( 'amp' );
 			wrapper.setState( {
-				tokenSuggestions: fixtures.specialSuggestions.textUnescaped,
+				tokenSuggestions: fixtures.specialSuggestions.textUnescaped
 			} );
-			expect( getSuggestionsText() ).to.deep.equal(
-				fixtures.specialSuggestions.matchAmpersandEscaped
-			);
+			expect( getSuggestionsText() ).to.deep.equal( fixtures.specialSuggestions.matchAmpersandEscaped );
 		} );
 
-		test( 'should match suggestions even with trailing spaces', () => {
+		it( 'should match suggestions even with trailing spaces', function() {
 			setText( '  at  ' );
 			expect( getSuggestionsText() ).to.deep.equal( fixtures.matchingSuggestions.at );
 		} );
 
-		test(
-			'should manage the selected suggestion based on both keyboard and mouse events',
-			sinon.test( function() {
-				setText( 't' );
-				expect( getSuggestionsText() ).to.deep.equal( fixtures.matchingSuggestions.t );
-				expect( getSelectedSuggestion() ).to.equal( null );
-				sendKeyDown( keyCodes.downArrow ); // 'the'
-				expect( getSelectedSuggestion() ).to.deep.equal( [ 't', 'he' ] );
-				sendKeyDown( keyCodes.downArrow ); // 'to'
-				expect( getSelectedSuggestion() ).to.deep.equal( [ 't', 'o' ] );
+		it( 'should manage the selected suggestion based on both keyboard and mouse events', test( function() {
+			setText( 't' );
+			expect( getSuggestionsText() ).to.deep.equal( fixtures.matchingSuggestions.t );
+			expect( getSelectedSuggestion() ).to.equal( null );
+			sendKeyDown( keyCodes.downArrow ); // 'the'
+			expect( getSelectedSuggestion() ).to.deep.equal( [ 't', 'he' ] );
+			sendKeyDown( keyCodes.downArrow ); // 'to'
+			expect( getSelectedSuggestion() ).to.deep.equal( [ 't', 'o' ] );
 
-				const hoverSuggestion = tokenFieldNode.find( '.token-field__suggestion' ).at( 5 ); // 'it'
-				expect( getSuggestionNodeText( hoverSuggestion ) ).to.deep.equal( [ 'i', 't' ] );
+			const hoverSuggestion = tokenFieldNode.find( '.token-field__suggestion' ).at( 5 ); // 'it'
+			expect( getSuggestionNodeText( hoverSuggestion ) ).to.deep.equal( [ 'i', 't' ] );
 
-				// before sending a hover event, we need to wait for
-				// SuggestionList#_scrollingIntoView to become false
-				this.clock.tick( 100 );
+			// before sending a hover event, we need to wait for
+			// SuggestionList#_scrollingIntoView to become false
+			this.clock.tick( 100 );
 
-				hoverSuggestion.simulate( 'mouseEnter' );
-				expect( getSelectedSuggestion() ).to.deep.equal( [ 'i', 't' ] );
-				sendKeyDown( keyCodes.upArrow );
-				expect( getSelectedSuggestion() ).to.deep.equal( [ 'wi', 't', 'h' ] );
-				sendKeyDown( keyCodes.upArrow );
-				expect( getSelectedSuggestion() ).to.deep.equal( [ 't', 'his' ] );
-				hoverSuggestion.simulate( 'click' );
-				expect( getSelectedSuggestion() ).to.equal( null );
-				expect( getTokensHTML() ).to.deep.equal( [ 'foo', 'bar', 'it' ] );
-			} )
-		);
+			hoverSuggestion.simulate( 'mouseEnter' );
+			expect( getSelectedSuggestion() ).to.deep.equal( [ 'i', 't' ] );
+			sendKeyDown( keyCodes.upArrow );
+			expect( getSelectedSuggestion() ).to.deep.equal( [ 'wi', 't', 'h' ] );
+			sendKeyDown( keyCodes.upArrow );
+			expect( getSelectedSuggestion() ).to.deep.equal( [ 't', 'his' ] );
+			hoverSuggestion.simulate( 'click' );
+			expect( getSelectedSuggestion() ).to.equal( null );
+			expect( getTokensHTML() ).to.deep.equal( [ 'foo', 'bar', 'it' ] );
+		} ) );
 	} );
 
-	describe( 'adding tokens', () => {
-		test( 'should add a token when Tab pressed', () => {
+	describe( 'adding tokens', function() {
+		it( 'should add a token when Tab pressed', function() {
 			setText( 'baz' );
 			sendKeyDown( keyCodes.tab );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( '' );
 		} );
 
-		test( 'should not allow adding blank tokens with Tab', () => {
+		it( 'should not allow adding blank tokens with Tab', function() {
 			sendKeyDown( keyCodes.tab );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
 		} );
 
-		test( 'should not allow adding whitespace tokens with Tab', () => {
+		it( 'should not allow adding whitespace tokens with Tab', function() {
 			setText( '   ' );
 			sendKeyDown( keyCodes.tab );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
 		} );
 
-		test( 'should add a token when Enter pressed', () => {
+		it( 'should add a token when Enter pressed', function() {
 			setText( 'baz' );
 			sendKeyDown( keyCodes.enter );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( '' );
 		} );
 
-		test( 'should not allow adding blank tokens with Enter', () => {
+		it( 'should not allow adding blank tokens with Enter', function() {
 			sendKeyDown( keyCodes.enter );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
 		} );
 
-		test( 'should not allow adding whitespace tokens with Enter', () => {
+		it( 'should not allow adding whitespace tokens with Enter', function() {
 			setText( '   ' );
 			sendKeyDown( keyCodes.enter );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
 		} );
 
-		test( 'should not allow adding whitespace tokens with comma', () => {
+		it( 'should not allow adding whitespace tokens with comma', function() {
 			setText( '   ' );
 			sendKeyPress( charCodes.comma );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
 		} );
 
-		test( 'should add a token when comma pressed', () => {
+		it( 'should add a token when comma pressed', function() {
 			setText( 'baz' );
 			sendKeyPress( charCodes.comma );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
 		} );
 
-		test( 'should not add a token when < pressed', () => {
+		it( 'should not add a token when < pressed', function() {
 			setText( 'baz' );
 			sendKeyDown( keyCodes.comma, true );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar' ] );
@@ -296,7 +289,7 @@ describe( 'TokenField', () => {
 			expect( textInputNode.prop( 'value' ) ).to.equal( 'baz' );
 		} );
 
-		test( 'should trim token values when adding', () => {
+		it( 'should trim token values when adding', function() {
 			setText( '  baz  ' );
 			sendKeyDown( keyCodes.enter );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
@@ -314,12 +307,7 @@ describe( 'TokenField', () => {
 				expect( wrapper.state( 'tokens' ) ).to.deep.equal( expectedTokens );
 				expect( textInputNode.prop( 'value' ) ).to.equal( '' );
 				expect( getSelectedSuggestion() ).to.equal( null );
-				expect(
-					tokenFieldNode
-						.find( 'div' )
-						.first()
-						.hasClass( 'is-active' )
-				).to.equal( isActive );
+				expect( tokenFieldNode.find( 'div' ).first().hasClass( 'is-active' ) ).to.equal( isActive );
 			}
 
 			document.activeElement.blur();
@@ -329,58 +317,47 @@ describe( 'TokenField', () => {
 			testSavedState( true );
 		}
 
-		test( 'should add the current text when the input field loses focus', () => {
+		it( 'should add the current text when the input field loses focus', test( function() {
 			testOnBlur(
-				't', // initialText
-				false, // selectSuggestion
-				null, // expectedSuggestion
+				't',                   // initialText
+				false,                 // selectSuggestion
+				null,                  // expectedSuggestion
 				[ 'foo', 'bar', 't' ] // expectedTokens
 			);
-		} );
+		} ) );
 
-		test( 'should add the suggested token when the (non-blank) input field loses focus', () => {
+		it( 'should add the suggested token when the (non-blank) input field loses focus', test( function() {
 			testOnBlur(
-				't', // initialText
-				true, // selectSuggestion
-				[ 't', 'o' ], // expectedSuggestion
+				't',                    // initialText
+				true,                   // selectSuggestion
+				[ 't', 'o' ],       // expectedSuggestion
 				[ 'foo', 'bar', 'to' ] // expectedTokens
 			);
-		} );
+		} ) );
 
-		test(
-			'should not add the suggested token when the (blank) input field loses focus',
-			sinon.test( function() {
-				testOnBlur(
-					'', // initialText
-					true, // selectSuggestion
-					'of', // expectedSuggestion
-					[ 'foo', 'bar' ], // expectedTokens
-					this.clock
-				);
-			} )
-		);
+		it( 'should not add the suggested token when the (blank) input field loses focus', test( function() {
+			testOnBlur(
+				'',               // initialText
+				true,             // selectSuggestion
+				'of',             // expectedSuggestion
+				[ 'foo', 'bar' ], // expectedTokens
+				this.clock
+			);
+		} ) );
 
-		test(
-			'should not lose focus when a suggestion is clicked',
-			sinon.test( function() {
-				// prevents regression of https://github.com/Automattic/wp-calypso/issues/1884
+		it( 'should not lose focus when a suggestion is clicked', test( function() {
+			// prevents regression of https://github.com/Automattic/wp-calypso/issues/1884
 
-				const firstSuggestion = tokenFieldNode.find( '.token-field__suggestion' ).at( 0 );
-				firstSuggestion.simulate( 'click' );
+			const firstSuggestion = tokenFieldNode.find( '.token-field__suggestion' ).at( 0 );
+			firstSuggestion.simulate( 'click' );
 
-				// wait for setState call
-				this.clock.tick( 10 );
+			// wait for setState call
+			this.clock.tick( 10 );
 
-				expect(
-					tokenFieldNode
-						.find( 'div' )
-						.first()
-						.hasClass( 'is-active' )
-				).to.equal( true );
-			} )
-		);
+			expect( tokenFieldNode.find( 'div' ).first().hasClass( 'is-active' ) ).to.equal( true );
+		} ) );
 
-		test( 'should add tokens in the middle of the current tokens', () => {
+		it( 'should add tokens in the middle of the current tokens', function() {
 			sendKeyDown( keyCodes.leftArrow );
 			setText( 'baz' );
 			sendKeyDown( keyCodes.tab );
@@ -389,7 +366,7 @@ describe( 'TokenField', () => {
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'baz', 'quux', 'bar' ] );
 		} );
 
-		test( 'should add tokens from the selected matching suggestion using Tab', () => {
+		it( 'should add tokens from the selected matching suggestion using Tab', function() {
 			setText( 't' );
 			expect( getSelectedSuggestion() ).to.equal( null );
 			sendKeyDown( keyCodes.downArrow ); // 'the'
@@ -401,7 +378,7 @@ describe( 'TokenField', () => {
 			expect( getSelectedSuggestion() ).to.equal( null );
 		} );
 
-		test( 'should add tokens from the selected matching suggestion using Enter', () => {
+		it( 'should add tokens from the selected matching suggestion using Enter', function() {
 			setText( 't' );
 			expect( getSelectedSuggestion() ).to.equal( null );
 			sendKeyDown( keyCodes.downArrow ); // 'the'
@@ -413,7 +390,7 @@ describe( 'TokenField', () => {
 			expect( getSelectedSuggestion() ).to.equal( null );
 		} );
 
-		test( 'should add tokens from the selected suggestion using Tab', () => {
+		it( 'should add tokens from the selected suggestion using Tab', function() {
 			expect( getSelectedSuggestion() ).to.equal( null );
 			sendKeyDown( keyCodes.downArrow ); // 'the'
 			expect( getSelectedSuggestion() ).to.equal( 'the' );
@@ -424,7 +401,7 @@ describe( 'TokenField', () => {
 			expect( getSelectedSuggestion() ).to.equal( null );
 		} );
 
-		test( 'should add tokens from the selected suggestion using Enter', () => {
+		it( 'should add tokens from the selected suggestion using Enter', function() {
 			expect( getSelectedSuggestion() ).to.equal( null );
 			sendKeyDown( keyCodes.downArrow ); // 'the'
 			expect( getSelectedSuggestion() ).to.equal( 'the' );
@@ -436,8 +413,8 @@ describe( 'TokenField', () => {
 		} );
 	} );
 
-	describe( 'adding multiple tokens when pasting', () => {
-		test( 'should add multiple comma-separated tokens when pasting', () => {
+	describe( 'adding multiple tokens when pasting', function() {
+		it( 'should add multiple comma-separated tokens when pasting', function() {
 			setText( 'baz, quux, wut' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz', 'quux' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( ' wut' );
@@ -446,58 +423,55 @@ describe( 'TokenField', () => {
 			expect( textInputNode.prop( 'value' ) ).to.equal( '' );
 		} );
 
-		test( 'should add multiple tab-separated tokens when pasting', () => {
+		it( 'should add multiple tab-separated tokens when pasting', function() {
 			setText( 'baz\tquux\twut' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz', 'quux' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( 'wut' );
 		} );
 
-		test( 'should not duplicate tokens when pasting', () => {
+		it( 'should not duplicate tokens when pasting', function() {
 			setText( 'baz \tbaz,  quux \tquux,quux , wut  \twut, wut' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz', 'quux', 'wut' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( ' wut' );
 		} );
 
-		test( 'should skip empty tokens at the beginning of a paste', () => {
+		it( 'should skip empty tokens at the beginning of a paste', function() {
 			setText( ',  ,\t \t  ,,baz, quux' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( ' quux' );
 		} );
 
-		test( 'should skip empty tokens at the beginning of a paste', () => {
+		it( 'should skip empty tokens at the beginning of a paste', function() {
 			setText( ',  ,\t \t  ,,baz, quux' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( ' quux' );
 		} );
 
-		test( 'should skip empty tokens in the middle of a paste', () => {
+		it( 'should skip empty tokens in the middle of a paste', function() {
 			setText( 'baz,  ,\t \t  ,,quux' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( 'quux' );
 		} );
 
-		test( 'should skip empty tokens at the end of a paste', () => {
+		it( 'should skip empty tokens at the end of a paste', function() {
 			setText( 'baz, quux,  ,\t \t  ,,   ' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo', 'bar', 'baz', 'quux' ] );
 			expect( textInputNode.prop( 'value' ) ).to.equal( '   ' );
 		} );
 	} );
 
-	describe( 'removing tokens', () => {
-		test( 'should remove tokens when X icon clicked', () => {
-			tokenFieldNode
-				.find( '.token-field__remove-token' )
-				.first()
-				.simulate( 'click' );
+	describe( 'removing tokens', function() {
+		it( 'should remove tokens when X icon clicked', function() {
+			tokenFieldNode.find( '.token-field__remove-token' ).first().simulate( 'click' );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'bar' ] );
 		} );
 
-		test( 'should remove the token to the left when backspace pressed', () => {
+		it( 'should remove the token to the left when backspace pressed', function() {
 			sendKeyDown( keyCodes.backspace );
 			expect( wrapper.state( 'tokens' ) ).to.deep.equal( [ 'foo' ] );
 		} );
 
-		test( 'should remove the token to the right when delete pressed', () => {
+		it( 'should remove the token to the right when delete pressed', function() {
 			sendKeyDown( keyCodes.leftArrow );
 			sendKeyDown( keyCodes.leftArrow );
 			sendKeyDown( keyCodes.delete );

@@ -1,41 +1,51 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { localize } from 'i18n-calypso';
+import Gridicon from 'gridicons';
 
 /**
  * Internal dependencies
  */
 import { getPost } from 'state/posts/selectors';
+import { isSingleUserSite } from 'state/sites/selectors';
 
-function PostTypePostAuthor( { name } ) {
-	if ( ! name ) {
+function PostTypePostAuthor( { translate, singleUserSite, name } ) {
+	if ( ! name || singleUserSite ) {
 		return null;
 	}
 
 	return (
 		<div className="post-type-post-author">
-			<div className="post-type-post-author__name">{ name }</div>
+			<Gridicon
+				icon="user"
+				size={ 18 }
+				className="post-type-post-author__icon" />
+			{ translate( 'by %(name)s', { args: { name } } ) }
 		</div>
 	);
 }
 
 PostTypePostAuthor.propTypes = {
+	translate: PropTypes.func,
 	globalId: PropTypes.string,
-	name: PropTypes.string,
+	singleUserSite: PropTypes.bool,
+	name: PropTypes.string
 };
 
 export default connect( ( state, ownProps ) => {
 	const post = getPost( state, ownProps.globalId );
 
+	let singleUserSite;
+	if ( post ) {
+		singleUserSite = isSingleUserSite( state, post.site_ID );
+	}
+
 	return {
-		name: get( post, [ 'author', 'name' ] ),
+		singleUserSite,
+		name: get( post, [ 'author', 'name' ] )
 	};
 } )( localize( PostTypePostAuthor ) );

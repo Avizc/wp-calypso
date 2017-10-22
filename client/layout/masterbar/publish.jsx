@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
@@ -22,23 +18,23 @@ import AsyncLoad from 'components/async-load';
 
 const MasterbarItemNew = React.createClass( {
 	propTypes: {
-		user: PropTypes.object,
-		isActive: PropTypes.bool,
-		className: PropTypes.string,
-		tooltip: PropTypes.string,
+		user: React.PropTypes.object,
+		isActive: React.PropTypes.bool,
+		className: React.PropTypes.string,
+		tooltip: React.PropTypes.string,
 		// connected props
-		selectedSite: PropTypes.object,
+		selectedSite: React.PropTypes.object,
 	},
 
 	getInitialState() {
 		return {
-			isShowingPopover: false,
+			isShowingPopover: false
 		};
 	},
 
 	setPostButtonContext( component ) {
 		this.setState( {
-			postButtonContext: component,
+			postButtonContext: component
 		} );
 	},
 
@@ -93,15 +89,14 @@ const MasterbarItemNew = React.createClass( {
 						context={ this.state.postButtonContext }
 						onClose={ this.toggleSitesPopover.bind( this, false ) }
 						groups={ true }
-						position={ this.getPopoverPosition() }
-					/>
+						position={ this.getPopoverPosition() } />
 				</MasterbarItem>
 				<AsyncLoad require="layout/masterbar/drafts" />
 			</div>
 		);
-	},
+	}
 } );
 
-export default connect( state => {
+export default connect( ( state ) => {
 	return { selectedSite: getSelectedSite( state ) };
 } )( MasterbarItemNew );

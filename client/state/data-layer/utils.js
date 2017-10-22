@@ -1,9 +1,6 @@
 /**
  * Internal dependencies
- *
- * @format
  */
-
 import { extendAction } from 'state/utils';
 
 const doBypassDataLayer = {
@@ -14,4 +11,4 @@ const doBypassDataLayer = {
 	},
 };
 
-export const bypassDataLayer = action => extendAction( action, doBypassDataLayer );
+export const local = action => extendAction( action, doBypassDataLayer );

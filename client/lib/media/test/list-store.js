@@ -1,34 +1,38 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
-import { assign, find } from 'lodash';
+import { assign, find, noop } from 'lodash';
 import sinon from 'sinon';
 
-jest.mock( 'lib/user', () => () => {} );
+/**
+ * Internal dependencies
+ */
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
 const DUMMY_SITE_ID = 1,
 	DUMMY_MEDIA_ID = 10,
-	DUMMY_MEDIA_OBJECT = {
-		ID: DUMMY_MEDIA_ID,
-		title: 'Image',
-		date: '2015-06-19T09:36:09-04:00',
-		mime_type: 'image/png',
-	},
+	DUMMY_MEDIA_OBJECT = { ID: DUMMY_MEDIA_ID, title: 'Image', date: '2015-06-19T09:36:09-04:00', mime_type: 'image/png' },
 	DUMMY_MEDIA_RESPONSE = {
 		media: [ DUMMY_MEDIA_OBJECT ],
-		meta: { next_page: 'value%3D2015-03-04T14%253A38%253A21%252B00%253A00%26id%3D2135' },
+		meta: { next_page: 'value%3D2015-03-04T14%253A38%253A21%252B00%253A00%26id%3D2135' }
 	};
 
-describe( 'MediaListStore', () => {
+describe( 'MediaListStore', function() {
 	let Dispatcher, sandbox, MediaListStore, handler, MediaStore;
 
-	beforeAll( function() {
+	useFakeDom();
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/wp', {
+			me: () => ( {
+				get: noop
+			} ),
+			site: noop
+		} );
+	} );
+
+	before( function() {
 		MediaStore = require( '../store' );
 		Dispatcher = require( 'dispatcher' );
 
@@ -45,104 +49,87 @@ describe( 'MediaListStore', () => {
 		handler = Dispatcher.register.lastCall.args[ 0 ];
 	} );
 
-	beforeEach( () => {
+	beforeEach( function() {
 		MediaListStore._media = {};
 		MediaListStore._activeQueries = {};
 	} );
 
-	afterAll( function() {
+	after( function() {
 		sandbox.restore();
 	} );
 
 	function dispatchSetQuery( action ) {
 		handler( {
-			action: assign(
-				{
-					type: 'SET_MEDIA_QUERY',
-					siteId: DUMMY_SITE_ID,
-				},
-				action
-			),
+			action: assign( {
+				type: 'SET_MEDIA_QUERY',
+				siteId: DUMMY_SITE_ID
+			}, action )
 		} );
 	}
 
 	function dispatchFetchMedia( action ) {
 		handler( {
-			action: assign(
-				{
-					type: 'FETCH_MEDIA_ITEMS',
-					siteId: DUMMY_SITE_ID,
-				},
-				action
-			),
+			action: assign( {
+				type: 'FETCH_MEDIA_ITEMS',
+				siteId: DUMMY_SITE_ID
+			}, action )
 		} );
 	}
 
 	function dispatchReceiveMediaItems( action ) {
 		handler( {
-			action: assign(
-				{
-					type: 'RECEIVE_MEDIA_ITEMS',
-					siteId: DUMMY_SITE_ID,
-					data: DUMMY_MEDIA_RESPONSE,
-					query: MediaListStore.getNextPageQuery(
-						action && action.siteId ? action.siteId : DUMMY_SITE_ID
-					),
-				},
-				action
-			),
+			action: assign( {
+				type: 'RECEIVE_MEDIA_ITEMS',
+				siteId: DUMMY_SITE_ID,
+				data: DUMMY_MEDIA_RESPONSE,
+				query: MediaListStore.getNextPageQuery( action && action.siteId ? action.siteId : DUMMY_SITE_ID )
+			}, action )
 		} );
 	}
 
 	function dispatchReceiveMediaItem( action ) {
 		handler( {
-			action: assign(
-				{
-					type: 'RECEIVE_MEDIA_ITEM',
-					siteId: DUMMY_SITE_ID,
-					data: DUMMY_MEDIA_OBJECT,
-				},
-				action
-			),
+			action: assign( {
+				type: 'RECEIVE_MEDIA_ITEM',
+				siteId: DUMMY_SITE_ID,
+				data: DUMMY_MEDIA_OBJECT
+			}, action )
 		} );
 	}
 
 	function dispatchRemoveMediaItem( action ) {
 		handler( {
-			action: assign(
-				{
-					type: 'REMOVE_MEDIA_ITEM',
-					siteId: DUMMY_SITE_ID,
-					data: DUMMY_MEDIA_OBJECT,
-				},
-				action
-			),
+			action: assign( {
+				type: 'REMOVE_MEDIA_ITEM',
+				siteId: DUMMY_SITE_ID,
+				data: DUMMY_MEDIA_OBJECT
+			}, action )
 		} );
 	}
 
-	describe( '#get()', () => {
-		test( 'should return a single value', () => {
+	describe( '#get()', function() {
+		it( 'should return a single value', function() {
 			dispatchReceiveMediaItems();
 
 			expect( MediaListStore.get( DUMMY_SITE_ID, DUMMY_MEDIA_ID ) ).to.equal( DUMMY_MEDIA_OBJECT );
 		} );
 
-		test( 'should return undefined for an item that does not exist', () => {
+		it( 'should return undefined for an item that does not exist', function() {
 			expect( MediaListStore.get( DUMMY_SITE_ID, DUMMY_MEDIA_ID + 1 ) ).to.be.undefined;
 		} );
 	} );
 
-	describe( '#getAll()', () => {
-		test( 'should return all received media', () => {
+	describe( '#getAll()', function() {
+		it( 'should return all received media', function() {
 			dispatchReceiveMediaItems();
 
 			expect( MediaListStore.getAll( DUMMY_SITE_ID ) ).to.eql( DUMMY_MEDIA_RESPONSE.media );
 		} );
 
-		test( 'should sort media by date, with newest first', () => {
+		it( 'should sort media by date, with newest first', function() {
 			var media = [
 				DUMMY_MEDIA_OBJECT,
-				assign( {}, DUMMY_MEDIA_OBJECT, { ID: 20, date: '2015-06-19T11:36:09-04:00' } ),
+				assign( {}, DUMMY_MEDIA_OBJECT, { ID: 20, date: '2015-06-19T11:36:09-04:00' } )
 			];
 
 			MediaStore.get.restore();
@@ -155,10 +142,10 @@ describe( 'MediaListStore', () => {
 			expect( MediaListStore.getAllIds( DUMMY_SITE_ID ) ).to.eql( [ 20, 10 ] );
 		} );
 
-		test( 'should secondary sort media by ID, with larger first', () => {
+		it( 'should secondary sort media by ID, with larger first', function() {
 			var media = [
 				DUMMY_MEDIA_OBJECT,
-				assign( {}, DUMMY_MEDIA_OBJECT, { ID: 20, date: DUMMY_MEDIA_OBJECT.date } ),
+				assign( {}, DUMMY_MEDIA_OBJECT, { ID: 20, date: DUMMY_MEDIA_OBJECT.date } )
 			];
 
 			MediaStore.get.restore();
@@ -171,103 +158,94 @@ describe( 'MediaListStore', () => {
 			expect( MediaListStore.getAllIds( DUMMY_SITE_ID ) ).to.eql( [ 20, 10 ] );
 		} );
 
-		test( 'should return undefined for a fetching site', () => {
+		it( 'should return undefined for a fetching site', function() {
 			dispatchFetchMedia();
 
 			expect( MediaListStore.getAll( DUMMY_SITE_ID ) ).to.be.undefined;
 		} );
 
-		test( 'should return an empty array for a site with no media', () => {
+		it( 'should return an empty array for a site with no media', function() {
 			dispatchReceiveMediaItems( { data: { media: [] } } );
 
 			expect( MediaListStore.getAll( DUMMY_SITE_ID ) ).to.eql( [] );
 		} );
 	} );
 
-	describe( '#getNextPageQuery()', () => {
-		test( 'should include default parameters if no query provided', () => {
-			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql(
-				MediaListStore.DEFAULT_QUERY
-			);
+	describe( '#getNextPageQuery()', function() {
+		it( 'should include default parameters if no query provided', function() {
+			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql( MediaListStore.DEFAULT_QUERY );
 		} );
 
-		test( 'should include page_handle if the previous response included next_page meta', () => {
+		it( 'should include page_handle if the previous response included next_page meta', function() {
 			dispatchReceiveMediaItems();
 
 			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql( {
 				number: MediaListStore.DEFAULT_QUERY.number,
-				page_handle: DUMMY_MEDIA_RESPONSE.meta.next_page,
+				page_handle: DUMMY_MEDIA_RESPONSE.meta.next_page
 			} );
 		} );
 
-		test( 'should preserve the query from the previous request', () => {
+		it( 'should preserve the query from the previous request', function() {
 			var query = { mime_type: 'audio/' };
 			dispatchSetQuery( { query: query } );
 			dispatchFetchMedia();
 			dispatchReceiveMediaItems();
 
-			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql(
-				assign(
-					{
-						number: MediaListStore.DEFAULT_QUERY.number,
-						page_handle: DUMMY_MEDIA_RESPONSE.meta.next_page,
-					},
-					query
-				)
-			);
+			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql( assign( {
+				number: MediaListStore.DEFAULT_QUERY.number,
+				page_handle: DUMMY_MEDIA_RESPONSE.meta.next_page
+			}, query ) );
 		} );
 
-		test( 'should reset the page handle when the query changes', () => {
+		it( 'should reset the page handle when the query changes', function() {
 			var query = { mime_type: 'audio/' };
 			dispatchReceiveMediaItems();
 			dispatchSetQuery( { query: query } );
 
-			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql(
-				assign( {}, query, {
-					number: MediaListStore.DEFAULT_QUERY.number,
-					page_handle: undefined,
-				} )
-			);
+			expect( MediaListStore.getNextPageQuery( DUMMY_SITE_ID ) ).to.eql( assign( {}, query, {
+				number: MediaListStore.DEFAULT_QUERY.number,
+				page_handle: undefined
+			} ) );
 		} );
 	} );
 
-	describe( '#hasNextPage()', () => {
-		test( 'should return true if the previous response included next_page meta', () => {
+	describe( '#hasNextPage()', function() {
+		it( 'should return true if the previous response included next_page meta', function() {
 			dispatchReceiveMediaItems();
 
 			expect( MediaListStore.hasNextPage( DUMMY_SITE_ID ) ).to.be.ok;
 		} );
 
-		test( 'should return true if the site is unknown', () => {
+		it( 'should return true if the site is unknown', function() {
 			expect( MediaListStore.hasNextPage( DUMMY_SITE_ID ) ).to.be.ok;
 		} );
 
-		test( 'should return false if the previous response did not include next_page meta', () => {
+		it( 'should return false if the previous response did not include next_page meta', function() {
 			dispatchReceiveMediaItems( { data: { media: [] } } );
 
 			expect( MediaListStore.hasNextPage( DUMMY_SITE_ID ) ).to.not.be.ok;
 		} );
 	} );
 
-	describe( '#isFetchingNextPage()', () => {
-		test( 'should return false no request has been made', () => {
+	describe( '#isFetchingNextPage()', function() {
+		it( 'should return false no request has been made', function() {
 			expect( MediaListStore.isFetchingNextPage( DUMMY_SITE_ID ) ).to.not.be.ok;
 		} );
 
-		test( 'should return true if site media is being fetched', () => {
+		it( 'should return true if site media is being fetched', function() {
 			dispatchFetchMedia();
 
 			expect( MediaListStore.isFetchingNextPage( DUMMY_SITE_ID ) ).to.be.ok;
 		} );
 
-		test( 'should return false if site media was received', () => {
+		it( 'should return false if site media was received', function() {
 			dispatchFetchMedia();
 			dispatchReceiveMediaItems();
 
 			expect( MediaListStore.isFetchingNextPage( DUMMY_SITE_ID ) ).to.not.be.ok;
 		} );
 
-		test( 'should return false when the query was changed', () => {
+		it( 'should return false when the query was changed', function() {
 			dispatchFetchMedia();
 			dispatchSetQuery( { query: { mime_type: 'audio/' } } );
 
@@ -275,20 +253,20 @@ describe( 'MediaListStore', () => {
 		} );
 	} );
 
-	describe( '#isItemMatchingQuery', () => {
+	describe( '#isItemMatchingQuery', function() {
 		var isItemMatchingQuery;
 
-		beforeAll( function() {
+		before( function() {
 			isItemMatchingQuery = MediaListStore.isItemMatchingQuery;
 		} );
 
-		test( 'should return true if no query exists for site', () => {
+		it( 'should return true if no query exists for site', function() {
 			var matches = isItemMatchingQuery( DUMMY_SITE_ID, DUMMY_MEDIA_OBJECT );
 
 			expect( matches ).to.be.true;
 		} );
 
-		test( "should return false if a search query is specified, but the item doesn't match", () => {
+		it( 'should return false if a search query is specified, but the item doesn\'t match', function() {
 			var matches;
 			dispatchSetQuery( { query: { search: 'Notmyitem' } } );
 
@@ -297,7 +275,7 @@ describe( 'MediaListStore', () => {
 			expect( matches ).to.be.false;
 		} );
 
-		test( 'should return true if a search query is specified, and the item matches', () => {
+		it( 'should return true if a search query is specified, and the item matches', function() {
 			var matches;
 			dispatchSetQuery( { query: { search: 'Imag' } } );
 
@@ -306,7 +284,7 @@ describe( 'MediaListStore', () => {
 			expect( matches ).to.be.true;
 		} );
 
-		test( 'should return true if a search query is specified, and the item matches case insensitive', () => {
+		it( 'should return true if a search query is specified, and the item matches case insensitive', function() {
 			var matches;
 			dispatchSetQuery( { query: { search: 'imag' } } );
 
@@ -315,7 +293,7 @@ describe( 'MediaListStore', () => {
 			expect( matches ).to.be.true;
 		} );
 
-		test( 'should return false if a search query and mime_type are specified, and the item matches on title, but not mime_type', () => {
+		it( 'should return false if a search query and mime_type are specified, and the item matches on title, but not mime_type', function() {
 			var matches;
 			dispatchSetQuery( { query: { search: 'Imag', mime_type: 'audio/' } } );
 
@@ -324,7 +302,7 @@ describe( 'MediaListStore', () => {
 			expect( matches ).to.be.false;
 		} );
 
-		test( "should return false if a mime_type is specified, but the item doesn't match", () => {
+		it( 'should return false if a mime_type is specified, but the item doesn\'t match', function() {
 			var matches;
 			dispatchSetQuery( { query: { mime_type: 'audio/' } } );
 
@@ -333,7 +311,7 @@ describe( 'MediaListStore', () => {
 			expect( matches ).to.be.false;
 		} );
 
-		test( 'should return true if a mime_type is specified, and the item matches', () => {
+		it( 'should return true if a mime_type is specified, and the item matches', function() {
 			var matches;
 			dispatchSetQuery( { query: { mime_type: 'image/' } } );
 
@@ -342,7 +320,7 @@ describe( 'MediaListStore', () => {
 			expect( matches ).to.be.true;
 		} );
 
-		test( 'should return true if item matches an external source but doesnt match title', () => {
+		it( 'should return true if item matches an external source but doesnt match title', function() {
 			dispatchSetQuery( { query: { search: 'monkey', source: 'external' } } );
 
 			const matches = isItemMatchingQuery( DUMMY_SITE_ID, DUMMY_MEDIA_OBJECT );
@@ -351,32 +329,32 @@ describe( 'MediaListStore', () => {
 		} );
 	} );
 
-	describe( '.dispatchToken', () => {
-		test( 'should expose its dispatcher ID', () => {
+	describe( '.dispatchToken', function() {
+		it( 'should expose its dispatcher ID', function() {
 			expect( MediaListStore.dispatchToken ).to.be.a( 'string' );
 		} );
 
-		test( 'should destroy existing media when a query changes', () => {
+		it( 'should destroy existing media when a query changes', function() {
 			dispatchReceiveMediaItems();
 			dispatchSetQuery( { query: { mime_type: 'audio/' } } );
 
 			expect( MediaListStore.getAll( DUMMY_SITE_ID ) ).to.be.undefined;
 		} );
 
-		test( 'should not destroy existing media if query change relates to pagination', () => {
+		it( 'should not destroy existing media if query change relates to pagination', function() {
 			dispatchReceiveMediaItems();
 			dispatchSetQuery( { query: { number: 40 } } );
 
 			expect( MediaListStore.getAll( DUMMY_SITE_ID ) ).to.not.be.undefined;
 		} );
 
-		test( 'should emit a change event when receiving updates', done => {
+		it( 'should emit a change event when receiving updates', function( done ) {
 			MediaListStore.once( 'change', done );
 
 			dispatchReceiveMediaItems();
 		} );
 
-		test( 'should ignore received items where the query does not match', () => {
+		it( 'should ignore received items where the query does not match', function() {
 			dispatchFetchMedia();
 			dispatchSetQuery( { query: { mime_type: 'audio/' } } );
 			dispatchReceiveMediaItems( { query: MediaListStore.DEFAULT_QUERY } );
@@ -384,21 +362,21 @@ describe( 'MediaListStore', () => {
 			expect( MediaListStore.getAll( DUMMY_SITE_ID ) ).to.be.undefined;
 		} );
 
-		test( 'should remove an item when REMOVE_MEDIA_ITEM is dispatched', () => {
+		it( 'should remove an item when REMOVE_MEDIA_ITEM is dispatched', function() {
 			dispatchReceiveMediaItems();
 			dispatchRemoveMediaItem();
 
 			expect( MediaListStore.getAllIds( DUMMY_SITE_ID ) ).to.be.be.empty;
 		} );
 
-		test( 'should re-add an item when REMOVE_MEDIA_ITEM errors and includes data', () => {
+		it( 'should re-add an item when REMOVE_MEDIA_ITEM errors and includes data', function() {
 			MediaListStore.ensureActiveQueryForSiteId( DUMMY_SITE_ID );
 			dispatchRemoveMediaItem( { error: true } );
 
 			expect( MediaListStore.getAllIds( DUMMY_SITE_ID ) ).to.not.be.empty;
 		} );
 
-		test( 'should replace an item when RECEIVE_MEDIA_ITEM includes ID', () => {
+		it( 'should replace an item when RECEIVE_MEDIA_ITEM includes ID', function() {
 			var newItem = assign( {}, DUMMY_MEDIA_OBJECT, { ID: DUMMY_MEDIA_ID + 1 } ),
 				allItems;
 

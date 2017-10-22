@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import classnames from 'classnames';
 import page from 'page';
 
@@ -38,8 +34,7 @@ const TableRow = ( { className, isHeader, href, children, ...props } ) => {
 			tabIndex="0"
 			onClick={ goToHref }
 			onKeyDown={ getKeyboardHandler( goToHref ) }
-			{ ...props }
-		>
+			{ ...props }>
 			{ children }
 		</tr>
 	);

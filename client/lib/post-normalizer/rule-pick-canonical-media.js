@@ -1,10 +1,7 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import { find, get } from 'lodash';
+import { find } from 'lodash';
 
 /**
  * Internal Dependencies
@@ -52,22 +49,18 @@ export default function pickCanonicalMedia( post ) {
 	}
 
 	// jetpack lies about thumbnails/featured_images so we need to make sure its actually an image
-	if (
-		isUrlLikelyAnImage( post.featured_image ) &&
-		( ( ! post.post_thumbnail && post.is_jetpack ) || // some jetpack sites dont create post_thumbnail
-			isImageLargeEnoughForFeature( post.post_thumbnail ) )
-	) {
+	if ( post.featured_image && isUrlLikelyAnImage( post.featured_image ) &&
+			isImageLargeEnoughForFeature( post.post_thumbnail ) ) {
 		post.canonical_media = {
 			src: post.featured_image,
-			height: get( post, 'post_thumbnail.height' ),
-			width: get( post, 'post_thumbnail.width' ),
+			height: post.post_thumbnail.height,
+			width: post.post_thumbnail.width,
 			mediaType: 'image',
 		};
 		return post;
 	}
 
 	const canonicalMedia = find( post.content_media, isCandidateForFeature );
-
 	if ( canonicalMedia ) {
 		post.canonical_media = canonicalMedia;
 	}

@@ -1,33 +1,22 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 import Gridicon from 'gridicons';
 
-const BulkSelect = ( {
-	totalElements,
-	selectedElements,
-	className,
-	disabled,
-	readOnly,
-	onToggle,
-} ) => {
+const BulkSelect = ( { totalElements, selectedElements, className, disabled, readOnly, onToggle } ) => {
 	const hasAllElementsSelected = selectedElements && selectedElements === totalElements;
 	const hasSomeElementsSelected = selectedElements && selectedElements < totalElements;
 	const inputClasses = classNames( 'bulk-select__box', { 'is-checked': hasAllElementsSelected } );
 	const iconClasses = classNames( 'bulk-select__some-checked-icon', { 'is-disabled': disabled } );
 	const containerClasses = classNames( 'bulk-select', className );
-	const handleToggle = event => {
+	const handleToggle = () => {
 		if ( readOnly ) {
 			return;
 		}
 		const newCheckedState = ! ( hasSomeElementsSelected || hasAllElementsSelected );
-		onToggle( newCheckedState, event );
+		onToggle( newCheckedState );
 	};
 
 	return (
@@ -38,11 +27,11 @@ const BulkSelect = ( {
 					className={ inputClasses }
 					checked={ hasAllElementsSelected }
 					disabled={ disabled }
-					readOnly
-				/>
-				{ hasSomeElementsSelected ? (
-					<Gridicon className={ iconClasses } icon="minus-small" size={ 18 } />
-				) : null }
+					readOnly />
+				{ hasSomeElementsSelected ? <Gridicon
+					className={ iconClasses }
+					icon="minus-small"
+					size={ 18 } /> : null }
 			</span>
 		</span>
 	);

@@ -1,25 +1,26 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
+import React from 'react';
 import { shallow } from 'enzyme';
 import Gridicon from 'gridicons';
-import React from 'react';
 
-describe( 'Accordion', () => {
+/**
+ * Internal dependencies
+ */
+import useFakeDom from 'test/helpers/use-fake-dom';
+
+describe( 'Accordion', function() {
 	let Accordion, AccordionStatus;
 
-	beforeAll( () => {
+	useFakeDom();
+	before( () => {
 		Accordion = require( '../' );
 		AccordionStatus = require( '../status' );
 	} );
 
-	test( 'should render as expected with a title and content', () => {
+	it( 'should render as expected with a title and content', function() {
 		const wrapper = shallow( <Accordion title="Section">Content</Accordion> );
 
 		expect( wrapper ).to.have.className( 'accordion' );
@@ -33,52 +34,34 @@ describe( 'Accordion', () => {
 		expect( wrapper.find( '.accordion__content' ) ).to.have.text( 'Content' );
 	} );
 
-	test( 'should accept an icon prop to be rendered', () => {
-		const wrapper = shallow(
-			<Accordion title="Section" icon={ <Gridicon icon="time" /> }>
-				Content
-			</Accordion>
-		);
+	it( 'should accept an icon prop to be rendered', function() {
+		const wrapper = shallow( <Accordion title="Section" icon={ <Gridicon icon="time" /> }>Content</Accordion> );
 
 		expect( wrapper ).to.have.className( 'has-icon' );
 		expect( wrapper.find( '.accordion__icon' ) ).to.have.descendants( Gridicon );
 	} );
 
-	test( 'should accept a subtitle prop to be rendered aside the title', () => {
-		const wrapper = shallow(
-			<Accordion title="Section" subtitle="Subtitle">
-				Content
-			</Accordion>
-		);
+	it( 'should accept a subtitle prop to be rendered aside the title', function() {
+		const wrapper = shallow( <Accordion title="Section" subtitle="Subtitle">Content</Accordion> );
 
 		expect( wrapper ).to.have.className( 'has-subtitle' );
 		expect( wrapper.find( '.accordion__subtitle' ) ).to.have.text( 'Subtitle' );
 	} );
 
-	test( 'should accept a status prop to be rendered in the toggle', () => {
-		const status = {
-			type: 'error',
-			text: 'Warning!',
-			url: 'https://wordpress.com',
-			position: 'top left',
-			onClick() {},
-		};
-		const wrapper = shallow(
-			<Accordion title="Section" status={ status }>
-				Content
-			</Accordion>
-		);
+	it( 'should accept a status prop to be rendered in the toggle', () => {
+		const status = { type: 'error', text: 'Warning!', url: 'https://wordpress.com', position: 'top left', onClick() {} };
+		const wrapper = shallow( <Accordion title="Section" status={ status }>Content</Accordion> );
 
 		expect( wrapper ).to.have.className( 'has-status' );
 		expect( wrapper.find( AccordionStatus ).props() ).to.eql( status );
 	} );
 
-	describe( 'events', () => {
+	context( 'events', () => {
 		function simulateClick( wrapper ) {
 			wrapper.find( '.accordion__toggle' ).simulate( 'click' );
 		}
 
-		test( 'should toggle when clicked', () => {
+		it( 'should toggle when clicked', function() {
 			const wrapper = shallow( <Accordion title="Section">Content</Accordion> );
 
 			simulateClick( wrapper );
@@ -86,12 +69,8 @@ describe( 'Accordion', () => {
 			expect( wrapper ).to.have.state( 'isExpanded' ).be.true;
 		} );
 
-		test( 'should accept an onToggle function handler to be invoked when toggled', done => {
-			const wrapper = shallow(
-				<Accordion title="Section" onToggle={ finishTest }>
-					Content
-				</Accordion>
-			);
+		it( 'should accept an onToggle function handler to be invoked when toggled', function( done ) {
+			const wrapper = shallow( <Accordion title="Section" onToggle={ finishTest }>Content</Accordion> );
 
 			simulateClick( wrapper );
 
@@ -105,11 +84,9 @@ describe( 'Accordion', () => {
 			}
 		} );
 
-		test( 'should always use the initialExpanded prop, if specified', done => {
+		it( 'should always use the initialExpanded prop, if specified', function( done ) {
 			const wrapper = shallow(
-				<Accordion initialExpanded={ true } title="Section" onToggle={ finishTest }>
-					Content
-				</Accordion>
+				<Accordion initialExpanded={ true } title="Section" onToggle={ finishTest }>Content</Accordion>
 			);
 
 			simulateClick( wrapper );

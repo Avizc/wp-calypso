@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -22,12 +21,7 @@ import {
  * @return {String}      Tag slug
  */
 export const slugify = tag =>
-	encodeURIComponent(
-		trim( tag )
-			.toLowerCase()
-			.replace( /\s+/g, '-' )
-			.replace( /-{2,}/g, '-' )
-	);
+	encodeURIComponent( trim( tag ).toLowerCase().replace( /\s+/g, '-' ).replace( /-{2,}/g, '-' ) );
 
 export const requestTags = tag => {
 	const type = READER_TAGS_REQUEST;

@@ -1,32 +1,28 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import assert from 'assert';
-import { ary, defer } from 'lodash';
-import { createStore } from 'redux';
+import defer from 'lodash/defer';
+import ary from 'lodash/ary';
 
 /**
  * Internal dependencies
  */
+import useFakeDom from 'test/helpers/use-fake-dom';
+import { createStore } from 'redux';
 import { reducer } from 'state';
 
-jest.mock( 'lib/user', () => () => {} );
-jest.mock( 'signup/config/flows', () => require( './mocks/signup/config/flows' ) );
-jest.mock( 'signup/config/steps', () => require( './mocks/signup/config/steps' ) );
-
-describe( 'flow-controller', () => {
+describe( 'flow-controller', function() {
 	let SignupProgressStore,
 		SignupDependencyStore,
 		SignupFlowController,
 		SignupActions,
 		signupFlowController;
 
-	beforeAll( () => {
+	useFakeDom();
+	require( 'test/helpers/use-filesystem-mocks' )( __dirname );
+
+	before( () => {
 		SignupProgressStore = require( '../progress-store' );
 		SignupDependencyStore = require( '../dependency-store' );
 		SignupFlowController = require( '../flow-controller' );
@@ -37,20 +33,20 @@ describe( 'flow-controller', () => {
 		SignupDependencyStore.setReduxStore( store );
 	} );
 
-	afterEach( () => {
+	afterEach( function() {
 		signupFlowController.reset();
 		SignupDependencyStore.reset();
 		SignupProgressStore.reset();
 	} );
 
-	describe( 'controlling a simple flow', () => {
-		test( 'should run the onComplete callback with the flow destination when the flow is completed', done => {
+	describe( 'controlling a simple flow', function() {
+		it( 'should run the onComplete callback with the flow destination when the flow is completed', function( done ) {
 			signupFlowController = SignupFlowController( {
 				flowName: 'simple_flow',
 				onComplete: function( dependencies, destination ) {
 					assert.equal( destination, '/' );
 					done();
-				},
+				}
 			} );
 
 			SignupActions.submitSignupStep( { stepName: 'stepA' } );
@@ -58,25 +54,25 @@ describe( 'flow-controller', () => {
 		} );
 	} );
 
-	describe( 'controlling a flow w/ an asynchronous step', () => {
-		beforeEach( () => {
+	describe( 'controlling a flow w/ an asynchronous step', function() {
+		beforeEach( function() {
 			signupFlowController = SignupFlowController( { flowName: 'flow_with_async' } );
 		} );
 
-		test( 'should call apiRequestFunction on steps with that property', done => {
+		it( 'should call apiRequestFunction on steps with that property', function( done ) {
 			SignupActions.submitSignupStep( { stepName: 'userCreation' }, [], { bearer_token: 'TOKEN' } );
 
 			SignupActions.submitSignupStep( {
 				stepName: 'asyncStep',
-				done: done,
+				done: done
 			} );
 		} );
 
-		test( 'should not call apiRequestFunction multiple times', done => {
+		it( 'should not call apiRequestFunction multiple times', function( done ) {
 			SignupActions.submitSignupStep( { stepName: 'userCreation' }, [], { bearer_token: 'TOKEN' } );
 			SignupActions.submitSignupStep( {
 				stepName: 'asyncStep',
-				done: done,
+				done: done
 			} );
 
 			// resubmit the first step to initiate another call to SignupFlowController#_process
@@ -85,32 +81,32 @@ describe( 'flow-controller', () => {
 		} );
 	} );
 
-	describe( 'controlling a flow w/ dependencies', () => {
-		test( 'should call the apiRequestFunction callback with its dependencies', done => {
+	describe( 'controlling a flow w/ dependencies', function() {
+		it( 'should call the apiRequestFunction callback with its dependencies', function( done ) {
 			signupFlowController = SignupFlowController( {
 				flowName: 'flow_with_dependencies',
 				onComplete: function( dependencies, destination ) {
 					assert.equal( destination, '/checkout/testsite.wordpress.com' );
 					done();
-				},
+				}
 			} );
 
 			SignupActions.submitSignupStep( {
 				stepName: 'siteCreation',
 				stepCallback: function( dependencies ) {
 					assert.deepEqual( dependencies, { bearer_token: 'TOKEN' } );
-				},
+				}
 			} );
 
 			SignupActions.submitSignupStep( {
-				stepName: 'userCreation',
+				stepName: 'userCreation'
 			} );
 		} );
 
-		test( 'should throw an error when the flow is completed without all dependencies provided', () => {
+		it( 'should throw an error when the flow is completed without all dependencies provided', function() {
 			signupFlowController = SignupFlowController( {
 				flowName: 'invalid_flow_with_dependencies',
-				onComplete: function() {},
+				onComplete: function() {}
 			} );
 
 			SignupActions.submitSignupStep( { stepName: 'siteCreation' } );
@@ -120,18 +116,17 @@ describe( 'flow-controller', () => {
 		} );
 	} );
 
-	describe( 'controlling a flow w/ a delayed step', () => {
-		test( 'should submit steps with the delayApiRequestUntilComplete once the flow is complete', done => {
+	describe( 'controlling a flow w/ a delayed step', function() {
+		it( 'should submit steps with the delayApiRequestUntilComplete once the flow is complete', function( done ) {
 			signupFlowController = SignupFlowController( {
 				flowName: 'flowWithDelay',
-				onComplete: ary( done, 0 ),
+				onComplete: ary( done, 0 )
 			} );
 
 			SignupActions.submitSignupStep( {
-				stepName: 'delayedStep',
-				stepCallback: function() {
+				stepName: 'delayedStep', stepCallback: function() {
 					assert.equal( SignupProgressStore.get().length, 2 );
-				},
+				}
 			} );
 
 			defer( function() {
@@ -139,17 +134,16 @@ describe( 'flow-controller', () => {
 			} );
 		} );
 
-		test( 'should not submit delayed steps if some steps are in-progress', done => {
+		it( 'should not submit delayed steps if some steps are in-progress', function( done ) {
 			signupFlowController = SignupFlowController( {
 				flowName: 'flowWithDelay',
-				onComplete: ary( done, 0 ),
+				onComplete: ary( done, 0 )
 			} );
 
 			SignupActions.submitSignupStep( {
-				stepName: 'delayedStep',
-				stepCallback: function() {
+				stepName: 'delayedStep', stepCallback: function() {
 					assert.equal( SignupProgressStore.get()[ 1 ].status, 'completed' );
-				},
+				}
 			} );
 
 			defer( function() {
@@ -164,24 +158,24 @@ describe( 'flow-controller', () => {
 		} );
 	} );
 
-	describe( 'controlling a flow w/ dependencies provided in query', () => {
-		test( 'should throw an error if the given flow requires dependencies from query but none are given', () => {
+	describe( 'controlling a flow w/ dependencies provided in query', function() {
+		it( 'should throw an error if the given flow requires dependencies from query but none are given', function() {
 			assert.throws( function() {
 				SignupFlowController( {
-					flowName: 'flowWithProvidedDependencies',
+					flowName: 'flowWithProvidedDependencies'
 				} );
 			} );
 		} );
 
-		test( 'should run `onComplete` once all steps are submitted without an error', done => {
+		it( 'should run `onComplete` once all steps are submitted without an error', function( done ) {
 			signupFlowController = SignupFlowController( {
 				flowName: 'flowWithProvidedDependencies',
 				providedDependencies: { siteSlug: 'foo' },
-				onComplete: ary( done, 0 ),
+				onComplete: ary( done, 0 )
 			} );
 
 			SignupActions.submitSignupStep( {
-				stepName: 'stepRequiringSiteSlug',
+				stepName: 'stepRequiringSiteSlug'
 			} );
 		} );
 	} );

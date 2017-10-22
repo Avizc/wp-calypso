@@ -1,12 +1,10 @@
-/** @format */
-
 /**
- * External dependencies
+ * External Dependencies
  */
 import { expect } from 'chai';
 
 /**
- * Internal dependencies
+ * Internal Dependencies
  */
 import {
 	isRequestInflight,
@@ -22,8 +20,8 @@ describe( 'inflight', () => {
 	afterEach( () => {
 		_clear();
 	} );
-	describe( 'explicit lifecycle', () => {
-		test( 'should handle the explicit lifecycle', () => {
+	context( 'explicit lifecycle', () => {
+		it( 'should handle the explicit lifecycle', () => {
 			expect( isRequestInflight( key ) ).to.be.false;
 			markRequestInflight( key );
 			expect( isRequestInflight( key ) ).to.be.true;
@@ -31,7 +29,7 @@ describe( 'inflight', () => {
 			expect( isRequestInflight( key ) ).to.be.false;
 		} );
 
-		test( 'should handle marking a request inflight twice', () => {
+		it( 'should handle marking a request inflight twice', () => {
 			expect( isRequestInflight( key ) ).to.be.false;
 			markRequestInflight( key );
 			markRequestInflight( key );
@@ -40,19 +38,21 @@ describe( 'inflight', () => {
 			expect( isRequestInflight( key ) ).to.be.false;
 		} );
 
-		test( 'should handle marking a request not inflight as not inflight', () => {
+		it( 'should handle marking a request not inflight as not inflight', () => {
 			expect( isRequestInflight( key ) ).to.be.false;
 			completeRequest( key );
 			expect( isRequestInflight( key ) ).to.be.false;
 		} );
 	} );
-	describe( 'promise tracker', () => {
-		test( 'should track a promise that resolves', () => {
+	context( 'promise tracker', () => {
+		it( 'should track a promise that resolves', () => {
 			const tracked = trackPromise( key, Promise.resolve( 5 ) );
 			expect( isRequestInflight( key ) ).to.be.true;
-			return tracked.then( () => expect( isRequestInflight( key ) ).to.be.false );
+			return tracked.then(
+				() => expect( isRequestInflight( key ) ).to.be.false
+			);
 		} );
-		test( 'should track a promise that rejects', () => {
+		it( 'should track a promise that rejects', () => {
 			const tracked = trackPromise( key, Promise.reject( 5 ) );
 			expect( isRequestInflight( key ) ).to.be.true;
 			return tracked.then(
@@ -61,8 +61,8 @@ describe( 'inflight', () => {
 			);
 		} );
 	} );
-	describe( 'requestTracker', () => {
-		test( 'should track a good request', done => {
+	context( 'requestTracker', () => {
+		it( 'should track a good request', ( done ) => {
 			const val = { one: 1 };
 			const cb = ( err, data ) => {
 				expect( err ).to.not.be.ok;
@@ -74,7 +74,7 @@ describe( 'inflight', () => {
 			expect( isRequestInflight( key ) ).to.be.true;
 			tracked( null, val );
 		} );
-		test( 'should track a bad request', done => {
+		it( 'should track a bad request', ( done ) => {
 			const error = { one: 1 };
 			const cb = ( err, data ) => {
 				expect( err ).to.equal( error );

@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { get, noop } from 'lodash';
@@ -26,17 +22,17 @@ class TermSelectorAddTerm extends Component {
 		onSuccess: PropTypes.func,
 		postType: PropTypes.string,
 		taxonomy: PropTypes.string,
-		terms: PropTypes.array,
+		terms: PropTypes.array
 	};
 
 	static defaultProps = {
-		onSuccess: noop,
+		onSuccess: noop
 	};
 
 	constructor( props ) {
 		super( props );
 		this.state = {
-			showDialog: false,
+			showDialog: false
 		};
 	}
 
@@ -52,9 +48,7 @@ class TermSelectorAddTerm extends Component {
 	render() {
 		const { labels, onSuccess, postType, terms, taxonomy } = this.props;
 		const totalTerms = terms ? terms.length : 0;
-		const classes = classNames( 'editor-term-selector__add-term', {
-			'is-compact': totalTerms < 8,
-		} );
+		const classes = classNames( 'editor-term-selector__add-term', { 'is-compact': totalTerms < 8 } );
 
 		return (
 			<div className={ classes }>
@@ -73,14 +67,16 @@ class TermSelectorAddTerm extends Component {
 	}
 }
 
-export default connect( ( state, ownProps ) => {
-	const { taxonomy, postType } = ownProps;
-	const siteId = getSelectedSiteId( state );
-	const taxonomyDetails = getPostTypeTaxonomy( state, siteId, postType, taxonomy );
-	const labels = get( taxonomyDetails, 'labels', {} );
+export default connect(
+	( state, ownProps ) => {
+		const { taxonomy, postType } = ownProps;
+		const siteId = getSelectedSiteId( state );
+		const taxonomyDetails = getPostTypeTaxonomy( state, siteId, postType, taxonomy );
+		const labels = get( taxonomyDetails, 'labels', {} );
 
-	return {
-		terms: getTerms( state, siteId, taxonomy ),
-		labels,
-	};
-} )( TermSelectorAddTerm );
+		return {
+			terms: getTerms( state, siteId, taxonomy ),
+			labels
+		};
+	}
+)( TermSelectorAddTerm );

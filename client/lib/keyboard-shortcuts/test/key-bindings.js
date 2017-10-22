@@ -1,22 +1,28 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import i18n from 'i18n-calypso';
 
 /**
  * Internal dependencies
  */
-import KeyBindings from 'lib/keyboard-shortcuts/key-bindings';
+import useFilesystemMocks from 'test/helpers/use-filesystem-mocks';
 
-describe( 'KeyBindings', () => {
-	test( 'should have get function', () => {
+describe( 'KeyBindings', function() {
+	let i18n, KeyBindings;
+
+	useFilesystemMocks( __dirname );
+
+	before( () => {
+		i18n = require( 'i18n-calypso' );
+		KeyBindings = require( 'lib/keyboard-shortcuts/key-bindings' );
+	} );
+
+	it( 'should have get function', function() {
 		expect( KeyBindings.get ).to.be.a( 'function' );
 	} );
 
-	test( 'should return an object with strings for keys and arrays for values', () => {
+	it( 'should return an object with strings for keys and arrays for values', function() {
 		var bindings = KeyBindings.get();
 
 		Object.keys( bindings ).forEach( function( category ) {
@@ -25,7 +31,7 @@ describe( 'KeyBindings', () => {
 		} );
 	} );
 
-	test( 'should emit an event when the language changes', () => {
+	it( 'should emit an event when the language changes', function() {
 		var languageChanged = false,
 			handleLanguageChange = function() {
 				languageChanged = true;

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import wp from 'lib/wp';
 import debugFactory from 'debug';
 
@@ -17,7 +14,7 @@ import {
 	siteUpdatesRequestAction,
 	siteUpdatesRequestSuccessAction,
 	siteUpdatesReceiveAction,
-	siteUpdatesRequestFailureAction,
+	siteUpdatesRequestFailureAction
 } from './actions';
 
 export function requestSiteUpdates( siteId ) {
@@ -37,7 +34,9 @@ export function requestSiteUpdates( siteId ) {
 				dispatch( siteUpdatesReceiveAction( siteId, updates ) );
 			} )
 			.catch( error => {
-				const message = error instanceof Error ? error.message : error;
+				const message = error instanceof Error
+					? error.message
+					: error;
 
 				debug( 'dispatching siteUpdatesRequestFailureAction(%o) action', siteId );
 				dispatch( siteUpdatesRequestFailureAction( siteId, message ) );

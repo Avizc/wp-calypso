@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { combineReducers, keyedReducer } from 'state/utils';
 
 /**
@@ -11,9 +8,6 @@ import { combineReducers, keyedReducer } from 'state/utils';
  */
 import zones from './zones/reducer';
 
-export default keyedReducer(
-	'siteId',
-	combineReducers( {
-		zones,
-	} )
-);
+export default keyedReducer( 'siteId', combineReducers( {
+	zones,
+} ) );

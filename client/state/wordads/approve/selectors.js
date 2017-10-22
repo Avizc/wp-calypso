@@ -1,11 +1,9 @@
 /**
  * Returns true if we're currently requesting WordAds approval
- *
- * @format
- * @param {Number} siteId Site Id
+ * @param   {Object} state  Global State
+ * @param   {Number} siteId Site Id
  * @returns {boolean}       requesting state
  */
-
 export function isRequestingWordAdsApproval( state, siteId ) {
 	return !! state.wordads.approve.requesting[ siteId ];
 }

@@ -1,23 +1,17 @@
-/**
- * Internal dependencies
- *
- * @format
- */
+var site = require( './mock-site' ),
+	followerData = require( './mock-email-followers' ),
+	moreFollowerData = require( './mock-more-email-followers' );
 
-import site from './mock-site';
-import followerData from './mock-email-followers';
-import moreFollowerData from './mock-more-email-followers';
-
-export default {
+module.exports = {
 	fetchedFollowers: {
 		type: 'RECEIVE_EMAIL_FOLLOWERS',
 		fetchOptions: {
 			siteId: site.ID,
 			page: 1,
-			max: 2,
+			max: 2
 		},
 		data: followerData,
-		error: null,
+		error: null
 	},
 
 	fetchedMoreFollowers: {
@@ -25,27 +19,27 @@ export default {
 		fetchOptions: {
 			siteId: site.ID,
 			page: 2,
-			max: 2,
+			max: 2
 		},
 		data: moreFollowerData,
-		error: null,
+		error: null
 	},
 
 	removeFollower: {
 		type: 'REMOVE_EMAIL_FOLLOWER',
 		siteId: site.ID,
-		follower: followerData.subscribers[ 0 ],
+		follower: followerData.subscribers[ 0 ]
 	},
 
 	removeFollowerSuccess: {
 		type: 'RECEIVE_REMOVE_EMAIL_FOLLOWER_SUCCESS',
 		siteId: site.ID,
-		follower: followerData.subscribers[ 0 ],
+		follower: followerData.subscribers[ 0 ]
 	},
 
 	removeFollowerError: {
 		type: 'RECEIVE_REMOVE_EMAIL_FOLLOWER_ERROR',
 		siteId: site.ID,
-		follower: followerData.subscribers[ 0 ],
-	},
+		follower: followerData.subscribers[ 0 ]
+	}
 };

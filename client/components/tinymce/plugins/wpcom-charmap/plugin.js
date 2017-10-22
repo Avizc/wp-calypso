@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import ReactDom from 'react-dom';
 import React from 'react';
 import tinymce from 'tinymce/tinymce';
@@ -39,7 +36,7 @@ function wpcomCharMapPlugin( editor ) {
 				React.createElement( CharMap, {
 					showDialog: visibility === 'show',
 					onClose: onClose,
-					editor: editor,
+					editor: editor
 				} ),
 				node
 			);
@@ -49,6 +46,6 @@ function wpcomCharMapPlugin( editor ) {
 	} );
 }
 
-export default function() {
+module.exports = function() {
 	tinymce.PluginManager.add( 'wpcom/charmap', wpcomCharMapPlugin );
-}
+};

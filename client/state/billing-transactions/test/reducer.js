@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -9,7 +7,6 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import reducer, { requesting, items, sendingReceiptEmail } from '../reducer';
 import {
 	BILLING_RECEIPT_EMAIL_SEND,
 	BILLING_RECEIPT_EMAIL_SEND_FAILURE,
@@ -19,16 +16,17 @@ import {
 	BILLING_TRANSACTIONS_REQUEST_FAILURE,
 	BILLING_TRANSACTIONS_REQUEST_SUCCESS,
 	SERIALIZE,
-	DESERIALIZE,
+	DESERIALIZE
 } from 'state/action-types';
+import reducer, { requesting, items, sendingReceiptEmail } from '../reducer';
 import { useSandbox } from 'test/helpers/use-sinon';
 
 describe( 'reducer', () => {
-	useSandbox( sandbox => {
+	useSandbox( ( sandbox ) => {
 		sandbox.stub( console, 'warn' );
 	} );
 
-	test( 'should include expected keys in return value', () => {
+	it( 'should include expected keys in return value', () => {
 		expect( reducer( undefined, {} ) ).to.have.keys( [
 			'requesting',
 			'items',
@@ -37,13 +35,13 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#requesting()', () => {
-		test( 'should default to an false', () => {
+		it( 'should default to an false', () => {
 			const state = requesting( undefined, {} );
 
 			expect( state ).to.be.false;
 		} );
 
-		test( 'should set requesting to true value if a request is initiated', () => {
+		it( 'should set requesting to true value if a request is initiated', () => {
 			const state = requesting( undefined, {
 				type: BILLING_TRANSACTIONS_REQUEST,
 			} );
@@ -51,7 +49,7 @@ describe( 'reducer', () => {
 			expect( state ).to.be.true;
 		} );
 
-		test( 'should set requesting to false if request finishes successfully', () => {
+		it( 'should set requesting to false if request finishes successfully', () => {
 			const state = requesting( true, {
 				type: BILLING_TRANSACTIONS_REQUEST_SUCCESS,
 			} );
@@ -59,7 +57,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( false );
 		} );
 
-		test( 'should set requesting to false if request finishes unsuccessfully', () => {
+		it( 'should set requesting to false if request finishes unsuccessfully', () => {
 			const state = requesting( true, {
 				type: BILLING_TRANSACTIONS_REQUEST_FAILURE,
 			} );
@@ -67,17 +65,17 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( false );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = requesting( true, {
-				type: SERIALIZE,
+				type: SERIALIZE
 			} );
 
 			expect( state ).to.eql( false );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = requesting( true, {
-				type: DESERIALIZE,
+				type: DESERIALIZE
 			} );
 
 			expect( state ).to.eql( false );
@@ -90,83 +88,77 @@ describe( 'reducer', () => {
 				{
 					id: '12345678',
 					amount: '$1.23',
-				},
+				}
 			],
 			upcoming: [
 				{
 					id: '87654321',
 					amount: '$4.56',
-				},
-			],
+				}
+			]
 		};
 
-		test( 'should default to empty object', () => {
+		it( 'should default to empty object', () => {
 			const state = items( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should store the billing transactions properly', () => {
+		it( 'should store the billing transactions properly', () => {
 			const state = items( null, {
 				type: BILLING_TRANSACTIONS_RECEIVE,
-				...billingTransactions,
+				...billingTransactions
 			} );
 
 			expect( state ).to.eql( billingTransactions );
 		} );
 
-		test( 'should override previous billing transactions', () => {
-			const state = items(
-				deepFreeze( {
-					past: [
-						{
-							id: '11223344',
-							amount: '$3.43',
-							desc: 'test',
-						},
-					],
-					upcoming: [
-						{
-							id: '88776655',
-							amount: '$1.11',
-							product: 'example',
-						},
-					],
-				} ),
-				{
-					type: BILLING_TRANSACTIONS_RECEIVE,
-					...billingTransactions,
-				}
-			);
+		it( 'should override previous billing transactions', () => {
+			const state = items( deepFreeze( {
+				past: [
+					{
+						id: '11223344',
+						amount: '$3.43',
+						desc: 'test'
+					}
+				],
+				upcoming: [
+					{
+						id: '88776655',
+						amount: '$1.11',
+						product: 'example'
+					}
+				]
+			} ), {
+				type: BILLING_TRANSACTIONS_RECEIVE,
+				...billingTransactions
+			} );
 
 			expect( state ).to.eql( billingTransactions );
 		} );
 
-		test( 'should persist state', () => {
+		it( 'should persist state', () => {
 			const state = items( deepFreeze( billingTransactions ), {
-				type: SERIALIZE,
+				type: SERIALIZE
 			} );
 
 			expect( state ).to.eql( billingTransactions );
 		} );
 
-		test( 'should load valid persisted state', () => {
+		it( 'should load valid persisted state', () => {
 			const state = items( deepFreeze( billingTransactions ), {
-				type: DESERIALIZE,
+				type: DESERIALIZE
 			} );
 
 			expect( state ).to.eql( billingTransactions );
 		} );
 
-		test( 'should not load invalid persisted state', () => {
-			const state = items(
-				deepFreeze( {
-					example: 'test',
-				} ),
-				{
-					type: DESERIALIZE,
-				}
-			);
+		it( 'should not load invalid persisted state', () => {
+			const state = items( deepFreeze( {
+				example: 'test'
+			} ), {
+				type: DESERIALIZE
+			} );
 
 			expect( state ).to.eql( {} );
 		} );
@@ -177,13 +169,13 @@ describe( 'reducer', () => {
 			87654321: false,
 		};
 
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = sendingReceiptEmail( undefined, {} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should set sendingReceiptEmail of that receipt to true value if a request is initiated', () => {
+		it( 'should set sendingReceiptEmail of that receipt to true value if a request is initiated', () => {
 			const state = sendingReceiptEmail( currentState, {
 				type: BILLING_RECEIPT_EMAIL_SEND,
 				receiptId: 12345678,
@@ -191,11 +183,11 @@ describe( 'reducer', () => {
 
 			expect( state ).to.eql( {
 				12345678: true,
-				...state,
+				...state
 			} );
 		} );
 
-		test( 'should set sendingReceiptEmail of that receipt to false if request finishes successfully', () => {
+		it( 'should set sendingReceiptEmail of that receipt to false if request finishes successfully', () => {
 			const state = sendingReceiptEmail( currentState, {
 				type: BILLING_RECEIPT_EMAIL_SEND_SUCCESS,
 				receiptId: 12345678,
@@ -203,11 +195,11 @@ describe( 'reducer', () => {
 
 			expect( state ).to.eql( {
 				12345678: false,
-				...state,
+				...state
 			} );
 		} );
 
-		test( 'should set sendingReceiptEmail of that receipt to false if request finishes unsuccessfully', () => {
+		it( 'should set sendingReceiptEmail of that receipt to false if request finishes unsuccessfully', () => {
 			const state = sendingReceiptEmail( currentState, {
 				type: BILLING_RECEIPT_EMAIL_SEND_FAILURE,
 				receiptId: 12345678,
@@ -215,21 +207,21 @@ describe( 'reducer', () => {
 
 			expect( state ).to.eql( {
 				12345678: false,
-				...state,
+				...state
 			} );
 		} );
 
-		test( 'should not persist state', () => {
+		it( 'should not persist state', () => {
 			const state = sendingReceiptEmail( currentState, {
-				type: SERIALIZE,
+				type: SERIALIZE
 			} );
 
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should not load persisted state', () => {
+		it( 'should not load persisted state', () => {
 			const state = sendingReceiptEmail( currentState, {
-				type: DESERIALIZE,
+				type: DESERIALIZE
 			} );
 
 			expect( state ).to.eql( {} );

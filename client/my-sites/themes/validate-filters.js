@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import page from 'page';
 
 /**
@@ -26,9 +23,7 @@ export function validateFilters( context, next ) {
 	const filterParam = context.params.filter.replace( /\s/g, '+' );
 
 	// Accept commas, which were previously used as canonical filter separators
-	const validFilters = filterParam
-		.split( /[,+]/ )
-		.filter( term => isValidThemeFilterTerm( context.store.getState(), term ) );
+	const validFilters = filterParam.split( /[,+]/ ).filter( term => isValidThemeFilterTerm( context.store.getState(), term ) );
 	const sortedValidFilters = sortFilterTerms( context, validFilters ).join( '+' );
 
 	if ( sortedValidFilters !== filterParam ) {
@@ -48,7 +43,7 @@ export function validateFilters( context, next ) {
 
 export function validateVertical( context, next ) {
 	const { vertical } = context.params;
-	const { store } = context;
+	const { store } = context;
 
 	if ( ! vertical ) {
 		return next();
@@ -79,8 +74,9 @@ export function validateVertical( context, next ) {
  * @return {array} Sorted array
  */
 export function sortFilterTerms( context, terms ) {
-	return terms
-		.map( term => getThemeFilterStringFromTerm( context.store.getState(), term ) )
-		.sort()
-		.map( filter => getThemeFilterTermFromString( context.store.getState(), filter ) );
+	return terms.map(
+		( term ) => getThemeFilterStringFromTerm( context.store.getState(), term )
+	).sort().map(
+		( filter ) => getThemeFilterTermFromString( context.store.getState(), filter )
+	);
 }

@@ -1,7 +1,5 @@
 /**
  * External Dependencies
- *
- * @format
  */
 
 /**
@@ -21,3 +19,5 @@ export function areEqualIgnoringWhitespaceAndCase( a, b ) {
 	b = b.replace( /[\s'.\-_"]/g, '' );
 	return a.toLowerCase() === b.toLowerCase();
 }
+
+

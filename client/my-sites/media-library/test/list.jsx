@@ -1,40 +1,29 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { expect } from 'chai';
-import { mount } from 'enzyme';
-import { toArray } from 'lodash';
+import { noop, toArray } from 'lodash';
 import React from 'react';
+import mockery from 'mockery';
 
 /**
  * Internal dependencies
  */
-import { MediaLibraryList as MediaList } from '../list';
-import fixtures from './fixtures';
-import MediaLibrarySelectedData from 'components/data/media-library-selected-data';
-import Dispatcher from 'dispatcher';
-import MediaActions from 'lib/media/actions';
-import MediaLibrarySelectedStore from 'lib/media/library-selected-store';
-
-jest.mock( 'lib/user', () => () => {} );
-jest.mock( 'components/infinite-list', () => require( 'components/empty-component' ) );
-jest.mock( 'my-sites/media-library/list-item', () => require( 'components/empty-component' ) );
-jest.mock( 'my-sites/media-library/list-plan-upgrade-nudge', () =>
-	require( 'components/empty-component' )
-);
+import EmptyComponent from 'test/helpers/react/empty-component';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
 /**
  * Module variables
  */
 const DUMMY_SITE_ID = 2916284;
 
-describe( 'MediaLibraryList item selection', () => {
-	let wrapper, mediaList;
+describe( 'MediaLibraryList item selection', function() {
+	let mount, MediaLibrarySelectedData, MediaLibrarySelectedStore,
+		MediaActions, fixtures, Dispatcher, MediaList, wrapper, mediaList;
+
+	useFakeDom();
+	useMockery();
 
 	function toggleItem( itemIndex, shiftClick ) {
 		mediaList.toggleItem( fixtures.media[ itemIndex ], shiftClick );
@@ -48,15 +37,33 @@ describe( 'MediaLibraryList item selection', () => {
 		);
 	}
 
-	beforeAll( function() {
+	before( function() {
+		mockery.registerMock( 'lib/wp', {
+			me: () => ( {
+				get: noop
+			} )
+		} );
+		mockery.registerMock( 'components/infinite-list', EmptyComponent );
+		mockery.registerMock( './list-item', EmptyComponent );
+		mockery.registerMock( './list-plan-upgrade-nudge', EmptyComponent );
+
+		mount = require( 'enzyme' ).mount;
+		MediaLibrarySelectedData = require( 'components/data/media-library-selected-data' );
+		MediaLibrarySelectedStore = require( 'lib/media/library-selected-store' );
+		MediaActions = require( 'lib/media/actions' );
+		fixtures = require( './fixtures' );
+		Dispatcher = require( 'dispatcher' );
+
 		Dispatcher.handleServerAction( {
 			type: 'RECEIVE_MEDIA_ITEMS',
 			siteId: DUMMY_SITE_ID,
-			data: fixtures,
+			data: fixtures
 		} );
+
+		MediaList = require( '../list' ).MediaLibraryList;
 	} );
 
-	beforeEach( () => {
+	beforeEach( function() {
 		MediaActions.setLibrarySelectedItems( DUMMY_SITE_ID, [] );
 
 		if ( wrapper ) {
@@ -64,7 +71,7 @@ describe( 'MediaLibraryList item selection', () => {
 		}
 	} );
 
-	describe( 'multiple selection', () => {
+	context( 'multiple selection', function() {
 		beforeEach( () => {
 			wrapper = mount(
 				<MediaLibrarySelectedData siteId={ DUMMY_SITE_ID }>
@@ -72,27 +79,26 @@ describe( 'MediaLibraryList item selection', () => {
 						filterRequiresUpgrade={ false }
 						site={ { ID: DUMMY_SITE_ID } }
 						media={ fixtures.media }
-						mediaScale={ 0.24 }
-					/>
+						mediaScale={ 0.24 } />
 				</MediaLibrarySelectedData>
 			);
 			mediaList = wrapper.find( MediaList ).get( 0 );
 		} );
 
-		test( 'allows selecting single items', () => {
+		it( 'allows selecting single items', function() {
 			toggleItem( 0 );
 			expectSelectedItems( 0 );
 			toggleItem( 2 );
 			expectSelectedItems( 0, 2 );
 		} );
 
-		test( 'allows selecting multiple items at once by Shift+clicking', () => {
+		it( 'allows selecting multiple items at once by Shift+clicking', function() {
 			toggleItem( 0 );
 			toggleItem( 4, true ); // Shift+click to select items 0 through 4
 			expectSelectedItems( 0, 1, 2, 3, 4 );
 		} );
 
-		test( 'allows selecting single and multiple items', () => {
+		it( 'allows selecting single and multiple items', function() {
 			toggleItem( 1 );
 			expectSelectedItems( 1 );
 			toggleItem( 5 );
@@ -100,7 +106,7 @@ describe( 'MediaLibraryList item selection', () => {
 			expectSelectedItems( 1, 5, 6, 7, 8, 9 );
 		} );
 
-		test( 'allows chaining Shift+click selections from first item', () => {
+		it( 'allows chaining Shift+click selections from first item', function() {
 			toggleItem( 0 );
 			toggleItem( 3, true );
 			expectSelectedItems( 0, 1, 2, 3 );
@@ -108,7 +114,7 @@ describe( 'MediaLibraryList item selection', () => {
 			expectSelectedItems( 0, 1, 2, 3, 4, 5, 6 );
 		} );
 
-		test( 'allows chaining Shift+click selections to last item', () => {
+		it( 'allows chaining Shift+click selections to last item', function() {
 			toggleItem( 3 );
 			toggleItem( 6, true );
 			expectSelectedItems( 3, 4, 5, 6 );
@@ -116,7 +122,7 @@ describe( 'MediaLibraryList item selection', () => {
 			expectSelectedItems( 3, 4, 5, 6, 7, 8, 9 );
 		} );
 
-		test( 'allows chaining Shift+click deselections', () => {
+		it( 'allows chaining Shift+click deselections', function() {
 			// first select all items
 			toggleItem( 0 );
 			toggleItem( 9, true );
@@ -129,7 +135,7 @@ describe( 'MediaLibraryList item selection', () => {
 			expectSelectedItems( 0, 8, 9 );
 		} );
 
-		test( 'allows selecting then deselecting multiple items', () => {
+		it( 'allows selecting then deselecting multiple items', function() {
 			toggleItem( 1 );
 			toggleItem( 6, true );
 			expectSelectedItems( 1, 2, 3, 4, 5, 6 );
@@ -137,7 +143,7 @@ describe( 'MediaLibraryList item selection', () => {
 			expectSelectedItems();
 		} );
 
-		test( 'selects the previously and currently clicked items when Shift+clicking', () => {
+		it( 'selects the previously and currently clicked items when Shift+clicking', function() {
 			toggleItem( 1 );
 			toggleItem( 4, true );
 			expectSelectedItems( 1, 2, 3, 4 );
@@ -147,7 +153,7 @@ describe( 'MediaLibraryList item selection', () => {
 		} );
 	} );
 
-	describe( 'single selection', () => {
+	context( 'single selection', function() {
 		beforeEach( () => {
 			wrapper = mount(
 				<MediaLibrarySelectedData siteId={ DUMMY_SITE_ID }>
@@ -156,35 +162,34 @@ describe( 'MediaLibraryList item selection', () => {
 						site={ { ID: DUMMY_SITE_ID } }
 						media={ fixtures.media }
 						mediaScale={ 0.24 }
-						single
-					/>
+						single />
 				</MediaLibrarySelectedData>
 			);
 			mediaList = wrapper.find( MediaList ).get( 0 );
 		} );
 
-		test( 'allows selecting a single item', () => {
+		it( 'allows selecting a single item', function() {
 			toggleItem( 0 );
 			expectSelectedItems( 0 );
 			toggleItem( 2 );
 			expectSelectedItems( 2 );
 		} );
 
-		test( 'allows deselecting a single item', () => {
+		it( 'allows deselecting a single item', function() {
 			toggleItem( 0 );
 			expectSelectedItems( 0 );
 			toggleItem( 0 );
 			expectSelectedItems();
 		} );
 
-		test( 'only selects a single item when selecting multiple via Shift+click', () => {
+		it( 'only selects a single item when selecting multiple via Shift+click', function() {
 			toggleItem( 0 );
 			toggleItem( 4, true ); // Shift+click to select items 0 through 4
 			expectSelectedItems( 4 );
 		} );
 	} );
 
-	describe( 'google photos', () => {
+	context( 'google photos', () => {
 		let largeLibrary = [];
 
 		const getList = ( media, source ) => {
@@ -195,32 +200,29 @@ describe( 'MediaLibraryList item selection', () => {
 					media={ media }
 					mediaScale={ 0.24 }
 					source={ source }
-					single
-				/>
-			)
-				.find( MediaList )
-				.get( 0 );
+					single />
+				).find( MediaList ).get( 0 );
 		};
 
-		beforeAll( () => {
+		before( () => {
 			while ( largeLibrary.length < 1000 ) {
 				largeLibrary = largeLibrary.concat( fixtures.media );
 			}
 		} );
 
-		test( 'displays a trailing message when media library showing > 1000 google photos', () => {
+		it( 'displays a trailing message when media library showing > 1000 google photos', () => {
 			const list = getList( largeLibrary, 'google_photos' );
 
 			expect( list.renderTrailingItems() ).to.not.be.null;
 		} );
 
-		test( 'doesnt displays a trailing message when media library showing > 1000 non-google photos', () => {
+		it( 'doesnt displays a trailing message when media library showing > 1000 non-google photos', () => {
 			const list = getList( largeLibrary, '' );
 
 			expect( list.renderTrailingItems() ).to.be.null;
 		} );
 
-		test( 'doesnt display a trailing message when media library showing < 1000 photos', () => {
+		it( 'doesnt display a trailing message when media library showing < 1000 photos', () => {
 			const list = getList( largeLibrary.slice( 0, 10 ), 'google_photos' );
 
 			expect( list.renderTrailingItems() ).to.be.null;

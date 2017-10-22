@@ -1,34 +1,34 @@
-/** @format */
 /**
  * External Dependencies
  */
-import React from 'react';
 import ReactDom from 'react-dom';
-import Debug from 'debug';
+import React from 'react';
 import page from 'page';
-import { get, isEmpty } from 'lodash';
+import Debug from 'debug';
 import { translate } from 'i18n-calypso';
+import {
+	get,
+	isEmpty,
+} from 'lodash';
 
 /**
  * Internal Dependencies
  */
-import analytics from 'lib/analytics';
-import CheckoutData from 'components/data/checkout';
-import i18nUtils from 'lib/i18n-utils';
 import JetpackConnect from './main';
-import JetpackConnectAuthorizeForm from './authorize-form';
 import JetpackNewSite from './jetpack-new-site/index';
-import jetpackSSOForm from './sso';
-import Plans from './plans';
-import PlansLanding from './plans-landing';
-import route from 'lib/route';
+import JetpackConnectAuthorizeForm from './authorize-form';
+import { setSection } from 'state/ui/actions';
+import { renderWithReduxStore } from 'lib/react-helpers';
+import { JETPACK_CONNECT_QUERY_SET } from 'state/action-types';
 import userFactory from 'lib/user';
+import jetpackSSOForm from './sso';
+import i18nUtils from 'lib/i18n-utils';
+import analytics from 'lib/analytics';
+import route from 'lib/route';
+import { setDocumentHeadTitle as setTitle } from 'state/document-head/actions';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { isJetpackSite } from 'state/sites/selectors';
-import { JETPACK_CONNECT_QUERY_SET } from 'state/action-types';
-import { renderWithReduxStore } from 'lib/react-helpers';
-import { setDocumentHeadTitle as setTitle } from 'state/document-head/actions';
-import { setSection } from 'state/ui/actions';
+import PlansLanding from './plans-landing';
 
 /**
  * Module variables
@@ -42,26 +42,21 @@ const analyticsPageTitleByType = {
 	pro: 'Jetpack Install Pro',
 };
 
-const removeSidebar = context => {
+const removeSidebar = ( context ) => {
 	ReactDom.unmountComponentAtNode( document.getElementById( 'secondary' ) );
 
-	context.store.dispatch(
-		setSection(
-			{ name: 'jetpackConnect' },
-			{
-				hasSidebar: false,
-			}
-		)
-	);
+	context.store.dispatch( setSection( { name: 'jetpackConnect' }, {
+		hasSidebar: false
+	} ) );
 };
 
-const jetpackNewSiteSelector = context => {
+const jetpackNewSiteSelector = ( context ) => {
 	removeSidebar( context );
 	renderWithReduxStore(
 		React.createElement( JetpackNewSite, {
 			path: context.path,
 			context: context,
-			locale: context.params.locale,
+			locale: context.params.locale
 		} ),
 		document.getElementById( 'primary' ),
 		context.store
@@ -84,7 +79,7 @@ export default {
 			debug( 'set initial query object', context.query );
 			context.store.dispatch( {
 				type: JETPACK_CONNECT_QUERY_SET,
-				queryObject: context.query,
+				queryObject: context.query
 			} );
 			page.redirect( context.pathname );
 		}
@@ -98,7 +93,11 @@ export default {
 	},
 
 	connect( context ) {
-		const { path, pathname, params } = context;
+		const {
+			path,
+			pathname,
+			params
+		} = context;
 		const { type = false } = params;
 		const analyticsPageTitle = get( type, analyticsPageTitleByType, 'Jetpack Connect' );
 
@@ -142,7 +141,11 @@ export default {
 
 		analytics.pageView.record( analyticsBasePath, analyticsPageTitle );
 		renderWithReduxStore(
-			<JetpackConnectAuthorizeForm path={ context.path } interval={ interval } locale={ locale } />,
+			<JetpackConnectAuthorizeForm
+				path={ context.path }
+				interval={ interval }
+				locale={ locale }
+			/>,
 			document.getElementById( 'primary' ),
 			context.store
 		);
@@ -164,7 +167,7 @@ export default {
 				locale: context.params.locale,
 				userModule: userModule,
 				siteId: context.params.siteId,
-				ssoNonce: context.params.ssoNonce,
+				ssoNonce: context.params.ssoNonce
 			} ),
 			document.getElementById( 'primary' ),
 			context.store
@@ -197,12 +200,14 @@ export default {
 	},
 
 	plansSelection( context ) {
-		const state = context.store.getState();
-		const siteId = getSelectedSiteId( state );
-		const isJetpack = isJetpackSite( state, siteId );
-		const analyticsPageTitle = 'Plans';
-		const basePath = route.sectionify( context.path );
-		const analyticsBasePath = basePath + '/:site';
+		const Plans = require( './plans' ),
+			CheckoutData = require( 'components/data/checkout' ),
+			state = context.store.getState(),
+			siteId = getSelectedSiteId( state ),
+			isJetpack = isJetpackSite( state, siteId ),
+			analyticsPageTitle = 'Plans',
+			basePath = route.sectionify( context.path ),
+			analyticsBasePath = basePath + '/:site';
 
 		if ( ! isJetpack ) {
 			return;
@@ -222,8 +227,7 @@ export default {
 					context={ context }
 					destinationType={ context.params.destinationType }
 					basePlansPath={ '/jetpack/connect/plans' }
-					interval={ context.params.interval }
-				/>
+					interval={ context.params.interval } />
 			</CheckoutData>,
 			document.getElementById( 'primary' ),
 			context.store
@@ -231,9 +235,10 @@ export default {
 	},
 
 	plansPreSelection( context ) {
-		const analyticsPageTitle = 'Plans';
-		const basePath = route.sectionify( context.path );
-		const analyticsBasePath = basePath + '/:site';
+		const Plans = require( './plans' ),
+			analyticsPageTitle = 'Plans',
+			basePath = route.sectionify( context.path ),
+			analyticsBasePath = basePath + '/:site';
 
 		analytics.tracks.recordEvent( 'calypso_plans_view' );
 		analytics.pageView.record( analyticsBasePath, analyticsPageTitle );
@@ -242,8 +247,7 @@ export default {
 			<Plans
 				context={ context }
 				showFirst={ true }
-				destinationType={ context.params.destinationType }
-			/>,
+				destinationType={ context.params.destinationType } />,
 			document.getElementById( 'primary' ),
 			context.store
 		);

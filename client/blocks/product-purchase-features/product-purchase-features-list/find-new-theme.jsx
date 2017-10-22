@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { localize } from 'i18n-calypso';
 
@@ -16,11 +13,9 @@ export default localize( ( { selectedSite, translate } ) => {
 	return (
 		<div className="product-purchase-features-list__item">
 			<PurchaseDetail
-				icon={ <img src="/calypso/images/upgrades/customize-theme.svg" /> }
-				title={ translate( 'Try a New Theme' ) }
-				description={ translate(
-					"You've now got access to every premium theme, at no extra cost - that's hundreds of new options. Give one a try!"
-				) }
+				icon="customize"
+				title={ translate( 'Find a new theme' ) }
+				description={ translate( 'All our premium themes are now available at no extra cost. Try them out now.' ) }
 				buttonText={ translate( 'Browse premium themes' ) }
 				href={ '/themes/' + selectedSite.slug }
 			/>

@@ -1,4 +1,3 @@
-/** @format */
 export const DEFAULT_MEDIA_QUERY = {
 	context: 'display',
 	http_envelope: false,
@@ -9,5 +8,5 @@ export const DEFAULT_MEDIA_QUERY = {
 	order: 'DESC',
 	order_by: 'date',
 	mime_type: '',
-	search: '',
+	search: ''
 };

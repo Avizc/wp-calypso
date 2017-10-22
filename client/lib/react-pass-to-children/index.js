@@ -1,13 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
+var React = require( 'react' ),
+	assign = require( 'lodash/assign' );
 
-import { assign } from 'lodash';
-import React from 'react';
-
-export default function( element, additionalProps ) {
+module.exports = function( element, additionalProps ) {
 	var props = assign( {}, element.props, additionalProps ),
 		childElements;
 
@@ -26,4 +23,4 @@ export default function( element, additionalProps ) {
 	}
 
 	return React.cloneElement( element.props.children, props );
-}
+};

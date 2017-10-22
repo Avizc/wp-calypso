@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import classNames from 'classnames';
-import { localize } from 'i18n-calypso';
 import { omit } from 'lodash';
 import React, { Children } from 'react';
 
@@ -14,33 +10,35 @@ import React, { Children } from 'react';
  */
 import Button from 'components/button';
 
-class FormButton extends React.Component {
-	static defaultProps = {
-		isSubmitting: false,
-		isPrimary: true,
-		type: 'submit',
-	};
+export default React.createClass( {
 
-	getDefaultButtonAction = () => {
-		return this.props.isSubmitting
-			? this.props.translate( 'Saving…' )
-			: this.props.translate( 'Save Settings' );
-	};
+	displayName: 'FormsButton',
+
+	getDefaultProps() {
+		return {
+			isSubmitting: false,
+			isPrimary: true,
+			type: 'submit'
+		};
+	},
+
+	getDefaultButtonAction() {
+		return this.props.isSubmitting ? this.translate( 'Saving…' ) : this.translate( 'Save Settings' );
+	},
 
 	render() {
 		const { children, className, isPrimary, ...props } = this.props,
-			buttonClasses = classNames( className, 'form-button' );
+			buttonClasses = classNames( className, {
+				'form-button': true
+			} );
 
 		return (
 			<Button
-				{ ...omit( props, [ 'isSubmitting', 'moment', 'numberFormat', 'translate' ] ) }
+				{ ...omit( props, 'isSubmitting' ) }
 				primary={ isPrimary }
-				className={ buttonClasses }
-			>
+				className={ buttonClasses }>
 				{ Children.count( children ) ? children : this.getDefaultButtonAction() }
 			</Button>
 		);
 	}
-}
-
-export default localize( FormButton );
+} );

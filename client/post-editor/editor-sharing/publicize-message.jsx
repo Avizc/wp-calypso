@@ -1,55 +1,54 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React, { Component } from 'react';
-import { localize } from 'i18n-calypso';
-import PropTypes from 'prop-types';
+const React = require( 'react' );
 
 /**
  * Internal dependencies
  */
-import CountedTextarea from 'components/forms/counted-textarea';
-import FormTextarea from 'components/forms/form-textarea';
-import InfoPopover from 'components/info-popover';
-import TrackInputChanges from 'components/track-input-changes';
-import PostActions from 'lib/posts/actions';
-import * as stats from 'lib/posts/stats';
+const CountedTextarea = require( 'components/forms/counted-textarea' ),
+	FormTextarea = require( 'components/forms/form-textarea' ),
+	PostActions = require( 'lib/posts/actions' ),
+	stats = require( 'lib/posts/stats' ),
+	TrackInputChanges = require( 'components/track-input-changes' ),
+	InfoPopover = require( 'components/info-popover' );
 
-class PublicizeMessage extends Component {
-	static propTypes = {
-		disabled: PropTypes.bool,
-		message: PropTypes.string,
-		preview: PropTypes.string,
-		acceptableLength: PropTypes.number,
-		requireCount: PropTypes.bool,
-		onChange: PropTypes.func,
-	};
+export default React.createClass( {
+	displayName: 'PublicizeMessage',
 
-	static defaultProps = {
-		disabled: false,
-		message: '',
-		acceptableLength: 140,
-		requireCount: false,
-	};
+	propTypes: {
+		disabled: React.PropTypes.bool,
+		message: React.PropTypes.string,
+		preview: React.PropTypes.string,
+		acceptableLength: React.PropTypes.number,
+		requireCount: React.PropTypes.bool,
+		onChange: React.PropTypes.func
+	},
 
-	onChange = event => {
+	getDefaultProps: function() {
+		return {
+			disabled: false,
+			message: '',
+			acceptableLength: 140,
+			requireCount: false,
+		};
+	},
+
+	onChange: function( event ) {
 		// TODO: REDUX - remove flux actions when whole post-editor is reduxified
 		if ( this.props.onChange ) {
 			this.props.onChange( event.target.value );
 		} else {
 			PostActions.updateMetadata( '_wpas_mess', event.target.value );
 		}
-	};
+	},
 
-	recordStats = () => {
+	recordStats: function() {
 		stats.recordStat( 'sharing_message_changed' );
 		stats.recordEvent( 'Publicize Sharing Message Changed' );
-	};
+	},
 
-	renderInfoPopover() {
+	renderInfoPopover: function() {
 		return (
 			<InfoPopover
 				className="publicize-message-counter-info"
@@ -57,24 +56,21 @@ class PublicizeMessage extends Component {
 				gaEventCategory="Editor"
 				popoverName="SharingMessage"
 			>
-				{ this.props.translate(
+				{ this.translate(
 					'The length includes space for the link to your post and an attached image.',
 					{ context: 'Post editor sharing message counter explanation' }
-				) }
+			) }
 			</InfoPopover>
 		);
-	}
+	},
 
-	renderTextarea() {
-		const placeholder =
-			this.props.preview || this.props.translate( 'Write a message for your audience here.' );
-
+	renderTextarea: function() {
 		if ( this.props.requireCount ) {
 			return (
 				<CountedTextarea
 					disabled={ this.props.disabled }
 					value={ this.props.message }
-					placeholder={ placeholder }
+					placeholder={ this.props.preview }
 					countPlaceholderLength={ true }
 					onChange={ this.onChange }
 					showRemainingCharacters={ true }
@@ -89,21 +85,18 @@ class PublicizeMessage extends Component {
 				<FormTextarea
 					disabled={ this.props.disabled }
 					value={ this.props.message }
-					placeholder={ placeholder }
+					placeholder={ this.props.preview }
 					onChange={ this.onChange }
-					className="editor-sharing__message-input"
-				/>
+					className="editor-sharing__message-input" />
 			);
 		}
-	}
+	},
 
-	render() {
+	render: function() {
 		return (
 			<div className="editor-sharing__publicize-message">
 				<h5 className="editor-sharing__message-heading">
-					{ this.props.translate( 'Customize the message', {
-						context: 'Post editor sharing message heading',
-					} ) }
+					{ this.translate( 'Customize the message', { context: 'Post editor sharing message heading' } ) }
 				</h5>
 				<TrackInputChanges onNewValue={ this.recordStats }>
 					{ this.renderTextarea() }
@@ -111,6 +104,4 @@ class PublicizeMessage extends Component {
 			</div>
 		);
 	}
-}
-
-export default localize( PublicizeMessage );
+} );

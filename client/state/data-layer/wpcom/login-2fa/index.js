@@ -1,10 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { get } from 'lodash';
+import request from 'superagent';
+import defer from 'lodash/defer';
 
 /**
  * Internal dependencies
@@ -14,7 +12,6 @@ import {
 	TWO_FACTOR_AUTHENTICATION_UPDATE_NONCE,
 	TWO_FACTOR_AUTHENTICATION_PUSH_POLL_COMPLETED,
 	TWO_FACTOR_AUTHENTICATION_PUSH_POLL_START,
-	TWO_FACTOR_AUTHENTICATION_PUSH_POLL_STOP,
 } from 'state/action-types';
 import {
 	getRememberMe,
@@ -23,91 +20,77 @@ import {
 	getTwoFactorPushToken,
 	getTwoFactorUserId,
 } from 'state/login/selectors';
-import { http } from 'state/http/actions';
-import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
-import { bypassDataLayer } from 'state/data-layer/utils';
-import { addLocaleToWpcomUrl, getLocaleSlug } from 'lib/i18n-utils';
 
-/**
+/***
  * Module constants
  */
 const POLL_APP_PUSH_INTERVAL_SECONDS = 5;
 
-const requestTwoFactorPushNotificationStatus = ( store, action ) => {
+/***
+ * Checks the status of the push notification auth
+ *
+ * @param {Object}   store  Global redux store
+ * @returns {Promise}		Promise of result from the API
+ */
+const doAppPushRequest = ( store ) => {
 	const authType = 'push';
 
-	store.dispatch(
-		http(
-			{
-				url: addLocaleToWpcomUrl(
-					'https://wordpress.com/wp-login.php?action=two-step-authentication-endpoint',
-					getLocaleSlug()
-				),
-				method: 'POST',
-				headers: [ [ 'Content-Type', 'application/x-www-form-urlencoded' ] ],
-				withCredentials: true,
-				body: {
-					user_id: getTwoFactorUserId( store.getState() ),
-					auth_type: authType,
-					two_step_nonce: getTwoFactorAuthNonce( store.getState(), authType ),
-					remember_me: getRememberMe( store.getState() ),
-					two_step_push_token: getTwoFactorPushToken( store.getState() ),
-					client_id: config( 'wpcom_signup_id' ),
-					client_secret: config( 'wpcom_signup_key' ),
-				},
-			},
-			action
-		)
-	);
+	return request.post( 'https://wordpress.com/wp-login.php?action=two-step-authentication-endpoint' )
+		.withCredentials()
+		.set( 'Content-Type', 'application/x-www-form-urlencoded' )
+		.accept( 'application/json' )
+		.send( {
+			user_id: getTwoFactorUserId( store.getState() ),
+			auth_type: authType,
+			two_step_nonce: getTwoFactorAuthNonce( store.getState(), authType ),
+			remember_me: getRememberMe( store.getState() ),
+			two_step_push_token: getTwoFactorPushToken( store.getState() ),
+			client_id: config( 'wpcom_signup_id' ),
+			client_secret: config( 'wpcom_signup_key' ),
+		} ).then( () => {
+			store.dispatch( { type: TWO_FACTOR_AUTHENTICATION_PUSH_POLL_COMPLETED } );
+		} ).catch( error => {
+			store.dispatch( {
+				type: TWO_FACTOR_AUTHENTICATION_UPDATE_NONCE,
+				nonceType: 'push',
+				twoStepNonce: error.response.body.data.two_step_nonce
+			} );
+			return Promise.reject( error );
+		} );
 };
 
-const receivedTwoFactorPushNotificationApproved = ( { dispatch } ) =>
-	dispatch( { type: TWO_FACTOR_AUTHENTICATION_PUSH_POLL_COMPLETED } );
-
-/**
- * Receive error from the two factor push notification status http request
+/***
+ * Polling the login API for the status of the push notification.
+ * The polling will stop on success or when store's polling progress
+ * state changes to `false`
  *
- * @param {Object}	 store  Global redux store
- * @param {Object}	 action dispatched action
- * @param {Object}	 error  the error object
+ * @param {Object}   store  Global redux store
  */
-const receivedTwoFactorPushNotificationError = ( store, action, error ) => {
-	const isNetworkFailure = ! error.status;
-	const twoStepNonce = get( error, 'response.body.data.two_step_nonce' );
+const doAppPushPolling = store => {
+	let retryCount = 0;
+	const retry = () => {
+		// if polling was stopped or not in progress - stop
+		if ( ! getTwoFactorPushPollInProgress( store.getState() ) ) {
+			return;
+		}
 
-	if ( twoStepNonce ) {
-		store.dispatch( {
-			type: TWO_FACTOR_AUTHENTICATION_UPDATE_NONCE,
-			nonceType: 'push',
-			twoStepNonce,
-		} );
-	} else if ( ! isNetworkFailure ) {
-		store.dispatch( { type: TWO_FACTOR_AUTHENTICATION_PUSH_POLL_STOP } );
-
-		throw new Error( 'Unable to continue polling because of error' );
-	}
+		retryCount++;
+		setTimeout(
+			() => doAppPushRequest( store ).catch( retry ),
+			( POLL_APP_PUSH_INTERVAL_SECONDS + Math.floor( retryCount / 10 ) ) * 1000 // backoff lineary
+		);
+	};
 
 	if ( getTwoFactorPushPollInProgress( store.getState() ) ) {
-		setTimeout(
-			// eslint-disable-next-line no-use-before-define
-			() => makePushNotificationRequest( store, { type: action.type } ),
-			POLL_APP_PUSH_INTERVAL_SECONDS * 1000
-		);
+		doAppPushRequest( store ).catch( retry );
 	}
 };
 
-const makePushNotificationRequest = dispatchRequest(
-	requestTwoFactorPushNotificationStatus,
-	receivedTwoFactorPushNotificationApproved,
-	receivedTwoFactorPushNotificationError
-);
+const handleTwoFactorPushPoll = ( store ) => {
+	// this is deferred to allow reducer respond to TWO_FACTOR_AUTHENTICATION_PUSH_POLL_START
+	defer( () => doAppPushPolling( store ) );
+};
 
 export default {
-	[ TWO_FACTOR_AUTHENTICATION_PUSH_POLL_START ]: [
-		( store, action ) => {
-			// We need to store to update for `getTwoFactorPushPollInProgress` selector
-			store.dispatch( bypassDataLayer( action ) );
-			return makePushNotificationRequest( store, action );
-		},
-	],
+	[ TWO_FACTOR_AUTHENTICATION_PUSH_POLL_START ]: [ handleTwoFactorPushPoll ],
 };

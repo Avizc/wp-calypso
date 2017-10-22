@@ -1,28 +1,17 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
-import assert from 'assert';
 import debugModule from 'debug';
 import sinon from 'sinon';
+import assert from 'assert';
 
 /**
  * Internal dependencies
  */
-import utils from '../utils';
+import useFilesystemMocks from 'test/helpers/use-filesystem-mocks';
+import useMockery from 'test/helpers/use-mockery';
+import useFakeDom from 'test/helpers/use-fake-dom';
 import mockedFlows from './fixtures/flows';
-import flows from 'signup/config/flows';
-
-jest.mock( 'lib/abtest', () => ( {
-	abtest: () => '',
-} ) );
-jest.mock( 'lib/user', () => () => ( {
-	get: () => {},
-} ) );
 
 /**
  * Module variables
@@ -31,206 +20,200 @@ const debug = debugModule( 'calypso:client:signup:controller-utils:test' );
 
 debug( 'start utils test' );
 
-describe( 'utils', () => {
-	beforeAll( () => {
-		sinon.stub( flows, 'getFlows' ).returns( mockedFlows );
-		sinon.stub( flows, 'preloadABTestVariationsForStep', () => {} );
-		sinon.stub( flows, 'getABTestFilteredFlow', ( flowName, flow ) => {
-			return flow;
+describe( 'utils', function() {
+	let flows, utils;
+
+	useFilesystemMocks( __dirname );
+	useFakeDom();
+
+	useMockery( ( mockery ) => {
+		mockery.registerMock( 'lib/abtest', {
+			abtest: () => ''
 		} );
 	} );
 
-	describe( 'getLocale', () => {
-		test( 'should find the locale anywhere in the params', () => {
+	before( () => {
+		flows = require( 'signup/config/flows' );
+
+		sinon.stub( flows, 'getFlows' ).returns( mockedFlows );
+		sinon.stub( flows, 'preloadABTestVariationsForStep', ()=>{} );
+		sinon.stub( flows, 'getABTestFilteredFlow', ( flowName, flow ) => {
+			return flow;
+		} );
+
+		utils = require( '../utils' );
+	} );
+
+	describe( 'getLocale', function() {
+		it( 'should find the locale anywhere in the params', function() {
 			assert.equal( utils.getLocale( { lang: 'fr' } ), 'fr' );
 			assert.equal( utils.getLocale( { stepName: 'fr' } ), 'fr' );
 			assert.equal( utils.getLocale( { flowName: 'fr' } ), 'fr' );
 		} );
 
-		test( 'should return undefined if no locale is present in the params', () => {
-			assert.equal(
-				utils.getLocale( {
-					stepName: 'theme-selection',
-					flowName: 'flow-one',
-				} ),
-				undefined
-			);
+		it( 'should return undefined if no locale is present in the params', function() {
+			assert.equal( utils.getLocale( {
+				stepName: 'theme-selection',
+				flowName: 'flow-one'
+			} ), undefined );
 		} );
 	} );
 
-	describe( 'getStepName', () => {
-		test( 'should find the step name in either the stepName or flowName fragment', () => {
+	describe( 'getStepName', function() {
+		it( 'should find the step name in either the stepName or flowName fragment', function() {
 			assert.equal( utils.getStepName( { stepName: 'user' } ), 'user' );
 			assert.equal( utils.getStepName( { flowName: 'user' } ), 'user' );
 		} );
 
-		test( 'should return undefined if no step name is found', () => {
+		it( 'should return undefined if no step name is found', function() {
 			assert.equal( utils.getStepName( { flowName: 'account' } ), undefined );
 		} );
 	} );
 
-	describe( 'getFlowName', () => {
-		afterEach( () => {
+	describe( 'getFlowName', function() {
+		afterEach( function() {
 			flows.filterFlowName = null;
 		} );
 
-		test( 'should find the flow name in the flowName fragment if present', () => {
+		it( 'should find the flow name in the flowName fragment if present', function() {
 			assert.equal( utils.getFlowName( { flowName: 'other' } ), 'other' );
 		} );
 
-		test( 'should return the default flow if the flow is missing', () => {
+		it( 'should return the default flow if the flow is missing', function() {
 			assert.equal( utils.getFlowName( {} ), 'main' );
 		} );
 
-		test( 'should return the result of filterFlowName if it is a function and the flow is missing', () => {
+		it( 'should return the result of filterFlowName if it is a function and the flow is missing', function() {
 			flows.filterFlowName = sinon.stub().returns( 'filtered' );
 			assert.equal( utils.getFlowName( {} ), 'filtered' );
 		} );
 
-		test( 'should return the result of filterFlowName if it is a function and the flow is not valid', () => {
+		it( 'should return the result of filterFlowName if it is a function and the flow is not valid', function() {
 			flows.filterFlowName = sinon.stub().returns( 'filtered' );
 			assert.equal( utils.getFlowName( { flowName: 'invalid' } ), 'filtered' );
 		} );
 
-		test( 'should return the result of filterFlowName if it is a function and the requested flow is present', () => {
+		it( 'should return the result of filterFlowName if it is a function and the requested flow is present', function() {
 			flows.filterFlowName = sinon.stub().returns( 'filtered' );
 			assert.equal( utils.getFlowName( { flowName: 'other' } ), 'filtered' );
 		} );
 
-		test( 'should return the passed flow if the result of filterFlowName is not valid', () => {
+		it( 'should return the passed flow if the result of filterFlowName is not valid', function() {
 			flows.filterFlowName = sinon.stub().returns( 'foobar' );
 			assert.equal( utils.getFlowName( { flowName: 'other' } ), 'other' );
 		} );
 
-		test( 'should call filterFlowName with the default flow if it is a function and the flow is not valid', () => {
+		it( 'should call filterFlowName with the default flow if it is a function and the flow is not valid', function() {
 			flows.filterFlowName = sinon.stub().returns( 'filtered' );
 			utils.getFlowName( { flowName: 'invalid' } );
 			assert( flows.filterFlowName.calledWith( 'main' ) );
 		} );
 
-		test( 'should call filterFlowName with the requested flow if it is a function and the flow is valid', () => {
+		it( 'should call filterFlowName with the requested flow if it is a function and the flow is valid', function() {
 			flows.filterFlowName = sinon.stub().returns( 'filtered' );
 			utils.getFlowName( { flowName: 'other' } );
 			assert( flows.filterFlowName.calledWith( 'other' ) );
 		} );
 	} );
 
-	describe( 'getValidPath', () => {
-		test( 'should redirect to the default if no flow is present', () => {
+	describe( 'getValidPath', function() {
+		it( 'should redirect to the default if no flow is present', function() {
 			assert.equal( utils.getValidPath( {} ), '/start/user' );
 		} );
 
-		test( 'should redirect to the current flow default if no step is present', () => {
+		it( 'should redirect to the current flow default if no step is present', function() {
 			assert.equal( utils.getValidPath( { flowName: 'account' } ), '/start/account/user' );
 		} );
 
-		test( 'should redirect to the default flow if the flow is the default', () => {
+		it( 'should redirect to the default flow if the flow is the default', function() {
 			assert.equal( utils.getValidPath( { flowName: 'main' } ), '/start/user' );
 		} );
 
-		test( 'should redirect invalid steps to the default flow if no flow is present', () => {
-			assert.equal(
-				utils.getValidPath( {
-					stepName: 'fr',
-					stepSectionName: 'fr',
-				} ),
-				'/start/user/fr'
-			);
+		it( 'should redirect invalid steps to the default flow if no flow is present', function() {
+			assert.equal( utils.getValidPath( {
+				stepName: 'fr',
+				stepSectionName: 'fr'
+			} ), '/start/user/fr' );
 		} );
 
-		test( 'should preserve a valid locale to the default flow if one is specified', () => {
-			assert.equal(
-				utils.getValidPath( {
-					stepName: 'fr',
-					stepSectionName: 'abc',
-				} ),
-				'/start/user/abc/fr'
-			);
+		it( 'should preserve a valid locale to the default flow if one is specified', function() {
+			assert.equal( utils.getValidPath( {
+				stepName: 'fr',
+				stepSectionName: 'abc'
+			} ), '/start/user/abc/fr' );
 		} );
 
-		test( 'should redirect invalid steps to the current flow default', () => {
-			assert.equal(
-				utils.getValidPath( {
-					flowName: 'account',
-					stepName: 'fr',
-					stepSectionName: 'fr',
-				} ),
-				'/start/account/user/fr'
-			);
+		it( 'should redirect invalid steps to the current flow default', function() {
+			assert.equal( utils.getValidPath( {
+				flowName: 'account',
+				stepName: 'fr',
+				stepSectionName: 'fr'
+			} ), '/start/account/user/fr' );
 		} );
 
-		test( 'should preserve a valid locale if one is specified', () => {
-			assert.equal(
-				utils.getValidPath( {
-					flowName: 'account',
-					stepName: 'fr',
-					stepSectionName: 'abc',
-				} ),
-				'/start/account/user/abc/fr'
-			);
+		it( 'should preserve a valid locale if one is specified', function() {
+			assert.equal( utils.getValidPath( {
+				flowName: 'account',
+				stepName: 'fr',
+				stepSectionName: 'abc'
+			} ), '/start/account/user/abc/fr' );
 		} );
 
-		test( 'should handle arbitrary step section names', () => {
+		it( 'should handle arbitrary step section names', function() {
 			const randomStepSectionName = 'random-step-section-' + Math.random();
 
-			assert.equal(
-				utils.getValidPath( {
-					flowName: 'account',
-					stepName: 'user',
-					stepSectionName: randomStepSectionName,
-					lang: 'fr',
-				} ),
-				'/start/account/user/' + randomStepSectionName + '/fr'
-			);
+			assert.equal( utils.getValidPath( {
+				flowName: 'account',
+				stepName: 'user',
+				stepSectionName: randomStepSectionName,
+				lang: 'fr'
+			} ), '/start/account/user/' + randomStepSectionName + '/fr' );
 		} );
 
-		test( 'should handle arbitrary step section names in the default flow', () => {
+		it( 'should handle arbitrary step section names in the default flow', function() {
 			const randomStepSectionName = 'random-step-section-' + Math.random();
 
-			assert.equal(
-				utils.getValidPath( {
-					stepName: 'user',
-					stepSectionName: randomStepSectionName,
-					lang: 'fr',
-				} ),
-				'/start/user/' + randomStepSectionName + '/fr'
-			);
+			assert.equal( utils.getValidPath( {
+				stepName: 'user',
+				stepSectionName: randomStepSectionName,
+				lang: 'fr'
+			} ), '/start/user/' + randomStepSectionName + '/fr' );
 		} );
 	} );
 
-	describe( 'getValueFromProgressStore', () => {
+	describe( 'getValueFromProgressStore', function() {
 		const signupProgress = [ { stepName: 'empty' }, { stepName: 'site', site: 'calypso' } ];
 		const config = {
 			stepName: 'site',
 			fieldName: 'site',
-			signupProgress,
+			signupProgress
 		};
 
-		test( 'should return the value of the field if it exists', () => {
+		it( 'should return the value of the field if it exists', function() {
 			assert.equal( utils.getValueFromProgressStore( config ), 'calypso' );
 		} );
 
-		test( 'should return null if the field is not present', () => {
+		it( 'should return null if the field is not present', function() {
 			delete signupProgress[ 1 ].site;
 			assert.equal( utils.getValueFromProgressStore( config ), null );
 		} );
 	} );
 
-	describe( 'mergeFormWithValue', () => {
+	describe( 'mergeFormWithValue', function() {
 		const config = {
 			fieldName: 'username',
-			fieldValue: 'calypso',
+			fieldValue: 'calypso'
 		};
 
-		test( "should return the form with the field added if the field doesn't have a value", () => {
+		it( 'should return the form with the field added if the field doesn\'t have a value', function() {
 			const form = { username: {} };
 			config.form = form;
 			assert.deepEqual( utils.mergeFormWithValue( config ), {
-				username: { value: 'calypso' },
+				username: { value: 'calypso' }
 			} );
 		} );
 
-		test( 'should return the form unchanged if there is already a value in the form', () => {
+		it( 'should return the form unchanged if there is already a value in the form', function() {
 			const form = { username: { value: 'wordpress' } };
 			config.form = form;
 			assert.equal( utils.mergeFormWithValue( config ), form );

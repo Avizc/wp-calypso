@@ -1,32 +1,37 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import assert from 'assert';
-import { assign, isEqual } from 'lodash';
+import { assign, isEqual, noop } from 'lodash';
 import { spy } from 'sinon';
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
+import useFakeDom from 'test/helpers/use-fake-dom';
+import useMockery from 'test/helpers/use-mockery';
 
-jest.mock( 'lib/user', () => () => {} );
+describe( 'post-edit-store', function() {
+	let Dispatcher, PostEditStore, dispatcherCallback;
 
-describe( 'post-edit-store', () => {
-	let PostEditStore, dispatcherCallback;
+	useFakeDom();
 
-	beforeAll( () => {
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/wp', {
+			me: () => ( {
+				get: noop
+			} )
+		} );
+	} );
+
+	before( () => {
+		Dispatcher = require( 'dispatcher' );
 		spy( Dispatcher, 'register' );
 		PostEditStore = require( '../post-edit-store' );
 		dispatcherCallback = Dispatcher.register.lastCall.args[ 0 ];
 	} );
 
-	afterAll( () => {
+	after( () => {
 		Dispatcher.register.restore();
 	} );
 
@@ -41,22 +46,22 @@ describe( 'post-edit-store', () => {
 					categories: {
 						Unicorns: {
 							ID: 199,
-							name: 'Unicorns',
-						},
-					},
-				},
-			},
+							name: 'Unicorns'
+						}
+					}
+				}
+			}
 		} );
 	}
 
-	test( 'initializes new draft post properly', () => {
+	it( 'initializes new draft post properly', function() {
 		const siteId = 1234;
 
 		dispatcherCallback( {
 			action: {
 				type: 'DRAFT_NEW_POST',
-				siteId: siteId,
-			},
+				siteId: siteId
+			}
 		} );
 
 		assert( PostEditStore.getSavedPost().ID === undefined );
@@ -66,7 +71,7 @@ describe( 'post-edit-store', () => {
 		assert( PostEditStore.isNew() );
 	} );
 
-	test( 'initialize existing post', () => {
+	it( 'initialize existing post', function() {
 		const siteId = 12,
 			postId = 345;
 
@@ -74,89 +79,89 @@ describe( 'post-edit-store', () => {
 			action: {
 				type: 'START_EDITING_POST',
 				siteId: siteId,
-				postId: postId,
-			},
+				postId: postId
+			}
 		} );
 
 		assert( ! PostEditStore.isNew() );
 	} );
 
-	test( 'sets parent_id properly', () => {
+	it( 'sets parent_id properly', function() {
 		dispatchReceivePost();
 		const post = PostEditStore.get();
 		assert( post.parent_id === null );
 	} );
 
-	test( 'decodes entities on received post title', () => {
+	it( 'decodes entities on received post title', function() {
 		dispatcherCallback( {
 			action: {
 				type: 'DRAFT_NEW_POST',
-				title: 'Ribs &amp; Chicken',
-			},
+				title: 'Ribs &amp; Chicken'
+			}
 		} );
 
 		assert( PostEditStore.get().title === 'Ribs & Chicken' );
 	} );
 
-	test( 'updates parent_id after a set', () => {
+	it( 'updates parent_id after a set', function() {
 		dispatchReceivePost();
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
 				post: {
-					parent: 101,
-				},
-			},
+					parent: 101
+				}
+			}
 		} );
 
 		const post = PostEditStore.get();
 		assert( post.parent_id, 101 );
 	} );
 
-	test( 'does not decode post title entities on EDIT_POST', () => {
+	it( 'does not decode post title entities on EDIT_POST', function() {
 		dispatcherCallback( {
 			action: {
-				type: 'DRAFT_NEW_POST',
-			},
+				type: 'DRAFT_NEW_POST'
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
 				post: {
-					title: 'Ribs &gt; Chicken',
-				},
-			},
+					title: 'Ribs &gt; Chicken'
+				}
+			}
 		} );
 
 		assert( PostEditStore.get().title === 'Ribs &gt; Chicken' );
 	} );
 
-	test( 'decodes post title entities on RECEIVE_POST_BEING_EDITED', () => {
+	it( 'decodes post title entities on RECEIVE_POST_BEING_EDITED', function() {
 		dispatcherCallback( {
 			action: {
-				type: 'DRAFT_NEW_POST',
-			},
+				type: 'DRAFT_NEW_POST'
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'RECEIVE_POST_BEING_EDITED',
 				post: {
-					title: 'Ribs &gt; Chicken',
-				},
-			},
+					title: 'Ribs &gt; Chicken'
+				}
+			}
 		} );
 
 		assert( PostEditStore.get().title === 'Ribs > Chicken' );
 	} );
 
-	test( 'reset on stop editing', () => {
+	it( 'reset on stop editing', function() {
 		dispatcherCallback( {
 			action: {
 				type: 'DRAFT_NEW_POST',
-				siteId: 1234,
-			},
+				siteId: 1234
+			}
 		} );
 
 		dispatcherCallback( {
@@ -164,41 +169,43 @@ describe( 'post-edit-store', () => {
 				type: 'EDIT_POST',
 				post: {
 					title: 'hello, world!',
-					content: 'initial edit',
-				},
-			},
+					content: 'initial edit'
+				}
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
-				type: 'STOP_EDITING_POST',
-			},
+				type: 'STOP_EDITING_POST'
+			}
 		} );
 
 		assert( PostEditStore.get() === null );
 		assert( PostEditStore.getSavedPost() === null );
 	} );
 
-	test( 'updates attributes on edit', () => {
+	it( 'updates attributes on edit', function() {
 		const siteId = 1234,
 			postEdits = {
 				title: 'hello, world!',
 				content: 'initial edit',
-				metadata: [ { key: 'super', value: 'duper', operation: 'update' } ],
+				metadata: [
+					{ key: 'super', value: 'duper', operation: 'update' }
+				]
 			};
 
 		dispatcherCallback( {
 			action: {
 				type: 'DRAFT_NEW_POST',
-				siteId: siteId,
-			},
+				siteId: siteId
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
-				post: postEdits,
-			},
+				post: postEdits
+			}
 		} );
 
 		assert( PostEditStore.isNew() );
@@ -211,78 +218,78 @@ describe( 'post-edit-store', () => {
 		assert( isEqual( PostEditStore.getChangedAttributes().metadata, postEdits.metadata ) );
 	} );
 
-	test( 'preserves attributes when update is in-flight', () => {
+	it( 'preserves attributes when update is in-flight', function() {
 		const siteId = 1234,
 			initialPost = {
 				ID: 2345,
 				title: 'hello, world!',
-				content: 'initial edit',
+				content: 'initial edit'
 			},
 			updates = {
-				content: 'updated content',
+				content: 'updated content'
 			};
 
 		dispatcherCallback( {
 			action: {
 				type: 'DRAFT_NEW_POST',
-				siteId: siteId,
-			},
+				siteId: siteId
+			}
 		} );
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
-				post: initialPost,
-			},
+				post: initialPost
+			}
 		} );
 		dispatcherCallback( {
 			action: {
-				type: 'EDIT_POST_SAVE',
-			},
+				type: 'EDIT_POST_SAVE'
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
-				post: updates,
-			},
+				post: updates
+			}
 		} );
 		dispatcherCallback( {
 			action: {
 				type: 'RECEIVE_POST_BEING_EDITED',
-				post: initialPost,
-			},
+				post: initialPost
+			}
 		} );
 
 		assert( PostEditStore.get().content === updates.content );
 		assert( PostEditStore.isDirty() );
 	} );
 
-	test( 'excludes metadata without an operation on edit', () => {
+	it( 'excludes metadata without an operation on edit', function() {
 		const postEdits = {
 				title: 'Super Duper',
 				metadata: [
 					{ key: 'super', value: 'duper', operation: 'update' },
 					{ key: 'foo', value: 'bar', operation: 'delete' },
-					{ key: 'bar', value: 'foo' },
-				],
+					{ key: 'bar', value: 'foo' }
+				]
 			},
 			expectedMetadata = [
 				{ key: 'super', value: 'duper', operation: 'update' },
-				{ key: 'foo', value: 'bar', operation: 'delete' },
+				{ key: 'foo', value: 'bar', operation: 'delete' }
 			];
 
 		dispatcherCallback( {
 			action: {
 				type: 'RECEIVE_POST_TO_EDIT',
-				post: {},
-			},
+				post: {}
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
-				post: postEdits,
-			},
+				post: postEdits
+			}
 		} );
 
 		assert( PostEditStore.get().metadata === postEdits.metadata );
@@ -291,32 +298,32 @@ describe( 'post-edit-store', () => {
 		assert( isEqual( PostEditStore.getChangedAttributes().metadata, expectedMetadata ) );
 	} );
 
-	test( 'reset post after saving an edit', () => {
+	it( 'reset post after saving an edit', function() {
 		const siteId = 1234,
 			postEdits = {
 				title: 'hello, world!',
-				content: 'initial edit',
+				content: 'initial edit'
 			};
 
 		dispatcherCallback( {
 			action: {
 				type: 'DRAFT_NEW_POST',
-				siteId: siteId,
-			},
+				siteId: siteId
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST',
-				post: postEdits,
-			},
+				post: postEdits
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'RECEIVE_POST_BEING_EDITED',
-				post: assign( { ID: 1234 }, postEdits ),
-			},
+				post: assign( { ID: 1234 }, postEdits )
+			}
 		} );
 
 		assert( PostEditStore.isNew() === false );
@@ -329,64 +336,64 @@ describe( 'post-edit-store', () => {
 		assert( PostEditStore.getChangedAttributes().metadata === undefined );
 	} );
 
-	test( 'resets raw content when receiving an updated post', () => {
+	it( 'resets raw content when receiving an updated post', function() {
 		dispatcherCallback( {
 			action: {
 				type: 'RECEIVE_POST_TO_EDIT',
-				post: { content: 'bar' },
-			},
+				post: { content: 'bar' }
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST_RAW_CONTENT',
-				content: 'foo',
-			},
+				content: 'foo'
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'RECEIVE_POST_BEING_EDITED',
-				post: { content: 'bar' },
-			},
+				post: { content: 'bar' }
+			}
 		} );
 
 		assert( ! PostEditStore.isDirty() );
 	} );
 
-	test( 'resets raw content on RESET_POST_RAW_CONTENT', () => {
+	it( 'resets raw content on RESET_POST_RAW_CONTENT', function() {
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST_RAW_CONTENT',
-				content: 'foo',
-			},
+				content: 'foo'
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
 				type: 'EDIT_POST_RAW_CONTENT',
-				content: 'bar',
-			},
+				content: 'bar'
+			}
 		} );
 
 		dispatcherCallback( {
 			action: {
-				type: 'RESET_POST_RAW_CONTENT',
-			},
+				type: 'RESET_POST_RAW_CONTENT'
+			}
 		} );
 
 		assert( ! PostEditStore.isDirty() );
 	} );
 
-	describe( '#setRawContent', () => {
-		test( "should not emit a change event if content hasn't changed", () => {
+	describe( '#setRawContent', function() {
+		it( 'should not emit a change event if content hasn\'t changed', function() {
 			const onChange = spy();
 
 			dispatcherCallback( {
 				action: {
 					type: 'RECEIVE_POST_TO_EDIT',
-					post: {},
-				},
+					post: {}
+				}
 			} );
 
 			PostEditStore.on( 'change', onChange );
@@ -394,15 +401,15 @@ describe( 'post-edit-store', () => {
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: 'foo',
-				},
+					content: 'foo'
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: 'foo',
-				},
+					content: 'foo'
+				}
 			} );
 
 			PostEditStore.off( 'change', onChange );
@@ -412,372 +419,370 @@ describe( 'post-edit-store', () => {
 		} );
 	} );
 
-	describe( '#getChangedAttributes()', () => {
-		test( 'includes status for a new post', () => {
+	describe( '#getChangedAttributes()', function() {
+		it( 'includes status for a new post', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			assert( PostEditStore.getChangedAttributes().status === 'draft' );
 		} );
 
-		test( 'includes all attributes on a new post', () => {
+		it( 'includes all attributes on a new post', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
-			assert(
-				isEqual( PostEditStore.getChangedAttributes(), {
-					site_ID: 1,
-					status: 'draft',
-					type: 'post',
-					parent_id: null,
-					title: '',
-					content: '',
-				} )
-			);
+			assert( isEqual( PostEditStore.getChangedAttributes(), {
+				site_ID: 1,
+				status: 'draft',
+				type: 'post',
+				parent_id: null,
+				title: '',
+				content: ''
+			} ) );
 		} );
 	} );
 
-	describe( '#isDirty()', () => {
-		test( 'returns false for a new post', () => {
+	describe( '#isDirty()', function() {
+		it( 'returns false for a new post', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			assert( ! PostEditStore.isDirty() );
 		} );
 
-		test( 'returns false if the edited post is unchanged', () => {
+		it( 'returns false if the edited post is unchanged', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'RECEIVE_POST_TO_EDIT',
-					post: {},
-				},
+					post: {}
+				}
 			} );
 
 			assert( ! PostEditStore.isDirty() );
 		} );
 
-		test( 'returns true if raw content changes over time', () => {
+		it( 'returns true if raw content changes over time', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'RECEIVE_POST_TO_EDIT',
-					post: {},
-				},
+					post: {}
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: '',
-				},
+					content: ''
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: 'foo',
-				},
+					content: 'foo'
+				}
 			} );
 
 			assert( PostEditStore.isDirty() );
 		} );
 	} );
 
-	describe( '#isSaveBlocked()', () => {
-		test( 'returns false for new post', () => {
+	describe( '#isSaveBlocked()', function() {
+		it( 'returns false for new post', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			assert( PostEditStore.isSaveBlocked() === false );
 		} );
 
-		test( 'returns true if blocked and no key provided', () => {
+		it( 'returns true if blocked and no key provided', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'BLOCK_EDIT_POST_SAVE',
-					key: 'foo',
-				},
+					key: 'foo'
+				}
 			} );
 
 			assert( PostEditStore.isSaveBlocked() === true );
 		} );
 
-		test( 'returns false if blocked but not by provided key', () => {
+		it( 'returns false if blocked but not by provided key', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'BLOCK_EDIT_POST_SAVE',
-					key: 'foo',
-				},
+					key: 'foo'
+				}
 			} );
 
 			assert( PostEditStore.isSaveBlocked( 'bar' ) === false );
 		} );
 
-		test( 'returns true if blocked by provided key', () => {
+		it( 'returns true if blocked by provided key', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'BLOCK_EDIT_POST_SAVE',
-					key: 'foo',
-				},
+					key: 'foo'
+				}
 			} );
 
 			assert( PostEditStore.isSaveBlocked( 'foo' ) === true );
 		} );
 	} );
 
-	describe( '#hasContent()', () => {
-		test( 'returns false for new post', () => {
+	describe( '#hasContent()', function() {
+		it( 'returns false for new post', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === false );
 		} );
 
-		test( 'returns true if title is set', () => {
+		it( 'returns true if title is set', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { title: 'Draft' },
-				},
+					post: { title: 'Draft' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === true );
 		} );
 
-		test( 'returns false if title is whitespace', () => {
+		it( 'returns false if title is whitespace', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { title: ' ' },
-				},
+					post: { title: ' ' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === false );
 		} );
 
-		test( 'returns true if excerpt is set', () => {
+		it( 'returns true if excerpt is set', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { excerpt: 'Excerpt' },
-				},
+					post: { excerpt: 'Excerpt' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === true );
 		} );
 
-		test( 'returns false if content includes bogus line break', () => {
+		it( 'returns false if content includes bogus line break', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { content: '<p><br data-mce-bogus="1"></p>' },
-				},
+					post: { content: '<p><br data-mce-bogus="1"></p>' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === false );
 		} );
 
-		test( 'returns false if content includes non-breaking space', () => {
+		it( 'returns false if content includes non-breaking space', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { content: '<p>&nbsp;</p>' },
-				},
+					post: { content: '<p>&nbsp;</p>' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === false );
 		} );
 
-		test( 'returns false if content includes empty paragraph', () => {
+		it( 'returns false if content includes empty paragraph', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { content: '<p> </p>' },
-				},
+					post: { content: '<p> </p>' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === false );
 		} );
 
-		test( 'returns true if content is set', () => {
+		it( 'returns true if content is set', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { content: '<p>Hello World</p>' },
-				},
+					post: { content: '<p>Hello World</p>' }
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === true );
 		} );
 
-		test( 'returns true if raw content is set', () => {
+		it( 'returns true if raw content is set', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: '<p>Hello World</p>',
-				},
+					content: '<p>Hello World</p>'
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === true );
 		} );
 
-		test( 'returns false if post content exists, but raw content is empty', () => {
+		it( 'returns false if post content exists, but raw content is empty', function() {
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST',
 					siteId: 1,
-					post: { content: '<p>Hello World</p>' },
-				},
+					post: { content: '<p>Hello World</p>' }
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: '<p></p>',
-				},
+					content: '<p></p>'
+				}
 			} );
 
 			assert( PostEditStore.hasContent() === false );
 		} );
 	} );
 
-	describe( 'rawContent', () => {
-		afterAll( function() {
+	describe( 'rawContent', function() {
+		after( function() {
 			PostEditStore.removeAllListeners();
 		} );
 
-		test( "should not trigger changes if isDirty() and hadContent() don't change", () => {
+		it( 'should not trigger changes if isDirty() and hadContent() don\'t change', function() {
 			let called = false;
 
 			dispatcherCallback( {
 				action: {
 					type: 'DRAFT_NEW_POST',
-					siteId: 1,
-				},
+					siteId: 1
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: '<p>H</p>',
-				},
+					content: '<p>H</p>'
+				}
 			} );
 
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: '<p>Hello</p>',
-				},
+					content: '<p>Hello</p>'
+				}
 			} );
 
 			function callback() {
@@ -789,8 +794,8 @@ describe( 'post-edit-store', () => {
 			dispatcherCallback( {
 				action: {
 					type: 'EDIT_POST_RAW_CONTENT',
-					content: '<p>Hello World!</p>',
-				},
+					content: '<p>Hello World!</p>'
+				}
 			} );
 
 			assert( called === false );

@@ -1,4 +1,3 @@
-/** @format */
 // External dependencies
 import i18n from 'i18n-calypso';
 
@@ -16,7 +15,7 @@ import {
 	PURCHASES_USER_FETCH_COMPLETED,
 	PURCHASES_USER_FETCH_FAILED,
 	PURCHASE_REMOVE_COMPLETED,
-	PURCHASE_REMOVE_FAILED,
+	PURCHASE_REMOVE_FAILED
 } from 'state/action-types';
 
 import wp from 'lib/wp';
@@ -28,32 +27,28 @@ const PURCHASE_REMOVE_ERROR_MESSAGE = i18n.translate( 'There was an error removi
 export const cancelPrivacyProtection = purchaseId => dispatch => {
 	dispatch( {
 		type: PRIVACY_PROTECTION_CANCEL,
-		purchaseId,
+		purchaseId
 	} );
 
 	return new Promise( ( resolve, reject ) => {
 		wpcom.cancelPrivacyProtection( purchaseId, ( error, data ) => {
 			error ? reject( error ) : resolve( data );
 		} );
-	} )
-		.then( data => {
-			dispatch( {
-				type: PRIVACY_PROTECTION_CANCEL_COMPLETED,
-				purchase: data.upgrade,
-			} );
-		} )
-		.catch( error => {
-			dispatch( {
-				type: PRIVACY_PROTECTION_CANCEL_FAILED,
-				purchaseId,
-				error:
-					error.message ||
-					i18n.translate(
-						'There was a problem canceling this privacy protection. ' +
-							'Please try again later or contact support.'
-					),
-			} );
+	} ).then( data => {
+		dispatch( {
+			type: PRIVACY_PROTECTION_CANCEL_COMPLETED,
+			purchase: data.upgrade
 		} );
+	} ).catch( error => {
+		dispatch( {
+			type: PRIVACY_PROTECTION_CANCEL_FAILED,
+			purchaseId,
+			error: error.message || i18n.translate(
+				'There was a problem canceling this privacy protection. ' +
+				'Please try again later or contact support.'
+			)
+		} );
+	} );
 };
 
 export const clearPurchases = () => {
@@ -62,59 +57,55 @@ export const clearPurchases = () => {
 	olark.updateOlarkGroupAndEligibility();
 
 	return {
-		type: PURCHASES_REMOVE,
+		type: PURCHASES_REMOVE
 	};
 };
 
 export const fetchSitePurchases = siteId => dispatch => {
 	dispatch( {
 		type: PURCHASES_SITE_FETCH,
-		siteId,
+		siteId
 	} );
 
 	return new Promise( ( resolve, reject ) => {
 		wpcom.sitePurchases( siteId, ( error, data ) => {
 			error ? reject( error ) : resolve( data );
 		} );
-	} )
-		.then( data => {
-			dispatch( {
-				type: PURCHASES_SITE_FETCH_COMPLETED,
-				siteId,
-				purchases: data,
-			} );
-		} )
-		.catch( () => {
-			dispatch( {
-				type: PURCHASES_SITE_FETCH_FAILED,
-				error: PURCHASES_FETCH_ERROR_MESSAGE,
-			} );
+	} ).then( data => {
+		dispatch( {
+			type: PURCHASES_SITE_FETCH_COMPLETED,
+			siteId,
+			purchases: data
 		} );
+	} ).catch( () => {
+		dispatch( {
+			type: PURCHASES_SITE_FETCH_FAILED,
+			error: PURCHASES_FETCH_ERROR_MESSAGE
+		} );
+	} );
 };
 
 export const fetchUserPurchases = userId => dispatch => {
 	dispatch( {
-		type: PURCHASES_USER_FETCH,
+		type: PURCHASES_USER_FETCH
 	} );
 
 	return new Promise( ( resolve, reject ) => {
 		wpcom.me().purchases( ( error, data ) => {
 			error ? reject( error ) : resolve( data );
 		} );
-	} )
-		.then( data => {
-			dispatch( {
-				type: PURCHASES_USER_FETCH_COMPLETED,
-				purchases: data,
-				userId,
-			} );
-		} )
-		.catch( () => {
-			dispatch( {
-				type: PURCHASES_USER_FETCH_FAILED,
-				error: PURCHASES_FETCH_ERROR_MESSAGE,
-			} );
+	} ).then( data => {
+		dispatch( {
+			type: PURCHASES_USER_FETCH_COMPLETED,
+			purchases: data,
+			userId
 		} );
+	} ).catch( () => {
+		dispatch( {
+			type: PURCHASES_USER_FETCH_FAILED,
+			error: PURCHASES_FETCH_ERROR_MESSAGE
+		} );
+	} );
 };
 
 export const removePurchase = ( purchaseId, userId ) => dispatch => {
@@ -122,20 +113,18 @@ export const removePurchase = ( purchaseId, userId ) => dispatch => {
 		wpcom.me().deletePurchase( purchaseId, ( error, data ) => {
 			error ? reject( error ) : resolve( data );
 		} );
-	} )
-		.then( data => {
-			dispatch( {
-				type: PURCHASE_REMOVE_COMPLETED,
-				purchases: data.purchases,
-				userId,
-			} );
-
-			olark.updateOlarkGroupAndEligibility();
-		} )
-		.catch( error => {
-			dispatch( {
-				type: PURCHASE_REMOVE_FAILED,
-				error: error.message || PURCHASE_REMOVE_ERROR_MESSAGE,
-			} );
+	} ).then( data => {
+		dispatch( {
+			type: PURCHASE_REMOVE_COMPLETED,
+			purchases: data.purchases,
+			userId
 		} );
+
+		olark.updateOlarkGroupAndEligibility();
+	} ).catch( error => {
+		dispatch( {
+			type: PURCHASE_REMOVE_FAILED,
+			error: error.message || PURCHASE_REMOVE_ERROR_MESSAGE
+		} );
+	} );
 };

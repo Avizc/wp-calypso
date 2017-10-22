@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,39 +10,39 @@ import { isJetpackModuleActive } from '../';
 import { modules as MODULES_FIXTURE } from './fixtures/jetpack-modules';
 
 describe( 'isJetpackModuleActive()', () => {
-	test( 'should return true if the module is currently active', () => {
+	it( 'should return true if the module is currently active', () => {
 		const stateIn = {
 				jetpack: {
 					modules: {
-						items: MODULES_FIXTURE,
-					},
-				},
+						items: MODULES_FIXTURE
+					}
+				}
 			},
 			siteId = 123456;
 		const output = isJetpackModuleActive( stateIn, siteId, 'module-b' );
 		expect( output ).to.be.true;
 	} );
 
-	test( 'should return false if the module is currently not active', () => {
+	it( 'should return false if the module is currently not active', () => {
 		const stateIn = {
 				jetpack: {
 					modules: {
-						items: MODULES_FIXTURE,
-					},
-				},
+						items: MODULES_FIXTURE
+					}
+				}
 			},
 			siteId = 123456;
 		const output = isJetpackModuleActive( stateIn, siteId, 'module-a' );
 		expect( output ).to.be.false;
 	} );
 
-	test( 'should return null if that module is not known', () => {
+	it( 'should return null if that module is not known', () => {
 		const stateIn = {
 				jetpack: {
 					modules: {
-						items: MODULES_FIXTURE,
-					},
-				},
+						items: MODULES_FIXTURE
+					}
+				}
 			},
 			siteId = 123456;
 		const output = isJetpackModuleActive( stateIn, siteId, 'module-z' );

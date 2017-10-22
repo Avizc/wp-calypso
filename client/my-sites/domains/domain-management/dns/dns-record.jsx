@@ -1,15 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
-import { endsWith } from 'lodash';
+import endsWith from 'lodash/endsWith';
 import Gridicon from 'gridicons';
-import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -17,79 +12,77 @@ import { localize } from 'i18n-calypso';
 import Button from 'components/button';
 import { isBeingProcessed } from 'lib/domains/dns';
 
-class DnsRecord extends React.Component {
-	static propTypes = {
-		onDeleteDns: PropTypes.func.isRequired,
-		dnsRecord: PropTypes.object.isRequired,
-		selectedDomainName: PropTypes.string.isRequired,
-	};
+const DnsRecord = React.createClass( {
+	propTypes: {
+		onDeleteDns: React.PropTypes.func.isRequired,
+		dnsRecord: React.PropTypes.object.isRequired,
+		selectedDomainName: React.PropTypes.string.isRequired
+	},
 
-	handledBy() {
-		const { dnsRecord, translate } = this.props;
-		const { type, aux, port, service, weight, protocol } = dnsRecord;
-		const data = this.trimDot( dnsRecord.data );
-		const target = this.trimDot( dnsRecord.target );
+	handledBy: function() {
+		const { type, aux, port, service, weight, protocol } = this.props.dnsRecord,
+			data = this.trimDot( this.props.dnsRecord.data ),
+			target = this.trimDot( this.props.dnsRecord.target );
 
-		if ( dnsRecord.protected_field ) {
+		if ( this.props.dnsRecord.protected_field ) {
 			if ( 'MX' === type ) {
-				return translate( 'Mail handled by WordPress.com email forwarding' );
+				return this.translate( 'Mail handled by WordPress.com email forwarding' );
 			}
 
-			return translate( 'Handled by WordPress.com' );
+			return this.translate( 'Handled by WordPress.com' );
 		}
 
 		switch ( type ) {
 			case 'A':
 			case 'AAAA':
-				return translate( 'Points to %(data)s', {
+				return this.translate( 'Points to %(data)s', {
 					args: {
-						data,
-					},
+						data
+					}
 				} );
 
 			case 'CNAME':
-				return translate( 'Alias of %(data)s', {
+				return this.translate( 'Alias of %(data)s', {
 					args: {
-						data,
-					},
+						data
+					}
 				} );
 
 			case 'MX':
-				return translate( 'Mail handled by %(data)s with priority %(aux)s', {
+				return this.translate( 'Mail handled by %(data)s with priority %(aux)s', {
 					args: {
 						data,
-						aux,
-					},
+						aux
+					}
 				} );
 
 			case 'SRV':
-				return translate(
+				return this.translate(
 					'Service %(service)s (%(protocol)s) on target %(target)s:%(port)s, ' +
-						'with priority %(aux)s and weight %(weight)s',
-					{
+					'with priority %(aux)s and weight %(weight)s', {
 						args: {
 							service,
 							protocol,
 							target,
 							port,
 							aux,
-							weight,
-						},
+							weight
+						}
 					}
 				);
 		}
 
 		return data;
-	}
+	},
 
-	trimDot( str ) {
+	trimDot: function( str ) {
 		return typeof str === 'string' ? str.replace( /\.$/, '' ) : str;
-	}
+	},
 
-	getName() {
-		const { name, service, protocol, type } = this.props.dnsRecord;
-		const domain = this.props.selectedDomainName;
-		const isRoot = name === `${ domain }.`;
+	getName: function() {
+		const { name, service, protocol, type } = this.props.dnsRecord,
+			domain = this.props.selectedDomainName,
+			isRoot = name === `${ domain }.`;
 
 		if ( 'SRV' === type ) {
 			return `_${ service }._${ protocol }.${ isRoot ? '' : name + '.' }${ domain }`;
@@ -100,30 +93,29 @@ class DnsRecord extends React.Component {
 		}
 
 		return name ? `${ name }.${ domain }` : domain;
-	}
+	},
 
-	deleteDns = () => {
+	deleteDns: function() {
 		// Delegate to callback from parent
 		this.props.onDeleteDns( this.props.dnsRecord );
-	};
+	},
 
-	renderRemoveButton() {
+	renderRemoveButton: function() {
 		return (
 			<Button borderless onClick={ this.deleteDns }>
 				<Gridicon icon="trash" />
 			</Button>
 		);
-	}
+	},
 
-	render() {
-		const { dnsRecord } = this.props;
-		const classes = classNames( { 'is-disabled': isBeingProcessed( dnsRecord ) } );
-		const isAllowedToBeRemoved = ! dnsRecord.protected_field || 'MX' === dnsRecord.type;
-
+	render: function() {
+		const { dnsRecord } = this.props,
+			classes = classNames( { 'is-disabled': isBeingProcessed( dnsRecord ) } ),
+			isAllowedToBeRemoved = ! this.props.dnsRecord.protected_field || 'MX' === this.props.dnsRecord.type;
 		return (
 			<li className={ classes }>
 				<div className="dns__list-type">
-					<label>{ dnsRecord.type }</label>
+					<label>{ this.props.dnsRecord.type }</label>
 				</div>
 				<div className="dns__list-info">
 					<strong>{ this.getName() }</strong>
@@ -135,6 +127,6 @@ class DnsRecord extends React.Component {
 			</li>
 		);
 	}
-}
+} );
 
-export default localize( DnsRecord );
+export default DnsRecord;

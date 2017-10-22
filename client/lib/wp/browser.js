@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { SyncHandler, syncOptOut } from './sync-handler';
 import debugFactory from 'debug';
 const debug = debugFactory( 'calypso:wp' );
@@ -29,23 +26,20 @@ if ( config.isEnabled( 'oauth' ) ) {
 	wpcom = wpcomUndocumented( oauthToken.getToken(), requestHandler );
 } else {
 	const requestHandler = addSyncHandlerWrapper
-		? new SyncHandler( require( 'wpcom-proxy-request' ).default )
-		: require( 'wpcom-proxy-request' ).default;
+		? new SyncHandler( require( 'wpcom-proxy-request' ) )
+		: require( 'wpcom-proxy-request' );
 
 	wpcom = wpcomUndocumented( requestHandler );
 
 	// Upgrade to "access all users blogs" mode
-	wpcom.request(
-		{
-			metaAPI: { accessAllUsersBlogs: true },
-		},
-		function( error ) {
-			if ( error ) {
-				throw error;
-			}
-			debug( 'Proxy now running in "access all user\'s blogs" mode' );
+	wpcom.request( {
+		metaAPI: { accessAllUsersBlogs: true }
+	}, function( error ) {
+		if ( error ) {
+			throw error;
 		}
-	);
+		debug( 'Proxy now running in "access all user\'s blogs" mode' );
+	} );
 }
 
 if ( addSyncHandlerWrapper ) {
@@ -71,4 +65,4 @@ injectGuestSandboxTicketHandler( wpcom );
 /**
  * Expose `wpcom`
  */
-export default wpcom;
+module.exports = wpcom;

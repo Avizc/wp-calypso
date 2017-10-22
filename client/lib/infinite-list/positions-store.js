@@ -1,18 +1,14 @@
 /**
- * External dependencies
- *
- * @format
+ * External Dependencies
  */
-
-import { isEqual } from 'lodash';
-import debugFactory from 'debug';
-const debug = debugFactory( 'calypso:infinite-list:positions-store' );
-import Dispatcher from 'dispatcher';
+var debug = require( 'debug' )( 'calypso:infinite-list:positions-store' ),
+	Dispatcher = require( 'dispatcher' ),
+	isEqual = require( 'lodash/isEqual' );
 
 /**
  * Internal Dependencies
  */
-import emitter from 'lib/mixins/emitter';
+var emitter = require( 'lib/mixins/emitter' );
 
 /**
  * Module Variables
@@ -22,7 +18,7 @@ var _infiniteListPositions = {},
 		get: function( url ) {
 			debug( 'positions-store:get(): ', url, _infiniteListPositions );
 			return _infiniteListPositions[ url ];
-		},
+		}
 	};
 
 emitter( InfiniteListPositionsStore );
@@ -49,4 +45,4 @@ InfiniteListPositionsStore.dispatchToken = Dispatcher.register( function( payloa
 	}
 } );
 
-export default InfiniteListPositionsStore;
+module.exports = InfiniteListPositionsStore;

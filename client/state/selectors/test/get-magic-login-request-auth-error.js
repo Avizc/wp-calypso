@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,12 +9,12 @@ import { expect } from 'chai';
 import { getMagicLoginRequestAuthError } from '../';
 
 describe( 'getMagicLoginRequestAuthError()', () => {
-	test( 'should return null if there is no information yet', () => {
+	it( 'should return null if there is no information yet', () => {
 		const error = getMagicLoginRequestAuthError( undefined );
 		expect( error ).to.be.null;
 	} );
 
-	test( 'should return the error if set', () => {
+	it( 'should return the error if set', () => {
 		const error = getMagicLoginRequestAuthError( {
 			login: {
 				magicLogin: {

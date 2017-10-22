@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { includes, find, isEmpty } from 'lodash';
@@ -32,7 +28,7 @@ import {
 	getSiteAdminUrl,
 	isJetpackSite,
 	isJetpackSiteMultiSite,
-	hasJetpackSiteJetpackThemesExtendedFeatures,
+	hasJetpackSiteJetpackThemesExtendedFeatures
 } from 'state/sites/selectors';
 import {
 	isUploadInProgress,
@@ -52,33 +48,37 @@ import { getBackPath } from 'state/themes/themes-ui/selectors';
 import { hasFeature } from 'state/sites/plans/selectors';
 import { FEATURE_UNLIMITED_PREMIUM_THEMES } from 'lib/plans/constants';
 import QueryEligibility from 'components/data/query-atat-eligibility';
-import { getEligibility, isEligibleForAutomatedTransfer } from 'state/automated-transfer/selectors';
+import {
+	getEligibility,
+	isEligibleForAutomatedTransfer
+} from 'state/automated-transfer/selectors';
 import isSiteAutomatedTransfer from 'state/selectors/is-site-automated-transfer';
 import WpAdminAutoLogin from 'components/wpadmin-auto-login';
 
 const debug = debugFactory( 'calypso:themes:theme-upload' );
 
 class Upload extends React.Component {
+
 	static propTypes = {
-		siteId: PropTypes.number,
-		selectedSite: PropTypes.object,
-		inProgress: PropTypes.bool,
-		complete: PropTypes.bool,
-		failed: PropTypes.bool,
-		uploadedTheme: PropTypes.object,
-		error: PropTypes.object,
-		progressTotal: PropTypes.number,
-		progressLoaded: PropTypes.number,
-		installing: PropTypes.bool,
-		isJetpack: PropTypes.bool,
-		upgradeJetpack: PropTypes.bool,
-		backPath: PropTypes.string,
-		showEligibility: PropTypes.bool,
+		siteId: React.PropTypes.number,
+		selectedSite: React.PropTypes.object,
+		inProgress: React.PropTypes.bool,
+		complete: React.PropTypes.bool,
+		failed: React.PropTypes.bool,
+		uploadedTheme: React.PropTypes.object,
+		error: React.PropTypes.object,
+		progressTotal: React.PropTypes.number,
+		progressLoaded: React.PropTypes.number,
+		installing: React.PropTypes.bool,
+		isJetpack: React.PropTypes.bool,
+		upgradeJetpack: React.PropTypes.bool,
+		backPath: React.PropTypes.string,
+		showEligibility: React.PropTypes.bool,
 	};
 
 	state = {
 		showEligibility: this.props.showEligibility,
-	};
+	}
 
 	componentDidMount() {
 		const { siteId, inProgress } = this.props;
@@ -114,8 +114,8 @@ class Upload extends React.Component {
 			translate( 'Successfully uploaded theme %(name)s', {
 				args: {
 					// using themeId lets us show a message before theme data arrives
-					name: uploadedTheme ? uploadedTheme.name : themeId,
-				},
+					name: uploadedTheme ? uploadedTheme.name : themeId
+				}
 			} ),
 			{ duration: 5000 }
 		);
@@ -134,7 +134,7 @@ class Upload extends React.Component {
 			unsupported_mime_type: translate( 'Upload problem: Not a valid zip file' ),
 			initiate_failure: translate(
 				'Upload problem: Theme may not be valid. Check that your zip file contains only the theme ' +
-					'you are trying to upload.'
+				'you are trying to upload.'
 			),
 		};
 
@@ -148,12 +148,16 @@ class Upload extends React.Component {
 	}
 
 	renderProgressBar() {
-		const { translate, progressTotal, progressLoaded, installing } = this.props;
+		const {
+			translate,
+			progressTotal,
+			progressLoaded,
+			installing,
+		} = this.props;
 
 		const uploadingMessage = translate( 'Uploading your theme…' );
 		const installingMessage = this.props.isJetpack
-			? translate( 'Installing your theme…' )
-			: translate( 'Configuring your site…' );
+			? translate( 'Installing your theme…' ) : translate( 'Configuring your site…' );
 
 		return (
 			<div>
@@ -178,7 +182,7 @@ class Upload extends React.Component {
 	onTryAndCustomizeClick = () => {
 		const { tryandcustomize } = this.props.options;
 		tryandcustomize.action( this.props.themeId );
-	};
+	}
 
 	renderTheme() {
 		const { uploadedTheme: theme, translate, options } = this.props;
@@ -194,7 +198,9 @@ class Upload extends React.Component {
 				</div>
 				<div className="theme-upload__description">{ theme.description }</div>
 				<div className="theme-upload__action-buttons">
-					<Button onClick={ this.onTryAndCustomizeClick }>{ tryandcustomize.label }</Button>
+					<Button onClick={ this.onTryAndCustomizeClick } >
+						{ tryandcustomize.label }
+					</Button>
 					<Button primary onClick={ this.onActivateClick }>
 						{ activate.label }
 					</Button>
@@ -204,21 +210,24 @@ class Upload extends React.Component {
 	}
 
 	renderUploadCard() {
-		const { inProgress, failed, uploadedTheme, complete, isJetpack, isBusiness } = this.props;
+		const {
+			inProgress,
+			failed,
+			uploadedTheme,
+			complete,
+			isJetpack,
+			isBusiness,
+		} = this.props;
 
 		const uploadAction = isJetpack ? this.props.uploadTheme : this.props.initiateThemeTransfer;
 		const disabled = ! isBusiness && ! isJetpack;
 
 		return (
 			<Card>
-				{ ! inProgress &&
-				! complete && <UploadDropZone doUpload={ uploadAction } disabled={ disabled } /> }
+				{ ! inProgress && ! complete && <UploadDropZone doUpload={ uploadAction } disabled={ disabled } /> }
 				{ inProgress && this.renderProgressBar() }
 				{ complete && ! failed && uploadedTheme && this.renderTheme() }
-				{ complete &&
-				this.props.isSiteAutomatedTransfer && (
-					<WpAdminAutoLogin site={ this.props.selectedSite } />
-				) }
+				{ complete && this.props.isSiteAutomatedTransfer && <WpAdminAutoLogin site={ this.props.selectedSite } /> }
 			</Card>
 		);
 	}
@@ -243,7 +252,7 @@ class Upload extends React.Component {
 			themeId,
 			upgradeJetpack,
 			backPath,
-			isMultisite,
+			isMultisite
 		} = this.props;
 
 		const { showEligibility } = this.state;
@@ -259,17 +268,14 @@ class Upload extends React.Component {
 				{ themeId && complete && <QueryCanonicalTheme siteId={ siteId } themeId={ themeId } /> }
 				<ThanksModal source="upload" />
 				<HeaderCake backHref={ backPath }>{ translate( 'Upload theme' ) }</HeaderCake>
-				{ upgradeJetpack && (
-					<JetpackManageErrorPage
-						template="updateJetpack"
-						siteId={ siteId }
-						featureExample={ this.renderUploadCard() }
-						version="4.7"
-					/>
-				) }
-				{ showEligibility && (
-					<EligibilityWarnings backUrl={ backPath } onProceed={ this.onProceedClick } />
-				) }
+				{ upgradeJetpack && <JetpackManageErrorPage
+					template="updateJetpack"
+					siteId={ siteId }
+					featureExample={ this.renderUploadCard() }
+					version="4.7" /> }
+				{ showEligibility && <EligibilityWarnings
+					backUrl={ backPath }
+					onProceed={ this.onProceedClick } /> }
 				{ ! upgradeJetpack && ! showEligibility && this.renderUploadCard() }
 			</Main>
 		);
@@ -278,13 +284,17 @@ class Upload extends React.Component {
 
 const ConnectedUpload = connectOptions( Upload );
 
-const UploadWithOptions = props => {
+const UploadWithOptions = ( props ) => {
 	const { siteId, uploadedTheme } = props;
-	return <ConnectedUpload { ...props } siteId={ siteId } theme={ uploadedTheme } />;
+	return (
+		<ConnectedUpload { ...props }
+			siteId={ siteId }
+			theme={ uploadedTheme } />
+	);
 };
 
 export default connect(
-	state => {
+	( state ) => {
 		const siteId = getSelectedSiteId( state );
 		const site = getSelectedSite( state );
 		const themeId = getUploadedThemeId( state, siteId );
@@ -294,7 +304,8 @@ export default connect(
 		// before data has loaded.
 		const isEligible = isEligibleForAutomatedTransfer( state, siteId );
 		const hasEligibilityMessages = ! (
-			isEmpty( eligibilityHolds ) && isEmpty( eligibilityWarnings )
+			isEmpty( eligibilityHolds ) &&
+			isEmpty( eligibilityWarnings )
 		);
 		return {
 			siteId,
@@ -318,5 +329,5 @@ export default connect(
 			siteAdminUrl: getSiteAdminUrl( state, siteId ),
 		};
 	},
-	{ uploadTheme, clearThemeUpload, initiateThemeTransfer }
+	{ uploadTheme, clearThemeUpload, initiateThemeTransfer },
 )( localize( UploadWithOptions ) );

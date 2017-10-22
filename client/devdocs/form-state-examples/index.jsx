@@ -1,11 +1,10 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
-import { camelCase, kebabCase, upperFirst } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash/camelCase';
+import kebabCase from 'lodash/kebabCase';
 
 /**
  * Internal dependencies
@@ -15,7 +14,7 @@ import AsyncInitialize from 'lib/form-state/examples/async-initialize';
 
 const COMPONENTS = {
 	SyncInitialize,
-	AsyncInitialize,
+	AsyncInitialize
 };
 
 class FormStateExamples extends React.Component {
@@ -24,10 +23,12 @@ class FormStateExamples extends React.Component {
 	}
 
 	list() {
-		const items = Object.keys( COMPONENTS ).map( componentName => {
+		const items = Object.keys( COMPONENTS ).map( ( componentName ) => {
 			return (
 				<li key={ componentName }>
-					<a href={ 'form-state-examples/' + kebabCase( componentName ) }>{ componentName }</a>
+					<a href={ 'form-state-examples/' + kebabCase( componentName ) }>
+						{ componentName }
+					</a>
 				</li>
 			);
 		} );

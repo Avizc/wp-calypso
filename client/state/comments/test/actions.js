@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -7,6 +6,8 @@ import { expect } from 'chai';
 /**
  * Internal dependencies
  */
+import config from 'config';
+import { useSandbox } from 'test/helpers/use-sinon';
 import {
 	COMMENTS_DELETE,
 	COMMENTS_REQUEST,
@@ -14,7 +15,6 @@ import {
 	COMMENTS_UNLIKE,
 	COMMENTS_WRITE,
 	COMMENTS_REPLY_WRITE,
-	COMMENTS_SET_ACTIVE_REPLY,
 } from '../../action-types';
 import {
 	requestPostComments,
@@ -23,11 +23,8 @@ import {
 	deleteComment,
 	likeComment,
 	unlikeComment,
-	setActiveReply,
 } from '../actions';
 import { NUMBER_OF_COMMENTS_PER_FETCH } from '../constants';
-import config from 'config';
-import { useSandbox } from 'test/helpers/use-sinon';
 
 const SITE_ID = 91750058;
 const POST_ID = 287;
@@ -35,14 +32,11 @@ const POST_ID = 287;
 describe( 'actions', () => {
 	describe( '#requestPostComments()', () => {
 		useSandbox( sandbox => {
-			sandbox
-				.stub( config, 'isEnabled' )
-				.withArgs( 'comments/filters-in-posts' )
-				.returns( true );
+			sandbox.stub( config, 'isEnabled' ).withArgs( 'comments/filters-in-posts' ).returns( true );
 		} );
 
-		test( 'should return a comment request action', () => {
-			const action = requestPostComments( { siteId: SITE_ID, postId: POST_ID, status: 'trash' } );
+		it( 'should return a comment request action', function() {
+			const action = requestPostComments( SITE_ID, POST_ID, 'trash' );
 
 			expect( action ).to.eql( {
 				type: COMMENTS_REQUEST,
@@ -53,18 +47,16 @@ describe( 'actions', () => {
 					number: NUMBER_OF_COMMENTS_PER_FETCH,
 					status: 'trash',
 				},
-				direction: 'before',
 			} );
 		} );
 
-		test( 'should return a comment request action with a default status of approved', () => {
-			const action = requestPostComments( { siteId: SITE_ID, postId: POST_ID, status: undefined } );
+		it( 'should return a comment request action with a default status of approved', function() {
+			const action = requestPostComments( SITE_ID, POST_ID, undefined );
 
 			expect( action ).to.eql( {
 				type: COMMENTS_REQUEST,
 				siteId: SITE_ID,
 				postId: POST_ID,
-				direction: 'before',
 				query: {
 					order: 'DESC',
 					number: NUMBER_OF_COMMENTS_PER_FETCH,
@@ -75,7 +67,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#writeComment()', () => {
-		test( 'should return a write comment action', () => {
+		it( 'should return a write comment action', function() {
 			const action = writeComment( 'comment text', SITE_ID, POST_ID );
 
 			expect( action ).to.eql( {
@@ -88,7 +80,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#replyComment()', () => {
-		test( 'should return a write comment action', () => {
+		it( 'should return a write comment action', function() {
 			const action = replyComment( 'comment text', SITE_ID, POST_ID, 1 );
 
 			expect( action ).to.eql( {
@@ -102,7 +94,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#deleteComment()', () => {
-		test( 'should dispatch remove for a placeholder when provided', () => {
+		it( 'should dispatch remove for a placeholder when provided', () => {
 			const deleteCommentAction = deleteComment( SITE_ID, POST_ID, 'placeholder-123' );
 
 			expect( deleteCommentAction.type ).to.eql( COMMENTS_DELETE );
@@ -111,7 +103,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#likeComment()', () => {
-		test( 'should return a like comment action', () => {
+		it( 'should return a like comment action', () => {
 			const action = likeComment( SITE_ID, POST_ID, 1 );
 
 			expect( action ).to.eql( {
@@ -124,7 +116,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#unlikeComment()', () => {
-		test( 'should return a comment unlike action', () => {
+		it( 'should return a comment unlike action', () => {
 			const action = unlikeComment( SITE_ID, POST_ID, 1 );
 
 			expect( action ).to.be.eql( {
@@ -132,21 +124,6 @@ describe( 'actions', () => {
 				siteId: SITE_ID,
 				postId: POST_ID,
 				commentId: 1,
-			} );
-		} );
-	} );
-
-	describe( '#setActiveReply()', () => {
-		test( 'should return an action to set the active comment reply', () => {
-			const action = setActiveReply( { siteId: SITE_ID, postId: POST_ID, commentId: 1 } );
-
-			expect( action ).to.be.eql( {
-				type: COMMENTS_SET_ACTIVE_REPLY,
-				payload: {
-					siteId: SITE_ID,
-					postId: POST_ID,
-					commentId: 1,
-				},
 			} );
 		} );
 	} );

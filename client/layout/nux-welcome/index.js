@@ -1,15 +1,12 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import store from 'store';
+var store = require( 'store' );
 
 /**
  * Internal dependencies
  */
-import Emitter from 'lib/mixins/emitter';
+var Emitter = require( 'lib/mixins/emitter' );
 
 /**
  * This module stores the current and previous
@@ -20,6 +17,7 @@ import Emitter from 'lib/mixins/emitter';
  * what the focus for any view of Calypso should be.
  */
 var nuxWelcome = {
+
 	tempWelcome: false,
 
 	showWelcome: store.get( 'show-welcome' ),
@@ -37,7 +35,7 @@ var nuxWelcome = {
 	},
 
 	getWelcome: function() {
-		return this.tempWelcome || this.showWelcome;
+		return ( this.tempWelcome || this.showWelcome );
 	},
 
 	clearTempWelcome: function() {
@@ -52,7 +50,8 @@ var nuxWelcome = {
 		this.showWelcome = false;
 		this.tempWelcome = false;
 		store.remove( 'show-welcome' );
-	},
+	}
+
 };
 
 /**
@@ -63,4 +62,4 @@ Emitter( nuxWelcome );
 /**
  * Expose `nuxWelcome` singleton
  */
-export default nuxWelcome;
+module.exports = nuxWelcome;

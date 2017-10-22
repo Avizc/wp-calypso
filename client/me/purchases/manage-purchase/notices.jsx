@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
@@ -15,7 +11,6 @@ import { connect } from 'react-redux';
 import { recordTracksEvent } from 'state/analytics/actions';
 import config from 'config';
 import {
-	canExplicitRenew,
 	creditCardExpiresBeforeSubscription,
 	getName,
 	isExpired,
@@ -32,15 +27,19 @@ import NoticeAction from 'components/notice/notice-action';
 import { isMonthly } from 'lib/plans/constants';
 import TrackComponentView from 'lib/analytics/track-component-view';
 
-const eventProperties = warning => ( { warning, position: 'individual-purchase' } );
+const eventProperties = ( warning ) => ( { warning, position: 'individual-purchase' } );
 
 class PurchaseNotice extends Component {
 	static propTypes = {
-		isDataLoading: PropTypes.bool,
-		handleRenew: PropTypes.func,
-		selectedPurchase: PropTypes.object,
-		selectedSite: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool, PropTypes.undefined ] ),
-		editCardDetailsPath: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
+		isDataLoading: React.PropTypes.bool,
+		handleRenew: React.PropTypes.func,
+		selectedPurchase: React.PropTypes.object,
+		selectedSite: React.PropTypes.oneOfType(
+			[ React.PropTypes.object, React.PropTypes.bool, React.PropTypes.undefined ]
+		),
+		editCardDetailsPath: React.PropTypes.oneOfType(
+			[ React.PropTypes.string, React.PropTypes.bool ]
+		),
 	};
 
 	getExpiringText( purchase ) {
@@ -81,22 +80,16 @@ class PurchaseNotice extends Component {
 	}
 
 	renderRenewNoticeAction( onClick ) {
-		const purchase = getPurchase( this.props );
-		const { editCardDetailsPath, translate } = this.props;
-
+		const { translate } = this.props;
 		if ( ! config.isEnabled( 'upgrades/checkout' ) || ! getSelectedSite( this.props ) ) {
 			return null;
 		}
 
-		if ( ! canExplicitRenew( purchase ) ) {
-			return (
-				<NoticeAction href={ editCardDetailsPath }>
-					{ translate( 'Enable Auto Renew' ) }
-				</NoticeAction>
-			);
-		}
-
-		return <NoticeAction onClick={ onClick }>{ translate( 'Renew Now' ) }</NoticeAction>;
+		return (
+			<NoticeAction onClick={ onClick }>
+				{ translate( 'Renew Now' ) }
+			</NoticeAction>
+		);
 	}
 
 	trackImpression( warning ) {
@@ -109,10 +102,7 @@ class PurchaseNotice extends Component {
 	}
 
 	trackClick( warning ) {
-		this.props.recordTracksEvent(
-			'calypso_subscription_warning_click',
-			eventProperties( warning )
-		);
+		this.props.recordTracksEvent( 'calypso_subscription_warning_click', eventProperties( warning ) );
 	}
 
 	handleExpiringNoticeRenewal = () => {
@@ -120,7 +110,7 @@ class PurchaseNotice extends Component {
 		if ( this.props.handleRenew ) {
 			this.props.handleRenew();
 		}
-	};
+	}
 
 	renderPurchaseExpiringNotice() {
 		const { moment } = this.props;
@@ -147,14 +137,13 @@ class PurchaseNotice extends Component {
 		);
 	}
 
-	onClickUpdateCreditCardDetails = () => {
+	onClickUpdateCreditCardDetails= () => {
 		this.trackClick( 'credit-card-expiring' );
-	};
+	}
 
 	renderCreditCardExpiringNotice() {
 		const { translate, editCardDetailsPath } = this.props;
-		const purchase = getPurchase( this.props ),
-			{ payment: { creditCard } } = purchase;
+		const purchase = getPurchase( this.props ), { payment: { creditCard } } = purchase;
 
 		if (
 			isExpired( purchase ) ||
@@ -166,11 +155,9 @@ class PurchaseNotice extends Component {
 		}
 
 		if ( creditCardExpiresBeforeSubscription( purchase ) ) {
-			const linkComponent = editCardDetailsPath ? (
-				<a onClick={ this.onClickUpdateCreditCardDetails } href={ editCardDetailsPath } />
-			) : (
-				<span />
-			);
+			const linkComponent = editCardDetailsPath
+				? <a onClick={ this.onClickUpdateCreditCardDetails } href={ editCardDetailsPath } />
+				: <span />;
 			return (
 				<Notice
 					className="manage-purchase__expiring-credit-card-notice"
@@ -202,7 +189,7 @@ class PurchaseNotice extends Component {
 		if ( this.props.handleRenew ) {
 			this.props.handleRenew();
 		}
-	};
+	}
 
 	renderExpiredRenewNotice() {
 		const purchase = getPurchase( this.props );
@@ -255,4 +242,7 @@ class PurchaseNotice extends Component {
 const mapStateToProps = null;
 const mapDispatchToProps = { recordTracksEvent };
 
-export default connect( mapStateToProps, mapDispatchToProps )( localize( PurchaseNotice ) );
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)( localize( PurchaseNotice ) );

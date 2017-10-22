@@ -1,21 +1,18 @@
-/**
- * @format
- * @jest-environment jsdom
- */
 
 /**
- * External dependencies
+ * External Dependencies
  */
-import { expect } from 'chai';
+var expect = require( 'chai' ).expect,
+	useFileSystemMocks = require( 'test/helpers/use-filesystem-mocks' ),
+	useFakeDom = require( 'test/helpers/use-fake-dom' );
 
-jest.mock( 'lib/analytics', () => ( {} ) );
-jest.mock( 'lib/post-normalizer', () => require( './mocks/lib/post-normalizer' ) );
-jest.mock( 'lib/wp', () => require( './mocks/lib/wp' ) );
+var	Dispatcher, FeedStreamActionType, FeedPostActionType, FeedPostStore;
 
-var Dispatcher, FeedStreamActionType, FeedPostActionType, FeedPostStore;
+describe( 'feed-post-store', function() {
+	useFakeDom();
+	useFileSystemMocks( __dirname );
 
-describe( 'feed-post-store', () => {
-	beforeAll( () => {
+	before( () => {
 		Dispatcher = require( 'dispatcher' );
 		FeedStreamActionType = require( 'lib/feed-stream-store/constants' ).action;
 		FeedPostActionType = require( 'lib/feed-post-store/constants' ).action;
@@ -23,93 +20,85 @@ describe( 'feed-post-store', () => {
 		FeedPostStore = require( '../' );
 	} );
 
-	beforeEach( () => {
+	beforeEach( function() {
 		FeedPostStore._reset();
 	} );
 
-	test( 'should have a dispatch token', () => {
+	it( 'should have a dispatch token', function() {
 		expect( FeedPostStore ).to.have.property( 'dispatchToken' );
 	} );
 
-	test( 'should save a post from a feed page', () => {
+	it( 'should save a post from a feed page', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedStreamActionType.RECEIVE_PAGE,
 			data: { posts: [ { feed_ID: 1, ID: 2 } ] },
-			error: null,
+			error: null
 		} );
 
-		expect(
-			FeedPostStore.get( {
-				feedId: 1,
-				postId: 2,
-			} )
-		).to.be.ok;
+		expect( FeedPostStore.get( {
+			feedId: 1,
+			postId: 2
+		} ) ).to.be.ok;
 	} );
 
-	test( 'should save a post from a blog page', () => {
+	it( 'should save a post from a blog page', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedStreamActionType.RECEIVE_PAGE,
 			data: { posts: [ { site_ID: 1, ID: 2 } ] },
-			error: null,
+			error: null
 		} );
 
-		expect(
-			FeedPostStore.get( {
-				blogId: 1,
-				postId: 2,
-			} )
-		).to.be.ok;
+		expect( FeedPostStore.get( {
+			blogId: 1,
+			postId: 2
+		} ) ).to.be.ok;
 	} );
 
-	test( 'should ignore a post from a page without the right ID', () => {
+	it( 'should ignore a post from a page without the right ID', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedStreamActionType.RECEIVE_PAGE,
 			data: { posts: [ { junk: '' } ] },
-			error: null,
+			error: null
 		} );
 
 		expect( FeedPostStore._all() ).to.eql( {} );
 	} );
 
-	test( 'should ignore a post from a page with an error', () => {
+	it( 'should ignore a post from a page with an error', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedStreamActionType.RECEIVE_PAGE,
 			data: { posts: [ { global_ID: 1 } ] },
-			error: new Error(),
+			error: new Error()
 		} );
 
 		expect( FeedPostStore._all() ).to.be.empty;
 	} );
 
-	test( 'should normalize a received post', () => {
+	it( 'should normalize a received post', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedPostActionType.RECEIVE_FEED_POST,
 			data: {
 				feed_id: 1,
 				feed_item_ID: 2,
 				ID: 3, // notice this can and will be different for wpcom posts
-				title: 'chris & ben',
+				title: 'chris & ben'
 			},
 			feedId: 1,
 			postId: 2,
-			error: null,
+			error: null
 		} );
 
-		expect(
-			FeedPostStore.get( {
-				feedId: 1,
-				postId: 2,
-			} )
-		).to.be.ok;
-		expect(
-			FeedPostStore.get( {
-				feedId: 1,
-				postId: 2,
-			} ).title
-		).to.equal( 'chris & ben' );
+		expect( FeedPostStore.get( {
+			feedId: 1,
+			postId: 2
+		} ) ).to.be.ok;
+		expect( FeedPostStore.get( {
+			feedId: 1,
+			postId: 2
+		} ).title ).to.equal( 'chris & ben' );
 	} );
 
-	test( 'should index a post by the site_ID and ID if it is internal', () => {
+	it( 'should index a post by the site_ID and ID if it is internal', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedPostActionType.RECEIVE_FEED_POST,
 			data: {
@@ -117,51 +106,43 @@ describe( 'feed-post-store', () => {
 				feed_item_ID: 2,
 				ID: 3, // notice this can and will be different for wpcom posts
 				site_ID: 4,
-				title: 'a sample post',
+				title: 'a sample post'
 			},
 			feedId: 1,
 			postId: 2,
-			error: null,
+			error: null
 		} );
 
-		expect(
-			FeedPostStore.get( {
-				feedId: 1,
-				postId: 2,
-			} )
-		).to.be.ok;
-		expect(
-			FeedPostStore.get( {
-				blogId: 4,
-				postId: 3,
-			} )
-		).to.be.ok;
+		expect( FeedPostStore.get( {
+			feedId: 1,
+			postId: 2
+		} ) ).to.be.ok;
+		expect( FeedPostStore.get( {
+			blogId: 4,
+			postId: 3
+		} ) ).to.be.ok;
 	} );
 
-	test( 'should accept a post without a feed ID', () => {
+	it( 'should accept a post without a feed ID', function() {
 		Dispatcher.handleServerAction( {
 			type: FeedPostActionType.RECEIVE_FEED_POST,
 			data: {
 				ID: 3, // notice this can and will be different for wpcom posts
 				site_ID: 4,
-				title: 'a sample post',
+				title: 'a sample post'
 			},
 			blogId: 4,
 			postId: 3,
-			error: null,
+			error: null
 		} );
 
-		expect(
-			FeedPostStore.get( {
-				feedId: 1,
-				postId: 2,
-			} )
-		).to.be.undefined;
-		expect(
-			FeedPostStore.get( {
-				blogId: 4,
-				postId: 3,
-			} )
-		).to.be.ok;
+		expect( FeedPostStore.get( {
+			feedId: 1,
+			postId: 2
+		} ) ).to.be.undefined;
+		expect( FeedPostStore.get( {
+			blogId: 4,
+			postId: 3
+		} ) ).to.be.ok;
 	} );
 } );

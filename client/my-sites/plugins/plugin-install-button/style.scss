@@ -2,6 +2,7 @@
 	position: absolute;
 	top: 0;
 	right: 0;
+	margin: 18px 0 0 0;
 	display: flex;
 	align-items: center;
 
@@ -9,7 +10,7 @@
 			color: $gray;
 			height: 100%;
 			position: initial;
-			margin: 18px 16px 0 0;
+			margin-right: 16px;
 		}
 
 	@include breakpoint( "<480px" ) {

@@ -1,12 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
-import { isEqual } from 'lodash';
+import React, { PropTypes } from 'react';
+import isEqual from 'lodash/isEqual';
 
 /**
  * Internal dependencies
@@ -21,12 +17,12 @@ export default React.createClass( {
 
 	propTypes: {
 		site: PropTypes.object,
-		onInvalidItemAdded: PropTypes.func,
+		onInvalidItemAdded: PropTypes.func
 	},
 
 	getDefaultProps() {
 		return {
-			onInvalidItemAdded: () => {},
+			onInvalidItemAdded: () => {}
 		};
 	},
 
@@ -50,8 +46,7 @@ export default React.createClass( {
 			<MediaLibraryDropZone
 				site={ this.props.site }
 				onAddMedia={ this.filterDroppedImagesSelected }
-				fullScreen={ false }
-			/>
+				fullScreen={ false } />
 		);
-	},
+	}
 } );

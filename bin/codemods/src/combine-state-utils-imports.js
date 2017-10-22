@@ -9,8 +9,6 @@
  import { baz, combineReducersWithPersistence as bar, createReducer } from 'state/utils';
  */
 
-const config = require( './config' );
-
 module.exports = function ( file, api ) {
 	// alias the jscodeshift API
 	const j = api.jscodeshift;
@@ -76,5 +74,5 @@ module.exports = function ( file, api ) {
 	}
 
 	// print
-	return root.toSource( config.recastOptions );
+	return root.toSource( { quote: 'single' } );
 };

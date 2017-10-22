@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 
 /**
@@ -13,7 +10,9 @@ import Notice from 'components/notice';
 
 function DomainSuggestionFlag( { content, status = 'info' } ) {
 	return (
-		<Notice isCompact status={ `is-${ status }` }>
+		<Notice
+			isCompact
+			status={ `is-${ status }` }>
 			{ content }
 		</Notice>
 	);

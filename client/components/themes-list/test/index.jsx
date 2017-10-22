@@ -1,29 +1,29 @@
 /**
- * @format
- * @jest-environment jsdom
- */
-
-/**
  * External dependencies
  */
 import { assert } from 'chai';
-import { noop } from 'lodash';
-import React from 'react';
-import ShallowRenderer from 'react-test-renderer/shallow';
+import noop from 'lodash/noop';
 
 /**
  * Internal dependencies
  */
-import { ThemesList } from '../';
+import useMockery from 'test/helpers/use-mockery';
+import { useSandbox } from 'test/helpers/use-sinon';
 
-jest.mock( 'components/pulsing-dot', () => require( 'components/empty-component' ) );
-jest.mock( 'components/theme/more-button', () => require( 'components/empty-component' ) );
+describe( 'ThemesList', function() {
+	let React, TestUtils, ThemesList;
+	useSandbox();
 
-describe( 'ThemesList', () => {
-	let props, themesList, themesListElement;
+	useMockery( mockery => {
+		React = require( 'react' );
+		TestUtils = require( 'react-addons-test-utils' );
+		mockery.registerMock( 'components/pulsing-dot', React.createClass( { render: () => <div/> } ) );
+		mockery.registerMock( './more-button', React.createClass( { render: () => <div/> } ) );
+		ThemesList = require( '../' ).ThemesList;
+	} );
 
-	beforeEach( () => {
-		props = {
+	beforeEach( function() {
+		this.props = {
 			themes: [
 				{
 					id: '1',
@@ -34,53 +34,50 @@ describe( 'ThemesList', () => {
 					id: '2',
 					name: 'picard',
 					screenshot: '/theme/picard/screenshot.png',
-				},
+				}
 			],
 			lastPage: true,
 			loading: false,
 			fetchNextPage: noop,
 			getButtonOptions: noop,
 			onScreenshotClick: noop,
-			translate: x => x, // Mock translate()
+			translate: x => x // Mock translate()
 		};
 
-		themesList = React.createElement( ThemesList, props );
+		this.themesList = React.createElement( ThemesList, this.props );
 	} );
 
-	describe( 'propTypes', () => {
-		test( 'specifies the required propType', () => {
-			assert( themesList.type.propTypes.themes, 'themes propType missing' );
+	describe( 'propTypes', function() {
+		it( 'specifies the required propType', function() {
+			assert( this.themesList.type.propTypes.themes, 'themes propType missing' );
 		} );
 	} );
 
-	describe( 'rendering', () => {
-		beforeEach( () => {
-			const renderer = new ShallowRenderer();
+	describe( 'rendering', function() {
+		beforeEach( function() {
+			var shallowRenderer = TestUtils.createRenderer();
 
-			renderer.render( themesList );
-			themesListElement = renderer.getRenderOutput();
+			shallowRenderer.render( this.themesList );
+			this.themesListElement = shallowRenderer.getRenderOutput();
 		} );
 
-		test( 'should render a div with a className of "themes-list"', () => {
-			assert( themesListElement, 'element does not exist' );
-			assert(
-				themesListElement.props.className === 'themes-list',
-				'className does not equal "themes-list"'
-			);
+		it( 'should render a div with a className of "themes-list"', function() {
+			assert( this.themesListElement, 'element does not exist' );
+			assert( this.themesListElement.props.className === 'themes-list', 'className does not equal "themes-list"' );
 		} );
 
-		describe( 'when no themes are found', () => {
-			beforeEach( () => {
-				const renderer = new ShallowRenderer();
-				props.themes = [];
-				themesList = React.createElement( ThemesList, props );
+		context( 'when no themes are found', function() {
+			beforeEach( function() {
+				var shallowRenderer = TestUtils.createRenderer();
+				this.props.themes = [];
+				this.themesList = React.createElement( ThemesList, this.props );
 
-				renderer.render( themesList );
-				themesListElement = renderer.getRenderOutput();
+				shallowRenderer.render( this.themesList );
+				this.themesListElement = shallowRenderer.getRenderOutput();
 			} );
 
-			test( 'displays the EmptyContent component', () => {
-				assert( themesListElement.type.displayName === 'EmptyContent', 'No EmptyContent' );
+			it( 'displays the EmptyContent component', function() {
+				assert( this.themesListElement.type.displayName === 'EmptyContent', 'No EmptyContent' );
 			} );
 		} );
 	} );

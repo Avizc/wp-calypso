@@ -1,21 +1,17 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import React from 'react';
-import qs from 'querystring';
+const React = require( 'react' ),
+	qs = require( 'querystring' );
 
 /**
  * Internal dependencies
  */
-import PostActions from 'lib/posts/actions';
-import EditorDrawerWell from 'post-editor/editor-drawer-well';
-import { recordEvent, recordStat } from 'lib/posts/stats';
-import EditorLocationSearch from './search';
+const PostActions = require( 'lib/posts/actions' ),
+	EditorDrawerWell = require( 'post-editor/editor-drawer-well' ),
+	stats = require( 'lib/posts/stats' ),
+	EditorLocationSearch = require( './search' );
+
 import Notice from 'components/notice';
 
 /**
@@ -23,69 +19,68 @@ import Notice from 'components/notice';
  */
 const GOOGLE_MAPS_BASE_URL = 'https://maps.google.com/maps/api/staticmap?';
 
-const EditorLocation = React.createClass( {
+export default React.createClass( {
 	displayName: 'EditorLocation',
 
 	propTypes: {
-		label: PropTypes.string,
+		label: React.PropTypes.string,
 		coordinates: function( props, propName ) {
 			var prop = props[ propName ];
-			if (
-				prop &&
-				( ! Array.isArray( prop ) || 2 !== prop.length || 2 !== prop.filter( Number ).length )
-			) {
+			if ( prop && ( ! Array.isArray( prop ) || 2 !== prop.length || 2 !== prop.filter( Number ).length ) ) {
 				return new Error( 'Expected array pair of coordinates for prop `' + propName + '`.' );
 			}
-		},
+		}
 	},
 
 	getInitialState: function() {
 		return {
-			error: null,
+			error: null
 		};
 	},
 
 	onGeolocateSuccess: function( position ) {
 		this.setState( {
-			locating: false,
+			locating: false
 		} );
 
 		// TODO: REDUX - remove flux actions when whole post-editor is reduxified
 		PostActions.updateMetadata( {
 			geo_latitude: position.coords.latitude,
-			geo_longitude: position.coords.longitude,
+			geo_longitude: position.coords.longitude
 		} );
 
-		recordStat( 'location_geolocate_success' );
+		stats.recordStat( 'location_geolocate_success' );
 	},
 
 	onGeolocateFailure: function( error ) {
 		this.setState( {
 			error: error,
-			locating: false,
+			locating: false
 		} );
 
-		recordStat( 'location_geolocate_failed' );
+		stats.recordStat( 'location_geolocate_failed' );
 	},
 
 	resetError: function() {
 		this.setState( {
-			error: null,
+			error: null
 		} );
 	},
 
 	geolocate: function() {
 		this.resetError();
 		this.setState( {
-			locating: true,
+			locating: true
 		} );
 
-		navigator.geolocation.getCurrentPosition( this.onGeolocateSuccess, this.onGeolocateFailure, {
-			enableHighAccuracy: true,
-		} );
+		navigator.geolocation.getCurrentPosition(
+			this.onGeolocateSuccess,
+			this.onGeolocateFailure,
+			{ enableHighAccuracy: true }
+		);
 
-		recordStat( 'location_geolocate' );
-		recordEvent( 'Location Geolocated' );
+		stats.recordStat( 'location_geolocate' );
+		stats.recordEvent( 'Location Geolocated' );
 	},
 
 	clear: function() {
@@ -96,7 +91,7 @@ const EditorLocation = React.createClass( {
 	onSearchSelect: function( result ) {
 		PostActions.updateMetadata( {
 			geo_latitude: result.geometry.location.lat,
-			geo_longitude: result.geometry.location.lng,
+			geo_longitude: result.geometry.location.lng
 		} );
 	},
 
@@ -105,13 +100,11 @@ const EditorLocation = React.createClass( {
 			return;
 		}
 
-		const src =
-			GOOGLE_MAPS_BASE_URL +
-			qs.stringify( {
-				markers: this.props.coordinates.join( ',' ),
-				zoom: 8,
-				size: '400x300',
-			} );
+		const src = GOOGLE_MAPS_BASE_URL + qs.stringify( {
+			markers: this.props.coordinates.join( ',' ),
+			zoom: 8,
+			size: '400x300'
+		} );
 
 		return <img src={ src } className="editor-location__map" />;
 	},
@@ -122,19 +115,15 @@ const EditorLocation = React.createClass( {
 		if ( this.state.error ) {
 			error = (
 				<Notice status="is-error" onDismissClick={ this.resetError } isCompact>
-					{ this.props.translate( "We couldn't find your current location.", {
-						context: 'Post editor geolocation',
-					} ) }
+					{ this.translate( 'We couldn\'t find your current location.', { context: 'Post editor geolocation' } ) }
 				</Notice>
 			);
 		}
 
 		if ( this.state.locating ) {
-			buttonText = this.props.translate( 'Locating…', { context: 'Post editor geolocation' } );
+			buttonText = this.translate( 'Locating…', { context: 'Post editor geolocation' } );
 		} else {
-			buttonText = this.props.translate( 'Get current location', {
-				context: 'Post editor geolocation',
-			} );
+			buttonText = this.translate( 'Get current location', { context: 'Post editor geolocation' } );
 		}
 
 		return (
@@ -146,17 +135,13 @@ const EditorLocation = React.createClass( {
 					empty={ ! this.props.coordinates }
 					onClick={ this.geolocate }
 					onRemove={ this.clear }
-					disabled={ this.state.locating }
-				>
+					disabled={ this.state.locating }>
 					{ this.renderCurrentLocation() }
 				</EditorDrawerWell>
 				<EditorLocationSearch
 					onError={ this.onGeolocateFailure }
-					onSelect={ this.onSearchSelect }
-				/>
+					onSelect={ this.onSearchSelect } />
 			</div>
 		);
-	},
+	}
 } );
-
-export default localize( EditorLocation );

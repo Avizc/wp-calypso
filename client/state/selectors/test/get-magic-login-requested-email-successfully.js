@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,12 +9,12 @@ import { expect } from 'chai';
 import { getMagicLoginRequestedEmailSuccessfully } from '../';
 
 describe( 'getMagicLoginRequestedEmailSuccessfully()', () => {
-	test( 'should return false if there is no information yet', () => {
+	it( 'should return false if there is no information yet', () => {
 		const requested = getMagicLoginRequestedEmailSuccessfully( undefined );
 		expect( requested ).to.be.false;
 	} );
 
-	test( 'should return true if true', () => {
+	it( 'should return true if true', () => {
 		const requested = getMagicLoginRequestedEmailSuccessfully( {
 			login: {
 				magicLogin: {
@@ -27,7 +25,7 @@ describe( 'getMagicLoginRequestedEmailSuccessfully()', () => {
 		expect( requested ).to.be.true;
 	} );
 
-	test( 'should return false if false', () => {
+	it( 'should return false if false', () => {
 		const requested = getMagicLoginRequestedEmailSuccessfully( {
 			login: {
 				magicLogin: {

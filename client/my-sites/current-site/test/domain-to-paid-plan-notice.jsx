@@ -1,11 +1,9 @@
-/** @format */
-
 /**
  * External dependencies
  */
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
 import React from 'react';
+import { shallow } from 'enzyme';
 import { stub } from 'sinon';
 
 /**
@@ -13,7 +11,7 @@ import { stub } from 'sinon';
  */
 import { DomainToPaidPlanNotice } from '../domain-to-paid-plan-notice';
 
-describe( 'DomainToPaidPlanNotice', () => {
+describe( 'DomainToPaidPlanNotice', function() {
 	const translate = stub();
 	const site = { ID: 12345, slug: 'site_slug' };
 
@@ -21,19 +19,19 @@ describe( 'DomainToPaidPlanNotice', () => {
 		translate.returns( 'translated content' );
 	} );
 
-	test( 'should render null when there is no site', () => {
+	it( 'should render null when there is no site', function() {
 		const wrapper = shallow( <DomainToPaidPlanNotice /> );
 
 		expect( wrapper.type() ).to.equal( null );
 	} );
 
-	test( 'should render null when ineligible', () => {
+	it( 'should render null when ineligible', function() {
 		const wrapper = shallow( <DomainToPaidPlanNotice site={ site } /> );
 
 		expect( wrapper.type() ).to.equal( null );
 	} );
 
-	test( 'should render component when site information is available and the site is eligible', () => {
+	it( 'should render component when site information is available and the site is eligible', function() {
 		const wrapper = shallow( <DomainToPaidPlanNotice site={ site } eligible /> );
 		expect( wrapper.type().displayName ).to.equal( 'Localized(Notice)' );
 	} );

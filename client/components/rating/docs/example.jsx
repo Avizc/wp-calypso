@@ -1,18 +1,22 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import React from 'react';
+var React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' );
 
 /**
  * Internal dependencies
  */
-import Rating from 'components/rating';
+var Rating = require( 'components/rating' );
 
-export default class RatingExample extends React.PureComponent {
-	render() {
-		return <Rating rating={ 70 } size={ 48 } />;
+module.exports = React.createClass( {
+	displayName: 'Rating',
+
+	mixins: [ PureRenderMixin ],
+
+	render: function() {
+		return (
+			<Rating rating={ 65 } size={ 50 } />
+		);
 	}
-}
+} );

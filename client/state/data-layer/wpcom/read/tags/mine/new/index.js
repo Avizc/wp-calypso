@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -9,6 +8,7 @@ import { find } from 'lodash';
  */
 import { READER_FOLLOW_TAG_REQUEST } from 'state/action-types';
 import { receiveTags as receiveTagsAction } from 'state/reader/tags/items/actions';
+
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { dispatchRequest } from 'state/data-layer/wpcom-http/utils';
 import { fromApi } from 'state/data-layer/wpcom/read/tags/utils';
@@ -23,11 +23,11 @@ export function requestFollowTag( store, action ) {
 			apiVersion: '1.1',
 			onSuccess: action,
 			onFailure: action,
-		} )
+		} ),
 	);
 }
 
-export function receiveFollowTag( store, action, apiResponse ) {
+export function receiveFollowTag( store, action, next, apiResponse ) {
 	if ( apiResponse.subscribed === false ) {
 		receiveError( store, action );
 		return;
@@ -42,11 +42,11 @@ export function receiveFollowTag( store, action, apiResponse ) {
 	store.dispatch(
 		receiveTagsAction( {
 			payload: [ followedTag ],
-		} )
+		} ),
 	);
 }
 
-export function receiveError( store, action, error ) {
+export function receiveError( store, action, next, error ) {
 	// exit early and do nothing if the error is that the user is already following the tag
 	if ( error && error.error === 'already_subscribed' ) {
 		return;

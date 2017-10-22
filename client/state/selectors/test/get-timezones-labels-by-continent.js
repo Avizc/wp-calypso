@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,26 +9,33 @@ import { expect } from 'chai';
 import { getTimezonesLabelsByContinent } from 'state/selectors';
 
 describe( 'getTimezonesLabelsByContinent()', () => {
-	test( "should return null if `timezones` aren't synced", () => {
+	it( 'should return null if `timezones` aren\'t synced', () => {
 		const state = {
 			timezones: {
 				byContinents: {},
 				labels: {},
 				rawOffsets: {},
-			},
+			}
 		};
 
 		const labelsByContinent = getTimezonesLabelsByContinent( state, 'Atlantic' );
 		expect( labelsByContinent ).to.eql( null );
 	} );
 
-	test( "should return null if `continent` isn't defined", () => {
+	it( 'should return null if `continent` isn\'t defined', () => {
 		const state = {
 			timezones: {
 				byContinents: {
-					Asia: [ 'Asia/Aqtobe' ],
-					America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-					Indian: [ 'Indian/Comoro' ],
+					Asia: [
+						'Asia/Aqtobe',
+					],
+					America: [
+						'America/Blanc-Sablon',
+						'America/Boa_Vista',
+					],
+					Indian: [
+						'Indian/Comoro',
+					],
 				},
 				labels: {
 					'Asia/Aqtobe': 'Aqtobe',
@@ -39,20 +44,27 @@ describe( 'getTimezonesLabelsByContinent()', () => {
 					'Indian/Comoro': 'Comoro',
 				},
 				rawOffsets: {},
-			},
+			}
 		};
 
 		const labelsByContinent = getTimezonesLabelsByContinent( state );
 		expect( labelsByContinent ).to.eql( null );
 	} );
 
-	test( 'should return timezones by contienent object data', () => {
+	it( 'should return timezones by contienent object data', () => {
 		const state = {
 			timezones: {
 				byContinents: {
-					Asia: [ 'Asia/Aqtobe' ],
-					America: [ 'America/Blanc-Sablon', 'America/Boa_Vista' ],
-					Indian: [ 'Indian/Comoro' ],
+					Asia: [
+						'Asia/Aqtobe',
+					],
+					America: [
+						'America/Blanc-Sablon',
+						'America/Boa_Vista',
+					],
+					Indian: [
+						'Indian/Comoro',
+					],
 				},
 				labels: {
 					'Asia/Aqtobe': 'Aqtobe',
@@ -61,7 +73,7 @@ describe( 'getTimezonesLabelsByContinent()', () => {
 					'Indian/Comoro': 'Comoro',
 				},
 				rawOffsets: {},
-			},
+			}
 		};
 
 		const labelsByContinent = getTimezonesLabelsByContinent( state, 'America' );

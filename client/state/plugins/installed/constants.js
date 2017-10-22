@@ -1,9 +1,4 @@
-/**
- * /* Notices use different action constants
- *
- * @format
- */
-
+/* Notices use different action constants */
 export const INSTALL_PLUGIN = 'INSTALL_PLUGIN';
 export const REMOVE_PLUGIN = 'REMOVE_PLUGIN';
 export const UPDATE_PLUGIN = 'UPDATE_PLUGIN';

@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { difference, each, omit } from 'lodash';
 
 /**
@@ -36,5 +33,5 @@ function recordRemoveEvent( cartItem ) {
 
 export default {
 	recordEvents,
-	removeNestedProperties,
+	removeNestedProperties
 };

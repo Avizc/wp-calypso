@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -11,38 +9,32 @@ import { expect } from 'chai';
 import generateVariations from '../index';
 
 describe( 'generateVariations', () => {
-	test( 'returns an empty array when passed a product with no attributes', () => {
+	it( 'returns an empty array when passed a product with no attributes', () => {
 		const product = { id: 1 };
 		const variations = generateVariations( product );
 		expect( variations ).to.eql( [] );
 	} );
-	test( 'returns an empty array when passed a product with non-variation attributes', () => {
-		const product = {
-			id: 1,
-			attributes: [
-				{
-					name: 'Test Attribute',
-					options: [ 'Option' ],
-					variation: false,
-					uid: 'edit_0',
-				},
-			],
-		};
+	it( 'returns an empty array when passed a product with non-variation attributes', () => {
+		const product = { id: 1, attributes: [
+			{
+				name: 'Test Attribute',
+				options: [ 'Option' ],
+				variation: false,
+				uid: 'edit_0',
+			}
+		] };
 		const variations = generateVariations( product );
 		expect( variations ).to.eql( [] );
 	} );
-	test( 'generates simple variations when passed a product with one product variation attribute', () => {
-		const product = {
-			id: 1,
-			attributes: [
-				{
-					name: 'Color',
-					options: [ 'Red', 'Blue' ],
-					variation: true,
-					uid: 'edit_0',
-				},
-			],
-		};
+	it( 'generates simple variations when passed a product with one product variation attribute', () => {
+		const product = { id: 1, attributes: [
+			{
+				name: 'Color',
+				options: [ 'Red', 'Blue' ],
+				variation: true,
+				uid: 'edit_0',
+			}
+		] };
 
 		const variations = generateVariations( product );
 		expect( variations[ 0 ].attributes ).to.eql( [
@@ -59,73 +51,67 @@ describe( 'generateVariations', () => {
 			},
 		] );
 	} );
-	test( 'generates a cartesian of variations when passed a product with multiple variation attributes', () => {
-		const product = {
-			id: 1,
-			attributes: [
-				{
-					name: 'Color',
-					options: [ 'Red', 'Blue' ],
-					variation: true,
-					uid: 'edit_0',
-				},
-				{
-					name: 'Size',
-					options: [ 'Small' ],
-					variation: true,
-					uid: 'edit_1',
-				},
-			],
-		};
+	it( 'generates a cartesian of variations when passed a product with multiple variation attributes', () => {
+		const product = { id: 1, attributes: [
+			{
+				name: 'Color',
+				options: [ 'Red', 'Blue' ],
+				variation: true,
+				uid: 'edit_0',
+			},
+			{
+				name: 'Size',
+				options: [ 'Small' ],
+				variation: true,
+				uid: 'edit_1',
+			},
+		] };
 
 		const variations = generateVariations( product );
 
 		expect( variations[ 0 ].attributes ).to.eql( [
 			{
 				name: 'Color',
-				option: 'Red',
+				option: 'Red'
 			},
 			{
 				name: 'Size',
 				option: 'Small',
-			},
+			}
 		] );
 
 		expect( variations[ 1 ].attributes ).to.eql( [
 			{
 				name: 'Color',
-				option: 'Blue',
+				option: 'Blue'
 			},
 			{
 				name: 'Size',
 				option: 'Small',
-			},
+			}
 		] );
 	} );
-	test( 'generates a complex cartesian of variations when passed a product with multiple variation attributes and multiple options', () => {
-		const product = {
-			id: 1,
-			attributes: [
-				{
-					name: 'Color',
-					options: [ 'Red', 'Blue', 'Green' ],
-					variation: true,
-					uid: 'edit_0',
-				},
-				{
-					name: 'Size',
-					options: [ 'Small', 'Medium' ],
-					variation: true,
-					uid: 'edit_1',
-				},
-				{
-					name: 'Sleeves',
-					options: [ 'Short', 'Long' ],
-					variation: true,
-					uid: 'edit_2',
-				},
-			],
-		};
+	it( 'generates a complex cartesian of variations when passed a product with multiple variation attributes and multiple options', () => {
+		const product = { id: 1, attributes: [
+			{
+				name: 'Color',
+				options: [ 'Red', 'Blue', 'Green' ],
+				variation: true,
+				uid: 'edit_0',
+			},
+			{
+				name: 'Size',
+				options: [ 'Small', 'Medium' ],
+				variation: true,
+				uid: 'edit_1',
+			},
+			{
+				name: 'Sleeves',
+				options: [ 'Short', 'Long' ],
+				variation: true,
+				uid: 'edit_2',
+			},
+		] };
 
 		const variations = generateVariations( product );
 
@@ -146,25 +132,21 @@ describe( 'generateVariations', () => {
 		] );
 	} );
 
-	test( 'generates a default variation sku with product name', () => {
-		const product = {
-			id: 1,
-			name: 'Shirt',
-			attributes: [
-				{
-					name: 'Color',
-					options: [ 'Red', 'Blue' ],
-					variation: true,
-					uid: 'edit_0',
-				},
-				{
-					name: 'Size',
-					options: [ 'Small' ],
-					variation: true,
-					uid: 'edit_1',
-				},
-			],
-		};
+	it( 'generates a default variation sku with product name', () => {
+		const product = { id: 1, name: 'Shirt', attributes: [
+			{
+				name: 'Color',
+				options: [ 'Red', 'Blue' ],
+				variation: true,
+				uid: 'edit_0',
+			},
+			{
+				name: 'Size',
+				options: [ 'Small' ],
+				variation: true,
+				uid: 'edit_1',
+			},
+		] };
 
 		const variations = generateVariations( product );
 
@@ -172,65 +154,52 @@ describe( 'generateVariations', () => {
 		expect( variations[ 1 ].sku ).to.equal( 'shirt-blue-small' );
 	} );
 
-	test( 'generates a default variation sku without a product name', () => {
-		const product = {
-			id: 2,
-			attributes: [
-				{
-					name: 'Color',
-					options: [ 'Red', 'Blue' ],
-					variation: true,
-					uid: 'edit_0',
-				},
-				{
-					name: 'Size',
-					options: [ 'Small' ],
-					variation: true,
-					uid: 'edit_1',
-				},
-			],
-		};
+	it( 'generates a default variation sku without a product name', () => {
+		const product = { id: 2, attributes: [
+			{
+				name: 'Color',
+				options: [ 'Red', 'Blue' ],
+				variation: true,
+				uid: 'edit_0',
+			},
+			{
+				name: 'Size',
+				options: [ 'Small' ],
+				variation: true,
+				uid: 'edit_1',
+			},
+		] };
 
 		const variations = generateVariations( product );
 		expect( variations[ 0 ].sku ).to.equal( 'red-small' );
 		expect( variations[ 1 ].sku ).to.equal( 'blue-small' );
 	} );
 
-	test( 'copies id and sku from existing product variations, where available', () => {
-		const product = {
-			id: 2,
-			attributes: [
-				{
-					name: 'Color',
-					options: [ 'Red', 'Blue' ],
-					variation: true,
-					uid: 'edit_0',
-				},
-				{
-					name: 'Size',
-					options: [ 'Small' ],
-					variation: true,
-					uid: 'edit_1',
-				},
-			],
-		};
+	it( 'copies id and sku from existing product variations, where available', () => {
+		const product = { id: 2, attributes: [
+			{
+				name: 'Color',
+				options: [ 'Red', 'Blue' ],
+				variation: true,
+				uid: 'edit_0',
+			},
+			{
+				name: 'Size',
+				options: [ 'Small' ],
+				variation: true,
+				uid: 'edit_1',
+			},
+		] };
 
 		const productVariations = [
-			{
-				id: 25,
-				sku: 'its-red-and-small',
-				attributes: [
-					{ id: 0, name: 'Color', option: 'Red' },
-					{ id: 1, name: 'Size', option: 'Small' },
-				],
-			},
-			{
-				sku: 'its-blue-and-small',
-				attributes: [
-					{ id: 2, name: 'Color', option: 'Blue' },
-					{ id: 1, name: 'Size', option: 'Small' },
-				],
-			},
+			{ id: 25, sku: 'its-red-and-small', attributes: [
+				{ id: 0, name: 'Color', option: 'Red' },
+				{ id: 1, name: 'Size', option: 'Small' },
+			] },
+			{ sku: 'its-blue-and-small', attributes: [
+				{ id: 2, name: 'Color', option: 'Blue' },
+				{ id: 1, name: 'Size', option: 'Small' },
+			] },
 		];
 
 		const variations = generateVariations( product, productVariations );

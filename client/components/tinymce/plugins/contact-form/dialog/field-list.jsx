@@ -1,12 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { localize } from 'i18n-calypso';
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -14,14 +9,14 @@ import React from 'react';
 import EmptyContent from 'components/empty-content';
 import Field from './field';
 
-const ContactFormDialogFieldList = React.createClass( {
+export default React.createClass( {
 	displayName: 'ContactFormDialogFieldList',
 
 	propTypes: {
 		fields: PropTypes.array.isRequired,
 		onFieldAdd: PropTypes.func.isRequired,
 		onFieldRemove: PropTypes.func.isRequired,
-		onFieldUpdate: PropTypes.func.isRequired,
+		onFieldUpdate: PropTypes.func.isRequired
 	},
 
 	render() {
@@ -34,24 +29,18 @@ const ContactFormDialogFieldList = React.createClass( {
 								key={ index }
 								{ ...field }
 								onRemove={ () => this.props.onFieldRemove( index ) }
-								onUpdate={ newField => this.props.onFieldUpdate( index, newField ) }
-							/>
+								onUpdate={ newField => this.props.onFieldUpdate( index, newField ) } />
 						);
 					} ) }
 				</div>
 			);
 		}
 
-		return (
-			<EmptyContent
-				title={ null }
-				line={ this.props.translate( 'An empty form is no fun! Go ahead and add some fields!' ) }
-				action={ this.props.translate( 'Add New Field' ) }
-				actionCallback={ this.props.onFieldAdd }
-				isCompact={ true }
-			/>
-		);
-	},
+		return <EmptyContent
+			title={ null }
+			line={ this.translate( 'An empty form is no fun! Go ahead and add some fields!' ) }
+			action={ this.translate( 'Add New Field' ) }
+			actionCallback={ this.props.onFieldAdd }
+			isCompact={ true } />;
+	}
 } );
-
-export default localize( ContactFormDialogFieldList );

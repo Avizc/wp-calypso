@@ -1,44 +1,38 @@
-/** @format */
 /**
  * External dependencies
  */
-import { expect } from 'chai';
 import sinon from 'sinon';
+import { expect } from 'chai';
 
 /**
  * Internal dependencies
  */
-import * as actions from '../actions';
-import { tracks } from 'lib/analytics';
 import { READER_POSTS_RECEIVE } from 'state/action-types';
-import wp from 'lib/wp';
-
-const undocumented = wp.undocumented;
-
-jest.mock( 'lib/analytics', () => ( {
-	tracks: {
-		recordEvent: require( 'sinon' ).spy(),
-	},
-} ) );
-
-jest.mock( 'lib/wp', () => {
-	const { stub } = require( 'sinon' );
-	const readFeedPost = stub();
-	const readSitePost = stub();
-
-	return {
-		undocumented: () => ( {
-			readFeedPost,
-			readSitePost,
-		} ),
-	};
-} );
+import useMockery from 'test/helpers/use-mockery';
 
 describe( 'actions', () => {
+	let actions;
 	const dispatchSpy = sinon.spy();
-	const trackingSpy = tracks.recordEvent;
-	const readFeedStub = undocumented().readFeedPost;
-	const readSiteStub = undocumented().readSitePost;
+	const trackingSpy = sinon.spy();
+	const readFeedStub = sinon.stub();
+	const readSiteStub = sinon.stub();
+
+	useMockery( mockery => {
+		mockery.registerMock( 'lib/analytics', {
+			tracks: {
+				recordEvent: trackingSpy,
+			},
+		} );
+
+		mockery.registerMock( 'lib/wp', {
+			undocumented: () => ( {
+				readFeedPost: readFeedStub,
+				readSitePost: readSiteStub,
+			} ),
+		} );
+
+		actions = require( '../actions' );
+	} );
 
 	afterEach( () => {
 		dispatchSpy.reset();
@@ -48,7 +42,7 @@ describe( 'actions', () => {
 	} );
 
 	describe( '#postToKey', () => {
-		test( 'should return a feed key for an external post', () => {
+		it( 'should return a feed key for an external post', () => {
 			expect(
 				actions.postToKey( {
 					feed_ID: 1,
@@ -56,21 +50,21 @@ describe( 'actions', () => {
 					ID: 3,
 					feed_item_ID: 3,
 					is_external: true,
-				} )
+				} ),
 			).to.deep.equal( { feedId: 1, postId: 3 } );
 		} );
 
-		test( 'should return an blog id key for an internal post', () => {
+		it( 'should return an blog id key for an internal post', () => {
 			expect(
 				actions.postToKey( {
 					site_ID: 2,
 					ID: 4,
 					is_external: false,
-				} )
+				} ),
 			).to.deep.equal( { blogId: 2, postId: 4 } );
 		} );
 
-		test( 'should return a feed key for a post with both a feed id and a site id', () => {
+		it( 'should return a feed key for a post with both a feed id and a site id', () => {
 			expect(
 				actions.postToKey( {
 					feed_ID: 1,
@@ -78,13 +72,13 @@ describe( 'actions', () => {
 					ID: 4,
 					feed_item_ID: 3,
 					is_external: false,
-				} )
+				} ),
 			).to.deep.equal( { feedId: 1, postId: 3 } );
 		} );
 	} );
 
 	describe( '#receivePosts()', () => {
-		test( 'should return an action object and dispatch posts receive', () => {
+		it( 'should return an action object and dispatch posts receive', () => {
 			const posts = [];
 			return actions.receivePosts( posts )( dispatchSpy ).then( () => {
 				expect( dispatchSpy ).to.have.been.calledWith( {
@@ -94,7 +88,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should fire tracks events for posts with railcars', () => {
+		it( 'should fire tracks events for posts with railcars', () => {
 			const posts = [
 				{
 					ID: 1,
@@ -107,7 +101,7 @@ describe( 'actions', () => {
 			expect( trackingSpy ).to.have.been.calledWith( 'calypso_traintracks_render', 'foo' );
 		} );
 
-		test( 'should try to reload posts marked with should_reload', () => {
+		it( 'should try to reload posts marked with should_reload', () => {
 			const posts = [
 				{
 					ID: 1,
@@ -119,12 +113,12 @@ describe( 'actions', () => {
 			];
 
 			actions.receivePosts( posts )( dispatchSpy );
-			expect( dispatchSpy ).to.have.been.calledWith( sinon.match.func );
+			return expect( dispatchSpy ).to.have.been.calledWith( sinon.match.func );
 		} );
 	} );
 
 	describe( '#fetchPost', () => {
-		test( 'should call read/sites for blog posts', () => {
+		it( 'should call read/sites for blog posts', () => {
 			readSiteStub.returns( Promise.resolve( {} ) );
 			const req = actions.fetchPost( { blogId: 1, postId: 2 } )( dispatchSpy );
 
@@ -138,7 +132,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should call read/feeds for feed posts', () => {
+		it( 'should call read/feeds for feed posts', () => {
 			readFeedStub.returns( Promise.resolve( {} ) );
 			const req = actions.fetchPost( { feedId: 1, postId: 2 } )( dispatchSpy );
 
@@ -152,7 +146,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch an error when a blog post call fails', () => {
+		it( 'should dispatch an error when a blog post call fails', () => {
 			readSiteStub.returns( Promise.reject( { status: 'oh no' } ) );
 			const req = actions.fetchPost( { blogId: 1, postId: 2 } )( dispatchSpy );
 
@@ -179,7 +173,7 @@ describe( 'actions', () => {
 			} );
 		} );
 
-		test( 'should dispatch an error when a feed post call fails', () => {
+		it( 'should dispatch an error when a feed post call fails', () => {
 			readFeedStub.returns( Promise.reject( { status: 'oh no' } ) );
 			const req = actions.fetchPost( { feedId: 1, postId: 2 } )( dispatchSpy );
 

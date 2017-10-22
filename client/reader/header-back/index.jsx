@@ -1,5 +1,5 @@
-/** @format */
 import React from 'react';
+
 import HeaderCake from 'components/header-cake';
 
 function goBack() {

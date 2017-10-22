@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import classNames from 'classnames';
@@ -39,11 +35,9 @@ function SiteIcon( { siteId, site, iconUrl, size, imgSize, isTransientIcon } ) {
 	return (
 		<div className={ classes } style={ style }>
 			{ ! site && siteId > 0 && <QuerySites siteId={ siteId } /> }
-			{ iconSrc ? (
-				<Image className="site-icon__img" src={ iconSrc } alt="" />
-			) : (
-				<Gridicon icon="globe" size={ Math.round( size / 1.3 ) } />
-			) }
+			{ iconSrc
+				? <Image className="site-icon__img" src={ iconSrc } />
+				: <Gridicon icon="globe" size={ Math.round( size / 1.3 ) } /> }
 			{ isTransientIcon && <Spinner /> }
 		</div>
 	);

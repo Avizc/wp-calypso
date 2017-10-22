@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -8,7 +7,6 @@ import deepFreeze from 'deep-freeze';
 /**
  * Internal dependencies
  */
-import { items, updatedLists, missingLists, subscribedLists } from '../reducer';
 import {
 	READER_LISTS_RECEIVE,
 	READER_LISTS_UNFOLLOW_SUCCESS,
@@ -20,14 +18,16 @@ import {
 	READER_LIST_REQUEST_FAILURE,
 } from 'state/action-types';
 
+import { items, updatedLists, missingLists, subscribedLists } from '../reducer';
+
 describe( 'reducer', () => {
 	describe( '#items()', () => {
-		test( 'should default to an empty object', () => {
+		it( 'should default to an empty object', () => {
 			const state = items( undefined, {} );
 			expect( state ).to.eql( {} );
 		} );
 
-		test( 'should index lists by ID', () => {
+		it( 'should index lists by ID', () => {
 			const state = items( null, {
 				type: READER_LISTS_RECEIVE,
 				lists: [ { ID: 841, title: 'Hello World' }, { ID: 413, title: 'Mangos and feijoas' } ],
@@ -39,7 +39,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should accumulate lists', () => {
+		it( 'should accumulate lists', () => {
 			const original = deepFreeze( {
 				841: { ID: 841, title: 'Hello World' },
 			} );
@@ -54,7 +54,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should update a list title', () => {
+		it( 'should update a list title', () => {
 			const original = deepFreeze( {
 				841: { ID: 841, title: 'Hello World' },
 			} );
@@ -69,7 +69,7 @@ describe( 'reducer', () => {
 			} );
 		} );
 
-		test( 'should update a list description', () => {
+		it( 'should update a list description', () => {
 			const original = deepFreeze( {
 				841: { ID: 841, title: 'Bananas' },
 			} );
@@ -87,12 +87,12 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#updatedLists()', () => {
-		test( 'should default to an empty array', () => {
+		it( 'should default to an empty array', () => {
 			const state = updatedLists( undefined, {} );
 			expect( state ).to.eql( [] );
 		} );
 
-		test( 'should add a list ID when a list is updated', () => {
+		it( 'should add a list ID when a list is updated', () => {
 			const state = updatedLists( null, {
 				type: READER_LIST_UPDATE_SUCCESS,
 				data: {
@@ -106,7 +106,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( [ 841 ] );
 		} );
 
-		test( 'should remove a list ID when a notice is dismissed', () => {
+		it( 'should remove a list ID when a notice is dismissed', () => {
 			let state = updatedLists( null, {
 				type: READER_LIST_UPDATE_SUCCESS,
 				data: {
@@ -129,12 +129,12 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#missingLists()', () => {
-		test( 'should default to an empty array', () => {
+		it( 'should default to an empty array', () => {
 			const state = missingLists( undefined, {} );
 			expect( state ).to.eql( [] );
 		} );
 
-		test( 'should store new missing lists in the case of a 404', () => {
+		it( 'should store new missing lists in the case of a 404', () => {
 			const state = missingLists( undefined, {
 				type: READER_LIST_REQUEST_FAILURE,
 				error: {
@@ -147,7 +147,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( [ { owner: 'lister', slug: 'banana' } ] );
 		} );
 
-		test( 'should not store new missing lists in the case of a different error', () => {
+		it( 'should not store new missing lists in the case of a different error', () => {
 			const state = missingLists( undefined, {
 				type: READER_LIST_REQUEST_FAILURE,
 				error: {
@@ -160,7 +160,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( [] );
 		} );
 
-		test( 'should remove a missing list if a successful lists response is received', () => {
+		it( 'should remove a missing list if a successful lists response is received', () => {
 			const initialState = missingLists( undefined, {
 				type: READER_LIST_REQUEST_FAILURE,
 				error: {
@@ -183,7 +183,7 @@ describe( 'reducer', () => {
 			expect( state ).to.eql( [] );
 		} );
 
-		test( 'should remove a missing list if a successful single list response is received', () => {
+		it( 'should remove a missing list if a successful single list response is received', () => {
 			const initialState = missingLists( undefined, {
 				type: READER_LIST_REQUEST_FAILURE,
 				error: {
@@ -207,30 +207,30 @@ describe( 'reducer', () => {
 	} );
 
 	describe( '#subscribedLists', () => {
-		test( 'should default to empty', () => {
+		it( 'should default to empty', () => {
 			expect( subscribedLists( undefined, { type: '@@BAD' } ) ).to.eql( [] );
 		} );
 
-		test( 'should pick up the ids of the subscribed lists', () => {
+		it( 'should pick up the ids of the subscribed lists', () => {
 			expect(
 				subscribedLists( deepFreeze( [] ), {
 					type: READER_LISTS_RECEIVE,
 					lists: [ { ID: 1 }, { ID: 2 } ],
-				} )
+				} ),
 			).to.eql( [ 1, 2 ] );
 		} );
 
-		test( 'should overwrite existing subs', () => {
+		it( 'should overwrite existing subs', () => {
 			const initial = deepFreeze( [ 1, 2 ] );
 			expect(
 				subscribedLists( initial, {
 					type: READER_LISTS_RECEIVE,
 					lists: [ { ID: 3 }, { ID: 1 } ],
-				} )
+				} ),
 			).to.eql( [ 3, 1 ] );
 		} );
 
-		test( 'should remove an item on unfollow', () => {
+		it( 'should remove an item on unfollow', () => {
 			const initial = deepFreeze( [ 1, 2 ] );
 			expect(
 				subscribedLists( initial, {
@@ -238,7 +238,7 @@ describe( 'reducer', () => {
 					data: {
 						list: { ID: 1 },
 					},
-				} )
+				} ),
 			).to.eql( [ 2 ] );
 		} );
 	} );

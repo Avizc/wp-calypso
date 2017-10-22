@@ -1,13 +1,9 @@
 /**
  * External Dependencies
- *
- * @format
  */
+var debug = require( 'debug' )( 'calypso:notices' );
 
-import debugFactory from 'debug';
-
-const debug = debugFactory( 'calypso:notices' );
-import Emitter from 'lib/mixins/emitter';
+var Emitter = require( 'lib/mixins/emitter' );
 
 debug( 'initializing notices' );
 
@@ -40,7 +36,7 @@ const notices = {
 			container: container,
 			button: options.button,
 			href: options.href,
-			onClick: event => {
+			onClick: ( event ) => {
 				if ( typeof options.onClick === 'function' ) {
 					const closeFn = notices.removeNotice.bind( notices, noticeObject );
 					return options.onClick( event, closeFn );
@@ -50,7 +46,7 @@ const notices = {
 			arrow: options.arrow,
 			isCompact: options.isCompact,
 			showDismiss: options.showDismiss,
-			persistent: options.persistent,
+			persistent: options.persistent
 		};
 
 		// if requested, delay the notice until the next page load
@@ -138,8 +134,7 @@ const notices = {
 	 */
 	clearNoticesOnNavigation: function( context, next ) {
 		debug( 'clearNoticesOnNavigation' );
-		var length,
-			container,
+		var length, container,
 			changed = false,
 			isNoticePersistent = function( notice ) {
 				return notice.persistent;
@@ -195,7 +190,8 @@ const notices = {
 		if ( noticeObject.success ) {
 			return 'is-success';
 		}
-	},
+	}
+
 };
 
 export default notices;

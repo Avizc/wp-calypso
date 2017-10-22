@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { throttle, map, uniq } from 'lodash';
 import { connect } from 'react-redux';
@@ -19,8 +15,9 @@ import { loadScript } from 'lib/load-script';
 import StatsModulePlaceholder from '../stats-module/placeholder';
 import QuerySiteStats from 'components/data/query-site-stats';
 import { getSelectedSiteId } from 'state/ui/selectors';
-import { getSiteStatsNormalizedData } from 'state/stats/lists/selectors';
-import { getCurrentUserCountryCode } from 'state/current-user/selectors';
+import {
+	getSiteStatsNormalizedData
+} from 'state/stats/lists/selectors';
 
 class StatsGeochart extends Component {
 	static propTypes = {
@@ -54,11 +51,7 @@ class StatsGeochart extends Component {
 
 	componentWillUnmount() {
 		if ( this.visualization ) {
-			window.google.visualization.events.removeListener(
-				this.visualization,
-				'regionClick',
-				this.recordEvent
-			);
+			window.google.visualization.events.removeListener( this.visualization, 'regionClick', this.recordEvent );
 			this.visualization.clearChart();
 		}
 		if ( this.resize.cancel ) {
@@ -69,42 +62,38 @@ class StatsGeochart extends Component {
 
 	recordEvent = () => {
 		analytics.ga.recordEvent( 'Stats', 'Clicked Country on Map' );
-	};
+	}
 
 	drawRegionsMap = () => {
 		if ( this.refs && this.refs.chart ) {
 			this.visualizationsLoaded = true;
 			this.visualization = new window.google.visualization.GeoChart( this.refs.chart );
-			window.google.visualization.events.addListener(
-				this.visualization,
-				'regionClick',
-				this.recordEvent
-			);
+			window.google.visualization.events.addListener( this.visualization, 'regionClick', this.recordEvent );
 
 			this.drawData();
 		}
-	};
+	}
 
 	resize = () => {
 		if ( this.visualizationsLoaded ) {
 			this.drawData();
 		}
-	};
+	}
 
 	drawData = () => {
-		const { currentUserCountryCode, data, translate } = this.props;
+		const { data, translate } = this.props;
 
 		if ( ! data || ! data.length ) {
 			return;
 		}
 
-		const mapData = map( data, country => {
+		const mapData = map( data, ( country ) => {
 			return [
 				{
 					v: country.countryCode,
-					f: country.label,
+					f: country.label
 				},
-				country.value,
+				country.value
 			];
 		} );
 
@@ -121,8 +110,7 @@ class StatsGeochart extends Component {
 			keepAspectRatio: true,
 			enableRegionInteractivity: true,
 			region: 'world',
-			colorAxis: { colors: [ '#FFF088', '#F34605' ] },
-			domain: currentUserCountryCode,
+			colorAxis: { colors: [ '#FFF088', '#F34605' ] }
 		};
 
 		const regions = uniq( map( data, 'region' ) );
@@ -132,31 +120,28 @@ class StatsGeochart extends Component {
 		}
 
 		this.visualization.draw( chartData, options );
-	};
+	}
 
 	loadVisualizations = () => {
 		// If google is already in the DOM, don't load it again.
 		if ( window.google ) {
-			window.google.load( 'visualization', '1', {
-				packages: [ 'geochart' ],
-				callback: this.drawRegionsMap,
-			} );
+			window.google.load( 'visualization', '1', { packages: [ 'geochart' ], callback: this.drawRegionsMap } );
 			clearTimeout( this.timer );
 		} else {
 			this.tick();
 		}
-	};
+	}
 
 	tick = () => {
 		this.timer = setTimeout( this.loadVisualizations, 1000 );
-	};
+	}
 
 	render() {
 		const { siteId, statType, query, data } = this.props;
 		const isLoading = ! data;
 		const classes = classNames( 'stats-geochart', {
 			'is-loading': isLoading,
-			'has-no-data': data && ! data.length,
+			'has-no-data': data && ! data.length
 		} );
 
 		return (
@@ -175,7 +160,6 @@ export default connect( ( state, ownProps ) => {
 	const { query } = ownProps;
 
 	return {
-		currentUserCountryCode: getCurrentUserCountryCode( state ),
 		data: getSiteStatsNormalizedData( state, siteId, statType, query ),
 		siteId,
 		statType,

@@ -1,10 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 import Gridicon from 'gridicons';
@@ -16,13 +12,13 @@ import DomainProductPrice from 'components/domains/domain-product-price';
 
 class DomainSuggestion extends React.Component {
 	static propTypes = {
-		buttonContent: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ).isRequired,
-		buttonClasses: PropTypes.string,
-		extraClasses: PropTypes.string,
-		onButtonClick: PropTypes.func.isRequired,
-		priceRule: PropTypes.string.isRequired,
-		price: PropTypes.string,
-		domain: PropTypes.string,
+		buttonContent: React.PropTypes.oneOfType( [ React.PropTypes.string, React.PropTypes.element ] ).isRequired,
+		buttonClasses: React.PropTypes.string,
+		extraClasses: React.PropTypes.string,
+		onButtonClick: React.PropTypes.func.isRequired,
+		priceRule: React.PropTypes.string.isRequired,
+		price: React.PropTypes.string,
+		domain: React.PropTypes.string
 	};
 
 	render() {
@@ -43,13 +39,17 @@ class DomainSuggestion extends React.Component {
 				className={ classes }
 				onClick={ this.props.onButtonClick }
 				role="button"
-				data-e2e-domain={ this.props.domain }
-			>
+				data-e2e-domain={ this.props.domain }>
 				<div className="domain-suggestion__content">
 					{ children }
-					<DomainProductPrice rule={ priceRule } price={ price } />
+					<DomainProductPrice
+						rule={ priceRule }
+						price={ price }
+					/>
 				</div>
-				<div className="domain-suggestion__action">{ this.props.buttonContent }</div>
+				<div className="domain-suggestion__action">
+					{ this.props.buttonContent }
+				</div>
 				<Gridicon className="domain-suggestion__chevron" icon="chevron-right" />
 			</div>
 		);

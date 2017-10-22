@@ -1,9 +1,6 @@
 /**
  * Extrenal dependencies
- *
- * @format
  */
-
 import React, { PureComponent } from 'react';
 import { keys, filter } from 'lodash';
 
@@ -19,8 +16,9 @@ const tldSpecificForms = {
 	fr,
 };
 
-const enabledTldForms = filter( keys( tldSpecificForms ), tld =>
-	config.isEnabled( `domains/cctlds/${ tld }` )
+const enabledTldForms = filter(
+	keys( tldSpecificForms ),
+	tld => config.isEnabled( `domains/cctlds/${ tld }` )
 );
 
 export const tldsWithAdditionalDetailsForms = enabledTldForms;

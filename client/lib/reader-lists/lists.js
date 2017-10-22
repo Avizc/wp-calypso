@@ -1,9 +1,9 @@
-/** @format */
 // External dependencies
 import { decodeEntities } from 'lib/formatting';
 import dispatcher from 'dispatcher';
 import emitter from 'lib/mixins/emitter';
-import { isEqual, last } from 'lodash';
+import isEqual from 'lodash/isEqual';
+import last from 'lodash/last';
 
 // Internal dependencies
 import { action as actionTypes } from './constants';
@@ -128,4 +128,4 @@ ListStore.dispatchToken = dispatcher.register( function( payload ) {
 	}
 } );
 
-export default ListStore;
+module.exports = ListStore;

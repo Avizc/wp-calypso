@@ -1,19 +1,16 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import page from 'page';
+const page = require( 'page' );
 
 /**
  * Internal dependencies
  */
-import controller from 'my-sites/controller';
-import checkoutController from './controller';
-import SiftScience from 'lib/siftscience';
+const controller = require( 'my-sites/controller' ),
+	checkoutController = require( './controller' ),
+	SiftScience = require( 'lib/siftscience' );
 
-export default function() {
+module.exports = function() {
 	SiftScience.recordUser();
 
 	page(
@@ -40,9 +37,17 @@ export default function() {
 		checkoutController.checkoutThankYou
 	);
 
-	page( '/checkout/no-site', controller.noSite, checkoutController.sitelessCheckout );
+	page(
+		'/checkout/no-site',
+		controller.noSite,
+		checkoutController.sitelessCheckout
+	);
 
-	page( '/checkout/:domain/:product?', controller.siteSelection, checkoutController.checkout );
+	page(
+		'/checkout/:domain/:product?',
+		controller.siteSelection,
+		checkoutController.checkout
+	);
 
 	page(
 		'/checkout/:product/renew/:purchaseId/:domain',
@@ -52,4 +57,4 @@ export default function() {
 
 	// Visting /checkout without a plan or product should be redirected to /plans
 	page( '/checkout', '/plans' );
-}
+};

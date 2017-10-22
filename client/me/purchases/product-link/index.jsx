@@ -1,10 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import i18n from 'i18n-calypso';
@@ -25,9 +21,7 @@ import {
 } from 'lib/products-values';
 
 const ProductLink = ( { selectedPurchase, selectedSite, productUrl } ) => {
-	let props = {},
-		url,
-		text;
+	let props = {}, url, text;
 
 	if ( ! selectedSite ) {
 		return <span />;
@@ -69,8 +63,8 @@ const ProductLink = ( { selectedPurchase, selectedSite, productUrl } ) => {
 };
 
 ProductLink.propTypes = {
-	selectedPurchase: PropTypes.object.isRequired,
-	selectedSite: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.object ] ),
+	selectedPurchase: React.PropTypes.object.isRequired,
+	selectedSite: React.PropTypes.oneOfType( [ React.PropTypes.bool, React.PropTypes.object ] ),
 };
 
 export default connect( ( state, { selectedPurchase } ) => {

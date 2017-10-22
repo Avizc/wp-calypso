@@ -1,4 +1,3 @@
-/** @format */
 export const itemsSchema = {
 	type: 'object',
 	additionalProperties: false,
@@ -10,9 +9,9 @@ export const itemsSchema = {
 				required: [ 'label', 'file' ],
 				properties: {
 					label: { type: 'string' },
-					file: { type: 'string' },
-				},
-			},
-		},
-	},
+					file: { type: 'string' }
+				}
+			}
+		}
+	}
 };

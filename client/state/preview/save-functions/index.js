@@ -1,4 +1,3 @@
-/** @format */
 import * as actions from './actions';
 
 export function siteTitle( dispatch, customizations, siteId ) {

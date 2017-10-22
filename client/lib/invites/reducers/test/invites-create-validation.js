@@ -1,15 +1,13 @@
-/** @format */
-
 /**
  * External dependencies
  */
-import { assert } from 'chai';
+const assert = require( 'chai' ).assert;
 
 /**
  * Internal dependencies
  */
-import Dispatcher from 'dispatcher';
-import { action as ActionTypes } from 'lib/invites/constants';
+const Dispatcher = require( 'dispatcher' ),
+	constants = require( 'lib/invites/constants' );
 
 describe( 'Invites Create Validation Store', () => {
 	let InvitesCreateValidationStore;
@@ -19,19 +17,19 @@ describe( 'Invites Create Validation Store', () => {
 		errors: {
 			'test@gmail.com': {
 				errors: {
-					'form-error-username-or-email': [ 'User already has a role on your site.' ],
+					'form-error-username-or-email': [ 'User already has a role on your site.' ]
 				},
-				error_data: [],
-			},
+				error_data: []
+			}
 		},
-		success: [ 'testuser', 'test2@gmail.com' ],
+		success: [ 'testuser', 'test2@gmail.com' ]
 	};
 
 	const actions = {
 		receiveValidaton: {
-			type: ActionTypes.RECEIVE_CREATE_INVITE_VALIDATION_SUCCESS,
+			type: constants.action.RECEIVE_CREATE_INVITE_VALIDATION_SUCCESS,
 			siteId: siteId,
-			data: validationData,
+			data: validationData
 		},
 	};
 
@@ -44,7 +42,7 @@ describe( 'Invites Create Validation Store', () => {
 			Dispatcher.handleServerAction( actions.receiveValidaton );
 		} );
 
-		test( 'Validation is not empty', () => {
+		it( 'Validation is not empty', () => {
 			const success = InvitesCreateValidationStore.getSuccess( siteId );
 			assert.lengthOf( success, 2 );
 			const errors = InvitesCreateValidationStore.getErrors( siteId );

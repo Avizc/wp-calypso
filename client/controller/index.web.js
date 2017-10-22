@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import React from 'react';
 import ReactDom from 'react-dom';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -29,17 +26,19 @@ const user = userFactory();
 
 export const ReduxWrappedLayout = ( { store, primary, secondary, redirectUri } ) => (
 	<ReduxProvider store={ store }>
-		{ getCurrentUser( store.getState() ) ? (
-			<Layout
-				primary={ primary }
+		{ getCurrentUser( store.getState() )
+			? <Layout primary={ primary }
 				secondary={ secondary }
 				user={ user }
 				nuxWelcome={ nuxWelcome }
 				translatorInvitation={ translatorInvitation }
 			/>
-		) : (
-			<LayoutLoggedOut primary={ primary } secondary={ secondary } redirectUri={ redirectUri } />
-		) }
+			: <LayoutLoggedOut
+				primary={ primary }
+				secondary={ secondary }
+				redirectUri={ redirectUri }
+			/>
+		}
 	</ReduxProvider>
 );
 
@@ -75,5 +74,8 @@ export function redirectLoggedIn( context, next ) {
 }
 
 function render( context ) {
-	ReactDom.render( context.layout, document.getElementById( 'wpcom' ) );
+	ReactDom.render(
+		context.layout,
+		document.getElementById( 'wpcom' )
+	);
 }

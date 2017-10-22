@@ -1,19 +1,11 @@
-/** @format */
-/**
- * External dependencies
- */
+import React from 'react';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
-import React from 'react';
 import { spy } from 'sinon';
-
-/**
- * Internal dependencies
- */
-import FormTextInput from '../';
+import FormTextInput from 'components/forms/form-text-input';
 
 describe( '<FormTextInput />', () => {
-	test( 'should add the provided class names', () => {
+	it( 'should add the provided class names', () => {
 		const wrapper = shallow( <FormTextInput className="test" isError isValid /> );
 
 		expect( wrapper ).to.have.className( 'test' );
@@ -21,13 +13,13 @@ describe( '<FormTextInput />', () => {
 		expect( wrapper ).to.have.className( 'is-valid' );
 	} );
 
-	test( 'should have form-text-input class name', () => {
+	it( 'should have form-text-input class name', () => {
 		const wrapper = shallow( <FormTextInput /> );
 
 		expect( wrapper ).to.have.className( 'form-text-input' );
 	} );
 
-	test( "should not pass component's own props down to the input", () => {
+	it( 'should not pass component\'s own props down to the input', () => {
 		const wrapper = shallow( <FormTextInput isValid isError selectOnFocus /> );
 
 		expect( wrapper ).to.not.have.prop( 'isValid' );
@@ -35,18 +27,18 @@ describe( '<FormTextInput />', () => {
 		expect( wrapper ).to.not.have.prop( 'selectOnFocus' );
 	} );
 
-	test( "should pass props aside from component's own to the input", () => {
+	it( 'should pass props aside from component\'s own to the input', () => {
 		const wrapper = shallow( <FormTextInput placeholder="test placeholder" /> );
 
 		expect( wrapper ).to.have.prop( 'placeholder' );
 	} );
 
-	test( 'should call select if selectOnFocus is true', () => {
+	it( 'should call select if selectOnFocus is true', () => {
 		const wrapper = shallow( <FormTextInput selectOnFocus={ true } /> );
 		const event = {
 			target: {
-				select: () => {},
-			},
+				select: () => {}
+			}
 		};
 
 		spy( event.target, 'select' );
@@ -55,12 +47,12 @@ describe( '<FormTextInput />', () => {
 		expect( event.target.select ).to.have.been.calledOnce;
 	} );
 
-	test( 'should not call select if selectOnFocus is false', () => {
+	it( 'should not call select if selectOnFocus is false', () => {
 		const wrapper = shallow( <FormTextInput selectOnFocus={ false } /> );
 		const event = {
 			target: {
-				select: () => {},
-			},
+				select: () => {}
+			}
 		};
 
 		spy( event.target, 'select' );

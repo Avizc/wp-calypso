@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get } from 'lodash';
 
 /**
@@ -13,12 +10,18 @@ import { ANALYTICS_EVENT_RECORD, EDITOR_PASTE_EVENT } from 'state/action-types';
 import { SOURCE_GOOGLE_DOCS } from 'components/tinymce/plugins/wpcom-track-paste/sources';
 import config from 'config';
 import { abtest } from 'lib/abtest';
-import { getAll as getAllMedia } from 'lib/media/store';
-import { getSectionName, getSelectedSite, getSelectedSiteId } from 'state/ui/selectors';
+import {
+	getSectionName,
+	getSelectedSite,
+	getSelectedSiteId,
+} from 'state/ui/selectors';
 import { getLastAction } from 'state/ui/action-log/selectors';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { canCurrentUser } from 'state/selectors';
-import { hasDefaultSiteTitle, isCurrentPlanPaid } from 'state/sites/selectors';
+import {
+	hasDefaultSiteTitle,
+	isCurrentPlanPaid,
+} from 'state/sites/selectors';
 
 export const WEEK_IN_MILLISECONDS = 7 * 1000 * 3600 * 24;
 
@@ -28,7 +31,8 @@ export const WEEK_IN_MILLISECONDS = 7 * 1000 * 3600 * 24;
  * @param {String} sectionName Name of section
  * @return {Function} Selector function
  */
-export const inSection = sectionName => state => getSectionName( state ) === sectionName;
+export const inSection = sectionName => state =>
+	getSectionName( state ) === sectionName;
 
 /**
  * Returns a selector that tests if a feature is enabled in config
@@ -36,7 +40,8 @@ export const inSection = sectionName => state => getSectionName( state ) === sec
  * @param {String} feature Name of feature
  * @return {Function} Selector function
  */
-export const isEnabled = feature => () => config.isEnabled( feature );
+export const isEnabled = feature => () =>
+	config.isEnabled( feature );
 
 /**
  * Returns milliseconds since registration date of the current user
@@ -47,7 +52,7 @@ export const isEnabled = feature => () => config.isEnabled( feature );
 const timeSinceUserRegistration = state => {
 	const user = getCurrentUser( state );
 	const registrationDate = user && Date.parse( user.date );
-	return registrationDate ? Date.now() - registrationDate : false;
+	return registrationDate ? ( Date.now() - registrationDate ) : false;
 };
 
 /**
@@ -72,16 +77,6 @@ export const isNewUser = state => {
 };
 
 /**
- * Returns true if the user is NOT considered "new" (less than a week since registration)
- *
- * @param {Object} state Global state tree
- * @return {Boolean} True if user is NOT new, false otherwise
- */
-export const isNotNewUser = state => {
-	return ! isNewUser( state );
-};
-
-/**
  * Returns a selector that tests if the user is older than a given time
  *
  * @param {Number} age Number of milliseconds
@@ -102,7 +97,7 @@ export const hasUserRegisteredBefore = date => state => {
 	const compareDate = date && Date.parse( date );
 	const user = getCurrentUser( state );
 	const registrationDate = user && Date.parse( user.date );
-	return registrationDate < compareDate;
+	return ( registrationDate < compareDate );
 };
 
 /*
@@ -121,10 +116,9 @@ export const hasUserInteractedWithComponent = () => () => false;
  */
 export const hasAnalyticsEventFired = eventName => state => {
 	const last = getLastAction( state );
-	return (
-		last.type === ANALYTICS_EVENT_RECORD &&
-		last.meta.analytics.some( record => record.payload.name === eventName )
-	);
+	return ( last.type === ANALYTICS_EVENT_RECORD ) &&
+		last.meta.analytics.some( record =>
+			record.payload.name === eventName );
 };
 
 /**
@@ -146,21 +140,6 @@ export const isSelectedSiteCustomizable = state =>
 	getSelectedSite( state ) && getSelectedSite( state ).is_customizable;
 
 /**
- * Returns true if the selected site has any media files.
- *
- * @param {Object} state Global state tree
- * @return {Boolean} True if site has any media files, false otherwise.
-*/
-export const doesSelectedSiteHaveMediaFiles = state => {
-	const siteId = getSelectedSiteId( state );
-	if ( ! siteId ) {
-		return false;
-	}
-	const media = getAllMedia( siteId );
-	return media && media.length && media.length > 0;
-};
-
-/**
  * Returns a selector that tests whether an A/B test is in a given variant.
  *
  * @see client/lib/abtest
@@ -169,7 +148,8 @@ export const doesSelectedSiteHaveMediaFiles = state => {
  * @param {String} variant Variant identifier
  * @return {Function} Selector function
  */
-export const isAbTestInVariant = ( testName, variant ) => () => abtest( testName ) === variant;
+export const isAbTestInVariant = ( testName, variant ) => () =>
+	abtest( testName ) === variant;
 
 /**
  * Returns true if the selected site has an unchanged site title
@@ -201,7 +181,7 @@ export const isSelectedSitePlanPaid = state => {
  */
 export const hasUserPastedFromGoogleDocs = state => {
 	const action = getLastAction( state ) || false;
-	return action && action.type === EDITOR_PASTE_EVENT && action.source === SOURCE_GOOGLE_DOCS;
+	return action && ( action.type === EDITOR_PASTE_EVENT ) && ( action.source === SOURCE_GOOGLE_DOCS );
 };
 
 /**

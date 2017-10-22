@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -18,7 +14,9 @@ import { fetchNameservers } from 'lib/upgrades/actions';
 import { getDomainsBySite } from 'state/sites/domains/selectors';
 import { getSelectedSite } from 'state/ui/selectors';
 
-const stores = [ NameserversStore ];
+const stores = [
+	NameserversStore
+];
 
 function getStateFromStores( props ) {
 	return {
@@ -88,7 +86,7 @@ const mapStateToProps = state => {
 			hasLoadedFromServer: !! domains.length,
 			list: domains,
 		},
-		selectedSite,
+		selectedSite
 	};
 };
 

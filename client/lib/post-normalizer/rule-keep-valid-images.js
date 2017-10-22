@@ -1,10 +1,7 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
-import { filter } from 'lodash';
+import filter from 'lodash/filter';
 
 /**
  * Internal Dependencies

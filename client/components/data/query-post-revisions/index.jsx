@@ -1,11 +1,7 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -19,7 +15,10 @@ class QueryPostRevisions extends Component {
 	}
 
 	componentDidUpdate( prevProps ) {
-		if ( this.props.siteId === prevProps.siteId && this.props.postId === prevProps.postId ) {
+		if (
+			this.props.siteId === prevProps.siteId &&
+			this.props.postId === prevProps.postId
+		) {
 			return;
 		}
 
@@ -27,7 +26,7 @@ class QueryPostRevisions extends Component {
 	}
 
 	request() {
-		this.props.requestPostRevisions( this.props.siteId, this.props.postId, this.props.postType );
+		this.props.requestPostRevisions( this.props.siteId, this.props.postId );
 	}
 
 	render() {
@@ -37,9 +36,11 @@ class QueryPostRevisions extends Component {
 
 QueryPostRevisions.propTypes = {
 	postId: PropTypes.number,
-	postType: PropTypes.string,
 	siteId: PropTypes.number,
 	requestPostRevisions: PropTypes.func,
 };
 
-export default connect( () => ( {} ), { requestPostRevisions } )( QueryPostRevisions );
+export default connect(
+	() => ( {} ),
+	{ requestPostRevisions }
+)( QueryPostRevisions );

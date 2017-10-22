@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -12,7 +10,7 @@ import deepFreeze from 'deep-freeze';
 import { isValidatingAccountRecoveryKey } from '../';
 
 describe( 'isValidatingAccountRecoveryKey()', () => {
-	test( 'should return the requesting field under the validate substate tree.', () => {
+	it( 'should return the requesting field under the validate substate tree.', () => {
 		const state = deepFreeze( {
 			accountRecovery: {
 				reset: {
@@ -26,7 +24,7 @@ describe( 'isValidatingAccountRecoveryKey()', () => {
 		assert.isTrue( isValidatingAccountRecoveryKey( state ) );
 	} );
 
-	test( 'should return false as the default value.', () => {
+	it( 'should return false as the default value.', () => {
 		assert.isFalse( isValidatingAccountRecoveryKey( undefined ) );
 	} );
 } );

@@ -1,10 +1,8 @@
 /**
  * External dependencies
- *
- * @format
  */
-
-import { filter, startsWith } from 'lodash';
+import startsWith from 'lodash/startsWith';
+import filter from 'lodash/filter';
 
 function domainManagementRoot() {
 	return '/domains/manage';
@@ -86,11 +84,7 @@ function domainManagementPrimaryDomain( siteName, domainName ) {
 }
 
 function domainManagementTransfer( siteName, domainName, transferType = '' ) {
-	return domainManagementEdit(
-		siteName,
-		domainName,
-		filter( [ 'transfer', transferType ] ).join( '/' )
-	);
+	return domainManagementEdit( siteName, domainName, filter( [ 'transfer', transferType ] ).join( '/' ) );
 }
 
 function domainManagementTransferOut( siteName, domainName ) {
@@ -106,13 +100,13 @@ function domainManagementTransferToOtherSite( siteName, domainName ) {
 }
 
 function getSectionName( pathname ) {
-	const regExp = new RegExp( '^' + domainManagementRoot() + '/[^/]+/([^/]+)', 'g' );
-	const matches = regExp.exec( pathname );
+	const regExp = new RegExp( '^' + domainManagementRoot() + '/[^/]+/([^/]+)', 'g' ),
+		matches = regExp.exec( pathname );
 
 	return matches ? matches[ 1 ] : null;
 }
 
-export default {
+module.exports = {
 	domainManagementAddGoogleApps,
 	domainManagementContactsPrivacy,
 	domainManagementDns,
@@ -130,5 +124,5 @@ export default {
 	domainManagementTransferOut,
 	domainManagementTransferToAnotherUser,
 	domainManagementTransferToOtherSite,
-	getSectionName,
+	getSectionName
 };

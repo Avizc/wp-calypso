@@ -1,9 +1,6 @@
 /**
  * External dependencies
- *
- * @format
  */
-
 import { get } from 'lodash';
 
 function getCacheState( state ) {
@@ -18,11 +15,7 @@ function getCacheState( state ) {
  * @return {Boolean} Whether the cache is being deleted
  */
 export function isDeletingCache( state, siteId ) {
-	return get(
-		state,
-		[ 'extensions', 'wpSuperCache', 'cache', 'deleteStatus', siteId, 'deleting' ],
-		false
-	);
+	return get( state, [ 'extensions', 'wpSuperCache', 'cache', 'deleteStatus', siteId, 'deleting' ], false );
 }
 
 /**

@@ -1,9 +1,6 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import React from 'react';
 import { map } from 'lodash';
 import { localize } from 'i18n-calypso';

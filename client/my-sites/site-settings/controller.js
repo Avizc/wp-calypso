@@ -1,12 +1,8 @@
 /**
  * External Dependencies
- *
- * @format
  */
-
 import page from 'page';
 import React from 'react';
-import ReactDom from 'react-dom';
 
 /**
  * Internal Dependencies
@@ -14,8 +10,6 @@ import ReactDom from 'react-dom';
 import AsyncLoad from 'components/async-load';
 import config from 'config';
 import DeleteSite from './delete-site';
-import ConfirmDisconnection from './disconnect-site/confirm';
-import DisconnectSite from './disconnect-site';
 import purchasesPaths from 'me/purchases/paths';
 import { renderWithReduxStore } from 'lib/react-helpers';
 import SiteSettingsMain from 'my-sites/site-settings/main';
@@ -26,7 +20,6 @@ import { getSelectedSite, getSelectedSiteId, getSelectedSiteSlug } from 'state/u
 import { isJetpackSite } from 'state/sites/selectors';
 import { canCurrentUser, isVipSite } from 'state/selectors';
 import { SITES_ONCE_CHANGED } from 'state/action-types';
-import { setSection } from 'state/ui/actions';
 
 function canDeleteSite( state, siteId ) {
 	const canManageOptions = canCurrentUser( state, siteId, 'manage_options' );
@@ -50,7 +43,11 @@ function canDeleteSite( state, siteId ) {
 }
 
 function renderPage( context, component ) {
-	renderWithReduxStore( component, document.getElementById( 'primary' ), context.store );
+	renderWithReduxStore(
+		component,
+		document.getElementById( 'primary' ),
+		context.store
+	);
 }
 
 const controller = {
@@ -78,27 +75,39 @@ const controller = {
 					if ( ! canDeleteSite( updatedState, updatedSiteId ) ) {
 						return page.redirect( '/settings/general/' + updatedSiteSlug );
 					}
-				},
+				}
 			} );
 		}
 	},
 
 	general( context ) {
-		renderPage( context, <SiteSettingsMain /> );
+		renderPage(
+			context,
+			<SiteSettingsMain />
+		);
 	},
 
 	importSite( context ) {
-		renderPage( context, <AsyncLoad require="my-sites/site-settings/section-import" /> );
+		renderPage(
+			context,
+			<AsyncLoad require="my-sites/site-settings/section-import" />
+		);
 	},
 
 	exportSite( context ) {
-		renderPage( context, <AsyncLoad require="my-sites/site-settings/section-export" /> );
+		renderPage(
+			context,
+			<AsyncLoad require="my-sites/site-settings/section-export" />
+		);
 	},
 
 	guidedTransfer( context ) {
 		renderPage(
 			context,
-			<AsyncLoad require="my-sites/guided-transfer" hostSlug={ context.params.host_slug } />
+			<AsyncLoad
+				require="my-sites/guided-transfer"
+				hostSlug={ context.params.host_slug }
+			/>
 		);
 	},
 
@@ -107,19 +116,10 @@ const controller = {
 
 		redirectIfCantDeleteSite( context );
 
-		renderPage( context, <DeleteSite path={ context.path } /> );
-	},
-
-	disconnectSite( context ) {
-		ReactDom.unmountComponentAtNode( document.getElementById( 'secondary' ) );
-		context.store.dispatch( setSection( null, { hasSidebar: false } ) );
-		renderPage( context, <DisconnectSite reason={ context.params.reason } /> );
-	},
-
-	disconnectSiteConfirm( context ) {
-		ReactDom.unmountComponentAtNode( document.getElementById( 'secondary' ) );
-		context.store.dispatch( setSection( null, { hasSidebar: false } ) );
-		renderPage( context, <ConfirmDisconnection /> );
+		renderPage(
+			context,
+			<DeleteSite path={ context.path } />
+		);
 	},
 
 	startOver( context ) {
@@ -127,7 +127,10 @@ const controller = {
 
 		redirectIfCantDeleteSite( context );
 
-		renderPage( context, <StartOver path={ context.path } /> );
+		renderPage(
+			context,
+			<StartOver path={ context.path } />
+		);
 	},
 
 	themeSetup( context ) {
@@ -140,11 +143,17 @@ const controller = {
 			return page.redirect( '/settings/general/' + site.slug );
 		}
 
-		renderPage( context, <ThemeSetup /> );
+		renderPage(
+			context,
+			<ThemeSetup />
+		);
 	},
 
 	manageConnection( context ) {
-		renderPage( context, <ManageConnection /> );
+		renderPage(
+			context,
+			<ManageConnection />
+		);
 	},
 
 	legacyRedirects( context, next ) {
@@ -158,7 +167,7 @@ const controller = {
 				earnings: '/me/public-profile',
 				'billing-history': purchasesPaths.billingHistory(),
 				'billing-history-v2': purchasesPaths.billingHistory(),
-				'connected-apps': '/me/security/connected-applications',
+				'connected-apps': '/me/security/connected-applications'
 			};
 		if ( ! context ) {
 			return page( '/me/public-profile' );
